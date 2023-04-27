@@ -28,7 +28,8 @@ class UserConnection():
             """)
             return cur.fetchall()
         
-    def read_only_one(self, data):
+    def read_only_one(self, data : str):
+        
         with self.conn.cursor() as cur:
             # cur.execute("""
             # SELECT * FROM users WHERE username=%(username)s AND password=%(password)s

@@ -1,0 +1,11 @@
+from pydantic import BaseModel
+from typing import Optional
+
+class userSchema(BaseModel):
+    id: Optional[int]
+    username: str
+    password: str
+
+class loginSchema(BaseModel):
+    username: str
+    password: str
