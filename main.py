@@ -83,15 +83,16 @@ async def login_user(user_data:loginSchema):
     }
 
 
-@app.post("/loginForm", status_code=status.HTTP_202_ACCEPTED)
-async def login_user(form : OAuth2PasswordRequestForm = Depends()):
-    data = form
-    print(form)
-    user_db = conn.read_only_one(data)
+
+# @app.post("/loginForm", status_code=status.HTTP_202_ACCEPTED)
+# async def login_user(form : OAuth2PasswordRequestForm = Depends()):
+#     data = form
+#     print(form)
+#     user_db = conn.read_only_one(data)
     
-    if user_db is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="El usuario no existe")
+#     if user_db is None:
+#         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="El usuario no existe")
     
-    if not crypt.verify(form.password, user_db[1]):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="la contraseña no es correcto")
-    return "Bienvenido {}".format(data["username"])
+#     if not crypt.verify(form.password, user_db[1]):
+#         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="la contraseña no es correcto")
+#     return "Bienvenido {}".format(data["username"])
