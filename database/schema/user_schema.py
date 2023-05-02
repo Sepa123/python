@@ -17,7 +17,6 @@ def users_schema(users_db):
         dictionary = {}
         dictionary["id"] = data[0]
         dictionary["username"] = data[1]
-        dictionary["password"] = data[2]
         item.append(dictionary)
     
     return item

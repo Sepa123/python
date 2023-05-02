@@ -24,7 +24,7 @@ class UserConnection():
     def read_all(self):
         with self.conn.cursor() as cur:
             cur.execute("""
-            SELECT * FROM users
+            SELECT id, username FROM users
             """)
             return cur.fetchall()
         
