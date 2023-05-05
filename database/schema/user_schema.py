@@ -12,7 +12,7 @@ class loginSchema(BaseModel):
 
 def users_schema(users_db):
     item = []
-
+    print
     for data in users_db:
         dictionary = {}
         dictionary["id"] = data[0]
