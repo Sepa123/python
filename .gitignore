@@ -1,3 +1,5 @@
 conexion.py
 /venv/
 .env
+__pycache__
+database\__pycache__

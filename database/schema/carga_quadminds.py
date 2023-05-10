@@ -1,0 +1,2 @@
+class CargaQuadmind():
+    sda: str
