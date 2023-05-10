@@ -3,3 +3,5 @@ conexion.py
 .env
 __pycache__
 database\__pycache__
+archivo.xlsx
+Carga_Quadminds_yyyymmdd-hh24miss.xlsx
