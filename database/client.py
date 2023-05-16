@@ -2,7 +2,13 @@ import psycopg2
 import codecs
 from decouple import config
 import os, sys, codecs
+import datetime
+import pytz
 
+
+
+
+# print(current_time)
 ### Conexion usuario 
 class UserConnection():
     conn = None
@@ -35,7 +41,7 @@ class UserConnection():
     def read_only_one(self, data):
         with self.conn.cursor() as cur:
             cur.execute("""
-            SELECT id,mail,"password" ,active ,rol_id  FROM "user".users WHERE mail=%(mail)s 
+            SELECT id, full_name ,mail,"password" ,active ,rol_id  FROM "user".users WHERE mail=%(mail)s 
             """, data)
             return cur.fetchone()
         
@@ -45,6 +51,8 @@ class reportesConnection():
         try:
             self.conn = psycopg2.connect(config("POSTGRES_DB_CARGA"))
             # self.conn.encoding("")
+            self.current_time = datetime.datetime.now(pytz.timezone("Chile/Continental"))
+            self.current_date = self.current_time.today().date()
             self.conn.set_client_encoding("UTF-8")
         except psycopg2.OperationalError as err:
             print(err)
@@ -87,7 +95,7 @@ class reportesConnection():
             ) as "Tiendas"
             From generate_series(date(date_trunc('month', current_date)) - CURRENT_DATE, 0 ) i
             """)
-
+            
             return cur.fetchall()
     
     def read_reporte_historico_anual(self):
@@ -367,6 +375,189 @@ where lower(easy.nombre) not like '%easy%'
 
             return cur.fetchall()
     
+    def read_reporte_producto_entregado_mensual(self):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            --------------------------- Reporte Productos Entregados en el Mes por Cliente
+                SELECT
+                case
+                    When (to_char(CURRENT_DATE+ i,'d') = '1') then 'Domingo'
+                    When (to_char(CURRENT_DATE+ i,'d') = '2') then 'Lunes'
+                    When (to_char(CURRENT_DATE+ i,'d') = '3') then 'Martes'
+                    When (to_char(CURRENT_DATE+ i,'d') = '4') then 'Miercoles'
+                    When (to_char(CURRENT_DATE+ i,'d') = '5') then 'Jueves'
+                    When (to_char(CURRENT_DATE+ i,'d') = '6') then 'Viernes'
+                    When (to_char(CURRENT_DATE+ i,'d') = '7') then 'Sabado'
+                    End "Día",
+                CURRENT_DATE+ i as "Fecha",
+                (
+                    -- ELECTROLUX
+                    Select count(*) from areati.ti_wms_carga_electrolux twce
+                    Where to_char(twce.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
+                ) as "Electrolux",
+                (
+                    -- SPORTEX
+                    Select count(*) from areati.ti_wms_carga_sportex twcs
+                    Where to_char(twcs.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
+                ) as "Sportex",
+                (
+                    -- EASY CD
+                    Select count(*) from areati.ti_wms_carga_easy easy
+                    Where to_char(easy.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
+                ) as "Easy",
+                (
+                    -- Easy Tienda por WMS
+                    Select count(*) from areati.ti_wms_carga_tiendas tienda
+                    Where to_char(tienda.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
+                ) as "Tiendas",
+                (
+                    -- EASY OPL
+                    Select count(*) from areati.ti_carga_easy_go_opl tcego  
+                    Where to_char(tcego.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
+                ) as "Easy OPL"
+                --From generate_series(date'2023-01-01'- CURRENT_DATE, 0 ) i                                   -- Resumen 2023 (Descarga)
+                From generate_series(date(date_trunc('month', current_date)) - CURRENT_DATE, 0 ) i             -- mes en Curso (Presentar en Pantalla con refresco)
+
+            """)
+
+            return cur.fetchall()
+        
+    def read_reporte_producto_entregado_anual(self):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            --------------------------- Reporte Productos Entregados en el Mes por Cliente
+                SELECT
+                case
+                    When (to_char(CURRENT_DATE+ i,'d') = '1') then 'Domingo'
+                    When (to_char(CURRENT_DATE+ i,'d') = '2') then 'Lunes'
+                    When (to_char(CURRENT_DATE+ i,'d') = '3') then 'Martes'
+                    When (to_char(CURRENT_DATE+ i,'d') = '4') then 'Miercoles'
+                    When (to_char(CURRENT_DATE+ i,'d') = '5') then 'Jueves'
+                    When (to_char(CURRENT_DATE+ i,'d') = '6') then 'Viernes'
+                    When (to_char(CURRENT_DATE+ i,'d') = '7') then 'Sabado'
+                    End "Día",
+                CURRENT_DATE+ i as "Fecha",
+                (
+                    -- ELECTROLUX
+                    Select count(*) from areati.ti_wms_carga_electrolux twce
+                    Where to_char(twce.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
+                ) as "Electrolux",
+                (
+                    -- SPORTEX
+                    Select count(*) from areati.ti_wms_carga_sportex twcs
+                    Where to_char(twcs.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
+                ) as "Sportex",
+                (
+                    -- EASY CD
+                    Select count(*) from areati.ti_wms_carga_easy easy
+                    Where to_char(easy.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
+                ) as "Easy",
+                (
+                    -- Easy Tienda por WMS
+                    Select count(*) from areati.ti_wms_carga_tiendas tienda
+                    Where to_char(tienda.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
+                ) as "Tiendas",
+                (
+                    -- EASY OPL
+                    Select count(*) from areati.ti_carga_easy_go_opl tcego  
+                    Where to_char(tcego.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
+                ) as "Easy OPL"
+                From generate_series(date'2023-01-01'- CURRENT_DATE, 0 ) i   
+
+            """)
+
+            return cur.fetchall()
+        
+    def read_reportes_hora(self):
+        
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                ---------------------------------------------------------------------------------
+                SELECT TO_CHAR(intervalo - INTERVAL '4 hours','HH24:MI') || ' - ' || TO_CHAR(intervalo - INTERVAL '3 hour','HH24:MI') as "Hora",
+                (
+                    -- ELECTROLUX
+                    Select count(*) from areati.ti_wms_carga_electrolux twce
+                    Where to_char(twce.created_at,'yyyy-mm-dd HH24') = to_char(intervalo,'yyyy-mm-dd HH24')
+                ) as "Electrolux",
+                (
+                    -- SPORTEX
+                    Select count(*) from areati.ti_wms_carga_sportex twcs
+                    Where to_char(twcs.created_at,'yyyy-mm-dd HH24') = to_char(intervalo,'yyyy-mm-dd HH24')
+                ) as "Sportex",
+                (
+                    -- EASY CD
+                    Select count(*) from areati.ti_wms_carga_easy easy
+                    Where to_char(easy.created_at,'yyyy-mm-dd HH24') = to_char(intervalo,'yyyy-mm-dd HH24')
+                ) as "Easy CD",
+                (
+                    -- Easy Tienda por WMS
+                    Select count(*) from areati.ti_wms_carga_tiendas tienda
+                    Where to_char(tienda.created_at,'yyyy-mm-dd HH24') = to_char(intervalo,'yyyy-mm-dd HH24')
+                ) as "Tiendas",
+                (
+                    -- EASY OPL
+                    Select count(*) from areati.ti_carga_easy_go_opl tcego  
+                    Where to_char(tcego.created_at,'yyyy-mm-dd HH24') = to_char(intervalo,'yyyy-mm-dd HH24')
+                ) as "Easy OPL"
+                from generate_series(
+                        current_date  + '00:00:00'::time,
+                        --current_date + current_time,
+                        current_date + current_time,
+                        '1 hour'::interval
+                    ) AS intervalo
+                    union all
+                select 'Total' as "Hora",
+                (select count(*) from areati.ti_wms_carga_electrolux twce3 where to_char(twce3.created_at,'yyyy-mm-dd') = to_char(current_date,'yyyy-mm-dd'))  as "Electrolux",
+                (select count(*) from areati.ti_wms_carga_sportex twcs2 where to_char(twcs2.created_at,'yyyy-mm-dd') = to_char(current_date,'yyyy-mm-dd')) as "Sportex",
+                (select count(*) from areati.ti_wms_carga_easy twce2 where to_char(twce2.created_at,'yyyy-mm-dd') = to_char(current_date,'yyyy-mm-dd')) as "Easy CD",
+                (select count(*) from areati.ti_wms_carga_tiendas twce2 where to_char(twce2.created_at,'yyyy-mm-dd') = to_char(current_date,'yyyy-mm-dd')) as "Tiendas",
+                (select count(*) from areati.ti_carga_easy_go_opl twce2 where to_char(twce2.created_at,'yyyy-mm-dd') = to_char(current_date,'yyyy-mm-dd')) as "Easy OPL"
+                order by 1 desc
+
+            """)
+
+            # current_time = datetime.datetime.now(pytz.timezone("Chile/Continental"))
+            # print (str(current_time))
+            print(self.current_time)
+            return cur.fetchall()
+
+    def read_productos_easy_region(self):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            select
+            'Easy CD' as "Origen",
+            COUNT(CASE WHEN datosBase.region = 'RM' THEN 1 END) AS "R. Metropolitana",
+            COUNT(CASE WHEN datosBase.region = 'V' THEN 1 END) AS "V Región"
+            FROM(
+            select
+            CASE
+                WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(easy.comuna))) = 'Region Metropolitana' THEN 'RM'
+                WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(easy.comuna))) = 'Valparaíso' THEN 'V'
+                else 'N/A'
+            END region
+            from areati.ti_wms_carga_easy easy 
+            where to_char(created_at,'yyyy-mm-dd')=to_char(current_date,'yyyy-mm-dd')
+            ) as datosBase
+            union all
+            select
+            'Easy Tienda' as "Origen",
+            COUNT(CASE WHEN datosBase.region = 'RM' THEN 1 END) AS "R. Metropolitana",
+            COUNT(CASE WHEN datosBase.region = 'V' THEN 1 END) AS "V Región"
+            FROM(
+            select
+            CASE
+                WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(easy.comuna_despacho))) = 'Region Metropolitana' THEN 'RM'
+                WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(easy.comuna_despacho))) = 'Valparaíso' THEN 'V'
+                else 'N/A'
+            END region
+            from areati.ti_carga_easy_go_opl easy 
+            where to_char(created_at,'yyyy-mm-dd')=to_char(current_date,'yyyy-mm-dd')
+            ) as datosBase
+
+            """)
+
+            return cur.fetchall()
+
 class transyanezConnection():
     conn = None
     def __init__(self) -> None:

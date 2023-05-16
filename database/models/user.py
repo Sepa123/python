@@ -11,11 +11,9 @@ class loginSchema(BaseModel):
     password: str
 
 class User:
-    id: Optional[int]
+    id: int
     full_name: str
     mail: str
-    phone: int
-    position: str
-    homologation: str
-    active: str
     password: str
+    active: bool
+    rol_id: int

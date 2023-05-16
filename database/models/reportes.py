@@ -18,4 +18,5 @@ def cargaEasy_schema(data_db):
     dictionary["total"] = get_number(data_db[0][0])
     dictionary["verificado"] = get_number(data_db[1][0])
     item.append(dictionary)
+    print(dictionary)
     return item

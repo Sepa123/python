@@ -9,4 +9,4 @@ def reporte_historico_schema(reporte_historico):
     }
 
 def reportes_historico_schema(reportes_historico):
-    return [reporte_historico_schema(reporte_vehiculo) for reporte_vehiculo in reportes_historico ]
+    return [reporte_historico_schema(reporte) for reporte in reportes_historico ]

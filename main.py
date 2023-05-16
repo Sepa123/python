@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException, status, Depends
 from database.client import UserConnection
 from database.schema.user_schema import users_schema, user_schema
-from database.models.user import userSchema, loginSchema 
+from database.models.user import userSchema, loginSchema ,User
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import jwt, JWTError
 from passlib.context import CryptContext
@@ -10,11 +10,12 @@ from datetime import datetime, timedelta
 from database.models.reportes import cargaEasy_schema
 from database.models.reportes import cargaEasy
 from lib.password import verify_password, hash_password
+from database.models.token import TokenPayload
 from routers import transyanez, reportes_cargas
 
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 10
+ACCESS_TOKEN_EXPIRE_MINUTES = 100
 
 crypt = CryptContext(schemes=["bcrypt"])
 
@@ -34,8 +35,10 @@ origins = [
     "http://localhost:4200",
     "http://localhost:8080",
     "http://18.220.116.139:80",
-    "http://18.220.116.139:88"
-    
+    "http://18.220.116.139:88",
+    "http://34.225.63.221:84",
+    "http://34.225.63.221:84/#/login"
+
 ]
 
 app.add_middleware(
@@ -76,39 +79,51 @@ async def select():
 async def login_user(user_data:loginSchema):
     data = user_data.dict()
     user_db = conn.read_only_one(data)
+    print(user_db)
     if user_db is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="El usuario no existe")
     
-    if not verify_password(data["password"],user_db[2]):
+    if not verify_password(data["password"],user_db[3]):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="la contraseña no es correcto")
     
     # return user_db
     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
 
-    access_token = {"sub": user_db[0],
+    access_token = {"sub": user_db[1],
                     "exp": expire,
-                    "email": user_db[1],
-                    "activated": user_db[3]}
+                    "email": user_db[2],
+                    "active": user_db[4],
+                    "rol_id":user_db[5]}
     # # return "Bienvenido {}".format(data["username"])
     return {
         "access_token": jwt.encode(access_token, SECRET_KEY,algorithm=ALGORITHM),
         "token_type":"bearer"
     }
 
-def auth_user(token:str = Depends(oauth2)):
+async def auth_user(token:str = Depends(oauth2)):
 
     exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="credenciales no corresponden",
                             headers={"WWW-Authenticate": "Bearer"})
-    print("hoal")
     try:
         username = jwt.decode(token, key=SECRET_KEY, algorithms=[ALGORITHM])
+        print(username)
         if username is None:
-            raise exception
-        
+            raise exception  
     except JWTError:
         raise exception
 
     return username
 
+async def current_user(user = Depends(auth_user)):
+
+    if not user["active"]:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="usuario inactivo",
+                            headers={"WWW-Authenticate": "Bearer"})
+    return user
+
 
     
+@app.get("/user")
+async def me (user:TokenPayload = Depends(current_user)):
+    print("Hoala")
+    return user

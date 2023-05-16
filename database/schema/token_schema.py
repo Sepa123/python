@@ -6,5 +6,8 @@ class tokenSchema(BaseModel):
     refresh_token:str
 
 class TokenPayload(BaseModel):
-    sub: str = None
-    exp: int = None
+    sub: str
+    exp: int
+    email: str
+    active: bool
+    rol_id: int

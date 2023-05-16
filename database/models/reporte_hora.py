@@ -1,11 +1,9 @@
 from pydantic import BaseModel
 
-
-class ReporteHistorico(BaseModel):
-    día: str
-    fecha: str
+class reporte_hora(BaseModel):
+    hora: str
     electrolux: int
     sportex: int
-    easy: int
+    easy_cd: int
     tiendas: int
-
+    easy_opl: int
