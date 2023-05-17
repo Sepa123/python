@@ -51,6 +51,7 @@ class reportesConnection():
         try:
             self.conn = psycopg2.connect(config("POSTGRES_DB_CARGA"))
             # self.conn.encoding("")
+            self.conn.autocommit = True
             self.current_time = datetime.datetime.now(pytz.timezone("Chile/Continental"))
             self.current_date = self.current_time.today().date()
             self.conn.set_client_encoding("UTF-8")
@@ -90,10 +91,12 @@ class reportesConnection():
                 Where to_char(easy.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
             ) as "Easy",
             (
-                Select count(*) from areati.ti_wms_carga_tiendas tienda
+                Select count(*) from areati.ti_carga_easy_go_opl tienda
                 Where to_char(tienda.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
-            ) as "Tiendas"
+            ) as "Easy OPL"
             From generate_series(date(date_trunc('month', current_date)) - CURRENT_DATE, 0 ) i
+            order by 2 desc
+
             """)
             
             return cur.fetchall()
@@ -371,9 +374,10 @@ where lower(easy.nombre) not like '%easy%'
             order by fecha asc
             """)
 
-            nombre_tabla= tuple([desc[0] for desc in cur.description])
+            # nombre_tabla= tuple([desc[0] for desc in cur.description])
 
             return cur.fetchall()
+    
     
     def read_reporte_producto_entregado_mensual(self):
         with self.conn.cursor() as cur:
@@ -405,11 +409,11 @@ where lower(easy.nombre) not like '%easy%'
                     Select count(*) from areati.ti_wms_carga_easy easy
                     Where to_char(easy.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
                 ) as "Easy",
-                (
+               -- (
                     -- Easy Tienda por WMS
-                    Select count(*) from areati.ti_wms_carga_tiendas tienda
-                    Where to_char(tienda.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
-                ) as "Tiendas",
+                   -- Select count(*) from areati.ti_wms_carga_tiendas tienda
+                    -- Where to_char(tienda.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
+                -- ) as "Tiendas",
                 (
                     -- EASY OPL
                     Select count(*) from areati.ti_carga_easy_go_opl tcego  
@@ -452,18 +456,17 @@ where lower(easy.nombre) not like '%easy%'
                     Select count(*) from areati.ti_wms_carga_easy easy
                     Where to_char(easy.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
                 ) as "Easy",
-                (
+               -- (
                     -- Easy Tienda por WMS
-                    Select count(*) from areati.ti_wms_carga_tiendas tienda
-                    Where to_char(tienda.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
-                ) as "Tiendas",
+                  --  Select count(*) from areati.ti_wms_carga_tiendas tienda
+                   -- Where to_char(tienda.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
+               -- ) as "Tiendas",
                 (
                     -- EASY OPL
                     Select count(*) from areati.ti_carga_easy_go_opl tcego  
                     Where to_char(tcego.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
                 ) as "Easy OPL"
                 From generate_series(date'2023-01-01'- CURRENT_DATE, 0 ) i   
-
             """)
 
             return cur.fetchall()
@@ -471,7 +474,7 @@ where lower(easy.nombre) not like '%easy%'
     def read_reportes_hora(self):
         
         with self.conn.cursor() as cur:
-            cur.execute(f"""
+            cur.execute("""
                 ---------------------------------------------------------------------------------
                 SELECT TO_CHAR(intervalo - INTERVAL '4 hours','HH24:MI') || ' - ' || TO_CHAR(intervalo - INTERVAL '3 hour','HH24:MI') as "Hora",
                 (
@@ -516,9 +519,6 @@ where lower(easy.nombre) not like '%easy%'
 
             """)
 
-            # current_time = datetime.datetime.now(pytz.timezone("Chile/Continental"))
-            # print (str(current_time))
-            print(self.current_time)
             return cur.fetchall()
 
     def read_productos_easy_region(self):
@@ -553,6 +553,66 @@ where lower(easy.nombre) not like '%easy%'
             from areati.ti_carga_easy_go_opl easy 
             where to_char(created_at,'yyyy-mm-dd')=to_char(current_date,'yyyy-mm-dd')
             ) as datosBase
+
+            """)
+
+            return cur.fetchall()
+
+    # Pedidos Con Fecha de Compromiso sin Despacho
+
+    def read_pedido_compromiso_sin_despacho(self):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            select 'Easy CD' as "Origen",
+            entrega as "Cod. Entrega",
+            to_char(created_at,'yyyy-mm-dd') as "Fecha Ingreso",
+            to_char(fecha_entrega,'yyyy-mm-dd') as "Fecha Compromiso",
+            CASE
+                WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(easy.comuna))) = 'Region Metropolitana' THEN 'Region Metropolitana'
+                WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(easy.comuna))) = 'Valparaíso' THEN 'Valparaíso'
+                else 'N/A'
+            END "Region",
+            initcap(easy.comuna) as "Comuna",
+            easy.descripcion as "Descripcion",
+            easy.bultos as "Bultos"
+            --,easy.estado,(select se."name"  from areati.subestado_entregas se where se.code = easy.subestado)
+            from areati.ti_wms_carga_easy easy 
+            where to_char(easy.fecha_entrega,'yyyymmdd') <= to_char(current_date,'yyyymmdd')
+            and (easy.estado=0 or (easy.estado=2 and easy.subestado not in (7,10,12,43,50,51,70,80)))
+            and easy.entrega not in (select guia from quadminds.ti_respuesta_beetrack)
+            union all
+            ------------------------------------------------------------------------------------------------------------------------------
+            select 'Electrolux' as "Origen",
+            numero_guia as "Cod. Entrega",
+            to_char(created_at,'yyyy-mm-dd') as "Fecha Ingreso",
+            to_char(fecha_max_entrega,'yyyy-mm-dd')  as "Fecha Compromiso",
+            initcap(split_part(direccion,',',3)) AS "Region",
+            initcap(split_part(direccion,',',2))  AS "Comuna",
+            nombre_item as "Descripcion",
+            cantidad as "Bultos"
+            from areati.ti_wms_carga_electrolux twce 
+            where to_char(twce.fecha_min_entrega,'yyyymmdd') <= to_char(current_date,'yyyymmdd')
+            and (twce.estado=0 or (twce.estado=2 and twce.subestado not in (7,10,12,43,50,51,70,80)))
+            and twce.numero_guia not in (select guia from quadminds.ti_respuesta_beetrack)
+            union all
+            ------------------------------------------------------------------------------------------------------------------------------
+            select 'Sportex' as "Origen",
+            id_sportex as "Cod. Entrega",
+            to_char(created_at,'yyyy-mm-dd') as "Fecha Ingreso",
+            to_char(fecha_entrega,'yyyy-mm-dd')  as "Fecha Compromiso",
+            CASE
+                WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(twcs.comuna))) = 'Region Metropolitana' THEN 'Region Metropolitana'
+                WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(twcs.comuna))) = 'Valparaíso' THEN 'Valparaíso'
+                else 'N/A'
+            END "Region",
+            initcap(comuna)  AS "Comuna",
+            marca as "Descripcion",
+            1 as "Bultos"
+            from areati.ti_wms_carga_sportex twcs  
+            where to_char(twcs.fecha_entrega ,'yyyymmdd') <= to_char(current_date,'yyyymmdd')
+            and (twcs.estado=0 or (twcs.estado=2 and twcs.subestado not in (7,10,12,43,50,51,70,80)))
+            and twcs.id_sportex not in (select guia from quadminds.ti_respuesta_beetrack)
+   
 
             """)
 

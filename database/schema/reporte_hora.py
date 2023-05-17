@@ -11,6 +11,7 @@ def reporte_hora_schema(reporte_hora):
 def reportes_hora_schema(reportes_hora):
     reportes = [reporte_hora_schema(reporte_hora) for reporte_hora in reportes_hora]
 
+    # print(reportes)
     total_El = total_Spo = total_easy_CD = total_easy_opl = total_tiendas = 0
 
     for i in range(1, 5):

@@ -5,6 +5,7 @@ from fastapi.responses import FileResponse
 from openpyxl import Workbook
 import re
 from os import remove
+
 from database.models.reporte_historico import ReporteHistorico
 from database.schema.reporte_historico import reportes_historico_schema, reporte_historico_schema
 from database.models.reportes import cargaEasy_schema
@@ -14,6 +15,9 @@ from database.schema.reportes_easy_region import reportes_easy_region_schema
 
 from database.models.reporte_productos_entregados import ReporteProducto
 from database.schema.reporte_productos_entregados import reportes_producto_schema
+
+from database.models.pedidos_compromiso_sin_despacho import pedidos_compromiso_sin_despacho
+from database.schema.pedidos_compromiso_sin_despacho import pedidos_compromiso_sin_despacho_schema
 
 router = APIRouter(prefix="/api/reportes")
 
@@ -179,12 +183,23 @@ async def get_productos_easy_region():
     # print(results)
     return reportes_easy_region_schema(results)
 
-def get_excel(results, table_name,excel_name):
+@router.get("/pedidos/sin_despacho")
+async def get_pedidos_sin_despacho():
+    results = conn.read_pedido_compromiso_sin_despacho()
+
+    return pedidos_compromiso_sin_despacho_schema(results)
+
+@router.get("/pedidos/sin_despacho/descargar")
+async def get_pedidos_sin_despacho_descarga():
+    results = conn.read_pedido_compromiso_sin_despacho()
+
     wb = Workbook()
     ws = wb.active
     
     results.insert(0, ("",))
-    results.insert(1,table_name )
+    results.insert(1,('Origen', 'Cod. Entrega', "Fecha Ingreso", "Fecha Compromiso", 
+                      "Region", "Comuna","Descripcion","Bultos"))
+
     for row in results:
         # print(row)
         ws.append(row)
@@ -201,6 +216,6 @@ def get_excel(results, table_name,excel_name):
         adjusted_width = (max_length + 2)
         ws.column_dimensions[column].width = adjusted_width
     results.insert(0, ("",))
-    wb.save("excel/"+ excel_name)
+    wb.save("excel/pedidos_con_fecha_de_compromiso_sin_despacho.xlsx")
 
-    return FileResponse("excel/"+ excel_name)
+    return FileResponse("excel/pedidos_con_fecha_de_compromiso_sin_despacho.xlsx")

@@ -5,8 +5,8 @@ def reporte_producto_schema(reporte_producto):
         "Electrolux": reporte_producto[2],
         "Sportex": reporte_producto[3],
         "Easy": reporte_producto[4],
-        "Tiendas": reporte_producto[5],
-        "Easy_OPL":reporte_producto[6]
+        "Easy_OPL": reporte_producto[5],
+        # "Easy_OPL":reporte_producto[6]
     }
 
 def reportes_producto_schema(reportes_producto):

@@ -5,7 +5,7 @@ def reporte_historico_schema(reporte_historico):
         "Electrolux": reporte_historico[2],
         "Sportex": reporte_historico[3],
         "Easy": reporte_historico[4],
-        "Tiendas": reporte_historico[5]
+        "Easy_OPL": reporte_historico[5]
     }
 
 def reportes_historico_schema(reportes_historico):

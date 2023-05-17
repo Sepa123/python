@@ -7,5 +7,5 @@ class ReporteHistorico(BaseModel):
     electrolux: int
     sportex: int
     easy: int
-    tiendas: int
+    easy_opl: int
 
