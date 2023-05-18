@@ -617,6 +617,19 @@ where lower(easy.nombre) not like '%easy%'
             """)
 
             return cur.fetchall()
+        
+    def read_pedidos(self):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            SELECT SUM(t_ped) as "Total Pedidos",
+                   SUM(t_ent) AS "Entregados",
+                   SUM(n_ent) AS "No Entregados",
+                   SUM(t_ped) - SUM(t_ent) - SUM(n_ent) AS "Pendientes"
+            FROM areati.mae_ns_ruta_beetrack_hoy
+
+            """)
+
+            return cur.fetchall()
 
 class transyanezConnection():
     conn = None

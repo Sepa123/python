@@ -1,10 +1,9 @@
 from fastapi import APIRouter,status,HTTPException
 from database.client import reportesConnection
-from datetime import datetime
 from fastapi.responses import FileResponse
 from openpyxl import Workbook
 import re
-from os import remove
+# from os import remove
 
 from database.models.reporte_historico import ReporteHistorico
 from database.schema.reporte_historico import reportes_historico_schema, reporte_historico_schema
@@ -18,6 +17,9 @@ from database.schema.reporte_productos_entregados import reportes_producto_schem
 
 from database.models.pedidos_compromiso_sin_despacho import pedidos_compromiso_sin_despacho
 from database.schema.pedidos_compromiso_sin_despacho import pedidos_compromiso_sin_despacho_schema
+
+from database.models.pedidos import Pedidos
+from database.schema.pedidos import pedidos_schema
 
 router = APIRouter(prefix="/api/reportes")
 
@@ -191,6 +193,7 @@ async def get_pedidos_sin_despacho():
 
 @router.get("/pedidos/sin_despacho/descargar")
 async def get_pedidos_sin_despacho_descarga():
+
     results = conn.read_pedido_compromiso_sin_despacho()
 
     wb = Workbook()
@@ -219,3 +222,9 @@ async def get_pedidos_sin_despacho_descarga():
     wb.save("excel/pedidos_con_fecha_de_compromiso_sin_despacho.xlsx")
 
     return FileResponse("excel/pedidos_con_fecha_de_compromiso_sin_despacho.xlsx")
+
+@router.get("/pedidos")
+async def get_pedidos():
+    results = conn.read_pedidos()
+
+    return pedidos_schema(results)
