@@ -51,7 +51,7 @@ class reportesConnection():
         try:
             self.conn = psycopg2.connect(config("POSTGRES_DB_CARGA"))
             # self.conn.encoding("")
-            self.conn.autocommit = True
+            # self.conn.autocommit = True
             self.current_time = datetime.datetime.now(pytz.timezone("Chile/Continental"))
             self.current_date = self.current_time.today().date()
             self.conn.set_client_encoding("UTF-8")
