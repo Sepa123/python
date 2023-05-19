@@ -45,6 +45,7 @@ class UserConnection():
             """, data)
             return cur.fetchone()
         
+        
 class reportesConnection():
     conn = None
     def __init__(self) -> None:
@@ -65,7 +66,6 @@ class reportesConnection():
     # Reporte historico 
     def read_reporte_historico_mensual(self):
         with self.conn.cursor() as cur:
-
             cur.execute("""
             SELECT
             case
@@ -101,6 +101,43 @@ class reportesConnection():
             
             return cur.fetchall()
     
+    def read_reporte_historico_hoy(self):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            SELECT
+            case
+                When (to_char(CURRENT_DATE+ i,'d') = '1') then 'Domingo'
+                When (to_char(CURRENT_DATE+ i,'d') = '2') then 'Lunes'
+                When (to_char(CURRENT_DATE+ i,'d') = '3') then 'Martes'
+                When (to_char(CURRENT_DATE+ i,'d') = '4') then 'Miercoles'
+                When (to_char(CURRENT_DATE+ i,'d') = '5') then 'Jueves'
+                When (to_char(CURRENT_DATE+ i,'d') = '6') then 'Viernes'
+                When (to_char(CURRENT_DATE+ i,'d') = '7') then 'Sabado'
+                End "Día",
+            CURRENT_DATE+ i as "Fecha",
+            (
+                Select count(*) from areati.ti_wms_carga_electrolux twce
+                Where to_char(twce.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
+            ) as "Electrolux",
+            (
+                Select count(*) from areati.ti_wms_carga_sportex twcs
+                Where to_char(twcs.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
+            ) as "Sportex",
+            (
+                Select count(*) from areati.ti_wms_carga_easy easy
+                Where to_char(easy.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
+            ) as "Easy",
+            (
+                Select count(*) from areati.ti_carga_easy_go_opl tienda
+                Where to_char(tienda.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
+            ) as "Easy OPL"
+            From generate_series(0,0) i
+            order by 2 desc
+
+            """)
+            
+            return cur.fetchall()
+        
     def read_reporte_historico_anual(self):
         with self.conn.cursor() as cur:
 
@@ -137,9 +174,10 @@ class reportesConnection():
             """)
 
             return cur.fetchall()
+    
     #Cargas Verificadas y Total
     def read_cargas_easy(self):
-
+        
         with self.conn.cursor() as cur:
 
             cur.execute("""
@@ -378,7 +416,7 @@ where lower(easy.nombre) not like '%easy%'
 
             return cur.fetchall()
     
-    
+    ## Reportes de productos entregados
     def read_reporte_producto_entregado_mensual(self):
         with self.conn.cursor() as cur:
             cur.execute("""
@@ -422,6 +460,53 @@ where lower(easy.nombre) not like '%easy%'
                 --From generate_series(date'2023-01-01'- CURRENT_DATE, 0 ) i                                   -- Resumen 2023 (Descarga)
                 From generate_series(date(date_trunc('month', current_date)) - CURRENT_DATE, 0 ) i             -- mes en Curso (Presentar en Pantalla con refresco)
 
+            """)
+
+            return cur.fetchall()
+
+    def read_reporte_producto_entregado_hoy(self):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            --------------------------- Reporte Productos Entregados en el Mes por Cliente
+            SELECT
+            case
+                When (to_char(CURRENT_DATE+ i,'d') = '1') then 'Domingo'
+                When (to_char(CURRENT_DATE+ i,'d') = '2') then 'Lunes'
+                When (to_char(CURRENT_DATE+ i,'d') = '3') then 'Martes'
+                When (to_char(CURRENT_DATE+ i,'d') = '4') then 'Miercoles'
+                When (to_char(CURRENT_DATE+ i,'d') = '5') then 'Jueves'
+                When (to_char(CURRENT_DATE+ i,'d') = '6') then 'Viernes'
+                When (to_char(CURRENT_DATE+ i,'d') = '7') then 'Sabado'
+                End "Día",
+            CURRENT_DATE+ i as "Fecha",
+            (
+                -- ELECTROLUX
+                Select count(*) from areati.ti_wms_carga_electrolux twce
+                Where to_char(twce.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
+            ) as "Electrolux",
+            (
+                -- SPORTEX
+                Select count(*) from areati.ti_wms_carga_sportex twcs
+                Where to_char(twcs.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
+            ) as "Sportex",
+            (
+                -- EASY CD
+                Select count(*) from areati.ti_wms_carga_easy easy
+                Where to_char(easy.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
+            ) as "Easy",
+            -- (
+                -- Easy Tienda por WMS
+            -- Select count(*) from areati.ti_wms_carga_tiendas tienda
+                -- Where to_char(tienda.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
+            -- ) as "Tiendas",
+            (
+                -- EASY OPL
+                Select count(*) from areati.ti_carga_easy_go_opl tcego  
+                Where to_char(tcego.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
+            ) as "Easy OPL"
+            --From generate_series(date'2023-01-01'- CURRENT_DATE, 0 ) i                                   -- Resumen 2023 (Descarga)
+            --From generate_series(date(date_trunc('month', current_date)) - CURRENT_DATE, 0 ) i             -- mes en Curso (Presentar en Pantalla con refresco)
+            from generate_series(0,0) i  -- dia de hoy
             """)
 
             return cur.fetchall()
@@ -470,9 +555,9 @@ where lower(easy.nombre) not like '%easy%'
             """)
 
             return cur.fetchall()
-        
-    def read_reportes_hora(self):
-        
+    
+    ## Reportes por hora
+    def read_reportes_hora(self): 
         with self.conn.cursor() as cur:
             cur.execute("""
                 ---------------------------------------------------------------------------------
@@ -521,6 +606,8 @@ where lower(easy.nombre) not like '%easy%'
 
             return cur.fetchall()
 
+
+    ##Reportes easy Region
     def read_productos_easy_region(self):
         with self.conn.cursor() as cur:
             cur.execute("""
@@ -627,6 +714,31 @@ where lower(easy.nombre) not like '%easy%'
                    SUM(t_ped) - SUM(t_ent) - SUM(n_ent) AS "Pendientes"
             FROM areati.mae_ns_ruta_beetrack_hoy
 
+            """)
+
+            return cur.fetchall()
+        
+    def read_ruta_beetrack_hoy(self):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            select 
+            ROW_NUMBER() OVER (ORDER BY id_ruta) as "N°",
+            id_ruta as "Ruta",
+            patente as "Patente",
+            driver as "Driver", 
+            h_inc as "Inicio",
+            region as "Región",
+            t_ped as "Total Pedidos",
+            h1100 || ' (' || p10 ||'%)' as "11:00 (10%)",
+            h1300 || ' (' || p40 ||'%)' as "13:00 (40%)",
+            h1500 || ' (' || p60 ||'%)' as "15:00 (60%)",
+            h1700 || ' (' || p80 ||'%)' as "17:00 (80%)",
+            h1800 || ' (' || p95 ||'%)' as "18:00 (95%)",
+            h2000 || ' (' || p100 ||'%)' as "20:00 (100%)",
+            t_ent as "Entregados",
+            n_ent as "No Entregados",
+            p100 as "Porcentaje"
+            from areati.mae_ns_ruta_beetrack_hoy 
             """)
 
             return cur.fetchall()

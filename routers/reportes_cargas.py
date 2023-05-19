@@ -18,6 +18,8 @@ from database.schema.reporte_productos_entregados import reportes_producto_schem
 from database.models.pedidos_compromiso_sin_despacho import pedidos_compromiso_sin_despacho
 from database.schema.pedidos_compromiso_sin_despacho import pedidos_compromiso_sin_despacho_schema
 
+from database.schema.rutas_beetrack_hoy import rutas_beetrack_hoy_schema
+
 from database.models.pedidos import Pedidos
 from database.schema.pedidos import pedidos_schema
 
@@ -103,7 +105,11 @@ async def get_beetrack_mensual():
 @router.get("/historico/mensual")
 async def get_historico_mensual():
     results = conn.read_reporte_historico_mensual()
-    # print(conn.read_reporte_historico_mensual())
+    return reportes_historico_schema(results)
+
+@router.get("/historico/hoy")
+async def get_historico_hoy():
+    results = conn.read_reporte_historico_hoy()
     return reportes_historico_schema(results)
 
 @router.get("/historico/anual")
@@ -140,6 +146,11 @@ async def get_historico_mensual():
 @router.get("/productos/mensual")
 async def get_productos_mensual():
     results = conn.read_reporte_producto_entregado_mensual()
+    return reportes_producto_schema(results)
+
+@router.get("/productos/hoy")
+async def get_productos_hoy():
+    results = conn.read_reporte_producto_entregado_hoy()
     return reportes_producto_schema(results)
 
 
@@ -228,3 +239,9 @@ async def get_pedidos():
     results = conn.read_pedidos()
 
     return pedidos_schema(results)
+
+@router.get("/ruta/beetrack/hoy")
+async def get_ruta_beetrack_hoy():
+    results = conn.read_ruta_beetrack_hoy()
+
+    return rutas_beetrack_hoy_schema(results)
