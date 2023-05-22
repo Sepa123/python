@@ -23,6 +23,12 @@ from database.schema.rutas_beetrack_hoy import rutas_beetrack_hoy_schema
 from database.models.pedidos import Pedidos
 from database.schema.pedidos import pedidos_schema
 
+from database.models.pedidos_sin_tienda import PedidosSinTienda
+from database.schema.pedidos_sin_tienda import pedidos_sin_tienda_schema
+
+from database.models.pedidos_tienda_easy_opl import PedidosTiendaEasyOPL
+from database.schema.pedidos_tiendas_easy_opl import pedidos_tiendas_easy_opl_schema
+
 router = APIRouter(prefix="/api/reportes")
 
 conn = reportesConnection()
@@ -245,3 +251,13 @@ async def get_ruta_beetrack_hoy():
     results = conn.read_ruta_beetrack_hoy()
 
     return rutas_beetrack_hoy_schema(results)
+
+@router.get("/pedidos/sin_tiendas")
+async def get_pedidos_sin_tienda():
+    results = conn.read_pedidos_sin_tienda()
+    return pedidos_sin_tienda_schema(results)
+
+@router.get("/pedidos/easy_opl")
+async def get_pedidos_tiendas_easy_opl():
+    results = conn.read_pedidos_tiendas_easy_opl()
+    return pedidos_tiendas_easy_opl_schema(results)
