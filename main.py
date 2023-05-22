@@ -39,7 +39,7 @@ origins = [
     "http://34.225.63.221:84",
     "http://34.225.63.221:84/#/login",
     "http://hela.transyanez.cl"
-
+    "http://34.225.63.221"
 ]
 
 app.add_middleware(
