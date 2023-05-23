@@ -2,13 +2,10 @@ import psycopg2
 import codecs
 from decouple import config
 import os, sys, codecs
-import datetime
-import pytz
+# import datetime
+# import pytz
 
 
-
-
-# print(current_time)
 ### Conexion usuario 
 class UserConnection():
     conn = None
@@ -45,16 +42,20 @@ class UserConnection():
             """, data)
             return cur.fetchone()
         
-        
+# Especifica el timezone que deseas utilizar
+timezone = 'America/Santiago'
+
+# Configura las opciones de conexión con el timezone especificado
+options = f'--timezone={timezone}'
+
+
 class reportesConnection():
     conn = None
     def __init__(self) -> None:
         try:
-            self.conn = psycopg2.connect(config("POSTGRES_DB_CARGA"))
+            self.conn = psycopg2.connect(config("POSTGRES_DB_CARGA"), options=options)
             # self.conn.encoding("")
             # self.conn.autocommit = True
-            self.current_time = datetime.datetime.now(pytz.timezone("Chile/Continental"))
-            self.current_date = self.current_time.today().date()
             self.conn.set_client_encoding("UTF-8")
         except psycopg2.OperationalError as err:
             print(err)
@@ -410,7 +411,6 @@ class reportesConnection():
             and (easygo.estado=0 or (easygo.estado=2 and easygo.subestado not in (7,10,12,43,50,51,70,80))) and easygo.estado not in (1,3)
 
             """)
-            # nombre_tabla= tuple([desc[0] for desc in cur.description])
             
             return cur.fetchall()
         
@@ -427,8 +427,6 @@ class reportesConnection():
             where to_char(fecha,'mm')=to_char(current_date,'mm')
             order by fecha asc
             """)
-
-            # nombre_tabla= tuple([desc[0] for desc in cur.description])
 
             return cur.fetchall()
     
@@ -577,7 +575,7 @@ class reportesConnection():
         with self.conn.cursor() as cur:
             cur.execute("""
                 ---------------------------------------------------------------------------------
-                SELECT TO_CHAR(intervalo - INTERVAL '4 hours','HH24:MI') || ' - ' || TO_CHAR(intervalo - INTERVAL '3 hour','HH24:MI') as "Hora",
+                SELECT TO_CHAR(intervalo ,'HH24:MI') || ' - ' || TO_CHAR(intervalo + '1 hour','HH24:MI') as "Hora",
                 (
                     -- ELECTROLUX
                     Select count(*) from areati.ti_wms_carga_electrolux twce
@@ -604,12 +602,11 @@ class reportesConnection():
                     Where to_char(tcego.created_at,'yyyy-mm-dd HH24') = to_char(intervalo,'yyyy-mm-dd HH24')
                 ) as "Easy OPL"
                 from generate_series(
-                        current_date  + '00:00:00'::time,
-                        --current_date + current_time,
-                        current_date + current_time,
+                        current_date + '00:00:00'::time,
+                            current_date + current_time,
                         '1 hour'::interval
                     ) AS intervalo
-                    union all
+                union all
                 select 'Total' as "Hora",
                 (select count(*) from areati.ti_wms_carga_electrolux twce3 where to_char(twce3.created_at,'yyyy-mm-dd') = to_char(current_date,'yyyy-mm-dd'))  as "Electrolux",
                 (select count(*) from areati.ti_wms_carga_sportex twcs2 where to_char(twcs2.created_at,'yyyy-mm-dd') = to_char(current_date,'yyyy-mm-dd')) as "Sportex",
@@ -617,12 +614,50 @@ class reportesConnection():
                 (select count(*) from areati.ti_wms_carga_tiendas twce2 where to_char(twce2.created_at,'yyyy-mm-dd') = to_char(current_date,'yyyy-mm-dd')) as "Tiendas",
                 (select count(*) from areati.ti_carga_easy_go_opl twce2 where to_char(twce2.created_at,'yyyy-mm-dd') = to_char(current_date,'yyyy-mm-dd')) as "Easy OPL"
                 order by 1 desc
+                ---------------------------------------------------------------------------------
+
 
             """)
 
             return cur.fetchall()
 
+    def read_reporte_ultima_hora(self):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            SELECT TO_CHAR(intervalo,'HH24:MI') || ' - ' || TO_CHAR(intervalo + '1 hour','HH24:MI') as "Hora",
+(
+                -- ELECTROLUX
+                SELECT COUNT(*) FROM areati.ti_wms_carga_electrolux twce
+                WHERE twce.created_at >= intervalo AND twce.created_at < intervalo + INTERVAL '1 hour'
+            ) as "Electrolux",
+            (
+                -- SPORTEX
+                SELECT COUNT(*) FROM areati.ti_wms_carga_sportex twcs
+                WHERE twcs.created_at >= intervalo AND twcs.created_at < intervalo + INTERVAL '1 hour'
+            ) as "Sportex",
+            (
+                -- EASY CD
+                SELECT COUNT(*) FROM areati.ti_wms_carga_easy easy
+                WHERE easy.created_at >= intervalo AND easy.created_at < intervalo + INTERVAL '1 hour'
+            ) as "Easy CD",
+            (
+                -- Easy Tienda por WMS
+                SELECT COUNT(*) FROM areati.ti_wms_carga_tiendas tienda
+                WHERE tienda.created_at >= intervalo AND tienda.created_at < intervalo + INTERVAL '1 hour'
+            ) as "Tiendas",
+            (
+                -- EASY OPL
+                SELECT COUNT(*) FROM areati.ti_carga_easy_go_opl tcego
+                WHERE tcego.created_at >= intervalo AND tcego.created_at < intervalo + INTERVAL '1 hour'
+            ) as "Easy OPL"
+            FROM generate_series(
+            date_trunc('hour', current_timestamp),
+            date_trunc('hour', current_timestamp) + INTERVAL '1 hour',
+            '1 hour'::interval
+            ) AS intervalo;
+            """)
 
+            return cur.fetchall()
     ##Reportes easy Region
     def read_productos_easy_region(self):
         with self.conn.cursor() as cur:
@@ -802,6 +837,13 @@ class reportesConnection():
             where cbase.tienda like '* %')
             """)
 
+            return cur.fetchall()
+
+    def get_timezone(self):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            SHOW timezone
+            """)
             return cur.fetchall()
 
 class transyanezConnection():

@@ -9,7 +9,7 @@ from database.models.reporte_historico import ReporteHistorico
 from database.schema.reporte_historico import reportes_historico_schema, reporte_historico_schema
 from database.models.reportes import cargaEasy_schema
 
-from database.schema.reporte_hora import reportes_hora_schema
+from database.schema.reporte_hora import reportes_hora_schema, reportes_ultima_hora_schema
 from database.schema.reportes_easy_region import reportes_easy_region_schema
 
 from database.models.reporte_productos_entregados import ReporteProducto
@@ -195,6 +195,11 @@ async def get_reportes_hora():
     results = conn.read_reportes_hora()
     return reportes_hora_schema(results)
 
+@router.get("/ultima_hora")
+async def get_reportes_ultima_hora():
+    results = conn.read_reporte_ultima_hora()
+    return reportes_ultima_hora_schema(results)
+
 
 @router.get("/productos/easy_region")
 async def get_productos_easy_region():
@@ -261,3 +266,12 @@ async def get_pedidos_sin_tienda():
 async def get_pedidos_tiendas_easy_opl():
     results = conn.read_pedidos_tiendas_easy_opl()
     return pedidos_tiendas_easy_opl_schema(results)
+
+
+
+@router.get("/timezone")
+async def get_pedidos_tiendas_easy_opl():
+    results = conn.get_timezone()
+    return results
+
+
