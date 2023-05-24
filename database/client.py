@@ -7,6 +7,7 @@ import os, sys, codecs
 
 
 ### Conexion usuario 
+
 class UserConnection():
     conn = None
     def __init__(self) -> None:
@@ -843,6 +844,152 @@ class reportesConnection():
         with self.conn.cursor() as cur:
             cur.execute("""
             SHOW timezone
+            """)
+            return cur.fetchall()
+
+
+    ## Pedidos Pendientes En ruta 
+
+    def read_pedidos_pendientes_total(self):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            ---------------------------------------------------------------------------------------------------------
+            -- Todos los Pedidos
+            ---------------------------------------------------------------------------------------------------------
+            WITH guias AS (
+                select guia as busqueda
+                from quadminds.ti_respuesta_beetrack
+            ),
+            fechas as(
+            select fecha_entrega as fecha_compromiso
+            from areati.ti_wms_carga_easy twce 
+            where twce.entrega in (select busqueda from guias)
+            union all
+            select fecha_max_entrega as fecha_compromiso
+            from areati.ti_wms_carga_electrolux twce
+            where twce.numero_guia in (select busqueda from guias)
+            union all
+            select fecha_entrega as fecha_compromiso
+            from areati.ti_wms_carga_sportex twcs 
+            where twcs.id_sportex in (select busqueda from guias)
+           -- union all
+           -- select fec_compromiso as fecha_compromiso
+           -- from areati.ti_carga_easy_go_opl tcego  
+           -- where tcego.suborden in (select busqueda from guias)
+            )
+            SELECT 
+                (SELECT COUNT(*) FROM fechas WHERE fecha_compromiso < CURRENT_DATE) AS "Atrasadas",
+                (SELECT COUNT(*) FROM fechas WHERE fecha_compromiso = CURRENT_DATE) AS "En Fecha",
+                (SELECT COUNT(*) FROM fechas WHERE fecha_compromiso > CURRENT_DATE) AS "Adelantadas"
+
+            """)
+            return cur.fetchall()
+    
+    def read_pedidos_pendientes_no_entregados(self):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            ---------------------------------------------------------------------------------------------------------
+            -- Pedidos No Entregados
+            ---------------------------------------------------------------------------------------------------------
+            WITH guias AS (
+                select guia as busqueda
+                from quadminds.ti_respuesta_beetrack
+                where lower(estado)='no entregado' -- Pendiente  No entregado
+            ),
+            fechas as(
+            select fecha_entrega as fecha_compromiso
+            from areati.ti_wms_carga_easy twce 
+            where twce.entrega in (select busqueda from guias)
+            union all
+            select fecha_max_entrega as fecha_compromiso
+            from areati.ti_wms_carga_electrolux twce
+            where twce.numero_guia in (select busqueda from guias)
+            union all
+            select fecha_entrega as fecha_compromiso
+            from areati.ti_wms_carga_sportex twcs 
+            where twcs.id_sportex in (select busqueda from guias)
+           -- union all
+           -- select fec_compromiso as fecha_compromiso
+            --from areati.ti_carga_easy_go_opl tcego  
+          --  where tcego.suborden in (select busqueda from guias)
+            )
+            SELECT 
+                (SELECT COUNT(*) FROM fechas WHERE fecha_compromiso < CURRENT_DATE) AS "Atrasadas",
+                (SELECT COUNT(*) FROM fechas WHERE fecha_compromiso = CURRENT_DATE) AS "En Fecha",
+                (SELECT COUNT(*) FROM fechas WHERE fecha_compromiso > CURRENT_DATE) AS "Adelantadas"
+
+            """)
+            return cur.fetchall()
+        
+    def read_pedidos_pendientes_en_ruta(self):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            ---------------------------------------------------------------------------------------------------------
+            -- Pedidos En Ruta
+            ---------------------------------------------------------------------------------------------------------
+            WITH guias AS (
+                select guia as busqueda
+                from quadminds.ti_respuesta_beetrack
+                where lower(estado)='pendiente' 
+            ),
+            fechas as(
+            select fecha_entrega as fecha_compromiso
+            from areati.ti_wms_carga_easy twce 
+            where twce.entrega in (select busqueda from guias)
+            union all
+            select fecha_max_entrega as fecha_compromiso
+            from areati.ti_wms_carga_electrolux twce
+            where twce.numero_guia in (select busqueda from guias)
+            union all
+            select fecha_entrega as fecha_compromiso
+            from areati.ti_wms_carga_sportex twcs 
+            where twcs.id_sportex in (select busqueda from guias)
+           -- union all
+           -- select fec_compromiso as fecha_compromiso
+           -- from areati.ti_carga_easy_go_opl tcego  
+           -- where tcego.suborden in (select busqueda from guias)
+            )
+            SELECT 
+                (SELECT COUNT(*) FROM fechas WHERE fecha_compromiso < CURRENT_DATE) AS "Atrasadas",
+                (SELECT COUNT(*) FROM fechas WHERE fecha_compromiso = CURRENT_DATE) AS "En Fecha",
+                (SELECT COUNT(*) FROM fechas WHERE fecha_compromiso > CURRENT_DATE) AS "Adelantadas"
+
+            """)
+            return cur.fetchall()
+
+    def read_pedidos_pendientes_entregados(self):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            ---------------------------------------------------------------------------------------------------------
+            -- Pedidos Entregados
+            ---------------------------------------------------------------------------------------------------------
+            WITH guias AS (
+                select guia as busqueda
+                from quadminds.ti_respuesta_beetrack
+                where lower(estado)='entregado' -- Pendiente  No entregado
+            ),
+            fechas as(
+            select fecha_entrega as fecha_compromiso
+            from areati.ti_wms_carga_easy twce 
+            where twce.entrega in (select busqueda from guias)
+            union all
+            select fecha_max_entrega as fecha_compromiso
+            from areati.ti_wms_carga_electrolux twce
+            where twce.numero_guia in (select busqueda from guias)
+            union all
+            select fecha_entrega as fecha_compromiso
+            from areati.ti_wms_carga_sportex twcs 
+            where twcs.id_sportex in (select busqueda from guias)
+           -- union all
+           -- select fec_compromiso as fecha_compromiso
+           -- from areati.ti_carga_easy_go_opl tcego  
+           -- where tcego.suborden in (select busqueda from guias)
+            )
+            SELECT 
+                (SELECT COUNT(*) FROM fechas WHERE fecha_compromiso < CURRENT_DATE) AS "Atrasadas",
+                (SELECT COUNT(*) FROM fechas WHERE fecha_compromiso = CURRENT_DATE) AS "En Fecha",
+                (SELECT COUNT(*) FROM fechas WHERE fecha_compromiso > CURRENT_DATE) AS "Adelantadas"
+
             """)
             return cur.fetchall()
 

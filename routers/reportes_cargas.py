@@ -29,6 +29,9 @@ from database.schema.pedidos_sin_tienda import pedidos_sin_tienda_schema
 from database.models.pedidos_tienda_easy_opl import PedidosTiendaEasyOPL
 from database.schema.pedidos_tiendas_easy_opl import pedidos_tiendas_easy_opl_schema
 
+from database.models.pedidos_pendientes import PedidosPendientes
+from database.schema.pedidos_pendientes import pedidos_pendientes_schema
+
 router = APIRouter(prefix="/api/reportes")
 
 conn = reportesConnection()
@@ -267,11 +270,27 @@ async def get_pedidos_tiendas_easy_opl():
     results = conn.read_pedidos_tiendas_easy_opl()
     return pedidos_tiendas_easy_opl_schema(results)
 
-
-
 @router.get("/timezone")
 async def get_pedidos_tiendas_easy_opl():
     results = conn.get_timezone()
     return results
 
+@router.get("/pedidos/pendientes/total")
+async def pedidos_pendientes_total():
+    results = conn.read_pedidos_pendientes_total()
+    return pedidos_pendientes_schema(results)
 
+@router.get("/pedidos/pendientes/entregados")
+async def pedidos_pendientes_total():
+    results = conn.read_pedidos_pendientes_entregados()
+    return pedidos_pendientes_schema(results)
+
+@router.get("/pedidos/pendientes/no_entregados")
+async def pedidos_pendientes_total():
+    results = conn.read_pedidos_pendientes_no_entregados()
+    return pedidos_pendientes_schema(results)
+
+@router.get("/pedidos/pendientes/en_ruta")
+async def pedidos_pendientes_total():
+    results = conn.read_pedidos_pendientes_en_ruta()
+    return pedidos_pendientes_schema(results)
