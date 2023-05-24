@@ -1,5 +1,5 @@
 def producto_picking_schema(producto):
-    return [{
+    return {
         "Codigo_cliente": producto[0],
         "Nombre": producto[1],
         "Calle": producto[2],
@@ -27,4 +27,4 @@ def producto_picking_schema(producto):
         "Eliminar_pedido" : producto[24],
         "Vehículo" : producto[25],
         "Habilidades" : producto[26]
-    }]
+    }
