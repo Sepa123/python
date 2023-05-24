@@ -4,6 +4,8 @@ from fastapi.responses import FileResponse
 from openpyxl import Workbook
 import re
 # from os import remove
+from database.models.producto_picking import producto_picking
+from database.schema.producto_picking import producto_picking_schema
 
 from database.models.reporte_historico import ReporteHistorico
 from database.schema.reporte_historico import reportes_historico_schema, reporte_historico_schema
@@ -294,3 +296,12 @@ async def pedidos_pendientes_total():
 async def pedidos_pendientes_total():
     results = conn.read_pedidos_pendientes_en_ruta()
     return pedidos_pendientes_schema(results)
+
+
+#producto picking
+
+@router.get("/buscar/producto")
+async def producto_picking():
+    results = conn.get_producto_picking()
+    return producto_picking_schema(results)
+   

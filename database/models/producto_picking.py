@@ -1,0 +1,29 @@
+from pydantic import BaseModel
+
+class producto_picking(BaseModel):
+    codigo_cliente: str
+    nombre: str
+    calle: str
+    ciudad: str
+    estado: str
+    latitud: str
+    longitud: str
+    telefono: str
+    email: str
+    fecha_pedido: str
+    operacion_e_r: str
+    codigo_producto: str
+    descripcion_producto: str
+    cantidad_producto: int
+    peso: int
+    volumen: int
+    dinero: int
+    duracion_min: int
+    ventana_horario_1: str
+    ventana_horario_2: str
+    notas: str
+    agrupador: str
+    email_remitente: str
+    email_pedido: str
+    vehiculo: str
+    habilidades: str
