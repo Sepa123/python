@@ -1007,6 +1007,14 @@ class reportesConnection():
             """)
             return cur.fetchone()
         
+    def get_producto_picking_id(self, producto_id):
+
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select * from areati.buscar_producto_picking('{producto_id}');
+            """)
+            return cur.fetchone()
+        
 
 class transyanezConnection():
     conn = None

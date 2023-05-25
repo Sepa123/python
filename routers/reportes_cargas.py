@@ -300,8 +300,13 @@ async def pedidos_pendientes_total():
 
 #producto picking
 
-@router.get("/buscar/producto")
-async def producto_picking():
-    results = conn.get_producto_picking()
+# @router.get("/buscar/producto")
+# async def productos_picking():
+#     results = conn.get_producto_picking()
+#     return producto_picking_schema(results)
+
+@router.get("/buscar/producto/{producto_id}")
+async def producto_picking_id(producto_id : str):
+    results = conn.get_producto_picking_id(producto_id)
     return producto_picking_schema(results)
    
