@@ -1013,7 +1013,9 @@ class reportesConnection():
             cur.execute(f"""
             select * from areati.buscar_producto_picking('{producto_id}');
             """)
-            return cur.fetchone()
+            result = cur.fetchone()
+            print(result)
+            return result
         
 
 class transyanezConnection():
