@@ -4,8 +4,8 @@ def reporte_hora_schema(reporte_hora):
     "Electrolux": reporte_hora[1], 
     "Sportex":reporte_hora[2],
     "Easy_CD": reporte_hora[3],
-    "Tiendas": reporte_hora[4],
-    "Easy_OPL": reporte_hora[5]
+    "Tiendas": reporte_hora[4]
+    # cambiar Tiendas por Easy_OPL
 }
 
 def reportes_hora_schema(reportes_hora):
