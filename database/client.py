@@ -577,11 +577,12 @@ class reportesConnection():
     def read_reportes_hora(self): 
         with self.conn.cursor() as cur:
             cur.execute("""
+                -- Listar Cantidad de Entregas, No de Bultos
                 ---------------------------------------------------------------------------------
-                SELECT TO_CHAR(intervalo ,'HH24:MI') || ' - ' || TO_CHAR(intervalo + '1 hour','HH24:MI') as "Hora",
+                SELECT TO_CHAR(intervalo,'HH24:MI') || ' - ' || TO_CHAR(intervalo + '1 hour','HH24:MI') as "Hora",
                 (
                     -- ELECTROLUX
-                    Select count(*) from areati.ti_wms_carga_electrolux twce
+                    Select count(distinct(numero_guia)) from areati.ti_wms_carga_electrolux twce
                     Where to_char(twce.created_at,'yyyy-mm-dd HH24') = to_char(intervalo,'yyyy-mm-dd HH24')
                 ) as "Electrolux",
                 (
@@ -591,17 +592,12 @@ class reportesConnection():
                 ) as "Sportex",
                 (
                     -- EASY CD
-                    Select count(*) from areati.ti_wms_carga_easy easy
+                    Select count(distinct(entrega)) from areati.ti_wms_carga_easy easy
                     Where to_char(easy.created_at,'yyyy-mm-dd HH24') = to_char(intervalo,'yyyy-mm-dd HH24')
                 ) as "Easy CD",
                 (
-                    -- Easy Tienda por WMS
-                    Select count(*) from areati.ti_wms_carga_tiendas tienda
-                    Where to_char(tienda.created_at,'yyyy-mm-dd HH24') = to_char(intervalo,'yyyy-mm-dd HH24')
-                ) as "Tiendas",
-                (
                     -- EASY OPL
-                    Select count(*) from areati.ti_carga_easy_go_opl tcego  
+                    Select count(distinct(id_entrega)) from areati.ti_carga_easy_go_opl tcego  
                     Where to_char(tcego.created_at,'yyyy-mm-dd HH24') = to_char(intervalo,'yyyy-mm-dd HH24')
                 ) as "Easy OPL"
                 from generate_series(
@@ -611,12 +607,13 @@ class reportesConnection():
                     ) AS intervalo
                 union all
                 select 'Total' as "Hora",
-                (select count(*) from areati.ti_wms_carga_electrolux twce3 where to_char(twce3.created_at,'yyyy-mm-dd') = to_char(current_date,'yyyy-mm-dd'))  as "Electrolux",
+                (select count(distinct(numero_guia)) from areati.ti_wms_carga_electrolux twce3 where to_char(twce3.created_at,'yyyy-mm-dd') = to_char(current_date,'yyyy-mm-dd'))  as "Electrolux",
                 (select count(*) from areati.ti_wms_carga_sportex twcs2 where to_char(twcs2.created_at,'yyyy-mm-dd') = to_char(current_date,'yyyy-mm-dd')) as "Sportex",
-                (select count(*) from areati.ti_wms_carga_easy twce2 where to_char(twce2.created_at,'yyyy-mm-dd') = to_char(current_date,'yyyy-mm-dd')) as "Easy CD",
-                (select count(*) from areati.ti_wms_carga_tiendas twce2 where to_char(twce2.created_at,'yyyy-mm-dd') = to_char(current_date,'yyyy-mm-dd')) as "Tiendas",
-                (select count(*) from areati.ti_carga_easy_go_opl twce2 where to_char(twce2.created_at,'yyyy-mm-dd') = to_char(current_date,'yyyy-mm-dd')) as "Easy OPL"
+                (select count(distinct(entrega)) from areati.ti_wms_carga_easy twce2 where to_char(twce2.created_at,'yyyy-mm-dd') = to_char(current_date,'yyyy-mm-dd')) as "Easy CD",
+                (select count(distinct(id_entrega)) from areati.ti_carga_easy_go_opl twce2 where to_char(twce2.created_at,'yyyy-mm-dd') = to_char(current_date,'yyyy-mm-dd')) as "Easy OPL"
                 order by 1 desc
+                ---------------------------------------------------------------------------------
+
                 ---------------------------------------------------------------------------------
             """)
             
