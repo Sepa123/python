@@ -56,7 +56,7 @@ class reportesConnection():
         try:
             self.conn = psycopg2.connect(config("POSTGRES_DB_CARGA"), options=options)
             # self.conn.encoding("")
-            # self.conn.autocommit = True
+            self.conn.autocommit = True
             self.conn.set_client_encoding("UTF-8")
         except psycopg2.OperationalError as err:
             print(err)
