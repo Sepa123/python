@@ -308,5 +308,8 @@ async def pedidos_pendientes_total():
 @router.get("/buscar/producto/{producto_id}")
 async def producto_picking_id(producto_id : str):
     results = conn.get_producto_picking_id(producto_id)
+    
+    if results is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El codigo del producto no existe")
     return producto_picking_schema(results)
    

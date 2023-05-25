@@ -83,7 +83,7 @@ class reportesConnection():
                 End "Día",
             CURRENT_DATE+ i as "Fecha",
             (
-                Select count(*) from areati.ti_wms_carga_electrolux twce
+                Select count(distinct(numero_guia))   from areati.ti_wms_carga_electrolux twce
                 Where to_char(twce.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
             ) as "Electrolux",
             (
@@ -91,11 +91,11 @@ class reportesConnection():
                 Where to_char(twcs.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
             ) as "Sportex",
             (
-                Select count(*) from areati.ti_wms_carga_easy easy
+                Select count(distinct(entrega))  from areati.ti_wms_carga_easy easy
                 Where to_char(easy.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
             ) as "Easy",
             (
-                Select count(*) from areati.ti_carga_easy_go_opl tienda
+                Select count(distinct(id_entrega)) from areati.ti_carga_easy_go_opl tienda
                 Where to_char(tienda.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
             ) as "Easy OPL"
             From generate_series(date(date_trunc('month', current_date)) - CURRENT_DATE, 0 ) i
@@ -120,7 +120,7 @@ class reportesConnection():
                 End "Día",
             CURRENT_DATE+ i as "Fecha",
             (
-                Select count(*) from areati.ti_wms_carga_electrolux twce
+                Select count(distinct(numero_guia))  from areati.ti_wms_carga_electrolux twce
                 Where to_char(twce.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
             ) as "Electrolux",
             (
@@ -128,11 +128,11 @@ class reportesConnection():
                 Where to_char(twcs.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
             ) as "Sportex",
             (
-                Select count(*) from areati.ti_wms_carga_easy easy
+                Select count(distinct(entrega)) from areati.ti_wms_carga_easy easy
                 Where to_char(easy.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
             ) as "Easy",
             (
-                Select count(*) from areati.ti_carga_easy_go_opl tienda
+                Select count(distinct(id_entrega)) from areati.ti_carga_easy_go_opl tienda
                 Where to_char(tienda.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
             ) as "Easy OPL"
             From generate_series(0,0) i
@@ -158,7 +158,7 @@ class reportesConnection():
                 End "Día",
             CURRENT_DATE+ i as "Fecha",
             (
-                Select count(*) from areati.ti_wms_carga_electrolux twce
+                Select count(distinct(numero_guia)) from areati.ti_wms_carga_electrolux twce
                 Where to_char(twce.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
             ) as "Electrolux",
             (
@@ -166,11 +166,11 @@ class reportesConnection():
                 Where to_char(twcs.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
             ) as "Sportex",
             (
-                Select count(*) from areati.ti_wms_carga_easy easy
+                Select count(distinct(entrega)) from areati.ti_wms_carga_easy easy
                 Where to_char(easy.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
             ) as "Easy",
             (
-                Select count(*) from areati.ti_wms_carga_tiendas tienda
+                Select count(distinct(id_entrega)) from areati.ti_wms_carga_tiendas tienda
                 Where to_char(tienda.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
             ) as "Tiendas"
             From generate_series(date'2023-01-01'- CURRENT_DATE, 0 ) i
@@ -438,50 +438,87 @@ class reportesConnection():
         with self.conn.cursor() as cur:
             cur.execute("""
             --------------------------- Reporte Productos Entregados en el Mes por Cliente
-                SELECT
-                case
-                    When (to_char(CURRENT_DATE+ i,'d') = '1') then 'Domingo'
-                    When (to_char(CURRENT_DATE+ i,'d') = '2') then 'Lunes'
-                    When (to_char(CURRENT_DATE+ i,'d') = '3') then 'Martes'
-                    When (to_char(CURRENT_DATE+ i,'d') = '4') then 'Miercoles'
-                    When (to_char(CURRENT_DATE+ i,'d') = '5') then 'Jueves'
-                    When (to_char(CURRENT_DATE+ i,'d') = '6') then 'Viernes'
-                    When (to_char(CURRENT_DATE+ i,'d') = '7') then 'Sabado'
-                    End "Día",
-                CURRENT_DATE+ i as "Fecha",
-                (
-                    -- ELECTROLUX
-                    Select count(*) from areati.ti_wms_carga_electrolux twce
-                    Where to_char(twce.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
-                ) as "Electrolux",
-                (
-                    -- SPORTEX
-                    Select count(*) from areati.ti_wms_carga_sportex twcs
-                    Where to_char(twcs.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
-                ) as "Sportex",
-                (
-                    -- EASY CD
-                    Select count(*) from areati.ti_wms_carga_easy easy
-                    Where to_char(easy.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
-                ) as "Easy",
-               -- (
-                    -- Easy Tienda por WMS
-                   -- Select count(*) from areati.ti_wms_carga_tiendas tienda
-                    -- Where to_char(tienda.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
-                -- ) as "Tiendas",
-                (
-                    -- EASY OPL
-                    Select count(*) from areati.ti_carga_easy_go_opl tcego  
-                    Where to_char(tcego.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
-                ) as "Easy OPL"
-                --From generate_series(date'2023-01-01'- CURRENT_DATE, 0 ) i                                   -- Resumen 2023 (Descarga)
-                From generate_series(date(date_trunc('month', current_date)) - CURRENT_DATE, 0 ) i             -- mes en Curso (Presentar en Pantalla con refresco)
+            SELECT
+            case
+                When (to_char(CURRENT_DATE+ i,'d') = '1') then 'Domingo'
+                When (to_char(CURRENT_DATE+ i,'d') = '2') then 'Lunes'
+                When (to_char(CURRENT_DATE+ i,'d') = '3') then 'Martes'
+                When (to_char(CURRENT_DATE+ i,'d') = '4') then 'Miercoles'
+                When (to_char(CURRENT_DATE+ i,'d') = '5') then 'Jueves'
+                When (to_char(CURRENT_DATE+ i,'d') = '6') then 'Viernes'
+                When (to_char(CURRENT_DATE+ i,'d') = '7') then 'Sabado'
+                End "Día",
+            CURRENT_DATE+ i as "Fecha",
+            (
+                -- ELECTROLUX
+                Select count(distinct(numero_guia)) from areati.ti_wms_carga_electrolux twce
+                Where to_char(twce.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
+            ) as "Electrolux",
+            (
+                -- SPORTEX
+                Select count(*) from areati.ti_wms_carga_sportex twcs
+                Where to_char(twcs.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
+            ) as "Sportex",
+            (
+                -- EASY CD
+                Select count(distinct(entrega)) from areati.ti_wms_carga_easy easy
+                Where to_char(easy.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
+            ) as "Easy",
+            (
+                -- EASY OPL
+                Select count(distinct(id_entrega)) from areati.ti_carga_easy_go_opl tcego  
+                Where to_char(tcego.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
+            ) as "Easy OPL"
+            --From generate_series(date'2023-01-01'- CURRENT_DATE, 0 ) i                                   -- Resumen 2023 (Descarga)
+            From generate_series(date(date_trunc('month', current_date)) - CURRENT_DATE, 0 ) i             
+                    -- mes en Curso (Presentar en Pantalla con refresco)
 
             """)
 
             return cur.fetchall()
 
     def read_reporte_producto_entregado_hoy(self):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+           --------------------------- Reporte Productos Entregados en el Mes por Cliente
+            SELECT
+            case
+                When (to_char(CURRENT_DATE+ i,'d') = '1') then 'Domingo'
+                When (to_char(CURRENT_DATE+ i,'d') = '2') then 'Lunes'
+                When (to_char(CURRENT_DATE+ i,'d') = '3') then 'Martes'
+                When (to_char(CURRENT_DATE+ i,'d') = '4') then 'Miercoles'
+                When (to_char(CURRENT_DATE+ i,'d') = '5') then 'Jueves'
+                When (to_char(CURRENT_DATE+ i,'d') = '6') then 'Viernes'
+                When (to_char(CURRENT_DATE+ i,'d') = '7') then 'Sabado'
+                End "Día",
+            CURRENT_DATE+ i as "Fecha",
+            (
+                -- ELECTROLUX
+                Select count(distinct(numero_guia)) from areati.ti_wms_carga_electrolux twce
+                Where to_char(twce.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
+            ) as "Electrolux",
+            (
+                -- SPORTEX
+                Select count(*) from areati.ti_wms_carga_sportex twcs
+                Where to_char(twcs.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
+            ) as "Sportex",
+            (
+                -- EASY CD
+                Select count(distinct(entrega)) from areati.ti_wms_carga_easy easy
+                Where to_char(easy.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
+            ) as "Easy",
+            (
+                -- EASY OPL
+                Select count(distinct(id_entrega)) from areati.ti_carga_easy_go_opl tcego  
+                Where to_char(tcego.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
+            ) as "Easy OPL"
+            --From generate_series(date'2023-01-01'- CURRENT_DATE, 0 ) i                                   -- Resumen 2023 (Descarga)
+            from generate_series(0,0) i  -- dia de hoy
+            """)
+
+            return cur.fetchall()
+        
+    def read_reporte_producto_entregado_anual(self):
         with self.conn.cursor() as cur:
             cur.execute("""
             --------------------------- Reporte Productos Entregados en el Mes por Cliente
@@ -498,7 +535,7 @@ class reportesConnection():
             CURRENT_DATE+ i as "Fecha",
             (
                 -- ELECTROLUX
-                Select count(*) from areati.ti_wms_carga_electrolux twce
+                Select count(distinct(numero_guia)) from areati.ti_wms_carga_electrolux twce
                 Where to_char(twce.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
             ) as "Electrolux",
             (
@@ -508,67 +545,17 @@ class reportesConnection():
             ) as "Sportex",
             (
                 -- EASY CD
-                Select count(*) from areati.ti_wms_carga_easy easy
+                Select count(distinct(entrega)) from areati.ti_wms_carga_easy easy
                 Where to_char(easy.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
             ) as "Easy",
-            -- (
-                -- Easy Tienda por WMS
-            -- Select count(*) from areati.ti_wms_carga_tiendas tienda
-                -- Where to_char(tienda.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
-            -- ) as "Tiendas",
             (
                 -- EASY OPL
-                Select count(*) from areati.ti_carga_easy_go_opl tcego  
+                Select count(distinct(id_entrega)) from areati.ti_carga_easy_go_opl tcego  
                 Where to_char(tcego.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
             ) as "Easy OPL"
-            --From generate_series(date'2023-01-01'- CURRENT_DATE, 0 ) i                                   -- Resumen 2023 (Descarga)
-            --From generate_series(date(date_trunc('month', current_date)) - CURRENT_DATE, 0 ) i             -- mes en Curso (Presentar en Pantalla con refresco)
-            from generate_series(0,0) i  -- dia de hoy
-            """)
-
-            return cur.fetchall()
-        
-    def read_reporte_producto_entregado_anual(self):
-        with self.conn.cursor() as cur:
-            cur.execute("""
-            --------------------------- Reporte Productos Entregados en el Mes por Cliente
-                SELECT
-                case
-                    When (to_char(CURRENT_DATE+ i,'d') = '1') then 'Domingo'
-                    When (to_char(CURRENT_DATE+ i,'d') = '2') then 'Lunes'
-                    When (to_char(CURRENT_DATE+ i,'d') = '3') then 'Martes'
-                    When (to_char(CURRENT_DATE+ i,'d') = '4') then 'Miercoles'
-                    When (to_char(CURRENT_DATE+ i,'d') = '5') then 'Jueves'
-                    When (to_char(CURRENT_DATE+ i,'d') = '6') then 'Viernes'
-                    When (to_char(CURRENT_DATE+ i,'d') = '7') then 'Sabado'
-                    End "Día",
-                CURRENT_DATE+ i as "Fecha",
-                (
-                    -- ELECTROLUX
-                    Select count(*) from areati.ti_wms_carga_electrolux twce
-                    Where to_char(twce.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
-                ) as "Electrolux",
-                (
-                    -- SPORTEX
-                    Select count(*) from areati.ti_wms_carga_sportex twcs
-                    Where to_char(twcs.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
-                ) as "Sportex",
-                (
-                    -- EASY CD
-                    Select count(*) from areati.ti_wms_carga_easy easy
-                    Where to_char(easy.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
-                ) as "Easy",
-               -- (
-                    -- Easy Tienda por WMS
-                  --  Select count(*) from areati.ti_wms_carga_tiendas tienda
-                   -- Where to_char(tienda.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
-               -- ) as "Tiendas",
-                (
-                    -- EASY OPL
-                    Select count(*) from areati.ti_carga_easy_go_opl tcego  
-                    Where to_char(tcego.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
-                ) as "Easy OPL"
-                From generate_series(date'2023-01-01'- CURRENT_DATE, 0 ) i   
+            From generate_series(date'2023-01-01'- CURRENT_DATE, 0 ) i                                   -- Resumen 2023 (Descarga)
+            --From generate_series(date(date_trunc('month', current_date)) - CURRENT_DATE, 0 ) i             
+  
             """)
 
             return cur.fetchall()
@@ -1010,9 +997,7 @@ class reportesConnection():
             cur.execute(f"""
             select * from areati.buscar_producto_picking('{producto_id}');
             """)
-            result = cur.fetchone()
-            print(result)
-            return result
+            return cur.fetchone()
         
 
 class transyanezConnection():
