@@ -7,12 +7,12 @@ def producto_picking_schema(producto):
         "Provincia": producto[4],
         "Latitud": producto[5],
         "Longitud": producto[6],
-        "Teléfono": producto[7],
+        "Telefono": producto[7],
         "Email":producto[8],
         "Codigo_pedido":producto[9],
         "Fecha_pedido": producto[10],
         "Operacion": producto[11],
-        "Código_producto":  producto[12],
+        "Codigo_producto":  producto[12],
         "Descripcion_producto": producto[13],
         "Cantidad_producto":  producto[14],
         "Peso": producto[15],
@@ -25,6 +25,6 @@ def producto_picking_schema(producto):
         "Agrupador" : producto[22],
         "Email_remitentes" : producto[23],
         "Eliminar_pedido" : producto[24],
-        "Vehículo" : producto[25],
+        "Vehiculo" : producto[25],
         "Habilidades" : producto[26]
     }
