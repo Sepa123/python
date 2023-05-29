@@ -8,8 +8,10 @@ from database.models.producto_picking import producto_picking
 from database.schema.producto_picking import producto_picking_schema
 
 from database.models.reporte_historico import ReporteHistorico
-from database.schema.reporte_historico import reportes_historico_schema, reporte_historico_schema
-from database.models.reportes import cargaEasy_schema
+from database.schema.reporte_historico import reportes_historico_schema
+
+from database.models.carga_easy import CargaEasy
+from database.schema.cargas_easy import cargaEasy_schema
 
 from database.schema.reporte_hora import reportes_hora_schema, reportes_ultima_hora_schema
 from database.schema.reportes_easy_region import reportes_easy_region_schema
@@ -17,7 +19,7 @@ from database.schema.reportes_easy_region import reportes_easy_region_schema
 from database.models.reporte_productos_entregados import ReporteProducto
 from database.schema.reporte_productos_entregados import reportes_producto_schema
 
-from database.models.pedidos_compromiso_sin_despacho import pedidos_compromiso_sin_despacho
+from database.models.pedidos_compromiso_sin_despacho import PedidosCompromisoSinDespacho
 from database.schema.pedidos_compromiso_sin_despacho import pedidos_compromiso_sin_despacho_schema
 
 from database.schema.rutas_beetrack_hoy import rutas_beetrack_hoy_schema
@@ -38,14 +40,14 @@ router = APIRouter(prefix="/api/reportes")
 
 conn = reportesConnection()
 
-@router.get("/cargas_easy")
+@router.get("/cargas_easy",status_code=status.HTTP_202_ACCEPTED)
 async def get_cuenta():
     data_db = conn.read_cargas_easy()
     if not data_db:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
     return cargaEasy_schema(data_db)
 
-@router.get("/clientes")
+@router.get("/clientes",status_code=status.HTTP_202_ACCEPTED)
 async def get_data_cliente():
     results = conn.read_clientes()
     # print(results)
@@ -58,8 +60,6 @@ async def get_data_cliente():
                        "Código de Producto","Descripción del Producto","Cantidad de Producto","Peso","Volumen","Dinero",
                        "Duración min","Ventana horaria 1","Ventana horaria 2","Notas","Agrupador","Email de Remitentes","Eliminar Pedido Si - No - Vacío",
                        "Vehículo","Habilidades"))
-
-
     for row in results:
         texto = row[2]
         texto_limpio = re.sub(r'[\x01]', '', str(texto))
@@ -82,10 +82,10 @@ async def get_data_cliente():
 
     return FileResponse("Carga_Quadminds_yyyymmdd-hh24miss.xlsx")
 
-@router.get("/NS_beetrack_Mensual")
+@router.get("/NS_beetrack_Mensual",status_code=status.HTTP_202_ACCEPTED)
 async def get_beetrack_mensual():
     results = conn.read_NS_beetrack_mensual()
-    # print(results)
+
     wb = Workbook()
     ws = wb.active
 
@@ -93,7 +93,7 @@ async def get_beetrack_mensual():
     results.insert(1,('FECHA', 'ID. RUTA', 'DRIVER', 'PATENTE', 'REGION', 'Km. Ruta', 'T-PED', 'Easy', 'Electrolux', 'Sportex', 'Imperial', 'PBB', 'Virutex', 'R1', 'R2', 'R3', 'VR', 'C11', '(%) 11', 'C13', '(%) 13', 'C15', '(%)15', 'C17', '(%)17', 'C18', '(%)18', 'C20', '(%)20', 'Final_D', 'OBSERV-RUTA', 'H_INIC', 'H_TERM', 'TT-RUTA', 'Prom. ENT', 'T-ENT', 'N-ENT', 'EE', 'SM', 'CA', 'DA', 'RxD', 'DNE', 'DNCC', 'D.ERR', 'INC.T', 'DFORM', 'PINCOM', 'SPELI', 'PNCORR', 'PFALT', 'PPARC', 'P.DUPL', 'R', 'Pedidos'))
 
     for row in results:
-        # print(row)
+
         ws.append(row)
 
     for col in ws.columns:
@@ -113,17 +113,17 @@ async def get_beetrack_mensual():
     return FileResponse("excel/NS_Beetrack_Mensual.xlsx")
     
 ## Reportes Historicos
-@router.get("/historico/mensual")
+@router.get("/historico/mensual",status_code=status.HTTP_202_ACCEPTED)
 async def get_historico_mensual():
     results = conn.read_reporte_historico_mensual()
     return reportes_historico_schema(results)
 
-@router.get("/historico/hoy")
+@router.get("/historico/hoy",status_code=status.HTTP_202_ACCEPTED)
 async def get_historico_hoy():
     results = conn.read_reporte_historico_hoy()
     return reportes_historico_schema(results)
 
-@router.get("/historico/anual")
+@router.get("/historico/anual",status_code=status.HTTP_202_ACCEPTED)
 async def get_historico_mensual():
     results = conn.read_reporte_historico_anual()
 
@@ -154,19 +154,19 @@ async def get_historico_mensual():
 
 ## reporte productos entregados
 
-@router.get("/productos/mensual")
+@router.get("/productos/mensual",status_code=status.HTTP_202_ACCEPTED)
 async def get_productos_mensual():
     results = conn.read_reporte_producto_entregado_mensual()
     return reportes_producto_schema(results)
 
-@router.get("/productos/hoy")
+@router.get("/productos/hoy",status_code=status.HTTP_202_ACCEPTED)
 async def get_productos_hoy():
     results = conn.read_reporte_producto_entregado_hoy()
     return reportes_producto_schema(results)
 
 
 ## TODO: EL ANUAL ES PARA DESCARGA
-@router.get("/productos/anual")
+@router.get("/productos/anual",status_code=status.HTTP_202_ACCEPTED)
 async def get_productos_anual():
     results = conn.read_reporte_producto_entregado_anual()
     # wb = Workbook()
@@ -195,30 +195,31 @@ async def get_productos_anual():
     # return FileResponse("excel/Reporte_producto_mensual.xlsx")
     return reportes_producto_schema(results)
 
-@router.get("/hora")
+# Cantidad de Entregas por hora
+@router.get("/hora",status_code=status.HTTP_202_ACCEPTED)
 async def get_reportes_hora():
     results = conn.read_reportes_hora()
     return reportes_hora_schema(results)
 
-@router.get("/ultima_hora")
+@router.get("/ultima_hora",status_code=status.HTTP_202_ACCEPTED)
 async def get_reportes_ultima_hora():
     results = conn.read_reporte_ultima_hora()
     return reportes_ultima_hora_schema(results)
 
 
-@router.get("/productos/easy_region")
+@router.get("/productos/easy_region",status_code=status.HTTP_202_ACCEPTED)
 async def get_productos_easy_region():
     results = conn.read_productos_easy_region()
     # print(results)
     return reportes_easy_region_schema(results)
 
-@router.get("/pedidos/sin_despacho")
+@router.get("/pedidos/sin_despacho",status_code=status.HTTP_202_ACCEPTED)
 async def get_pedidos_sin_despacho():
     results = conn.read_pedido_compromiso_sin_despacho()
 
     return pedidos_compromiso_sin_despacho_schema(results)
 
-@router.get("/pedidos/sin_despacho/descargar")
+@router.get("/pedidos/sin_despacho/descargar",status_code=status.HTTP_202_ACCEPTED)
 async def get_pedidos_sin_despacho_descarga():
 
     results = conn.read_pedido_compromiso_sin_despacho()
@@ -250,49 +251,49 @@ async def get_pedidos_sin_despacho_descarga():
 
     return FileResponse("excel/pedidos_con_fecha_de_compromiso_sin_despacho.xlsx")
 
-@router.get("/pedidos")
+@router.get("/pedidos",status_code=status.HTTP_202_ACCEPTED)
 async def get_pedidos():
     results = conn.read_pedidos()
 
     return pedidos_schema(results)
 
-@router.get("/ruta/beetrack/hoy")
+@router.get("/ruta/beetrack/hoy",status_code=status.HTTP_202_ACCEPTED)
 async def get_ruta_beetrack_hoy():
     results = conn.read_ruta_beetrack_hoy()
 
     return rutas_beetrack_hoy_schema(results)
 
-@router.get("/pedidos/sin_tiendas")
+@router.get("/pedidos/sin_tiendas",status_code=status.HTTP_202_ACCEPTED)
 async def get_pedidos_sin_tienda():
     results = conn.read_pedidos_sin_tienda()
     return pedidos_sin_tienda_schema(results)
 
-@router.get("/pedidos/easy_opl")
+@router.get("/pedidos/easy_opl",status_code=status.HTTP_202_ACCEPTED)
 async def get_pedidos_tiendas_easy_opl():
     results = conn.read_pedidos_tiendas_easy_opl()
     return pedidos_tiendas_easy_opl_schema(results)
 
-@router.get("/timezone")
+@router.get("/timezone",status_code=status.HTTP_202_ACCEPTED)
 async def get_pedidos_tiendas_easy_opl():
     results = conn.get_timezone()
     return results
 
-@router.get("/pedidos/pendientes/total")
+@router.get("/pedidos/pendientes/total",status_code=status.HTTP_202_ACCEPTED)
 async def pedidos_pendientes_total():
     results = conn.read_pedidos_pendientes_total()
     return pedidos_pendientes_schema(results)
 
-@router.get("/pedidos/pendientes/entregados")
+@router.get("/pedidos/pendientes/entregados",status_code=status.HTTP_202_ACCEPTED)
 async def pedidos_pendientes_total():
     results = conn.read_pedidos_pendientes_entregados()
     return pedidos_pendientes_schema(results)
 
-@router.get("/pedidos/pendientes/no_entregados")
+@router.get("/pedidos/pendientes/no_entregados",status_code=status.HTTP_202_ACCEPTED)
 async def pedidos_pendientes_total():
     results = conn.read_pedidos_pendientes_no_entregados()
     return pedidos_pendientes_schema(results)
 
-@router.get("/pedidos/pendientes/en_ruta")
+@router.get("/pedidos/pendientes/en_ruta",status_code=status.HTTP_202_ACCEPTED)
 async def pedidos_pendientes_total():
     results = conn.read_pedidos_pendientes_en_ruta()
     return pedidos_pendientes_schema(results)
@@ -305,7 +306,7 @@ async def pedidos_pendientes_total():
 #     results = conn.get_producto_picking()
 #     return producto_picking_schema(results)
 
-@router.get("/buscar/producto/{producto_id}")
+@router.get("/buscar/producto/{producto_id}",status_code=status.HTTP_202_ACCEPTED)
 async def producto_picking_id(producto_id : str):
     results = conn.get_producto_picking_id(producto_id)
     

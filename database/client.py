@@ -50,6 +50,7 @@ timezone = 'America/Santiago'
 options = f'--timezone={timezone}'
 
 
+
 class reportesConnection():
     conn = None
     def __init__(self) -> None:
@@ -199,76 +200,76 @@ class reportesConnection():
 
             cur.execute("""
                 -------------------------------------------------------------------------------------------------------------------------------------
-                -- EASY
-                -------------------------------------------------------------------------------------------------------------------------------------
-                select       CAST(easy.entrega AS varchar) AS "Código de Cliente",     
-                            initcap(easy.nombre) AS "Nombre",
-                            CASE 
-                        WHEN substring(easy.direccion from '^\d') ~ '\d' then substring(initcap(easy.direccion) from '\d+[\w\s]+\d+')
-                        WHEN lower(easy.direccion) ~ '^(pasaje|calle|avenida)\s+\d+\s+' THEN
-                        regexp_replace(REPLACE(regexp_replace(regexp_replace(initcap(split_part(easy.direccion,',',1)), ',.$', ''), '\s+(\d+\D+\d+).$', ' \1'), '\', ''), '', '') 
-                        else coalesce(substring(initcap(easy.direccion) from '^[^0-9]*[0-9]+'),initcap(easy.direccion))
-                        END "Calle y Número",
-                            case
-                                    when unaccent(lower(easy.comuna)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
-                                    (select oc.comuna_name from public.op_comunas oc 
-                                    where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
-                                                                            where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(easy.comuna))
-                                                                    )
+-- EASY
+-------------------------------------------------------------------------------------------------------------------------------------
+select       CAST(easy.entrega AS varchar) AS "Código de Cliente",     
+             initcap(easy.nombre) AS "Nombre",
+             CASE 
+        WHEN substring(easy.direccion from '^\d') ~ '\d' then substring(initcap(easy.direccion) from '\d+[\w\s]+\d+')
+        WHEN lower(easy.direccion) ~ '^(pasaje|calle|avenida)\s+\d+\s+' THEN
+        regexp_replace(REPLACE(regexp_replace(regexp_replace(initcap(split_part(easy.direccion,',',1)), ',.$', ''), '\s+(\d+\D+\d+).$', ' \1'), '\', ''), '', '') 
+        else coalesce(substring(initcap(easy.direccion) from '^[^0-9]*[0-9]+'),initcap(easy.direccion))
+        END "Calle y Número",
+             case
+                    when unaccent(lower(easy.comuna)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                    (select oc.comuna_name from public.op_comunas oc 
+                    where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+                                                             where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(easy.comuna))
+                                                      )
+                    )
+                    else (select initcap(oc2.comuna_name) from public.op_comunas oc2 
+                              where unaccent(lower(easy.comuna)) = unaccent(lower(oc2.comuna_name))
+                             )
+             end as "Ciudad",
+             CASE
+                    WHEN easy.region='XIII - Metropolitana' THEN 'Region Metropolitana'
+                    WHEN easy.region='V - Valparaíso' THEN 'Valparaíso'
+                    else (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(easy.comuna)))
+             END "Provincia/Estado",
+             '' AS "Latitud",
+             '' AS "Longitud", --7
+             coalesce(easy.telefono,'0') AS "Teléfono con código de país",
+             lower(easy.Correo) AS "Email",
+             CAST(easy.entrega AS varchar) AS "Código de Pedido",   -- Agrupar Por
+             easy.fecha_entrega AS "Fecha de Pedido",
+             'E' AS "Operación E/R",
+             (select string_agg(CAST(aux.carton AS varchar) , ' @ ') from areati.ti_wms_carga_easy aux
+               where aux.entrega = easy.entrega) AS "Código de Producto",
+             '(EASY) ' || (select string_agg(aux.descripcion , ' - ') from areati.ti_wms_carga_easy aux
+               where aux.entrega = easy.entrega) AS "Descripción del Producto",
+               (select count(*) from areati.ti_wms_carga_easy easy_a where easy_a.entrega = easy.entrega) AS "Cantidad de Producto", --15
+              1 AS "Peso", --16
+             1 AS "Volumen",
+             1 AS "Dinero",
+             '8' AS "Duración min",
+             '09:00 - 21:00' AS "Ventana horaria 1",
+             '' AS "Ventana horaria 2",
+             'EASY CD' AS "Notas", -- 22
+             CASE
+                    WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(easy.comuna)))='Region Metropolitana' THEN 'RM' || ' - ' ||
+                    case
+                           when unaccent(lower(easy.comuna)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                           (select oc.comuna_name from public.op_comunas oc 
+                           where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+                                                                   where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(easy.comuna))
+                                                             )
+                           )
+                           else (select initcap(oc2.comuna_name) from public.op_comunas oc2 
+                                     where unaccent(lower(easy.comuna)) = unaccent(lower(oc2.comuna_name))
                                     )
-                                    else (select initcap(oc2.comuna_name) from public.op_comunas oc2 
-                                            where unaccent(lower(easy.comuna)) = unaccent(lower(oc2.comuna_name))
-                                            )
-                            end as "Ciudad",
-                            CASE
-                                    WHEN easy.region='XIII - Metropolitana' THEN 'Region Metropolitana'
-                                    WHEN easy.region='V - Valparaíso' THEN 'Valparaíso'
-                                    else (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(easy.comuna)))
-                            END "Provincia/Estado",
-                            '' AS "Latitud",
-                            '' AS "Longitud", --7
-                            coalesce(easy.telefono,'0') AS "Teléfono con código de país",
-                            lower(easy.Correo) AS "Email",
-                            CAST(easy.entrega AS varchar) AS "Código de Pedido",   -- Agrupar Por
-                            easy.fecha_entrega AS "Fecha de Pedido",
-                            'E' AS "Operación E/R",
-                            (select string_agg(CAST(aux.carton AS varchar) , ' @ ') from areati.ti_wms_carga_easy aux
-                            where aux.entrega = easy.entrega) AS "Código de Producto",
-                            '(EASY) ' || (select string_agg(aux.descripcion , ' - ') from areati.ti_wms_carga_easy aux
-                            where aux.entrega = easy.entrega) AS "Descripción del Producto",
-                            (select count(*) from areati.ti_wms_carga_easy easy_a where easy_a.entrega = easy.entrega) AS "Cantidad de Producto", --15
-                            1 AS "Peso", --16
-                            1 AS "Volumen",
-                            1 AS "Dinero",
-                            '8' AS "Duración min",
-                            '09:00 - 21:00' AS "Ventana horaria 1",
-                            '' AS "Ventana horaria 2",
-                            'EASY CD' AS "Notas", -- 22
-                            CASE
-                                    WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(easy.comuna)))='Region Metropolitana' THEN 'RM' || ' - ' ||
-                                    case
-                                        when unaccent(lower(easy.comuna)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
-                                        (select oc.comuna_name from public.op_comunas oc 
-                                        where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
-                                                                                where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(easy.comuna))
-                                                                            )
-                                        )
-                                        else (select initcap(oc2.comuna_name) from public.op_comunas oc2 
-                                                    where unaccent(lower(easy.comuna)) = unaccent(lower(oc2.comuna_name))
-                                                    )
-                                    end
-                                    WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(easy.comuna)))='Valparaíso' THEN 'V - ' ||  initcap(easy.comuna)
-                                    else 'S/A'
-                            END "Agrupador",
-                            '' AS "Email de Remitentes",
-                            '' AS "Eliminar Pedido Si - No - Vacío",
-                            '' AS "Vehículo",
-                            '' AS "Habilidades"
-                from areati.ti_wms_carga_easy easy
-                where lower(easy.nombre) not like '%easy%'
-                and (easy.estado=0 or (easy.estado=2 and easy.subestado not in (7,10,12,43,50,51,70,80))) and easy.estado not in (1,3)
-                and to_char(easy.created_at,'yyyymmdd')=to_char(current_date - 1,'yyyymmdd')
-                group by easy.entrega,2,3,4,5,6,7,8,9,11,12,16,17,18,19,20,21,22,23,24,25,26,27
+                    end
+                    WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(easy.comuna)))='Valparaíso' THEN 'V - ' ||  initcap(easy.comuna)
+                    else 'S/A'
+             END "Agrupador",
+             '' AS "Email de Remitentes",
+             '' AS "Eliminar Pedido Si - No - Vacío",
+             '' AS "Vehículo",
+             '' AS "Habilidades"
+from areati.ti_wms_carga_easy easy
+where lower(easy.nombre) not like '%easy%'
+  and (easy.estado=0 or (easy.estado=2 and easy.subestado not in (7,10,12,43,50,51,70,80))) and easy.estado not in (1,3)
+  and to_char(easy.created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
+  group by easy.entrega,2,3,4,5,6,7,8,9,11,12,16,17,18,19,20,21,22,23,24,25,26,27
             
             -------------------------------------------------------------------------------------------------------------------------------------
             -- ELECTROLUX
@@ -309,9 +310,14 @@ class reportesConnection():
                     CAST (eltx.numero_guia AS varchar) AS "Código de Pedido",
                     eltx.fecha_min_entrega AS "Fecha de Pedido",
                     'E' AS "Operación E/R",
-                    CAST (eltx.numero_guia AS varchar) AS "Código de Producto",
-                    '(Electrolux) ' ||eltx.nombre_item AS "Descripción del Producto",
-                    eltx.cantidad AS "Cantidad de Producto",
+                    (select string_agg(CAST(aux.codigo_item AS varchar) , ' @ ') from areati.ti_wms_carga_electrolux aux
+                          where aux.numero_guia = eltx.numero_guia) AS "Código de Producto",
+                    -- CAST (eltx.numero_guia AS varchar) AS "Código de Producto",
+                    --'(Electrolux) ' ||eltx.nombre_item AS "Descripción del Producto",
+                          '(Electrolux) ' || (select string_agg(aux.nombre_item , ' - ') from areati.ti_wms_carga_electrolux aux
+                          where aux.numero_guia = eltx.numero_guia) AS "Descripción del Producto",
+                    --eltx.cantidad AS "Cantidad de Producto",
+                          (select count(*) from areati.ti_wms_carga_electrolux eltx_a where eltx_a.numero_guia = eltx.numero_guia) as "Cantidad de Producto",
                     1 AS "Peso",
                     1 AS "Volumen",
                     1 AS "Dinero",
@@ -319,15 +325,32 @@ class reportesConnection():
                     '09:00 - 21:00' AS "Ventana horaria 1",
                     '' AS "Ventana horaria 2",
                     coalesce((select 'Electrolux - ' || se.name from areati.subestado_entregas se where eltx.subestado=se.code),'Electrolux') AS "Notas",
-                    'RM - ' ||  initcap(eltx.comuna)  AS agrupador,
+                    --'RM - ' ||  initcap(eltx.comuna)  AS agrupador,
+                                 CASE
+                    WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(eltx.comuna)))='Region Metropolitana' THEN 'RM' || ' - ' ||
+                    case
+                           when unaccent(lower(eltx.comuna)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                           (select oc.comuna_name from public.op_comunas oc 
+                           where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+                                                                   where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(eltx.comuna))
+                                                             )
+                           )
+                           else (select initcap(oc2.comuna_name) from public.op_comunas oc2 
+                                     where unaccent(lower(eltx.comuna)) = unaccent(lower(oc2.comuna_name))
+                                    )
+                    end
+                    WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(eltx.comuna)))='Valparaíso' THEN 'V - ' ||  initcap(eltx.comuna)
+                    else 'S/A'
+             END "Agrupador",
                     '' AS "Email de Remitentes",
                     '' AS "Eliminar Pedido Si - No - Vacío",
                     '' AS "Vehículo",
                    '' AS "Habilidades"
             from areati.ti_wms_carga_electrolux eltx
-            where to_char(eltx.created_at,'yyyymmdd')=to_char(current_date -1,'yyyymmdd')
+            where to_char(eltx.created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
                 and (eltx.estado=0 or (eltx.estado=2 and eltx.subestado not in (7,10,12,43,50,51,70,80))) and eltx.estado not in (1,3)
-
+                  group by eltx.numero_guia,2,3,4,5,6,7,8,9,11,12,16,17,18,19,20,21,22,23,24,25,26,27,1
+                  
             -------------------------------------------------------------------------------------------------------------------------------------
             -- SPORTEX
             -------------------------------------------------------------------------------------------------------------------------------------
@@ -340,8 +363,24 @@ class reportesConnection():
                         regexp_replace(regexp_replace(initcap(twcs.direccion), ',.*$', ''), '\s+(\d+\D+\d+).*$', ' \1')
                         else substring(initcap(replace(twcs.direccion,',','')) from '^[^0-9]*[0-9]+')
                     END "Calle y Número",
-                    initcap(COALESCE(tcr.region, 'Region Metropolitana')) AS "Ciudad",
-                    initcap(twcs.comuna)  AS "Provincia/Estado",
+                    --initcap(COALESCE(tcr.region, 'Region Metropolitana')) AS "Ciudad",
+                    --initcap(twcs.comuna)  AS "Provincia/Estado",
+                                 case
+                    when unaccent(lower(twcs.comuna)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                    (select oc.comuna_name from public.op_comunas oc 
+                    where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+                                                             where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(twcs.comuna))
+                                                      )
+                    )
+                    else (select initcap(oc2.comuna_name) from public.op_comunas oc2 
+                              where unaccent(lower(twcs.comuna)) = unaccent(lower(oc2.comuna_name))
+                             )
+                          end as "Ciudad",
+                          CASE
+                    WHEN twcs.comuna='XIII - Metropolitana' THEN 'Region Metropolitana'
+                    WHEN twcs.comuna='V - Valparaíso' THEN 'Valparaíso'
+                    else (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(twcs.comuna)))
+                          END "Provincia/Estado",
                     '' AS "Latitud",
                     '' AS "Longitud",
                     coalesce(twcs.fono,'0') AS "Teléfono con código de país",
@@ -359,10 +398,22 @@ class reportesConnection():
                     '09:00 - 21:00' AS "Ventana horaria 1",
                     '' AS "Ventana horaria 2",
                     coalesce((select 'Sportex - ' || se.name from areati.subestado_entregas se where twcs.subestado=se.code),'Sportex') AS "Notas",
+                    CASE
+                    WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(twcs.comuna)))='Region Metropolitana' THEN 'RM' || ' - ' ||
                     case
-                        when tcr.region = 'Region Metropolitana' then 'RM'
-                        when tcr.region = 'Valparaíso' then 'V - ' ||  initcap(twcs.comuna)
-                    END "Agrupador",
+                           when unaccent(lower(twcs.comuna)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                           (select oc.comuna_name from public.op_comunas oc 
+                           where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+                                                                   where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(twcs.comuna))
+                                                             )
+                           )
+                           else (select initcap(oc2.comuna_name) from public.op_comunas oc2 
+                                     where unaccent(lower(twcs.comuna)) = unaccent(lower(oc2.comuna_name))
+                                    )
+                    end
+                    WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(twcs.comuna)))='Valparaíso' THEN 'V - ' ||  initcap(twcs.comuna)
+                    else 'S/A'
+             END "Agrupador",
                     '' AS "Email de Remitentes",
                     '' AS "Eliminar Pedido Si - No - Vacío",
                     '' AS "Vehículo",
@@ -370,28 +421,49 @@ class reportesConnection():
             from areati.ti_wms_carga_sportex twcs
             left join ti_comuna_region tcr on
                 translate(lower(twcs.comuna),'áéíóúÁÉÍÓÚäëïöüÄËÏÖÜ','aeiouAEIOUaeiouAEIOU') = lower(tcr.comuna)
-            where to_char(twcs.created_at,'yyyymmdd')=to_char(current_date - 1,'yyyymmdd')
+            where to_char(twcs.created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
             and (twcs.estado=0 or (twcs.estado=2 and twcs.subestado not in (7,10,12,43,50,51,70,80))) and twcs.estado not in (1,3)
 
             -------------------------------------------------------------------------------------------------------------------------------------
             -- Easy OPL
             -------------------------------------------------------------------------------------------------------------------------------------
             union all  
-            select      easygo.rut_cliente AS "Código de Cliente",
+            select  easygo.rut_cliente AS "Código de Cliente",
                     initcap(easygo.nombre_cliente) AS "Nombre",
                     initcap(easygo.direc_despacho) AS "Calle y Número",
-                    initcap(COALESCE(tcr.region, 'Region Metropolitana')) AS "Ciudad",
-                    initcap(easygo.comuna_despacho)  AS "Provincia/Estado",
+                    case
+                    when unaccent(lower(easygo.comuna_despacho)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                    (select oc.comuna_name from public.op_comunas oc 
+                    where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+                                                             where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(easygo.comuna_despacho))
+                                                      )
+                    )
+                    else (select initcap(oc2.comuna_name) from public.op_comunas oc2 
+                              where unaccent(lower(easygo.comuna_despacho)) = unaccent(lower(oc2.comuna_name))
+                             )
+                          end as "Ciudad",
+
+                    --initcap(COALESCE(tcr.region, 'Region Metropolitana')) AS "Ciudad",
+                    --initcap(easygo.comuna_despacho)  AS "Provincia/Estado",
+                          CASE
+                          WHEN easygo.comuna_despacho='XIII - Metropolitana' THEN 'Región Metropolitana'
+                          WHEN easygo.comuna_despacho='V - Valparaíso' THEN 'Valparaíso'
+                          else (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(easygo.comuna_despacho)))
+                          END "Provincia/Estado",
                     '' AS "Latitud",
                     '' AS "Longitud",
                     coalesce(easygo.fono_cliente ,'0') AS "Teléfono con código de país",
                     lower(easygo.correo_cliente) AS "Email",
-                    CAST (easygo.id_entrega AS varchar) AS "Código de Pedido",
+                    CAST (easygo.suborden AS varchar) AS "Código de Pedido",
                     easygo.fec_compromiso AS "Fecha de Pedido",
                     'E' AS "Operación E/R",
-                    easygo.id_entrega AS "Código de Producto",
-                    '(Easy OPL) ' || coalesce(easygo.tipo_pedido,'') AS "Descripción del Producto",
-                    easygo.unidades  AS "Cantidad de Producto",
+                    --easygo.id_entrega AS "Código de Producto",
+                    (select string_agg(CAST(aux.codigo_sku AS varchar) , ' @ ') from areati.ti_carga_easy_go_opl aux
+                          where aux.suborden = easygo.suborden) AS "Código de Producto",
+                          
+                    '(Easy OPL) ' || (select string_agg(aux.descripcion , ' - ') from areati.ti_carga_easy_go_opl aux
+                          where aux.suborden = easygo.suborden) AS "Descripción del Producto",
+                          (select count(*) from areati.ti_carga_easy_go_opl easy_a where easy_a.suborden = easygo.suborden) AS "Cantidad de Producto",
                     1 AS "Peso",
                     1 AS "Volumen",
                     1 AS "Dinero",
@@ -399,10 +471,22 @@ class reportesConnection():
                     '09:00 - 21:00' AS "Ventana horaria 1",
                     '' AS "Ventana horaria 2",
                     coalesce((select 'Easy OPL - ' || se.name from areati.subestado_entregas se where easygo.subestado=se.code),'Easy OPL') AS "Notas",
+                    CASE
+                    WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(easygo.comuna_despacho)))='Region Metropolitana' THEN 'RM' || ' - ' ||
                     case
-                        when tcr.region = 'Region Metropolitana' then 'RM'
-                        when tcr.region = 'Valparaíso' then 'V - ' ||  initcap(easygo.comuna_despacho)
-                    END "Agrupador",
+                           when unaccent(lower(easygo.comuna_despacho)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                           (select oc.comuna_name from public.op_comunas oc 
+                           where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+                                                                   where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(easygo.comuna_despacho))
+                                                             )
+                           )
+                           else (select initcap(oc2.comuna_name) from public.op_comunas oc2 
+                                     where unaccent(lower(easygo.comuna_despacho)) = unaccent(lower(oc2.comuna_name))
+                                    )
+                    end
+                    WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(easygo.comuna_despacho)))='Valparaíso' THEN 'V - ' ||  initcap(easygo.comuna_despacho)
+                    else 'S/A'
+             END "Agrupador",
                     '' AS "Email de Remitentes",
                     '' AS "Eliminar Pedido Si - No - Vacío",
                     '' AS "Vehículo",
@@ -410,8 +494,9 @@ class reportesConnection():
             from areati.ti_carga_easy_go_opl easygo
             left join ti_comuna_region tcr on
                 translate(lower(easygo.comuna_despacho),'áéíóúÁÉÍÓÚäëïöüÄËÏÖÜ','aeiouAEIOUaeiouAEIOU') = lower(tcr.comuna)
-            where to_char(easygo.created_at,'yyyymmdd')=to_char(current_date - 1,'yyyymmdd')
+            where to_char(easygo.created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
             and (easygo.estado=0 or (easygo.estado=2 and easygo.subestado not in (7,10,12,43,50,51,70,80))) and easygo.estado not in (1,3)
+            group by easygo.suborden,2,3,4,5,6,7,8,9,11,12,16,17,18,19,20,21,22,23,24,25,26,27,1
 
             """)
             

@@ -3,7 +3,7 @@ def ruta_beetrack_hoy_schema(ruta_beetrack):
         "Numero" : ruta_beetrack[0],
         "Ruta" : ruta_beetrack[1],
         "Patente": ruta_beetrack[2],
-         "Driver" : ruta_beetrack[3],
+        "Driver" : ruta_beetrack[3],
         "Inicio" : ruta_beetrack[4],
         "Region" : ruta_beetrack[5],
         "Total_pedidos" : ruta_beetrack[6],

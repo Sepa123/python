@@ -6,6 +6,5 @@ def pedido_schema(pedido):
         "Pendientes": pedido[3],
     }
 
-
 def pedidos_schema(pedidos):
     return [pedido_schema(pedido) for pedido in pedidos]

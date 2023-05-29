@@ -1,8 +1,8 @@
 from pydantic import BaseModel
 
 class PedidosSinTienda:
-    suborden: int
-    id_entrega: int
-    descripcion: str
-    unidades: int
-    fecha_compromiso: str
+    Suborden: int
+    Id_entrega: int
+    Descripcion: str
+    Unidades: int
+    Fecha_compromiso: str

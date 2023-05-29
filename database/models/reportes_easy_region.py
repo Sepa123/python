@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
 class reportesEasyRegion(BaseModel):
-    origen: str
-    RMetropolitana : int
+    Origen: str
+    R_metropolitana : int
     V_region: int

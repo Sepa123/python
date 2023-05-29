@@ -2,6 +2,6 @@ from pydantic import BaseModel
 
 
 class PedidosPendientes(BaseModel):
-    atrasadas: int
-    en_fecha: int
-    adelantadas: int
+    Atrasadas: int
+    En_fecha: int
+    Adelantadas: int

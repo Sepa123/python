@@ -1,19 +1,20 @@
 from pydantic import BaseModel
+from datetime import time
 
-class ruta_beetrack_hoy (BaseModel):
-    numero: int
-    ruta: str
-    patente: str
-    driver: str
-    inicio: str
-    region: str
-    total_pedidos: int
-    once: str
-    una: str
-    tres: str
-    cinco: str
-    seis: str
-    ocho: str
-    entregados: str
-    no_entregados: str
-    porcentaje: int
+class RutaBeetrackHoy (BaseModel):
+    Numero: int
+    Ruta: str
+    Patente: str
+    Driver: str
+    Inicio: str
+    Region: str
+    Total_pedidos: int
+    Once: str
+    Una: str
+    Tres: str
+    Cinco: str
+    Seis: str
+    Ocho: str
+    Entregados: str
+    No_entregados: str
+    Porcentaje: int
