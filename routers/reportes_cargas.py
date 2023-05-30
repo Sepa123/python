@@ -120,12 +120,13 @@ async def get_quadminds_fecha_compromiso():
 @router.get("/quadminds/fecha_compromiso/json",status_code=status.HTTP_202_ACCEPTED)
 async def get_data_cliente():
     results = conn.read_reporte_quadmind_fecha_compromiso()
+    print(len(productos_picking_schema(results)))
     return productos_picking_schema(results)
 
 @router.get("/clientes/json",status_code=status.HTTP_202_ACCEPTED)
 async def get_data_cliente():
     results = conn.read_clientes()
-
+    print(len(productos_picking_schema(results)))
     return productos_picking_schema(results)
 
 
