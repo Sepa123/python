@@ -1172,17 +1172,18 @@ where lower(easy.nombre) not like '%easy%'
     def read_pedidos_tiendas_easy_opl(self):
         with self.conn.cursor() as cur:
             cur.execute("""
-            ----- Agrupar y contar por Tienda -----------------------------------
+            --------------- Agrupar por O.C. ------------------------------------------------------
             select coalesce (mtet."local",'* Sin Información') as "Tienda",
-            count(*) as "Productos"
+            count(distinct(tcego.id_entrega)) as "Productos"
             from areati.ti_carga_easy_go_opl tcego 
             left join areati.metabase_tienda_easy_temp mtet on mtet.id_entrega = tcego.id_entrega  
             where to_char(tcego.created_at,'yyyymmdd')>=to_char(current_date,'yyyymmdd')
             group by 1
             union all 
             select 'Total' as "Tienda",
-            count(*) from areati.ti_carga_easy_go_opl tcego2 
+            count(distinct(id_entrega)) from areati.ti_carga_easy_go_opl tcego2 
             where to_char(tcego2.created_at,'yyyymmdd')>=to_char(current_date,'yyyymmdd')
+
 
             """)
 
