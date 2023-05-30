@@ -45,6 +45,7 @@ async def get_cuenta():
     data_db = conn.read_cargas_easy()
     if not data_db:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
+    print(" /cargas_easy/")
     return cargaEasy_schema(data_db)
 
 @router.get("/clientes",status_code=status.HTTP_202_ACCEPTED)
@@ -53,7 +54,7 @@ async def get_data_cliente():
     # print(results)
     wb = Workbook()
     ws = wb.active
-
+    print(" /quadminds/")
     results.insert(0, ("","","","",""))
     results.insert(1, ("Codigo de Cliente","Nombre","Calle y Número","Ciudad","Provincia/Estado","Latitud",
                        "Longitud","Teléfono con código de país","Email","Código de Pedido","Fecha de Pedido","Operación E/R",
@@ -88,7 +89,7 @@ async def get_quadminds_fecha_compromiso():
     # print(results)
     wb = Workbook()
     ws = wb.active
-
+    print("Descarga /quadminds/fecha_compromiso")
     results.insert(0, ("","","","",""))
     results.insert(1, ("Codigo de Cliente","Nombre","Calle y Número","Ciudad","Provincia/Estado","Latitud",
                        "Longitud","Teléfono con código de país","Email","Código de Pedido","Fecha de Pedido","Operación E/R",
@@ -136,7 +137,7 @@ async def get_beetrack_mensual():
 
     wb = Workbook()
     ws = wb.active
-
+    print("/NS_beetrack_Mensual")
     results.insert(0, ("",))
     results.insert(1,('FECHA', 'ID. RUTA', 'DRIVER', 'PATENTE', 'REGION', 'Km. Ruta', 'T-PED', 'Easy', 'Electrolux', 'Sportex', 'Imperial', 'PBB', 'Virutex', 'R1', 'R2', 'R3', 'VR', 'C11', '(%) 11', 'C13', '(%) 13', 'C15', '(%)15', 'C17', '(%)17', 'C18', '(%)18', 'C20', '(%)20', 'Final_D', 'OBSERV-RUTA', 'H_INIC', 'H_TERM', 'TT-RUTA', 'Prom. ENT', 'T-ENT', 'N-ENT', 'EE', 'SM', 'CA', 'DA', 'RxD', 'DNE', 'DNCC', 'D.ERR', 'INC.T', 'DFORM', 'PINCOM', 'SPELI', 'PNCORR', 'PFALT', 'PPARC', 'P.DUPL', 'R', 'Pedidos'))
 
@@ -164,11 +165,13 @@ async def get_beetrack_mensual():
 @router.get("/historico/mensual",status_code=status.HTTP_202_ACCEPTED)
 async def get_historico_mensual():
     results = conn.read_reporte_historico_mensual()
+    print("/historico/mensual")
     return reportes_historico_schema(results)
 
 @router.get("/historico/hoy",status_code=status.HTTP_202_ACCEPTED)
 async def get_historico_hoy():
     results = conn.read_reporte_historico_hoy()
+    print("/historico/hoy")
     return reportes_historico_schema(results)
 
 @router.get("/historico/anual",status_code=status.HTTP_202_ACCEPTED)
@@ -205,11 +208,13 @@ async def get_historico_mensual():
 @router.get("/productos/mensual",status_code=status.HTTP_202_ACCEPTED)
 async def get_productos_mensual():
     results = conn.read_reporte_producto_entregado_mensual()
+    print("/producto/mensual")
     return reportes_producto_schema(results)
 
 @router.get("/productos/hoy",status_code=status.HTTP_202_ACCEPTED)
 async def get_productos_hoy():
     results = conn.read_reporte_producto_entregado_hoy()
+    print("/productos/hoy")
     return reportes_producto_schema(results)
 
 
@@ -247,6 +252,7 @@ async def get_productos_anual():
 @router.get("/hora",status_code=status.HTTP_202_ACCEPTED)
 async def get_reportes_hora():
     results = conn.read_reportes_hora()
+    print("reporte/hora")
     return reportes_hora_schema(results)
 
 @router.get("/ultima_hora",status_code=status.HTTP_202_ACCEPTED)
@@ -258,13 +264,13 @@ async def get_reportes_ultima_hora():
 @router.get("/productos/easy_region",status_code=status.HTTP_202_ACCEPTED)
 async def get_productos_easy_region():
     results = conn.read_productos_easy_region()
-    # print(results)
+    print("/productos/easy_region")
     return reportes_easy_region_schema(results)
 
 @router.get("/pedidos/sin_despacho",status_code=status.HTTP_202_ACCEPTED)
 async def get_pedidos_sin_despacho():
     results = conn.read_pedido_compromiso_sin_despacho()
-
+    print("/pedidos/sin_despacho") 
     return pedidos_compromiso_sin_despacho_schema(results)
 
 @router.get("/pedidos/sin_despacho/descargar",status_code=status.HTTP_202_ACCEPTED)
@@ -274,7 +280,7 @@ async def get_pedidos_sin_despacho_descarga():
 
     wb = Workbook()
     ws = wb.active
-    
+    print("/pedidos/sin_despacho/descargar")
     results.insert(0, ("",))
     results.insert(1,('Origen', 'Cod. Entrega', "Fecha Ingreso", "Fecha Compromiso", 
                       "Region", "Comuna","Descripcion","Bultos"))
@@ -302,23 +308,25 @@ async def get_pedidos_sin_despacho_descarga():
 @router.get("/pedidos",status_code=status.HTTP_202_ACCEPTED)
 async def get_pedidos():
     results = conn.read_pedidos()
-
+    print("/pedidos")
     return pedidos_schema(results)
 
 @router.get("/ruta/beetrack/hoy",status_code=status.HTTP_202_ACCEPTED)
 async def get_ruta_beetrack_hoy():
     results = conn.read_ruta_beetrack_hoy()
-
+    print("/ruta/beetrack/hoy")
     return rutas_beetrack_hoy_schema(results)
 
 @router.get("/pedidos/sin_tiendas",status_code=status.HTTP_202_ACCEPTED)
 async def get_pedidos_sin_tienda():
     results = conn.read_pedidos_sin_tienda()
+    print("/pedidos/sin_tiendas")
     return pedidos_sin_tienda_schema(results)
 
 @router.get("/pedidos/easy_opl",status_code=status.HTTP_202_ACCEPTED)
 async def get_pedidos_tiendas_easy_opl():
     results = conn.read_pedidos_tiendas_easy_opl()
+    print("/pedidos/easy_opl")
     return pedidos_tiendas_easy_opl_schema(results)
 
 @router.get("/timezone",status_code=status.HTTP_202_ACCEPTED)
@@ -357,7 +365,7 @@ async def pedidos_pendientes_total():
 @router.get("/buscar/producto/{producto_id}",status_code=status.HTTP_202_ACCEPTED)
 async def producto_picking_id(producto_id : str):
     results = conn.get_producto_picking_id(producto_id)
-    
+    print("/buscar/producto/")
     if results is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El codigo del producto no existe")
     return producto_picking_schema(results)
