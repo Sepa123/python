@@ -21,7 +21,7 @@ from database.schema.pedidos_pendientes import pedidos_pendientes_schema
 from database.client import reportesConnection
 from fastapi.responses import FileResponse
 
-router = APIRouter(prefix="/api/pedidos")
+router = APIRouter(tags=["pedidos"], prefix="/api/pedidos")
 
 conn = reportesConnection()
 

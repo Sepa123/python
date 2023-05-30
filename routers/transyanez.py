@@ -5,7 +5,7 @@ from openpyxl import Workbook
 from datetime import datetime
 from os import remove
 
-router = APIRouter(prefix="/api/transyanez")
+router = APIRouter(tags=["transyanez"],prefix="/api/transyanez")
 
 conn = transyanezConnection()
 

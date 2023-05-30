@@ -5,7 +5,7 @@ from openpyxl import Workbook
 import re
 # from os import remove
 from database.models.producto_picking import producto_picking
-from database.schema.producto_picking import producto_picking_schema
+from database.schema.producto_picking import producto_picking_schema, productos_picking_schema
 
 from database.models.reporte_historico import ReporteHistorico
 from database.schema.reporte_historico import reportes_historico_schema
@@ -36,7 +36,7 @@ from database.schema.pedidos_tiendas_easy_opl import pedidos_tiendas_easy_opl_sc
 from database.models.pedidos_pendientes import PedidosPendientes
 from database.schema.pedidos_pendientes import pedidos_pendientes_schema
 
-router = APIRouter(prefix="/api/reportes")
+router = APIRouter(tags=["reportes"],prefix="/api/reportes")
 
 conn = reportesConnection()
 
@@ -50,7 +50,7 @@ async def get_cuenta():
 @router.get("/clientes",status_code=status.HTTP_202_ACCEPTED)
 async def get_data_cliente():
     results = conn.read_clientes()
-    # print(results)
+    print(results)
     wb = Workbook()
     ws = wb.active
 
@@ -81,6 +81,14 @@ async def get_data_cliente():
     wb.save("Carga_Quadminds_yyyymmdd-hh24miss.xlsx")
 
     return FileResponse("Carga_Quadminds_yyyymmdd-hh24miss.xlsx")
+
+
+@router.get("/clientes/json",status_code=status.HTTP_202_ACCEPTED)
+async def get_data_cliente():
+    results = conn.read_clientes()
+
+    return productos_picking_schema(results)
+
 
 @router.get("/NS_beetrack_Mensual",status_code=status.HTTP_202_ACCEPTED)
 async def get_beetrack_mensual():

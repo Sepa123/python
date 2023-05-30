@@ -28,3 +28,6 @@ def producto_picking_schema(producto):
         "Vehiculo" : producto[25],
         "Habilidades" : producto[26]
     }
+
+def productos_picking_schema(productos):
+    return [producto_picking_schema(producto) for producto in productos]
