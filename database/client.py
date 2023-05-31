@@ -1043,10 +1043,10 @@ where lower(easy.nombre) not like '%easy%'
             cur.execute("""
             select
             'Easy CD' as "Origen",
-            COUNT(CASE WHEN datosBase.region = 'RM' THEN 1 END) AS "R. Metropolitana",
-            COUNT(CASE WHEN datosBase.region = 'V' THEN 1 END) AS "V Región"
-            FROM(
-            select
+            COUNT(CASE WHEN subquery.region = 'RM' THEN 1 END) AS "R. Metropolitana",
+            COUNT(CASE WHEN subquery.region = 'V' THEN 1 END) AS "V Región"
+            from (
+            select distinct(easy.entrega) as entrega, easy.comuna as comuna,
             CASE
                 WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(easy.comuna))) = 'Region Metropolitana' THEN 'RM'
                 WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(easy.comuna))) = 'Valparaíso' THEN 'V'
@@ -1054,22 +1054,23 @@ where lower(easy.nombre) not like '%easy%'
             END region
             from areati.ti_wms_carga_easy easy 
             where to_char(created_at,'yyyy-mm-dd')=to_char(current_date,'yyyy-mm-dd')
-            ) as datosBase
-            union all
+            ) as subquery
+            union all 
             select
             'Easy Tienda' as "Origen",
-            COUNT(CASE WHEN datosBase.region = 'RM' THEN 1 END) AS "R. Metropolitana",
-            COUNT(CASE WHEN datosBase.region = 'V' THEN 1 END) AS "V Región"
-            FROM(
-            select
+            COUNT(CASE WHEN subquery.region = 'RM' THEN 1 END) AS "R. Metropolitana",
+            COUNT(CASE WHEN subquery.region = 'V' THEN 1 END) AS "V Región"
+            from (
+            select distinct(easy.suborden) as entrega, easy.comuna_despacho as comuna,
             CASE
                 WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(easy.comuna_despacho))) = 'Region Metropolitana' THEN 'RM'
                 WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(easy.comuna_despacho))) = 'Valparaíso' THEN 'V'
                 else 'N/A'
             END region
+            --select * 
             from areati.ti_carga_easy_go_opl easy 
             where to_char(created_at,'yyyy-mm-dd')=to_char(current_date,'yyyy-mm-dd')
-            ) as datosBase
+            ) as subquery
 
             """)
 
