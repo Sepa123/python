@@ -186,11 +186,16 @@ class reportesConnection():
         with self.conn.cursor() as cur:
 
             cur.execute("""
-            Select 'Verificados: '||  count(*) as Cuenta from areati.ti_wms_carga_easy twce
-            Where to_char(created_at,'yyyy-mm-dd')=to_char(current_date,'yyyy-mm-dd') and verified= true
-            union
-            Select 'Total: '|| count(*) as Cuenta from areati.ti_wms_carga_easy twce
-            Where to_char(created_at,'yyyy-mm-dd')=to_char(current_date,'yyyy-mm-dd')
+            ---------------- Presentacion por Pantalla ---------------------------------------
+            select 'Total' as Indice, count(*) as cantidad from areati.ti_wms_carga_easy twce 
+            where carton not like '%-%'
+            and to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
+            union all
+            select 'Pistoleados' as Indice, count(*) as cantidad from areati.ti_wms_carga_easy twce 
+            where carton not like '%-%'
+            and to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
+            and verified = true
+
             """)
             return cur.fetchall()
     # Quadminds

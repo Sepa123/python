@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 import re
 
 def quitar_caracteres(texto : str):

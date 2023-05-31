@@ -11,7 +11,7 @@ from database.models.reporte_historico import ReporteHistorico
 from database.schema.reporte_historico import reportes_historico_schema
 
 from database.models.carga_easy import CargaEasy
-from database.schema.cargas_easy import cargaEasy_schema
+from database.schema.cargas_easy import cargas_easy_schema
 
 from database.schema.reporte_hora import reportes_hora_schema, reportes_ultima_hora_schema
 from database.schema.reportes_easy_region import reportes_easy_region_schema
@@ -43,10 +43,12 @@ conn = reportesConnection()
 @router.get("/cargas_easy",status_code=status.HTTP_202_ACCEPTED)
 async def get_cuenta():
     data_db = conn.read_cargas_easy()
+
     if not data_db:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
+    
     print(" /cargas_easy/")
-    return cargaEasy_schema(data_db)
+    return cargas_easy_schema(data_db)
 
 @router.get("/clientes",status_code=status.HTTP_202_ACCEPTED)
 async def get_data_cliente():

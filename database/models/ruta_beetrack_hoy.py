@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from datetime import time
+from typing import Optional
 
 class RutaBeetrackHoy (BaseModel):
     Numero: int

@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 
 class Pedidos(BaseModel):
     Total_pedidos: int
