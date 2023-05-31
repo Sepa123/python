@@ -1393,6 +1393,32 @@ where lower(easy.nombre) not like '%easy%'
             return cur.fetchone()
         
 
+    ## Comparacion API VS WMS
+
+    def read_carga_easy_api(self):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            -- API
+            select nro_carga,count(distinct(entrega)) from areati.ti_wms_carga_easy
+            where to_char(created_at,'yyyymmdd')>=to_char(current_date,'yyyymmdd')
+            group by 1
+            order by 1 asc
+            """)
+
+            return cur.fetchall()
+        
+    def read_carga_easy_wms(self):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            -- WMS
+            select nro_carga,count(distinct(entrega)) from public.ti_wms_carga_easy_paso
+            where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
+            group by 1
+            order by 1 asc
+            """)
+
+            return cur.fetchall()
+
 class transyanezConnection():
     conn = None
     def __init__(self) -> None:

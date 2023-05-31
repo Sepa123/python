@@ -36,6 +36,9 @@ from database.schema.pedidos_tiendas_easy_opl import pedidos_tiendas_easy_opl_sc
 from database.models.pedidos_pendientes import PedidosPendientes
 from database.schema.pedidos_pendientes import pedidos_pendientes_schema
 
+from database.models.carga_easy_comparacion import CargaEasyComparacion
+from database.schema.carga_easy_comparacion import cargas_easy_comparacion_schema
+
 router = APIRouter(tags=["reportes"],prefix="/api/reportes")
 
 conn = reportesConnection()
@@ -356,6 +359,17 @@ async def pedidos_pendientes_total():
     results = conn.read_pedidos_pendientes_en_ruta()
     return pedidos_pendientes_schema(results)
 
+## Comparacion cargas easy API VS WMS
+
+@router.get("/cargas_easy/api",status_code=status.HTTP_202_ACCEPTED)
+async def cargas_easy_api():
+    results = conn.read_carga_easy_api()
+    return cargas_easy_comparacion_schema(results)
+
+@router.get("/cargas_easy/wms",status_code=status.HTTP_202_ACCEPTED)
+async def cargas_easy_api():
+    results = conn.read_carga_easy_wms()
+    return cargas_easy_comparacion_schema(results)
 
 #producto picking
 
