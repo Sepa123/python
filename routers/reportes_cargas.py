@@ -3,6 +3,7 @@ from database.client import reportesConnection
 from fastapi.responses import FileResponse
 from openpyxl import Workbook
 import re
+from urllib.parse import unquote
 # from os import remove
 from database.models.producto_picking import producto_picking
 from database.schema.producto_picking import producto_picking_schema, productos_picking_schema
@@ -39,9 +40,20 @@ from database.schema.pedidos_pendientes import pedidos_pendientes_schema
 from database.models.carga_easy_comparacion import CargaEasyComparacion
 from database.schema.carga_easy_comparacion import cargas_easy_comparacion_schema
 
+from typing import List
+from fastapi.params import Query
+
 router = APIRouter(tags=["reportes"],prefix="/api/reportes")
 
 conn = reportesConnection()
+
+# @router.get("/clientes/json/filter",status_code=status.HTTP_202_ACCEPTED)
+# async def get_data_cliente(Ciudad: List[str] = Query(...)):
+#     results = conn.read_clientes()
+#     # print(len(productos_picking_schema(results)))
+#     # usuarios_filtrados = [producto_picking_schema(producto) for producto in productos]
+#     usuarios_filtrados = [producto for producto in results if producto.Ciudad in Ciudad]
+#     return usuarios_filtrados
 
 @router.get("/cargas_easy",status_code=status.HTTP_202_ACCEPTED)
 async def get_cuenta():
@@ -87,6 +99,12 @@ async def get_data_cliente():
     wb.save("Carga_Quadminds_yyyymmdd-hh24miss.xlsx")
 
     return FileResponse("Carga_Quadminds_yyyymmdd-hh24miss.xlsx")
+
+@router.get("/clientes/json",status_code=status.HTTP_202_ACCEPTED)
+async def get_data_cliente():
+    results = conn.read_clientes()
+    print(len(productos_picking_schema(results)))
+    return productos_picking_schema(results)
 
 @router.get("/quadminds/fecha_compromiso",status_code=status.HTTP_202_ACCEPTED )
 async def get_quadminds_fecha_compromiso():

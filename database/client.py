@@ -272,7 +272,7 @@ select       CAST(easy.entrega AS varchar) AS "Código de Cliente",
              '' AS "Habilidades"
 from areati.ti_wms_carga_easy easy
 where lower(easy.nombre) not like '%easy%'
-  and (easy.estado=0 or (easy.estado=2 and easy.subestado not in (7,10,12,43,50,51,70,80))) and easy.estado not in (1,3)
+  and (easy.estado=0 or (easy.estado=2 and easy.subestado not in (7,10,12,19,43,50,51,70,80))) and easy.estado not in (1,3)
   and to_char(easy.created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
   group by easy.entrega,2,3,4,5,6,7,8,9,11,12,16,17,18,19,20,21,22,23,24,25,26,27
             
@@ -353,7 +353,7 @@ where lower(easy.nombre) not like '%easy%'
                    '' AS "Habilidades"
             from areati.ti_wms_carga_electrolux eltx
             where to_char(eltx.created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
-                and (eltx.estado=0 or (eltx.estado=2 and eltx.subestado not in (7,10,12,43,50,51,70,80))) and eltx.estado not in (1,3)
+                and (eltx.estado=0 or (eltx.estado=2 and eltx.subestado not in (7,10,12,19,43,50,51,70,80))) and eltx.estado not in (1,3)
                   group by eltx.numero_guia,2,3,4,5,6,7,8,9,11,12,16,17,18,19,20,21,22,23,24,25,26,27,1
                   
             -------------------------------------------------------------------------------------------------------------------------------------
@@ -427,7 +427,7 @@ where lower(easy.nombre) not like '%easy%'
             left join ti_comuna_region tcr on
                 translate(lower(twcs.comuna),'áéíóúÁÉÍÓÚäëïöüÄËÏÖÜ','aeiouAEIOUaeiouAEIOU') = lower(tcr.comuna)
             where to_char(twcs.created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
-            and (twcs.estado=0 or (twcs.estado=2 and twcs.subestado not in (7,10,12,43,50,51,70,80))) and twcs.estado not in (1,3)
+            and (twcs.estado=0 or (twcs.estado=2 and twcs.subestado not in (7,10,12,19,43,50,51,70,80))) and twcs.estado not in (1,3)
 
             -------------------------------------------------------------------------------------------------------------------------------------
             -- Easy OPL
@@ -500,12 +500,12 @@ where lower(easy.nombre) not like '%easy%'
             left join ti_comuna_region tcr on
                 translate(lower(easygo.comuna_despacho),'áéíóúÁÉÍÓÚäëïöüÄËÏÖÜ','aeiouAEIOUaeiouAEIOU') = lower(tcr.comuna)
             where to_char(easygo.created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
-            and (easygo.estado=0 or (easygo.estado=2 and easygo.subestado not in (7,10,12,43,50,51,70,80))) and easygo.estado not in (1,3)
+            and (easygo.estado=0 or (easygo.estado=2 and easygo.subestado not in (7,10,12,19,43,50,51,70,80))) and easygo.estado not in (1,3)
             group by easygo.suborden,2,3,4,5,6,7,8,9,11,12,16,17,18,19,20,21,22,23,24,25,26,27,1
 
             """)
             return cur.fetchall()
-        
+    
     def read_reporte_quadmind_fecha_compromiso(self):
         with self.conn.cursor() as cur:
 
@@ -578,7 +578,7 @@ where lower(easy.nombre) not like '%easy%'
                 '' AS "Habilidades"
     from areati.ti_wms_carga_easy easy
     where lower(easy.nombre) not like '%easy%'
-    and (easy.estado=0 or (easy.estado=2 and easy.subestado not in (7,10,12,43,50,51,70,80))) and easy.estado not in (1,3)
+    and (easy.estado=0 or (easy.estado=2 and easy.subestado not in (7,10,12,19,43,50,51,70,80))) and easy.estado not in (1,3)
     and to_char(easy.fecha_entrega,'yyyymmdd')<=to_char(current_date,'yyyymmdd')
     group by easy.entrega,2,3,4,5,6,7,8,9,11,12,16,17,18,19,20,21,22,23,24,25,26,27
                 
@@ -659,7 +659,7 @@ where lower(easy.nombre) not like '%easy%'
                     '' AS "Habilidades"
                 from areati.ti_wms_carga_electrolux eltx
                 where to_char(eltx.fecha_min_entrega,'yyyymmdd')<=to_char(current_date,'yyyymmdd')
-                    and (eltx.estado=0 or (eltx.estado=2 and eltx.subestado not in (7,10,12,43,50,51,70,80))) and eltx.estado not in (1,3)
+                    and (eltx.estado=0 or (eltx.estado=2 and eltx.subestado not in (7,10,12,19,43,50,51,70,80))) and eltx.estado not in (1,3)
                     group by eltx.numero_guia,2,3,4,5,6,7,8,9,11,12,16,17,18,19,20,21,22,23,24,25,26,27,1
                     
                 -------------------------------------------------------------------------------------------------------------------------------------
@@ -733,7 +733,7 @@ where lower(easy.nombre) not like '%easy%'
                 left join ti_comuna_region tcr on
                     translate(lower(twcs.comuna),'áéíóúÁÉÍÓÚäëïöüÄËÏÖÜ','aeiouAEIOUaeiouAEIOU') = lower(tcr.comuna)
                 where to_char(twcs.fecha_entrega,'yyyymmdd')<=to_char(current_date,'yyyymmdd')
-                and (twcs.estado=0 or (twcs.estado=2 and twcs.subestado not in (7,10,12,43,50,51,70,80))) and twcs.estado not in (1,3)
+                and (twcs.estado=0 or (twcs.estado=2 and twcs.subestado not in (7,10,12,19,43,50,51,70,80))) and twcs.estado not in (1,3)
 
                 -------------------------------------------------------------------------------------------------------------------------------------
                 -- Easy OPL
@@ -806,7 +806,7 @@ where lower(easy.nombre) not like '%easy%'
                 left join ti_comuna_region tcr on
                     translate(lower(easygo.comuna_despacho),'áéíóúÁÉÍÓÚäëïöüÄËÏÖÜ','aeiouAEIOUaeiouAEIOU') = lower(tcr.comuna)
                 where to_char(easygo.fec_compromiso,'yyyymmdd')<=to_char(current_date,'yyyymmdd')
-                and (easygo.estado=0 or (easygo.estado=2 and easygo.subestado not in (7,10,12,43,50,51,70,80))) and easygo.estado not in (1,3)
+                and (easygo.estado=0 or (easygo.estado=2 and easygo.subestado not in (7,10,12,19,43,50,51,70,80))) and easygo.estado not in (1,3)
                 group by easygo.suborden,2,3,4,5,6,7,8,9,11,12,16,17,18,19,20,21,22,23,24,25,26,27,1
                     
 
@@ -1096,7 +1096,7 @@ where lower(easy.nombre) not like '%easy%'
             --,easy.estado,(select se."name"  from areati.subestado_entregas se where se.code = easy.subestado)
             from areati.ti_wms_carga_easy easy 
             where to_char(easy.fecha_entrega,'yyyymmdd') <= to_char(current_date,'yyyymmdd')
-            and (easy.estado=0 or (easy.estado=2 and easy.subestado not in (7,10,12,43,50,51,70,80)))
+            and (easy.estado=0 or (easy.estado=2 and easy.subestado not in (7,10,12,19,43,50,51,70,80)))
             and easy.entrega not in (select guia from quadminds.ti_respuesta_beetrack)
             group by 1,2,3,4,5,6,7,8
             union all
@@ -1111,7 +1111,7 @@ where lower(easy.nombre) not like '%easy%'
             cantidad as "Bultos"
             from areati.ti_wms_carga_electrolux twce 
             where to_char(twce.fecha_min_entrega,'yyyymmdd') <= to_char(current_date,'yyyymmdd')
-            and (twce.estado=0 or (twce.estado=2 and twce.subestado not in (7,10,12,43,50,51,70,80)))
+            and (twce.estado=0 or (twce.estado=2 and twce.subestado not in (7,10,12,19,43,50,51,70,80)))
             and twce.numero_guia not in (select guia from quadminds.ti_respuesta_beetrack)
             union all
             ------------------------------------------------------------------------------------------------------------------------------
@@ -1129,7 +1129,7 @@ where lower(easy.nombre) not like '%easy%'
             1 as "Bultos"
             from areati.ti_wms_carga_sportex twcs  
             where to_char(twcs.fecha_entrega ,'yyyymmdd') <= to_char(current_date,'yyyymmdd')
-            and (twcs.estado=0 or (twcs.estado=2 and twcs.subestado not in (7,10,12,43,50,51,70,80)))
+            and (twcs.estado=0 or (twcs.estado=2 and twcs.subestado not in (7,10,12,19,43,50,51,70,80)))
             and twcs.id_sportex not in (select guia from quadminds.ti_respuesta_beetrack)
    
 
