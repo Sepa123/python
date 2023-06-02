@@ -2,6 +2,7 @@ import psycopg2
 import codecs
 from decouple import config
 import os, sys, codecs
+
 # import datetime
 # import pytz
 
@@ -1419,6 +1420,71 @@ class reportesConnection():
             """)
 
             return cur.fetchall()
+
+
+    ## productos sin clasificar
+
+    def read_productos_sin_clasificar(self):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            ----- EASY CD (HOY)
+            select DISTINCT ON (sku) sku,
+            descripcion,
+            talla
+            from (
+            select cast(easy.producto as text) as sku, 
+            easy.descripcion as descripcion,
+            coalesce (tts.tamano,'?') as talla
+            from areati.ti_wms_carga_easy easy 
+            left join public.ti_tamano_sku tts on tts.sku = cast(easy.producto as text)
+            where to_char(easy.created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
+            ) as datosbase
+            where datosbase.talla ='?'
+            -------------------
+            union all
+            ----- EASY OPL (HOY)
+            select DISTINCT ON (sku) sku,
+            descripcion,
+            talla
+            from (
+            select cast(easy.codigo_sku as text) as sku, 
+            easy.descripcion as descripcion,
+            coalesce (tts.tamano,'?') as talla
+            from areati.ti_carga_easy_go_opl easy 
+            left join public.ti_tamano_sku tts on tts.sku = cast(easy.codigo_sku as text)
+            where to_char(easy.created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
+            ) as datosbase
+            where datosbase.talla ='?'
+            -------------------
+            union all
+            ----- Electrolux (HOY)
+            select DISTINCT ON (sku) sku,
+            descripcion,
+            talla
+            from (
+            select cast(eltx.codigo_item as text) as sku, 
+            eltx.nombre_item as descripcion,
+            coalesce (tts.tamano,'?') as talla
+            from areati.ti_wms_carga_electrolux eltx 
+            left join public.ti_tamano_sku tts on tts.sku = cast(eltx.codigo_item as text)
+            where to_char(eltx.created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
+            ) as datosbase
+            where datosbase.talla ='?'
+
+            """)
+
+            return cur.fetchall()
+        
+
+    def write_producto_sin_clasificar(self, data):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            INSERT INTO public.ti_tamano_sku (sku, descripcion, tamano, origen)
+            VALUES(%(SKU)s, %(Descripcion)s, %(Talla)s, %(Origen)s);
+            """,data)
+        self.conn.commit()
+        
+    
 
 class transyanezConnection():
     conn = None

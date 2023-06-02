@@ -10,7 +10,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 from datetime import datetime, timedelta
 from lib.password import verify_password, hash_password
 from database.models.token import TokenPayload
-from routers import transyanez, reportes_cargas, pedidos
+from routers import transyanez, reportes_cargas, pedidos, productos
 
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 ALGORITHM = "HS256"
@@ -28,6 +28,7 @@ app = FastAPI()
 app.include_router(transyanez.router)
 app.include_router(reportes_cargas.router)
 app.include_router(pedidos.router)
+app.include_router(productos.router)
 
 conn = UserConnection()
 
@@ -94,6 +95,7 @@ async def login_user(user_data:loginSchema):
 
     access_token = {"sub": user_db[1],
                     "exp": expire,
+                    "uid": user_db[0],
                     "email": user_db[2],
                     "active": user_db[4],
                     "rol_id":user_db[5]}
@@ -109,7 +111,6 @@ async def auth_user(token:str = Depends(oauth2)):
                             headers={"WWW-Authenticate": "Bearer"})
     try:
         username = jwt.decode(token, key=SECRET_KEY, algorithms=[ALGORITHM])
-        print(username)
         if username is None:
             raise exception  
     except JWTError:
@@ -128,5 +129,5 @@ async def current_user(user = Depends(auth_user)):
     
 @app.get("/user")
 async def me (user:TokenPayload = Depends(current_user)):
-    print("Hoala")
+    print("Hola" )
     return user
