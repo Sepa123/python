@@ -1133,6 +1133,25 @@ class reportesConnection():
             and (twcs.estado=0 or (twcs.estado=2 and twcs.subestado not in (7,10,12,19,43,50,51,70,80)))
             and twcs.id_sportex not in (select guia from quadminds.ti_respuesta_beetrack)
    
+            union all
+            ------------------------------------------------------------------------------------------------------------------------------
+            select 'Easy Tienda' as "Origen",
+            suborden as "Cod. Entrega",
+            to_char(created_at,'yyyy-mm-dd') as "Fecha Ingreso",
+            to_char(fec_compromiso,'yyyy-mm-dd') as "Fecha Compromiso",
+            CASE
+                WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(easy.comuna_despacho))) = 'Region Metropolitana' THEN 'Region Metropolitana'
+                WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(easy.comuna_despacho))) = 'Valparaíso' THEN 'Valparaíso'
+                else 'N/A'
+            END "Region",
+            initcap(easy.comuna_despacho) as "Comuna",
+            easy.descripcion as "Descripcion",
+            easy.unidades as "Bultos"
+            --select *
+            from areati.ti_carga_easy_go_opl easy 
+            where to_char(easy.fec_compromiso,'yyyymmdd') <= to_char(current_date,'yyyymmdd')
+            and (easy.estado=0 or (easy.estado=2 and easy.subestado not in (7,10,12,19,43,50,51,70,80)))
+            and easy.suborden not in (select guia from quadminds.ti_respuesta_beetrack)
 
             """)
 
