@@ -1829,7 +1829,7 @@ class reportesConnection():
               %(Operacion)s, %(Codigo_producto)s, %(Descripcion_producto)s, %(Cantidad_producto)s, %(Peso)s, 
               %(Volumen)s, %(Dinero)s, %(Duracion_min)s, %(Ventana_horaria_1)s, %(Ventana_horaria_2)s, %(Notas)s, 
               %(Nombre_ruta)s, %(Email_remitentes)s, %(Eliminar_pedido)s, %(Vehiculo)s, %(Habilidades)s, %(SKU)s,
-              %(Tamaño)s, %(Estado)s, %(Created_by)s);
+              %(Tamaño)s, true , %(Created_by)s);
             """,data)
         self.conn.commit()
 
