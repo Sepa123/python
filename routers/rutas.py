@@ -34,23 +34,21 @@ async def get_ruta_manual(pedido_id : str):
 
 @router.post("/agregar",status_code=status.HTTP_201_CREATED)
 async def insert_ruta_manual(rutas : List[List[RutaManual]]):
-    # try:
+    try:
         print(len(rutas))
-
-        
+        data["Id_ruta"] = conn.read_id_ruta()[0]
+        data["Agrupador"] = conn.get_nombre_ruta_manual(rutas[0][0].Created_by)[0][0]
+        data["Nombre_ruta"] = conn.get_nombre_ruta_manual(rutas[0][0].Created_by)[0][0]
         for ruta in rutas:
             for producto in ruta:
                 data = producto.dict()
-                data["Id_ruta"] = conn.read_id_ruta()[0]
-                data["Agrupador"] = conn.get_nombre_ruta_manual(data["Created_by"])[0][0]
-                data["Nombre_ruta"] = conn.get_nombre_ruta_manual(data["Created_by"])[0][0]
                 # data["Pistoleado"] = True 
                 # conn.update_verified(data["Codigo_producto"])
                 conn.write_rutas_manual(data)
         return { "message":"Ruta Manual agregado correctamente" }
-    # except:
-    #     print("error")
-    #     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
+    except:
+        print("error")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
 
 # @router.put("/agregar",status_code=status.HTTP_201_CREATED)
 # async def insert_ruta_manual(rutas : List[List[RutaManual]]):
