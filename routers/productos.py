@@ -8,6 +8,9 @@ import re
 from database.models.producto_sin_clasificacion import ProductoSinClasificacion
 from database.schema.productos_sin_clasificacion import productos_sin_clasificacion_schema
 
+from database.models.producto_picking import producto_picking
+from database.schema.producto_picking import productos_picking_schema ,producto_picking_schema
+
 from database.client import reportesConnection
 from fastapi.responses import FileResponse
 
@@ -36,4 +39,20 @@ async def insert_producto_sin_clasificar(producto : ProductoSinClasificacion):
         # except:
         #     print("error")
         #     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
+
+#producto picking
+
+@router.get("/buscar/producto")
+async def productos_picking():
+    results = conn.get_producto_picking()
+    return producto_picking_schema(results)
+
+@router.get("/buscar/producto/{producto_id}",status_code=status.HTTP_202_ACCEPTED)
+async def producto_picking_id(producto_id : str):
+    results = conn.get_producto_picking_id(producto_id)
+    # print(results[""])
+    print("/buscar/producto/")
+    if results is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El codigo del producto no existe")
+    return producto_picking_schema(results)
 

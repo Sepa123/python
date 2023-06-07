@@ -2,7 +2,7 @@ from fastapi import APIRouter,status,HTTPException
 from database.client import reportesConnection
 from fastapi.responses import FileResponse
 from openpyxl import Workbook
-import re
+import re ,json
 from urllib.parse import unquote
 # from os import remove
 from database.models.producto_picking import producto_picking
@@ -427,16 +427,16 @@ async def cargas_easy_api():
 
 #producto picking
 
-# @router.get("/buscar/producto")
-# async def productos_picking():
-#     results = conn.get_producto_picking()
-#     return producto_picking_schema(results)
+@router.get("/buscar/producto")
+async def productos_picking():
+    results = conn.get_producto_picking()
+    return producto_picking_schema(results)
 
 @router.get("/buscar/producto/{producto_id}",status_code=status.HTTP_202_ACCEPTED)
 async def producto_picking_id(producto_id : str):
     results = conn.get_producto_picking_id(producto_id)
+    # print(results[""])
     print("/buscar/producto/")
     if results is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El codigo del producto no existe")
     return producto_picking_schema(results)
-   

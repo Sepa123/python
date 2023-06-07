@@ -1693,6 +1693,14 @@ class reportesConnection():
             return cur.fetchone()
         
 
+    def get_ruta_manual(self,pedido_id):
+
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select areati.busca_ruta_manual('{pedido_id}')
+            """)
+            return cur.fetchall()
+
     ## Comparacion API VS WMS
 
     def read_carga_easy_api(self):
@@ -1781,6 +1789,68 @@ class reportesConnection():
             VALUES(%(SKU)s, %(Descripcion)s, %(Talla)s, %(Origen)s);
             """,data)
         self.conn.commit()
+
+    
+    ### Insertar datos en tabla quadmind.ruta_manual
+
+    def get_nombre_ruta_manual(self,created_by):
+
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            SELECT
+            TO_CHAR(count(distinct(id_ruta))+1::integer, 'FM000')
+            || '-' ||
+            to_char({created_by}::integer, 'FM0000') || '-' ||
+            TO_CHAR(current_date, 'YYYYMMDD') AS numero_unico
+            FROM
+            quadminds.datos_ruta_manual drm
+            where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
+
+            """)
+            return cur.fetchall()
+        
+
+    def read_id_ruta(self):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+             select coalesce (max(id_ruta)+1,1) from quadminds.datos_ruta_manual drm
+            """)
+
+            return cur.fetchone()
+        
+    def write_rutas_manual(self, data):
+
+        print(data)
+        with self.conn.cursor() as cur: 
+            cur.execute("""
+            INSERT INTO quadminds.datos_ruta_manual (id_ruta, nombre_ruta, cod_cliente, nombre, calle_numero, ciudad, provincia_estado, latitud, longitud, telefono, email, cod_pedido, fecha_pedido, operacion, cod_producto, desc_producto, cant_producto, peso, volumen, dinero, duracion, vent_horaria_1, vent_horaria_2, notas, agrupador, email_rem, eliminar_pedido, vehiculo, habilidades, sku, talla, estado, created_by)
+            VALUES (%(Id_ruta)s, %(Nombre_ruta)s, %(Codigo_cliente)s, %(Nombre)s, %(Calle)s, %(Ciudad)s,
+              %(Provincia)s, %(Latitud)s, %(Longitud)s, %(Telefono)s, %(Email)s, %(Codigo_pedido)s, %(Fecha_pedido)s,
+              %(Operacion)s, %(Codigo_producto)s, %(Descripcion_producto)s, %(Cantidad_producto)s, %(Peso)s, 
+              %(Volumen)s, %(Dinero)s, %(Duracion_min)s, %(Ventana_horaria_1)s, %(Ventana_horaria_2)s, %(Notas)s, 
+              %(Nombre_ruta)s, %(Email_remitentes)s, %(Eliminar_pedido)s, %(Vehiculo)s, %(Habilidades)s, %(SKU)s,
+              %(Tamaño)s, %(Estado)s, %(Created_by)s);
+            """,data)
+        self.conn.commit()
+
+    def update_verified(self, codigo_producto):
+        sql_queries = [
+            "UPDATE areati.ti_wms_carga_sportex SET verified = true WHERE areati.ti_wms_carga_sportex.id_sportex = %s",
+            "UPDATE areati.ti_wms_carga_easy SET verified = true WHERE areati.ti_wms_carga_easy.carton = %s",
+            "UPDATE areati.ti_wms_carga_electrolux SET verified = true WHERE areati.ti_wms_carga_electrolux.numero_guia = %s",
+            "UPDATE areati.areati.ti_carga_easy_go_opl SET verified = true WHERE areati.ti_carga_easy_go_opl.id_entrega = %s"
+        ]
+        try:
+            for query in sql_queries:
+                with self.conn.cursor() as cur:
+                    cur.execute(query, (codigo_producto,))
+                self.conn.commit()
+        except (Exception, psycopg2.DatabaseError) as error:
+            print("Error durante la actualización:", error)
+        finally:
+            pass
+
+        
         
     
 
