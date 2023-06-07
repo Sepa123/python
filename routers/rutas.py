@@ -36,16 +36,14 @@ async def get_ruta_manual(pedido_id : str):
 async def insert_ruta_manual(rutas : List[List[RutaManual]]):
     # try:
         print(len(rutas))
-        id_ruta = conn.read_id_ruta()[0]
-        nombre_ruta = conn.get_nombre_ruta_manual(data["Created_by"])[0][0]
+
         
         for ruta in rutas:
-            
             for producto in ruta:
                 data = producto.dict()
-                data["Id_ruta"] = id_ruta
-                data["Agrupador"] = nombre_ruta
-                data["Nombre_ruta"] = nombre_ruta
+                data["Id_ruta"] = conn.read_id_ruta()[0]
+                data["Agrupador"] = conn.get_nombre_ruta_manual(data["Created_by"])[0][0]
+                data["Nombre_ruta"] = conn.get_nombre_ruta_manual(data["Created_by"])[0][0]
                 # data["Pistoleado"] = True 
                 # conn.update_verified(data["Codigo_producto"])
                 conn.write_rutas_manual(data)
