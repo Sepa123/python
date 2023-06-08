@@ -1812,6 +1812,13 @@ class reportesConnection():
             return cur.fetchall()
         
 
+    def check_producto_existe(self,codigo_pedido):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+             select areati.check_producto('{codigo_pedido}');
+            """)
+            return cur.fetchone()
+        
     def read_id_ruta(self):
         with self.conn.cursor() as cur:
             cur.execute("""
@@ -1851,10 +1858,6 @@ class reportesConnection():
             print("Error durante la actualización:", error)
         finally:
             pass
-
-        
-        
-    
 
 class transyanezConnection():
     conn = None

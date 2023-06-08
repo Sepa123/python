@@ -38,6 +38,17 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]]):
         print(len(rutas))
         id_ruta = conn.read_id_ruta()[0]
         nombre_ruta = conn.get_nombre_ruta_manual(rutas[0][0].Created_by)[0][0]
+
+        check = conn.check_producto_existe(rutas[0][0].Codigo_pedido)
+        check = re.sub(r'\(|\)', '',check[0])
+        check = check.split(",")
+
+        print(check)
+        
+        if(check[0] == "1"):
+            print("codigo pedido repetido")
+            raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, 
+                                detail=f"El Producto {rutas[0][0].Codigo_pedido} se encuentra en la ruta {check[1]}")
         for ruta in rutas:
             for producto in ruta:
                 data = producto.dict()
@@ -46,7 +57,7 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]]):
                 data["Nombre_ruta"] = nombre_ruta
                 # data["Pistoleado"] = True 
                 # conn.update_verified(data["Codigo_producto"])
-                conn.write_rutas_manual(data)
+                # conn.write_rutas_manual(data)
         return { "message": f"La Ruta {nombre_ruta} fue guardada exitosamente" }
     # except:
     #     print("error")
