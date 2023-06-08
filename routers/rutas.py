@@ -67,7 +67,7 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]]):
                 data["Agrupador"] = nombre_ruta
                 data["Nombre_ruta"] = nombre_ruta
                 data["Pistoleado"] = True 
-                conn.update_verified(data["Codigo_producto"])
+                # conn.update_verified(data["Codigo_producto"])
                 conn.write_rutas_manual(data)
         return { "message": f"La Ruta {nombre_ruta} fue guardada exitosamente" }
     # except:
