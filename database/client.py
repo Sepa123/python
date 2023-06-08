@@ -1693,13 +1693,7 @@ class reportesConnection():
             return cur.fetchone()
         
 
-    def get_ruta_manual(self,pedido_id):
-
-        with self.conn.cursor() as cur:
-            cur.execute(f"""
-            select areati.busca_ruta_manual('{pedido_id}')
-            """)
-            return cur.fetchall()
+    
 
     ## Comparacion API VS WMS
 
@@ -1792,6 +1786,14 @@ class reportesConnection():
 
     
     ### Insertar datos en tabla quadmind.ruta_manual
+
+    def get_ruta_manual(self,pedido_id):
+
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select areati.busca_ruta_manual('{pedido_id}')
+            """)
+            return cur.fetchall()
 
     def get_nombre_ruta_manual(self,created_by):
 

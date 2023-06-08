@@ -47,7 +47,7 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]]):
                 # data["Pistoleado"] = True 
                 # conn.update_verified(data["Codigo_producto"])
                 conn.write_rutas_manual(data)
-        return { "message":"Ruta Manual agregado correctamente" }
+        return { "message": f"La Ruta {nombre_ruta} fue guardada exitosamente" }
     # except:
     #     print("error")
     #     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
