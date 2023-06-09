@@ -12,6 +12,7 @@ def convert_to_json(results):
             if k == "Estado" or k == "Codigo_cliente" or k =="En_ruta":
                 v = v.strip("()")
             data[k] = v
+        # data["RutaEnTabla"] = ""
         json_data.append(data)
 
     return json_data

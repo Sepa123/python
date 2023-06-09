@@ -1859,6 +1859,32 @@ class reportesConnection():
         finally:
             pass
 
+    ## Rutas en activo
+
+    def read_rutas_en_activo(self,id_ruta,id_user):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select ROW_NUMBER() over (ORDER BY datos_base."Cod. Pedido") as "Pos.",* from
+            (
+            select cod_pedido as "Cod. Pedido",
+            ciudad as "Comuna",
+            string_agg(distinct(drm.sku) , '@') AS "SKU",
+            string_agg(distinct(drm.desc_producto) , '@') AS "Producto",
+            count(distinct(drm.sku)) as "UND",
+            count(drm.sku) as "Bultos",
+            initcap(nombre) as "Nombre Cliente",
+            initcap(calle_numero) as "Direccion Cliente",
+            telefono as "Telefono",
+            '' as "Validado",
+            '' as "DE",
+            '' as "DP"
+            from quadminds.datos_ruta_manual drm 
+            where id_ruta={id_ruta}
+            group by 1,2,7,8,9,10,11
+            ) datos_base
+            """)
+            return cur.fetchall()
+
 class transyanezConnection():
     conn = None
     def __init__(self) -> None:
