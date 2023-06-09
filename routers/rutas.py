@@ -87,9 +87,9 @@ async def update_estado_producto(cod_producto:str):
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
      
 @router.get("/listar/activo",status_code=status.HTTP_200_OK)
-async def get_rutas_en_activo(id_ruta : int, id_user:str):
-     print(id_ruta,id_user)
-     results = conn.read_rutas_en_activo(id_ruta,id_user)
+async def get_rutas_en_activo(id_ruta : int):
+     print(id_ruta)
+     results = conn.read_rutas_en_activo(id_ruta)
 
      if results is None or results == []:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="la ruta no existe")

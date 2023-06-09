@@ -1861,7 +1861,7 @@ class reportesConnection():
 
     ## Rutas en activo
 
-    def read_rutas_en_activo(self,id_ruta,id_user):
+    def read_rutas_en_activo(self,id_ruta):
         with self.conn.cursor() as cur:
             cur.execute(f"""
             select ROW_NUMBER() over (ORDER BY datos_base."Cod. Pedido") as "Pos.",* from
