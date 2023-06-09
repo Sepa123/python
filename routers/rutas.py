@@ -91,7 +91,7 @@ async def get_rutas_en_activo(id_ruta : int, id_user:str):
      print(id_ruta,id_user)
      results = conn.read_rutas_en_activo(id_ruta,id_user)
 
-     if results is None:
+     if results is None or results == []:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="la ruta no existe")
      
      return rutas_en_activo_schema(results)
