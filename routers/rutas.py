@@ -74,7 +74,7 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]]):
     #     print("error")
     #     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
 
-@router.put("/actualizar/estado/{cod_producto}",status_code=status.HTTP_202_ACCEPTED)
+@router.put("/actualizar/estado",status_code=status.HTTP_202_ACCEPTED)
 async def update_estado_producto(cod_producto:str):
      try:
           conn.update_verified(cod_producto)
