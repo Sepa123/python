@@ -77,6 +77,7 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]]):
 @router.put("/actualizar/estado/{cod_producto}",status_code=status.HTTP_202_ACCEPTED)
 async def update_estado_producto(cod_producto:str):
      try:
+          print(cod_producto)
           conn.update_verified(cod_producto)
           return { "message": "Producto Actualizado Correctamente" }
      except:
