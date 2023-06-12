@@ -15,6 +15,7 @@ from database.models.ruta_manual import RutaManual
 from database.schema.ruta_manual import convert_to_json
 from database.models.ruta_en_activo import RutaEnActivo
 from database.schema.rutas_en_activo import rutas_en_activo_schema
+from database.schema.nombres_rutas_activas import nombres_rutas_activas_schema
 
 router = APIRouter(tags=["rutas"], prefix="/api/rutas")
 
@@ -87,13 +88,45 @@ async def update_estado_producto(cod_producto:str):
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
      
 @router.get("/listar/activo",status_code=status.HTTP_200_OK)
-async def get_rutas_en_activo(id_ruta : int):
-     print(id_ruta)
-     results = conn.read_rutas_en_activo(id_ruta)
+async def get_rutas_en_activo(nombre_ruta : str):
+     print(nombre_ruta)
+     results = conn.read_rutas_en_activo(nombre_ruta)
 
      if results is None or results == []:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="la ruta no existe")
      
      return rutas_en_activo_schema(results)
+
+
+@router.get("/activo/descargar")
+async def get_data(id_ruta : int):
+
+    results = conn.read_rutas_en_activo(id_ruta)
+    wb = Workbook()
+    ws = wb.active
+    results.insert(0, ('Pos', 'Codigo_pedido', 'Comuna', 'SKU', 'Producto', 'Unidades', 'Bultos', 'Nombre_cliente', 'Direccion_cliente', 'Telefono', 'Validacion', 'DE', 'DP'))
+
+    for row in results:
+        ws.append(row)
     
+    for col in ws.columns:
+        max_length = 0
+        column = col[0].column_letter # get column letter
+        for cell in col:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(str(cell.value))
+            except:
+                pass
+        adjusted_width = (max_length + 2)
+        ws.column_dimensions[column].width = adjusted_width
+    
+    wb.save("excel/rutas_activas.xlsx")
+
+    return FileResponse("excel/rutas_activas.xlsx")
+    
+@router.get("/activo/nombre_ruta")
+async def get_nombres_ruta(fecha : str):
+    results = conn.read_nombres_rutas(fecha)
+    return nombres_rutas_activas_schema(results)
      

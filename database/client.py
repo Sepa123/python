@@ -1800,13 +1800,12 @@ class reportesConnection():
         with self.conn.cursor() as cur:
             cur.execute(f"""
             SELECT
-            TO_CHAR(count(distinct(id_ruta))+1::integer, 'FM000')
+            TO_CHAR(count(distinct(id_ruta))+1::integer, 'FM00000')
             || '-' ||
             to_char({created_by}::integer, 'FM0000') || '-' ||
             TO_CHAR(current_date, 'YYYYMMDD') AS numero_unico
             FROM
             quadminds.datos_ruta_manual drm
-            where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
 
             """)
             return cur.fetchall()
@@ -1861,7 +1860,7 @@ class reportesConnection():
 
     ## Rutas en activo
 
-    def read_rutas_en_activo(self,id_ruta):
+    def read_rutas_en_activo(self,nombre_ruta):
         with self.conn.cursor() as cur:
             cur.execute(f"""
             select ROW_NUMBER() over (ORDER BY datos_base."Cod. Pedido") as "Pos.",* from
@@ -1879,12 +1878,19 @@ class reportesConnection():
             '' as "DE",
             '' as "DP"
             from quadminds.datos_ruta_manual drm 
-            where id_ruta={id_ruta}
+            where nombre_ruta = '{nombre_ruta}'
             group by 1,2,7,8,9,10,11
             ) datos_base
             """)
             return cur.fetchall()
 
+    def read_nombres_rutas(self,fecha):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select distinct (nombre_ruta) from quadminds.datos_ruta_manual where TO_CHAR(created_at, 'YYYY-MM-DD') = '{fecha}'
+            """)
+
+            return cur.fetchall()
 class transyanezConnection():
     conn = None
     def __init__(self) -> None:
