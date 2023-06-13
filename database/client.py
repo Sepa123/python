@@ -1872,6 +1872,7 @@ class reportesConnection():
             initcap(nombre) as "Nombre Cliente",
             initcap(calle_numero) as "Direccion Cliente",
             telefono as "Telefono",
+            estado as "Estado",
             '' as "Validado",
             '' as "DE",
             '' as "DP"
@@ -1885,7 +1886,7 @@ class reportesConnection():
     def read_nombres_rutas(self,fecha):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            select distinct (nombre_ruta) from quadminds.datos_ruta_manual where TO_CHAR(created_at, 'YYYY-MM-DD') = '{fecha}'
+            select distinct (nombre_ruta),estado from quadminds.datos_ruta_manual where TO_CHAR(created_at, 'YYYY-MM-DD') = '{fecha}'
             """)
 
             return cur.fetchall()

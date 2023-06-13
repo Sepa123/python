@@ -1,6 +1,7 @@
 def nombre_ruta_activas(nombre_ruta):
     return {
-        "Nombre_ruta" : nombre_ruta[0]
+        "Nombre_ruta" : nombre_ruta[0],
+        "Estado"      : nombre_ruta[1]
     }
 
 def nombres_rutas_activas_schema(nombres_ruta):

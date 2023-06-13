@@ -10,9 +10,10 @@ def ruta_en_activo_schema(ruta):
             "Nombre_cliente": ruta[7],
             "Direccion_cliente": ruta[8],
             "Telefono": ruta[9],
-            "Validacion": ruta[10],
-            "DE": ruta[11],
-            "DP": ruta[12]
+            "Estado" : ruta[10],
+            "Validacion": ruta[11],
+            "DE": ruta[12],
+            "DP": ruta[13]
         }
 
 def rutas_en_activo_schema(rutas): 
