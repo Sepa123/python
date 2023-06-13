@@ -129,4 +129,14 @@ async def get_data(id_ruta : int):
 async def get_nombres_ruta(fecha : str):
     results = conn.read_nombres_rutas(fecha)
     return nombres_rutas_activas_schema(results)
-     
+
+
+@router.put("/actualizar/estado/activo/{nombre_ruta}",status_code=status.HTTP_202_ACCEPTED)
+async def update_estado_ruta(nombre_ruta:str):
+     try:
+          print(nombre_ruta)
+          conn.update_estado_rutas(nombre_ruta)
+          return { "message": "Estado de Ruta Actualizado Correctamente" }
+     except:
+          print("error")
+          raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")

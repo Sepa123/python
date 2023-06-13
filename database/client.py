@@ -1810,7 +1810,6 @@ class reportesConnection():
             """)
             return cur.fetchall()
         
-
     def check_producto_existe(self,codigo_pedido):
         with self.conn.cursor() as cur:
             cur.execute(f"""
@@ -1827,7 +1826,6 @@ class reportesConnection():
             return cur.fetchone()
         
     def write_rutas_manual(self, data):
-
         print(data)
         with self.conn.cursor() as cur: 
             cur.execute("""
@@ -1891,6 +1889,16 @@ class reportesConnection():
             """)
 
             return cur.fetchall()
+        
+    def update_estado_rutas(self,nombre_ruta):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""        
+            update quadminds.datos_ruta_manual
+            set estado = false
+            where quadminds.datos_ruta_manual.nombre_ruta  = '{nombre_ruta}'
+            """)
+        self.conn.commit()
+
 class transyanezConnection():
     conn = None
     def __init__(self) -> None:
