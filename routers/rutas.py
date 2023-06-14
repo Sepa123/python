@@ -97,6 +97,7 @@ async def get_rutas_en_activo(nombre_ruta : str):
      
      return rutas_en_activo_schema(results)
 
+# hoka
 
 @router.get("/activo/descargar")
 async def get_data(id_ruta : int):
