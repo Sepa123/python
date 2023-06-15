@@ -34,7 +34,6 @@ async def get_productos_sin_clasificar():
 @router.post("/sin_clasificacion", status_code=status.HTTP_201_CREATED)
 async def insert_producto_sin_clasificar(producto : ProductoSinClasificacion):
         # try:
-            
             data =  producto.dict()
             print(data)
             conn.write_producto_sin_clasificar(data)
@@ -60,11 +59,10 @@ async def producto_picking_id(producto_id : str):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El codigo del producto no existe")
     return producto_picking_schema(results)
 
-@router.get("/easy_opl",status_code=status.HTTP_202_ACCEPTED)
+@router.get("/buscar/sku",status_code=status.HTTP_202_ACCEPTED)
 async def get_productos_picking_easy_opl_hoy():
     results = conn.read_producto_picking_easy_opl()
     if not results:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
-
     json_data = convert_to_json(results)
     return json_data
