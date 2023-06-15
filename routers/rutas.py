@@ -1,6 +1,8 @@
 from fastapi import APIRouter, status,HTTPException
 from fastapi.responses import FileResponse
 from openpyxl import Workbook
+from openpyxl.styles import Font
+
 import re
 import json
 from typing import List
@@ -16,6 +18,8 @@ from database.schema.ruta_manual import convert_to_json
 from database.models.ruta_en_activo import RutaEnActivo
 from database.schema.rutas_en_activo import rutas_en_activo_schema
 from database.schema.nombres_rutas_activas import nombres_rutas_activas_schema
+
+from database.schema.datos_ruta_activa_editar import datos_rutas_activas_editar_schema
 
 router = APIRouter(tags=["rutas"], prefix="/api/rutas")
 
@@ -98,34 +102,7 @@ async def get_rutas_en_activo(nombre_ruta : str):
      return rutas_en_activo_schema(results)
 
 # hoka
-
-@router.get("/activo/descargar")
-async def get_data(id_ruta : int):
-
-    results = conn.read_rutas_en_activo(id_ruta)
-    wb = Workbook()
-    ws = wb.active
-    results.insert(0, ('Pos', 'Codigo_pedido', 'Comuna', 'SKU', 'Producto', 'Unidades', 'Bultos', 'Nombre_cliente', 'Direccion_cliente', 'Telefono', 'Validacion', 'DE', 'DP'))
-
-    for row in results:
-        ws.append(row)
-    
-    for col in ws.columns:
-        max_length = 0
-        column = col[0].column_letter # get column letter
-        for cell in col:
-            try:
-                if len(str(cell.value)) > max_length:
-                    max_length = len(str(cell.value))
-            except:
-                pass
-        adjusted_width = (max_length + 2)
-        ws.column_dimensions[column].width = adjusted_width
-    
-    wb.save("excel/rutas_activas.xlsx")
-
-    return FileResponse("excel/rutas_activas.xlsx")
-    
+  
 @router.get("/activo/nombre_ruta")
 async def get_nombres_ruta(fecha : str):
     results = conn.read_nombres_rutas(fecha)
@@ -141,3 +118,66 @@ async def update_estado_ruta(nombre_ruta:str):
      except:
           print("error")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
+
+@router.get("/datos_ruta/{nombre_ruta}",status_code=status.HTTP_202_ACCEPTED)
+async def get_ruta_by_nombre_ruta(nombre_ruta: str):
+     print(nombre_ruta)
+     results = conn.read_ruta_activa_by_nombre_ruta(nombre_ruta)
+     return datos_rutas_activas_editar_schema(results)
+     
+     
+# @router.get("/descargar")
+# async def download_excel(nombre_ruta : str):
+#     datos = [[]]
+  
+#     datos.append([
+#         "Posición", "Pedido", "Comuna", "SKU", "Producto", "UND", "Bultos", "Nombre",
+#         "Direccion Cliente", "Teléfono", "Validado", "DE", "DP"
+#     ])
+  
+#     ruta_en_activo = conn.read_rutas_en_activo(nombre_ruta) # Ruta en activo (tu implementación aquí)
+    
+#     # Crear un libro de Excel y seleccionar la hoja activa
+#     libro_excel = Workbook()
+#     hoja = libro_excel.active
+#     hoja.title = 'Hoja1'
+  
+#     # Estilo para el texto en negrita
+#     negrita = Font(bold=True)
+  
+#     # for ruta in ruta_en_activo:
+#     #     if len(ruta.arrayProductos) == 1:
+#     #         fila = [
+#     #             ruta.Pos, ruta.Codigo_pedido, ruta.Comuna, ruta.SKU, ruta.Producto,
+#     #             ruta.Unidades, ruta.Bultos, ruta.Nombre_cliente, ruta.Direccion_cliente, ruta.Telefono
+#     #         ]
+#     #         datos.append(fila)
+#     #     elif len(ruta.arrayProductos) > 1:
+#     #         for i, producto in enumerate(ruta.arrayProductos):
+#     #             if i == 0:
+#     #                 fila = [
+#     #                     ruta.Pos, ruta.Codigo_pedido, ruta.Comuna, ruta.arraySKU[i], producto,
+#     #                     ruta.Unidades, ruta.Bultos, ruta.Nombre_cliente, ruta.Direccion_cliente, ruta.Telefono
+#     #                 ]
+#     #                 datos.append(fila)
+#     #             else:
+#     #                 fila_producto = [
+#     #                     "", "", "", ruta.arraySKU[i], producto,
+#     #                     "", "", "", "", ""
+#     #                 ]
+#     #                 datos.append(fila_producto)
+  
+#     # Escribir los datos en la hoja
+#     for fila in datos:
+#         hoja.append(fila)
+  
+#     # Aplicar estilo en negrita a la primera fila
+#     for celda in hoja[2]:
+#         celda.font = negrita
+  
+#     # Guardar el archivo
+#     nombre_archivo = f"{nombre_ruta}.xlsx"
+#     libro_excel.save(nombre_archivo)
+
+
+#     return FileResponse(f"{nombre_archivo}")

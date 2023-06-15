@@ -1906,6 +1906,15 @@ class reportesConnection():
             where quadminds.datos_ruta_manual.nombre_ruta  = '{nombre_ruta}'
             """)
         self.conn.commit()
+    
+    def read_ruta_activa_by_nombre_ruta(self,nombre_ruta):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select id_ruta, nombre_ruta, cod_cliente, nombre, calle_numero, ciudad, provincia_estado, telefono, email, cod_pedido, fecha_pedido, operacion, cod_producto, desc_producto, cant_producto, notas, agrupador, sku, talla, estado, created_by
+            from quadminds.datos_ruta_manual drm where nombre_ruta = '{nombre_ruta}'
+            """)
+            
+            return cur.fetchall()
 
 class transyanezConnection():
     conn = None
