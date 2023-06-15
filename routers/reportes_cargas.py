@@ -148,12 +148,6 @@ async def get_data_cliente():
     print(len(productos_picking_schema(results)))
     return productos_picking_schema(results)
 
-@router.get("/clientes/json",status_code=status.HTTP_202_ACCEPTED)
-async def get_data_cliente():
-    results = conn.read_clientes()
-    print(len(productos_picking_schema(results)))
-    return productos_picking_schema(results)
-
 @router.get("/quadminds/tamano",status_code=status.HTTP_202_ACCEPTED )
 async def get_quadminds_fecha_compromiso():
     results = conn.read_resumen_quadmind_tamano()
@@ -388,10 +382,10 @@ async def get_pedidos_tiendas_easy_opl():
     print("/pedidos/easy_opl")
     return pedidos_tiendas_easy_opl_schema(results)
 
-@router.get("/timezone",status_code=status.HTTP_202_ACCEPTED)
-async def get_pedidos_tiendas_easy_opl():
-    results = conn.get_timezone()
-    return results
+# @router.get("/timezone",status_code=status.HTTP_202_ACCEPTED)
+# async def get_pedidos_tiendas_easy_opl():
+#     results = conn.get_timezone()
+#     return results
 
 @router.get("/pedidos/pendientes/total",status_code=status.HTTP_202_ACCEPTED)
 async def pedidos_pendientes_total():
