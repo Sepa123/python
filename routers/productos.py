@@ -14,6 +14,8 @@ from database.schema.producto_picking import productos_picking_schema ,producto_
 from database.models.producto_picking_easy_opl import ProductoPickingEasyOPL
 from database.schema.productos_picking_easy_opl import productos_picking_easy_opl_schema
 
+from database.schema.ruta_manual import convert_to_json
+
 from database.client import reportesConnection
 from fastapi.responses import FileResponse
 
@@ -64,4 +66,5 @@ async def get_productos_picking_easy_opl_hoy():
     if not results:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
 
-    return productos_picking_easy_opl_schema(results)
+    json_data = convert_to_json(results)
+    return json_data

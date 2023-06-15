@@ -1698,20 +1698,7 @@ class reportesConnection():
 
         with self.conn.cursor() as cur:
             cur.execute("""
-            select   easygo.rut_cliente AS "Código de Cliente",
-            initcap(easygo.nombre_cliente) AS "Nombre",
-            initcap(easygo.direc_despacho) AS "Calle y Número",
-            initcap(easygo.comuna_despacho)  AS "Provincia/Estado",
-            --coalesce(easygo.fono_cliente ,'0') AS "Teléfono",
-            CAST (easygo.suborden AS varchar) AS "Código de Pedido",
-            easygo.fec_compromiso AS "Fecha de Pedido",
-            easygo.id_entrega AS "Código de Producto",
-            easygo.descripcion AS "Descripción del Producto",
-            cast(easygo.unidades as numeric) AS "Cantidad de Producto",
-            easygo.codigo_sku as "Cod. SKU",                         
-            easygo.verified as "Pistoleado"   
-            from areati.ti_carga_easy_go_opl easygo
-            where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
+            select areati.busca_producto_sku('1056205')
             """)
             return cur.fetchall()
 
