@@ -11,8 +11,8 @@ from database.schema.productos_sin_clasificacion import productos_sin_clasificac
 from database.models.producto_picking import producto_picking
 from database.schema.producto_picking import productos_picking_schema ,producto_picking_schema
 
-from database.models.producto_picking_easy_opl import ProductoPickingEasyOPL
-from database.schema.productos_picking_easy_opl import productos_picking_easy_opl_schema
+from database.models.producto_sku import ProductoSKU
+from database.schema.productos_sku import productos_sku_schema
 
 from database.schema.ruta_manual import convert_to_json
 
@@ -59,9 +59,9 @@ async def producto_picking_id(producto_id : str):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El codigo del producto no existe")
     return producto_picking_schema(results)
 
-@router.get("/buscar/sku",status_code=status.HTTP_202_ACCEPTED)
-async def get_productos_picking_easy_opl_hoy():
-    results = conn.read_producto_picking_easy_opl()
+@router.get("/buscar/sku/{codigo_sku}",status_code=status.HTTP_202_ACCEPTED)
+async def get_productos_sku(codigo_sku : str):
+    results = conn.read_producto_sku(codigo_sku)
     if not results:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
     json_data = convert_to_json(results)

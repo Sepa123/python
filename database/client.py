@@ -1692,13 +1692,13 @@ class reportesConnection():
             """)
             return cur.fetchone()
         
-    ## productos picking de easy OPL
+    ## productos picking SKU
 
-    def read_producto_picking_easy_opl(self):
+    def read_producto_sku(self,codigo_sku):
 
         with self.conn.cursor() as cur:
-            cur.execute("""
-            select areati.busca_producto_sku('1056205')
+            cur.execute(f"""
+            select areati.busca_producto_sku('{codigo_sku}')
             """)
             return cur.fetchall()
 

@@ -1,4 +1,4 @@
-def producto_picking_easy_opl(producto):
+def producto_sku(producto):
     return  {
         "Codigo_cliente": producto[0],
         "Nombre": producto[1],
@@ -29,5 +29,5 @@ def producto_picking_easy_opl(producto):
         "Habilidades" : producto[26]
     }
 
-def productos_picking_easy_opl_schema(productos):
-    return [producto_picking_easy_opl(producto) for producto in productos]
+def productos_sku_schema(productos):
+    return [producto_sku(producto) for producto in productos]

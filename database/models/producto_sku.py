@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
 
-class ProductoPickingEasyOPL(BaseModel):
+class ProductoSKU(BaseModel):
     Codigo_cliente: Optional[str]
     Nombre: Optional[str]
     Calle: str
