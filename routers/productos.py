@@ -62,7 +62,8 @@ async def producto_picking_id(producto_id : str):
 @router.get("/buscar/sku/{codigo_sku}",status_code=status.HTTP_202_ACCEPTED)
 async def get_productos_sku(codigo_sku : str):
     results = conn.read_producto_sku(codigo_sku)
+    print(results)
     if not results:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="SKU no encontrado")
     json_data = convert_to_json(results)
     return json_data
