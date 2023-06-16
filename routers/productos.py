@@ -85,9 +85,10 @@ async def get_productos_OPL():
 async def update_verificado_producto_OPL(body: bodyUpdate):
     try:
         print(body.cod_producto, body.cod_sku)
+        # producto = body.cod_producto
         #   print(cod_producto)
         #   conn.update_verified(cod_producto)
-        return { f"message": "Producto {body.cod_producto} verificado" }
+        return { "message": f"Producto {body.cod_producto} verificado" }
     except:
           print("error")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
