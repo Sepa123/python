@@ -108,7 +108,7 @@ async def insert_ruta_existente_activa(rutas : List[List[RutaManual]]):
     try:
         print(len(rutas))
         id_ruta = rutas[0][0].Id_ruta
-        nombre_ruta = rutas[0][0].Created_by
+        nombre_ruta = rutas[0][0].Nombre_ruta
 
         check = conn.check_producto_existe(rutas[0][0].Codigo_pedido)
         check = re.sub(r'\(|\)', '',check[0])
