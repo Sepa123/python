@@ -509,7 +509,6 @@ class reportesConnection():
     
     def read_reporte_quadmind_fecha_compromiso(self):
         with self.conn.cursor() as cur:
-
             cur.execute("""
             -------------------------------------------------------------------------------------------------------------------------------------
             -- EASY
@@ -812,12 +811,10 @@ class reportesConnection():
                     
 
             """)
-
             return cur.fetchall()
     
     def read_resumen_quadmind_tamano(self):
         with self.conn.cursor() as cur:
-
             cur.execute("""
                 -------------------------------------------------------------------------------------------------------------------------------------
                 -- EASY
@@ -1089,7 +1086,6 @@ class reportesConnection():
                 group by easygo.suborden,2,3,4,5,6,7,8,9,11,12,16,17,18,19,20,21,22,23,24,25,26,27,1
 
             """)
-
             return cur.fetchall()
 
 
@@ -1282,7 +1278,6 @@ class reportesConnection():
             results = cur.fetchall()  
             return results
         
-
     def read_reporte_ultima_hora(self):
         with self.conn.cursor() as cur:
             cur.execute("""
@@ -1927,6 +1922,27 @@ class reportesConnection():
         self.conn.commit() 
         return rows_delete
            
+        #### Recepcion Easy OPL
+    def read_productos_picking_OPL(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+             select  easygo.rut_cliente AS "Rut de Cliente",
+             initcap(easygo.nombre_cliente) AS "Nombre",
+             initcap(easygo.direc_despacho) AS "Calle y Número",
+             initcap(easygo.comuna_despacho)  AS "Provincia/Estado",
+             --coalesce(easygo.fono_cliente ,'0') AS "Teléfono",
+             CAST (easygo.suborden AS varchar) AS "Código de Pedido",
+             easygo.fec_compromiso AS "Fecha de Pedido",
+             easygo.id_entrega AS "Código de Producto",
+             easygo.descripcion AS "Descripción del Producto",
+             cast(easygo.unidades as numeric) AS "Cantidad de Producto",
+             easygo.codigo_sku as "Cod. SKU",                         
+             easygo.verified as "Pistoleado"   
+        
+            from areati.ti_carga_easy_go_opl easygo
+            where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')           
+                        """)           
+            return cur.fetchall()
 
 class transyanezConnection():
     conn = None

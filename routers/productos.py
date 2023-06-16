@@ -16,6 +16,8 @@ from database.schema.productos_sku import productos_sku_schema
 
 from database.schema.ruta_manual import convert_to_json
 
+from database.schema.producto_picking_easy_opl import productos_picking_easy_opl_schema
+
 from database.client import reportesConnection
 from fastapi.responses import FileResponse
 
@@ -67,3 +69,10 @@ async def get_productos_sku(codigo_sku : str):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="SKU no encontrado")
     json_data = convert_to_json(results)
     return json_data
+
+@router.get("/recepcion/OPL",status_code=status.HTTP_202_ACCEPTED)
+async def get_productos_OPL():
+     results = conn.read_productos_picking_OPL()
+
+     return productos_picking_easy_opl_schema(results)
+
