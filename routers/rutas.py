@@ -101,7 +101,39 @@ async def get_rutas_en_activo(nombre_ruta : str):
      
      return rutas_en_activo_schema(results)
 
-# hoka
+# rutas activas
+
+# @router.post("/agregar/ruta_activa",status_code=status.HTTP_201_CREATED)
+# async def insert_ruta_manual(rutas : List[List[RutaManual]]):
+#     # try:
+#         print(len(rutas))
+#         id_ruta = conn.read_id_ruta()[0]
+#         nombre_ruta = conn.get_nombre_ruta_manual(rutas[0][0].Created_by)[0][0]
+
+#         check = conn.check_producto_existe(rutas[0][0].Codigo_pedido)
+#         check = re.sub(r'\(|\)', '',check[0])
+#         check = check.split(",")
+
+#         print(check)
+
+#         if(check[0] == "1"):
+#             print("codigo pedido repetido")
+#             raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, 
+#                                 detail=f"El Producto {rutas[0][0].Codigo_pedido} se encuentra en la ruta {check[1]}")
+#         for ruta in rutas:
+#             for producto in ruta:
+#                 data = producto.dict()
+#                 data["Id_ruta"] = id_ruta
+#                 data["Agrupador"] = nombre_ruta
+#                 data["Nombre_ruta"] = nombre_ruta
+#                 data["Pistoleado"] = True 
+#                 # conn.update_verified(data["Codigo_producto"])
+#                 conn.write_rutas_manual(data)
+#         return { "message": f"La Ruta {nombre_ruta} fue guardada exitosamente" }
+#     # except:
+#     #     print("error")
+#     #     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
+
   
 @router.get("/activo/nombre_ruta")
 async def get_nombres_ruta(fecha : str):
@@ -124,8 +156,17 @@ async def get_ruta_by_nombre_ruta(nombre_ruta: str):
      print(nombre_ruta)
      results = conn.read_ruta_activa_by_nombre_ruta(nombre_ruta)
      return datos_rutas_activas_editar_schema(results)
-     
-     
+
+@router.delete("/eliminar/producto/{cod_producto}") 
+async def delete_producto_ruta_activa(cod_producto : str):
+     try:
+          results = conn.delete_producto_ruta_activa(cod_producto)
+          if (results == 0): return { "message" : "El producto no existe en ninguna ruta"}
+          return { "message" : "producto eliminado"}
+     except:
+          print("error")
+          raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
+       
 # @router.get("/descargar")
 # async def download_excel(nombre_ruta : str):
 #     datos = [[]]

@@ -1915,16 +1915,18 @@ class reportesConnection():
             select id_ruta, nombre_ruta, cod_cliente, nombre, calle_numero, ciudad, provincia_estado, telefono, email, cod_pedido, fecha_pedido, cod_producto, desc_producto, cant_producto, notas, agrupador, sku, talla, estado, created_by
             from quadminds.datos_ruta_manual drm where nombre_ruta = '{nombre_ruta}'
             """)
-            
             return cur.fetchall()
     
     def delete_producto_ruta_activa(self,cod_producto):
         with self.conn.cursor() as cur:
             cur.execute(f"""
                 DELETE FROM quadminds.datos_ruta_manual
-                WHERE cod_producto = '{cod_producto}'
+                WHERE cod_producto = '{cod_producto}' 
                         """)
-        self.conn.commit()    
+            rows_delete = cur.rowcount
+        self.conn.commit() 
+        return rows_delete
+           
 
 class transyanezConnection():
     conn = None
