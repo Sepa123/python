@@ -87,7 +87,7 @@ async def update_verificado_producto_OPL(body: bodyUpdate):
         print(body.cod_producto, body.cod_sku)
         #   print(cod_producto)
         #   conn.update_verified(cod_producto)
-        return { "message": "Producto Actualizado Correctamente" }
+        return { f"message": "Producto {body.cod_producto} verificado" }
     except:
           print("error")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
