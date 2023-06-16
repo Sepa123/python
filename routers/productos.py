@@ -16,6 +16,8 @@ from database.schema.productos_sku import productos_sku_schema
 
 from database.schema.ruta_manual import convert_to_json
 
+
+from database.models.producto_picking_easy_opl import bodyUpdate, ProductoEasyOPL
 from database.schema.producto_picking_easy_opl import productos_picking_easy_opl_schema
 
 from database.client import reportesConnection
@@ -30,7 +32,7 @@ async def get_productos_sin_clasificar():
     results = conn.read_productos_sin_clasificar()
     if not results:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
-    
+
     return productos_sin_clasificacion_schema(results)
 
 @router.post("/sin_clasificacion", status_code=status.HTTP_201_CREATED)
@@ -76,3 +78,16 @@ async def get_productos_OPL():
 
      return productos_picking_easy_opl_schema(results)
 
+
+
+#### No estoy seguro si deba actualizar esto
+@router.put("/actualizar/verificado/OPL",status_code=status.HTTP_202_ACCEPTED)
+async def update_verificado_producto_OPL(body: bodyUpdate):
+    try:
+        print(body.cod_producto, body.cod_sku)
+        #   print(cod_producto)
+        #   conn.update_verified(cod_producto)
+        return { "message": "Producto Actualizado Correctamente" }
+    except:
+          print("error")
+          raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")

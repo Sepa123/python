@@ -1,7 +1,7 @@
 from datetime import datetime
+from pydantic import BaseModel
 
-
-class ProductoEasyOPL:
+class ProductoEasyOPL(BaseModel):
     Codigo_cliente: str
     Nombre: str
     Calle: str
@@ -20,3 +20,7 @@ class ProductoEasyOPL:
     # tamaño: str
     # estado: str
     # en_ruta: str
+
+class bodyUpdate(BaseModel):
+    cod_producto : str
+    cod_sku: str
