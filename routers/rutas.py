@@ -1,7 +1,7 @@
 from fastapi import APIRouter, status,HTTPException
 from fastapi.responses import FileResponse
 from openpyxl import Workbook
-from openpyxl.styles import Font
+from openpyxl.styles import Font , PatternFill
 
 import re
 import json
@@ -172,49 +172,60 @@ async def delete_producto_ruta_activa(cod_producto : str):
 #     datos = [[]]
   
 #     datos.append([
-#         "Posición", "Pedido", "Comuna", "SKU", "Producto", "UND", "Bultos", "Nombre",
+#         "Posición", "Pedido", "Comuna","Producto","SKU", "UND", "Bultos", "Nombre",
 #         "Direccion Cliente", "Teléfono", "Validado", "DE", "DP"
 #     ])
   
-#     ruta_en_activo = conn.read_rutas_en_activo(nombre_ruta) # Ruta en activo (tu implementación aquí)
+#     result = conn.read_rutas_en_activo(nombre_ruta) # Ruta en activo (tu implementación aquí)
     
+#     rutas_activas = rutas_en_activo_schema(result)
 #     # Crear un libro de Excel y seleccionar la hoja activa
 #     libro_excel = Workbook()
 #     hoja = libro_excel.active
 #     hoja.title = 'Hoja1'
   
 #     # Estilo para el texto en negrita
-#     negrita = Font(bold=True)
-  
-#     # for ruta in ruta_en_activo:
-#     #     if len(ruta.arrayProductos) == 1:
-#     #         fila = [
-#     #             ruta.Pos, ruta.Codigo_pedido, ruta.Comuna, ruta.SKU, ruta.Producto,
-#     #             ruta.Unidades, ruta.Bultos, ruta.Nombre_cliente, ruta.Direccion_cliente, ruta.Telefono
-#     #         ]
-#     #         datos.append(fila)
-#     #     elif len(ruta.arrayProductos) > 1:
-#     #         for i, producto in enumerate(ruta.arrayProductos):
-#     #             if i == 0:
-#     #                 fila = [
-#     #                     ruta.Pos, ruta.Codigo_pedido, ruta.Comuna, ruta.arraySKU[i], producto,
-#     #                     ruta.Unidades, ruta.Bultos, ruta.Nombre_cliente, ruta.Direccion_cliente, ruta.Telefono
-#     #                 ]
-#     #                 datos.append(fila)
-#     #             else:
-#     #                 fila_producto = [
-#     #                     "", "", "", ruta.arraySKU[i], producto,
-#     #                     "", "", "", "", ""
-#     #                 ]
-#     #                 datos.append(fila_producto)
+#     negrita = Font(bold=True, size=20,  color='1BDA6B')
+#     # hoja.merge_cells('A1:D1')
+#     hoja.append(("Ruta : "+nombre_ruta,))
+
+#     for ruta in rutas_activas:
+#         arrayProductos = ruta["Producto"].split("@")
+#         arraySKU = ruta["SKU"].split("@")
+#         if len(arrayProductos) == 1:
+#             fila = [
+#                 ruta["Pos"], ruta["Codigo_pedido"], ruta["Comuna"], arrayProductos[0], arraySKU[0],
+#                 ruta["Unidades"], ruta["Bultos"], ruta["Nombre_cliente"], ruta["Direccion_cliente"], ruta["Telefono"]
+#             ]
+#             datos.append(fila)
+#         elif len(arrayProductos) > 1:
+#             for i, producto in enumerate(arrayProductos):
+#                 if i == 0:
+#                     fila = [
+#                         ruta["Pos"], ruta["Codigo_pedido"], ruta["Comuna"], producto, arraySKU[0],
+#                         ruta["Unidades"], ruta["Bultos"], ruta["Nombre_cliente"], ruta["Direccion_cliente"], ruta["Telefono"]
+#                     ]
+#                     datos.append(fila)
+#                 else:
+#                     fila_producto = [
+#                         "", "", "",producto, arraySKU[i],
+#                         "", "", "", "", ""
+#                     ]
+#                     datos.append(fila_producto)
   
 #     # Escribir los datos en la hoja
-#     for fila in datos:
+#     for i,fila in enumerate(datos):
 #         hoja.append(fila)
+#         # hoja.font = Font(bold=True, color="FFFFFF")
+#         # hoja.fill = PatternFill(start_color="000000FF", end_color="000000FF", fill_type="solid")
   
 #     # Aplicar estilo en negrita a la primera fila
-#     for celda in hoja[2]:
+#     for celda in hoja[1]:
 #         celda.font = negrita
+
+#     for celda in hoja[3]:
+#         celda.font = Font(bold=True, color="FFFFFF")
+#         celda.fill = PatternFill(start_color="000000FF", end_color="000000FF", fill_type="solid")
   
 #     # Guardar el archivo
 #     nombre_archivo = f"{nombre_ruta}.xlsx"

@@ -1923,6 +1923,16 @@ class reportesConnection():
         return rows_delete
            
         #### Recepcion Easy OPL
+
+    def update_producto_picking_OPL(self,cod_producto,cod_sku):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""        
+            update areati.ti_carga_easy_go_opl
+            set verified = true
+            where areati.ti_carga_easy_go_opl.id_entrega  = '{cod_producto}' and areati.ti_carga_easy_go_opl.codigo_sku = '{cod_sku}'
+            """)
+        self.conn.commit()
+
     def read_productos_picking_OPL(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""
@@ -1940,7 +1950,7 @@ class reportesConnection():
              easygo.verified as "Pistoleado"   
         
             from areati.ti_carga_easy_go_opl easygo
-            where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')           
+            where to_char(created_at,'yyyymmdd')=to_char(current_date - 3,'yyyymmdd')           
                         """)           
             return cur.fetchall()
 

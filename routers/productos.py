@@ -66,7 +66,7 @@ async def producto_picking_id(producto_id : str):
 @router.get("/buscar/sku/{codigo_sku}",status_code=status.HTTP_202_ACCEPTED)
 async def get_productos_sku(codigo_sku : str):
     results = conn.read_producto_sku(codigo_sku)
-    print(results)
+    # print(results)
     if not results:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="SKU no encontrado")
     json_data = convert_to_json(results)
@@ -85,10 +85,10 @@ async def get_productos_OPL():
 async def update_verificado_producto_OPL(body: bodyUpdate):
     try:
         print(body.cod_producto, body.cod_sku)
-        # producto = body.cod_producto
+        producto = body.cod_producto
         #   print(cod_producto)
-        #   conn.update_verified(cod_producto)
-        return { "message": f"Producto {body.cod_producto} verificado" }
+        conn.update_producto_picking_OPL(body.cod_producto,body.cod_sku)
+        return { "message": f"Producto de codigo {body.cod_producto} verificado" }
     except:
           print("error")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
