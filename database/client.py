@@ -1950,7 +1950,7 @@ class reportesConnection():
              easygo.verified as "Pistoleado"   
         
             from areati.ti_carga_easy_go_opl easygo
-            where to_char(created_at,'yyyymmdd')=to_char(current_date - 3,'yyyymmdd')           
+            where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')           
                         """)           
             return cur.fetchall()
 
