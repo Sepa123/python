@@ -1,7 +1,7 @@
 from fastapi import APIRouter, status,HTTPException
 from fastapi.responses import FileResponse
 from openpyxl import Workbook
-from openpyxl.styles import Font , PatternFill
+from openpyxl.styles import Font , PatternFill, Border ,Side
 
 import re
 import json
@@ -167,69 +167,82 @@ async def delete_producto_ruta_activa(cod_producto : str):
           print("error")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
        
-# @router.get("/descargar")
-# async def download_excel(nombre_ruta : str):
-#     datos = [[]]
+@router.get("/descargar")
+async def download_excel(nombre_ruta : str):
+    datos = [[]]
   
-#     datos.append([
-#         "Posición", "Pedido", "Comuna","Producto","SKU", "UND", "Bultos", "Nombre",
-#         "Direccion Cliente", "Teléfono", "Validado", "DE", "DP"
-#     ])
+    datos.append([
+        "Posición", "Pedido", "Comuna","Producto","SKU", "UND", "Bultos", "Nombre",
+        "Direccion Cliente", "Teléfono", "Validado", "DE", "DP"
+    ])
   
-#     result = conn.read_rutas_en_activo(nombre_ruta) # Ruta en activo (tu implementación aquí)
+    result = conn.read_rutas_en_activo(nombre_ruta) 
     
-#     rutas_activas = rutas_en_activo_schema(result)
-#     # Crear un libro de Excel y seleccionar la hoja activa
-#     libro_excel = Workbook()
-#     hoja = libro_excel.active
-#     hoja.title = 'Hoja1'
-  
-#     # Estilo para el texto en negrita
-#     negrita = Font(bold=True, size=20,  color='1BDA6B')
-#     # hoja.merge_cells('A1:D1')
-#     hoja.append(("Ruta : "+nombre_ruta,))
 
-#     for ruta in rutas_activas:
-#         arrayProductos = ruta["Producto"].split("@")
-#         arraySKU = ruta["SKU"].split("@")
-#         if len(arrayProductos) == 1:
-#             fila = [
-#                 ruta["Pos"], ruta["Codigo_pedido"], ruta["Comuna"], arrayProductos[0], arraySKU[0],
-#                 ruta["Unidades"], ruta["Bultos"], ruta["Nombre_cliente"], ruta["Direccion_cliente"], ruta["Telefono"]
-#             ]
-#             datos.append(fila)
-#         elif len(arrayProductos) > 1:
-#             for i, producto in enumerate(arrayProductos):
-#                 if i == 0:
-#                     fila = [
-#                         ruta["Pos"], ruta["Codigo_pedido"], ruta["Comuna"], producto, arraySKU[0],
-#                         ruta["Unidades"], ruta["Bultos"], ruta["Nombre_cliente"], ruta["Direccion_cliente"], ruta["Telefono"]
-#                     ]
-#                     datos.append(fila)
-#                 else:
-#                     fila_producto = [
-#                         "", "", "",producto, arraySKU[i],
-#                         "", "", "", "", ""
-#                     ]
-#                     datos.append(fila_producto)
+    border = Border(left=Side(border_style='thin', color='000000'),   
+                right=Side(border_style='thin', color='000000'),   
+                top=Side(border_style='thin', color='000000'),     
+                bottom=Side(border_style='thin', color='000000')) 
+    
+    rutas_activas = rutas_en_activo_schema(result)
+    # Crear un libro de Excel y seleccionar la hoja activa
+    libro_excel = Workbook()
+    hoja = libro_excel.active
+    hoja.title = 'Hoja1'
   
-#     # Escribir los datos en la hoja
-#     for i,fila in enumerate(datos):
-#         hoja.append(fila)
-#         # hoja.font = Font(bold=True, color="FFFFFF")
-#         # hoja.fill = PatternFill(start_color="000000FF", end_color="000000FF", fill_type="solid")
+    # Estilo para el texto en negrita
+    negrita = Font(bold=True, size=20,  color='000000')
+    # hoja.merge_cells('A1:D1')
+    hoja.append(("Ruta : "+nombre_ruta,))
+
+    for ruta in rutas_activas:
+        arrayProductos = ruta["Producto"].split("@")
+        arraySKU = ruta["SKU"].split("@")
+        if len(arrayProductos) == 1:
+            fila = [
+                ruta["Pos"], ruta["Codigo_pedido"], ruta["Comuna"], arrayProductos[0], arraySKU[0],
+                ruta["Unidades"], ruta["Bultos"], ruta["Nombre_cliente"], ruta["Direccion_cliente"], ruta["Telefono"]
+            ]
+            datos.append(fila)
+        elif len(arrayProductos) > 1:
+            for i, producto in enumerate(arrayProductos):
+                if i == 0:
+                    fila = [
+                        ruta["Pos"], ruta["Codigo_pedido"], ruta["Comuna"], producto, arraySKU[0],
+                        ruta["Unidades"], ruta["Bultos"], ruta["Nombre_cliente"], ruta["Direccion_cliente"], ruta["Telefono"]
+                    ]
+                    datos.append(fila)
+                else:
+                    fila_producto = [
+                        "", "", "",producto, arraySKU[i],
+                        "", "", "", "", ""
+                    ]
+                    datos.append(fila_producto)
   
-#     # Aplicar estilo en negrita a la primera fila
-#     for celda in hoja[1]:
-#         celda.font = negrita
+    # Escribir los datos en la hoja
+    for i,fila in enumerate(datos):
+        hoja.append(fila)
+        nHoja = i
+        
+    # Aplicar estilo en negrita a la primera fila
+    for celda in hoja[1]:
+        celda.font = negrita
 
-#     for celda in hoja[3]:
-#         celda.font = Font(bold=True, color="FFFFFF")
-#         celda.fill = PatternFill(start_color="000000FF", end_color="000000FF", fill_type="solid")
-  
-#     # Guardar el archivo
-#     nombre_archivo = f"{nombre_ruta}.xlsx"
-#     libro_excel.save(nombre_archivo)
+    for celda in hoja[3]:
+        celda.font = Font(bold=True, color="FFFFFF")
+        celda.fill = PatternFill(start_color="000000FF", end_color="000000FF", fill_type="solid")
+        celda.border = border
+    
+    # print(nHoja)
+    for n in range(nHoja):
+         for celda in hoja[n+4]:
+             celda.font = Font(bold=True, color="070707")
+             celda.fill = PatternFill(start_color="FFFFFF", end_color="FFFFFF", fill_type="solid")
+             celda.border = border
+         
+    # Guardar el archivo
+    nombre_archivo = "nombre_ruta.xlsx"
+    libro_excel.save(nombre_archivo)
 
 
-#     return FileResponse(f"{nombre_archivo}")
+    return FileResponse("nombre_ruta.xlsx")
