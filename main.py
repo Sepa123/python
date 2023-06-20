@@ -99,7 +99,8 @@ async def login_user(user_data:loginSchema):
                     "uid": user_db[0],
                     "email": user_db[2],
                     "active": user_db[4],
-                    "rol_id":user_db[5]}
+                    # "rol_id":user_db[5]}
+                    "rol_id": "13"}
     # # return "Bienvenido {}".format(data["username"])
     return {
         "access_token": jwt.encode(access_token, SECRET_KEY,algorithm=ALGORITHM),
