@@ -78,6 +78,10 @@ async def get_productos_OPL():
 
      return productos_picking_easy_opl_schema(results)
 
+@router.get("/recepcion/OPL/{codigo_sku}",status_code=status.HTTP_202_ACCEPTED)
+async def get_productos_OPL_by_sku(codigo_sku : str):
+     results = conn.read_productos_picking_OPL_sku(codigo_sku)
+     return productos_picking_easy_opl_schema(results)
 
 
 #### No estoy seguro si deba actualizar esto
