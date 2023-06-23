@@ -1904,6 +1904,8 @@ class reportesConnection():
     
     ## editar rutas activas
 
+    
+
     def read_ruta_activa_by_nombre_ruta(self,nombre_ruta):
         with self.conn.cursor() as cur:
             cur.execute(f"""

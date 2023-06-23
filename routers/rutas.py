@@ -12,6 +12,7 @@ from typing import List
 from database.client import reportesConnection
 
 ## modelos y schemas
+from database.models.asignar_ruta import RutasAsignadas
 
 from database.models.ruta_manual import RutaManual
 from database.schema.ruta_manual import convert_to_json
@@ -169,6 +170,7 @@ async def delete_producto_ruta_activa(cod_producto : str):
        
 @router.get("/descargar")
 async def download_excel(nombre_ruta : str):
+
     datos = [[]]
   
     datos.append([
@@ -246,3 +248,8 @@ async def download_excel(nombre_ruta : str):
 
 
     return FileResponse("nombre_ruta.xlsx")
+
+@router.post("/asignar")
+async def asignar_ruta_activa(asignar : RutasAsignadas):
+    print(asignar)
+    return asignar
