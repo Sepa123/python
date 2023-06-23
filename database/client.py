@@ -1984,7 +1984,7 @@ class reportesConnection():
             select id_ruta
             from quadminds.datos_ruta_manual drm where nombre_ruta = '{nombre_ruta}'
             """)
-            return cur.fetchall()
+            return cur.fetchone()
 
 class transyanezConnection():
     conn = None
