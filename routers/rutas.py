@@ -10,6 +10,7 @@ from typing import List
 ## conexion
 
 from database.client import reportesConnection
+from database.hela_prod import HelaConnection
 
 ## modelos y schemas
 from database.models.asignar_ruta import RutasAsignadas
@@ -25,6 +26,8 @@ from database.schema.datos_ruta_activa_editar import datos_rutas_activas_editar_
 router = APIRouter(tags=["rutas"], prefix="/api/rutas")
 
 conn = reportesConnection()
+
+connHela = HelaConnection()
 
 @router.get("/buscar/{pedido_id}",status_code=status.HTTP_202_ACCEPTED)
 async def get_ruta_manual(pedido_id : str):
@@ -251,5 +254,12 @@ async def download_excel(nombre_ruta : str):
 
 @router.post("/asignar")
 async def asignar_ruta_activa(asignar : RutasAsignadas):
-    asignar.id_ruta = conn.get_id_ruta_activa_by_nombre(asignar.nombre_ruta)[0]
-    return asignar
+    try:
+        asignar.id_ruta = conn.get_id_ruta_activa_by_nombre(asignar.nombre_ruta)[0]
+        print(asignar)
+        data = asignar.dict()
+        connHela.insert_ruta_asignada(data)
+
+        return {"message": "ruta asignada correctamente"}
+    except:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error al ingresar la ruta ")

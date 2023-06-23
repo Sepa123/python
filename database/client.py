@@ -1977,6 +1977,14 @@ class reportesConnection():
             return cur.fetchall()
 
     ## Asignar rutas activas
+    def insert_ruta_asignada(self,data):
+        with self.conn.cursor() as cur: 
+            cur.execute("""
+            INSERT INTO hela.ruta_asignada
+            (asigned_by, id_ruta, nombre_ruta, patente, driver, cant_producto, estado, region)
+            VALUES(%(asigned_by)s, %(id_ruta)s, %(nombre_ruta)s, %(patente)s, %(conductor)s, %(cantidad_producto)s, true, %(region)s);
+            """,data)
+        self.conn.commit()
 
     def get_id_ruta_activa_by_nombre(self, nombre_ruta):
         with self.conn.cursor() as cur:
@@ -2038,4 +2046,3 @@ class transyanezConnection():
             """)
             return cur.fetchall()
         
-

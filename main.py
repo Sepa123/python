@@ -40,7 +40,7 @@ origins = [
     "http://18.220.116.139:88",
     "http://34.225.63.221:84",
     "http://34.225.63.221:84/#/login",
-    "http://hela.transyanez.cl",
+    "https://hela.transyanez.cl",
     "http://34.225.63.221"
 ]
 
@@ -84,7 +84,6 @@ async def select():
 async def login_user(user_data:loginSchema):
     data = user_data.dict()
     user_db = conn.read_only_one(data)
-    print(user_db)
     if user_db is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="El usuario no existe")
     
