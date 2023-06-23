@@ -6,7 +6,7 @@ class RutasAsignadas(BaseModel):
     id_ruta: Optional[str]
     nombre_ruta: Optional[str]
     patente: str
-    driver: str
+    conductor: str
     cantidad_producto: int
     estado: Optional[str]
     region: str
