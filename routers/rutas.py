@@ -252,4 +252,5 @@ async def download_excel(nombre_ruta : str):
 @router.post("/asignar")
 async def asignar_ruta_activa(asignar : RutasAsignadas):
     print(asignar)
+    asignar.id_ruta = conn.get_id_ruta_activa_by_nombre(asignar.nombre_ruta)
     return asignar

@@ -1904,8 +1904,6 @@ class reportesConnection():
     
     ## editar rutas activas
 
-    
-
     def read_ruta_activa_by_nombre_ruta(self,nombre_ruta):
         with self.conn.cursor() as cur:
             cur.execute(f"""
@@ -1976,6 +1974,16 @@ class reportesConnection():
             where to_char(created_at,'yyyymmdd')=to_char(current_date - 2,'yyyymmdd')   and easygo.codigo_sku = '{codigo_sku}'         
                         """)      
                  
+            return cur.fetchall()
+
+    ## Asignar rutas activas
+
+    def get_id_ruta_activa_by_nombre(self, nombre_ruta):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select id_ruta
+            from quadminds.datos_ruta_manual drm where nombre_ruta = '{nombre_ruta}'
+            """)
             return cur.fetchall()
 
 class transyanezConnection():
