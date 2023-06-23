@@ -2,9 +2,9 @@ from pydantic import BaseModel
 from typing import Optional
 
 class RutasAsignadas(BaseModel):
-    asigned_by: str
-    id_ruta: str
-    nombre_ruta: str
+    asigned_by: Optional[str]
+    id_ruta: Optional[str]
+    nombre_ruta: Optional[str]
     patente: str
     driver: str
     cantidad_producto: int
