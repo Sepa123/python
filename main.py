@@ -40,7 +40,7 @@ origins = [
     "http://18.220.116.139:88",
     "http://34.225.63.221:84",
     "http://34.225.63.221:84/#/login",
-    "http://hela.transyanez.cl",
+    "https://hela.transyanez.cl",
     "http://34.225.63.221",
 ]
 
@@ -54,7 +54,7 @@ app.add_middleware(
 
 app.add_middleware(GZipMiddleware, minimum_size=10000)
 
-@app.get("/")
+@app.get("/api")
 async def root():
     conn
     return "hola"
@@ -71,7 +71,7 @@ async def root():
 #         print("error")
 #         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
 
-@app.get("/select",status_code=status.HTTP_202_ACCEPTED)
+@app.get("/api/select",status_code=status.HTTP_202_ACCEPTED)
 async def select():
     users_db = conn.read_all()
     if not users_db:
@@ -80,7 +80,7 @@ async def select():
     return users_schema(users_db)
 
 
-@app.post("/login", status_code=status.HTTP_202_ACCEPTED)
+@app.post("/api/login", status_code=status.HTTP_202_ACCEPTED)
 async def login_user(user_data:loginSchema):
     data = user_data.dict()
     user_db = conn.read_only_one(data)
@@ -129,7 +129,7 @@ async def current_user(user = Depends(auth_user)):
 
 
     
-@app.get("/user")
+@app.get("/api/user")
 async def me (user:TokenPayload = Depends(current_user)):
     print("Hola" )
     return user
