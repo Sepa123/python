@@ -1333,20 +1333,26 @@ class reportesConnection():
             union all 
             select
             'Easy Tienda' as "Origen",
-            COUNT(CASE WHEN subquery.region = 'RM' THEN 1 END) AS "R. Metropolitana",
-            COUNT(CASE WHEN subquery.region = 'V' THEN 1 END) AS "V Región"
+            COUNT(CASE WHEN subquery.region = 'Region Metropolitana' THEN 1 END) AS "R. Metropolitana",
+            COUNT(CASE WHEN subquery.region = 'Valparaíso' THEN 1 END) AS "V Región"
             from (
             select distinct(easy.suborden) as entrega, easy.comuna_despacho as comuna,
-            CASE
-                WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(easy.comuna_despacho))) = 'Region Metropolitana' THEN 'RM'
-                WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(easy.comuna_despacho))) = 'Valparaíso' THEN 'V'
-                else 'N/A'
-            END region
+            (select initcap(tcr.region) from public.ti_comuna_region tcr 
+            where unaccent(lower(tcr.comuna))=unaccent(lower(case
+            when unaccent(lower(easy.comuna_despacho)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+            (select oc.comuna_name from public.op_comunas oc 
+            where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+            where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(easy.comuna_despacho))
+                        )
+            )
+            else (select initcap(oc2.comuna_name) from public.op_comunas oc2 
+                    where unaccent(lower(easy.comuna_despacho)) = unaccent(lower(oc2.comuna_name))
+                    )
+            end))) as region
             --select * 
             from areati.ti_carga_easy_go_opl easy 
             where to_char(created_at,'yyyy-mm-dd')=to_char(current_date,'yyyy-mm-dd')
             ) as subquery
-
             """)
 
             return cur.fetchall()
@@ -1971,7 +1977,7 @@ class reportesConnection():
              easygo.verified as "Pistoleado"   
         
             from areati.ti_carga_easy_go_opl easygo
-            where to_char(created_at,'yyyymmdd')=to_char(current_date - 2,'yyyymmdd')   and easygo.codigo_sku = '{codigo_sku}'         
+            where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd') and easygo.codigo_sku = '{codigo_sku}'         
                         """)      
                  
             return cur.fetchall()

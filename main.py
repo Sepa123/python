@@ -12,6 +12,12 @@ from lib.password import verify_password, hash_password
 from database.models.token import TokenPayload
 from routers import transyanez, reportes_cargas, pedidos, productos , rutas
 
+## documentacion api
+
+# from fastapi.openapi.docs import get_swagger_ui_html
+# from fastapi.openapi.utils import get_openapi
+# from starlette.responses import HTMLResponse, JSONResponse
+
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 100
@@ -23,7 +29,7 @@ crypt = CryptContext(schemes=["bcrypt"])
 
 oauth2 = OAuth2PasswordBearer(tokenUrl="/login")
 
-app = FastAPI()
+app = FastAPI(docs_url="/api/docs", redoc_url="/api/redoc")
 
 app.include_router(transyanez.router)
 app.include_router(reportes_cargas.router)
@@ -58,6 +64,17 @@ app.add_middleware(GZipMiddleware, minimum_size=10000)
 async def root():
     conn
     return "hola"
+
+# @app.get("/api/docs", response_class=HTMLResponse)
+# async def custom_swagger_ui_html():
+#     openapi_url = app.url_path_for("openapi")
+#     return get_swagger_ui_html(openapi_url, title=app.title + " - Swagger UI")
+
+
+# @app.get("/openapi.json", tags=["openapi"])
+# async def custom_openapi():
+#     return JSONResponse(get_openapi(title=app.title, version=app.version))
+
 
 # @app.post("/insert", status_code=status.HTTP_201_CREATED)
 # async def insert(user_data : userSchema):
