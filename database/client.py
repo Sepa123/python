@@ -181,6 +181,8 @@ class reportesConnection():
 
             return cur.fetchall()
     
+
+    
     #Cargas Verificadas y Total
     def read_cargas_easy(self):
         
@@ -1233,6 +1235,47 @@ class reportesConnection():
 
             return cur.fetchall()
     
+    def read_reporte_producto_entregado_por_rango_fecha(self,inicio,termino):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            --------------------------- Reporte Productos Entregados entre fechas por Cliente
+            SELECT
+            case
+                When (to_char(date'{termino}'+ i,'d') = '1') then 'Domingo'
+                When (to_char(date'{termino}'+ i,'d') = '2') then 'Lunes'
+                When (to_char(date'{termino}'+ i,'d') = '3') then 'Martes'
+                When (to_char(date'{termino}'+ i,'d') = '4') then 'Miercoles'
+                When (to_char(date'{termino}'+ i,'d') = '5') then 'Jueves'
+                When (to_char(date'{termino}'+ i,'d') = '6') then 'Viernes'
+                When (to_char(date'{termino}'+ i,'d') = '7') then 'Sabado'
+                End "Día",
+            date'{termino}'+ i as "Fecha",
+            (
+                -- ELECTROLUX
+                Select count(distinct(numero_guia)) from areati.ti_wms_carga_electrolux twce
+                Where to_char(twce.created_at,'yyyy-mm-dd') = to_char(date'{termino}'+ i,'yyyy-mm-dd')
+            ) as "Electrolux",
+            (
+                -- SPORTEX
+                Select count(*) from areati.ti_wms_carga_sportex twcs
+                Where to_char(twcs.created_at,'yyyy-mm-dd') = to_char(date'{termino}'+ i,'yyyy-mm-dd')
+            ) as "Sportex",
+            (
+                -- EASY CD
+                Select count(distinct(entrega)) from areati.ti_wms_carga_easy easy
+                Where to_char(easy.created_at,'yyyy-mm-dd') = to_char(date'{termino}'+ i,'yyyy-mm-dd')
+            ) as "Easy",
+            (
+                -- EASY OPL
+                Select count(distinct(id_entrega)) from areati.ti_carga_easy_go_opl tcego  
+                Where to_char(tcego.created_at,'yyyy-mm-dd') = to_char(date'{termino}'+ i,'yyyy-mm-dd')
+            ) as "Easy OPL"
+            --From generate_series(date'2023-01-01'- CURRENT_DATE, 0 ) i                                   -- Resumen 2023 (Descarga)
+            From generate_series( date'{inicio}'- date'{termino}', 0 ) i             
+  
+            """)
+
+            return cur.fetchall()
     ## Reportes por hora
     def read_reportes_hora(self): 
         with self.conn.cursor() as cur:
