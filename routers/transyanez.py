@@ -16,7 +16,7 @@ nombre_archivo = f"resumen_vehiculos_portal_{dia_actual}".format(dia_actual)
 # Crear un nuevo libro de trabajo y hoja de cálculo
 
 @router.get("/resumen_vehiculos_portal")
-async def get_data():
+async def download_resumen_vehiculos_portal():
 
     results = conn.get_vehiculos_portal()
     wb = Workbook()
