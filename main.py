@@ -65,15 +65,15 @@ async def root():
     conn
     return "hola"
 
-@app.get("/api/docs", response_class=HTMLResponse)
-async def custom_swagger_ui_html():
-    openapi_url = app.url_path_for("openapi")
-    return get_swagger_ui_html(openapi_url, title=app.title + " - Swagger UI")
+# @app.get("/api/docs", response_class=HTMLResponse)
+# async def custom_swagger_ui_html():
+#     openapi_url = app.url_path_for("openapi")
+#     return get_swagger_ui_html(openapi_url, title=app.title + " - Swagger UI")
 
 
-@app.get("/openapi.json", tags=["openapi"])
-async def custom_openapi():
-    return JSONResponse(get_openapi(title=app.title, version=app.version))
+# @app.get("/openapi.json", tags=["openapi"])
+# async def custom_openapi():
+#     return JSONResponse(get_openapi(title=app.title, version=app.version))
 
 
 # @app.post("/insert", status_code=status.HTTP_201_CREATED)
