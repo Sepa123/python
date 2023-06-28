@@ -121,7 +121,8 @@ async def login_user(user_data:loginSchema):
     # # return "Bienvenido {}".format(data["username"])
     return {
         "access_token": jwt.encode(access_token, SECRET_KEY,algorithm=ALGORITHM),
-        "token_type":"bearer"
+        "token_type":"bearer",
+        "rol_id" : user_db[5]
     }
 
 async def auth_user(token:str = Depends(oauth2)):
