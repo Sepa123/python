@@ -65,15 +65,15 @@ async def root():
     conn
     return "hola"
 
-# @app.get("/api/docs", response_class=HTMLResponse)
-# async def custom_swagger_ui_html():
-#     openapi_url = app.url_path_for("openapi")
-#     return get_swagger_ui_html(openapi_url, title=app.title + " - Swagger UI")
+@app.get("/api/docs", response_class=HTMLResponse)
+async def custom_swagger_ui_html():
+    openapi_url = app.url_path_for("openapi")
+    return get_swagger_ui_html(openapi_url, title=app.title + " - Swagger UI")
 
 
-# @app.get("/openapi.json", tags=["openapi"])
-# async def custom_openapi():
-#     return JSONResponse(get_openapi(title=app.title, version=app.version))
+@app.get("/openapi.json", tags=["openapi"])
+async def custom_openapi():
+    return JSONResponse(get_openapi(title=app.title, version=app.version))
 
 
 # @app.post("/insert", status_code=status.HTTP_201_CREATED)
@@ -117,7 +117,7 @@ async def login_user(user_data:loginSchema):
                     "active": user_db[4],
                     # "rol_id":user_db[5]
                     # }
-                    "rol_id": "13"}
+                    "rol_id": "5"}
     # # return "Bienvenido {}".format(data["username"])
     return {
         "access_token": jwt.encode(access_token, SECRET_KEY,algorithm=ALGORITHM),

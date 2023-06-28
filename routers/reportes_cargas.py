@@ -270,11 +270,11 @@ async def get_productos_hoy():
     print("/productos/hoy")
     return reportes_producto_schema(results)
 
-@router.get("/productos/trimestre",status_code=status.HTTP_202_ACCEPTED)
+@router.get("/productos/rango",status_code=status.HTTP_202_ACCEPTED)
 async def get_productos_por_rango_fecha(inicio, termino):
     results = conn.read_reporte_producto_entregado_por_rango_fecha(inicio,termino)
     # "2023-06-01","2023-07-01"
-    print("/productos/trimestre")
+    print("/productos/rango")
     return reportes_producto_schema(results)
 
 ## TODO: EL ANUAL ES PARA DESCARGA
