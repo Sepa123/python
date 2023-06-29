@@ -274,7 +274,7 @@ async def get_productos_hoy():
 async def get_productos_por_rango_fecha(inicio, termino):
     print("inicio",inicio,"termino",termino)
 
-    if inicio is 'undefined' or termino is 'undefined':
+    if inicio == 'undefined' or termino == 'undefined':
     # Una o ambas variables son None
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="las varaibles no estan definidas")
   
