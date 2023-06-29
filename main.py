@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 from lib.password import verify_password, hash_password
 from database.models.token import TokenPayload
 from routers import transyanez, reportes_cargas, pedidos, productos , rutas
+from database.schema.roles_list import roles_list_schema
 
 ## documentacion api
 
@@ -151,3 +152,8 @@ async def current_user(user = Depends(auth_user)):
 async def me (user:TokenPayload = Depends(current_user)):
     print("Hola" )
     return user
+
+@app.get("/api/roles")
+async def me ():  
+    results = conn.read_roles()
+    return roles_list_schema(results)

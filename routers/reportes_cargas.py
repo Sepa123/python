@@ -272,8 +272,14 @@ async def get_productos_hoy():
 
 @router.get("/productos/rango",status_code=status.HTTP_202_ACCEPTED)
 async def get_productos_por_rango_fecha(inicio, termino):
+    print("inicio",inicio,"termino",termino)
+
+    if inicio is None or termino is None:
+    # Una o ambas variables son None
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="las varaibles no estan definidas")
+  
     results = conn.read_reporte_producto_entregado_por_rango_fecha(inicio,termino)
-    # "2023-06-01","2023-07-01"
+    
     print("/productos/rango")
     return reportes_producto_schema(results)
 

@@ -29,11 +29,18 @@ class UserConnection():
             """,data)
         self.conn.commit()
 
-    
     def read_all(self):
         with self.conn.cursor() as cur:
             cur.execute("""
             select id, full_name ,mail,"password" ,active ,rol_id  from "user".users
+            """)
+            return cur.fetchall()
+        
+    def read_roles(self):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            SELECT id, "name", description, extra_data, is_sub_rol
+                FROM "user".rol;
             """)
             return cur.fetchall()
         
