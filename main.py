@@ -123,7 +123,8 @@ async def login_user(user_data:loginSchema):
     return {
         "access_token": jwt.encode(access_token, SECRET_KEY,algorithm=ALGORITHM),
         "token_type":"bearer",
-        "rol_id" : user_db[5]
+        # "rol_id" : user_db[5]
+        "rol_id": "7"
     }
 
 async def auth_user(token:str = Depends(oauth2)):
