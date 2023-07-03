@@ -2050,6 +2050,121 @@ class reportesConnection():
             """)
             return cur.fetchone()
 
+
+    ## recepcion tiendas
+
+    def read_recepcion_electrolux(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+        select eltx.identificador_contacto AS "Código de Cliente",
+        initcap(eltx.nombre_contacto) AS "Nombre",
+        CASE 
+        WHEN substring(initcap(split_part(eltx.direccion,',',1)) from '^\d') ~ '\d' then substring(initcap(split_part(eltx.direccion,',',1)) from '\d+[\w\s]+\d+')
+        WHEN lower(split_part(eltx.direccion,',',1)) ~ '^(pasaje|calle|avenida)\s+\d+\s+' THEN 
+        regexp_replace(REPLACE(regexp_replace(regexp_replace(initcap(split_part(eltx.direccion,',',1)), ',.$', ''), '\s+(\d+\D+\d+).$', ' \1'), '\', ''), '', '')
+        else coalesce(substring(initcap(split_part(eltx.direccion,',',1)) from '^[^0-9]*[0-9]+'),eltx.direccion)
+                END "Calle y Número",
+                --initcap(split_part(eltx.direccion,',',2)) AS "Ciudad",
+                --initcap(split_part(eltx.direccion,',',3)) AS "Provincia/Estado",
+                case
+                when unaccent(lower(eltx.comuna)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                (select oc.comuna_name from public.op_comunas oc 
+                where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+        where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(eltx.comuna))
+            )
+                )
+                else (select initcap(oc2.comuna_name) from public.op_comunas oc2 
+            where unaccent(lower(eltx.comuna)) = unaccent(lower(oc2.comuna_name))
+            )
+        end as "Ciudad",
+                CAST (eltx.numero_guia AS varchar) AS "Código de Pedido",
+                eltx.fecha_min_entrega AS "Fecha de Pedido",
+                CAST (eltx.codigo_item AS varchar) AS "Código de Producto",
+                TRIM(eltx.nombre_item) AS "Descripción del Producto",
+                cast(eltx.cantidad as numeric) AS "Cantidad de Producto",
+            cast(eltx.codigo_item as text) as "Cod. SKU",					
+            eltx.verified as "Pistoleado",
+            eltx.created_at as "fecha"
+        from areati.ti_wms_carga_electrolux eltx
+        where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
+                        """)           
+            return cur.fetchall()
+
+    def read_recepcion_easy_opl(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+             select  easygo.rut_cliente AS "Rut de Cliente",
+             initcap(easygo.nombre_cliente) AS "Nombre",
+             initcap(easygo.direc_despacho) AS "Calle y Número",
+             initcap(easygo.comuna_despacho)  AS "Provincia/Estado",
+             --coalesce(easygo.fono_cliente ,'0') AS "Teléfono",
+             CAST (easygo.suborden AS varchar) AS "Código de Pedido",
+             easygo.fec_compromiso AS "Fecha de Pedido",
+             easygo.id_entrega AS "Código de Producto",
+             easygo.descripcion AS "Descripción del Producto",
+             cast(easygo.unidades as numeric) AS "Cantidad de Producto",
+             easygo.codigo_sku as "Cod. SKU",                         
+             easygo.verified as "Pistoleado"   
+        
+            from areati.ti_carga_easy_go_opl easygo
+            where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')           
+                        """)           
+            return cur.fetchall()
+
+    def read_recepcion_sportex(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                select twcs.id_sportex AS "Código de Cliente",
+                initcap(twcs.cliente) as "Nombre",
+                twcs.direccion as "Calle",
+                twcs.comuna as "Provincia",
+                CAST (twcs.id_sportex AS varchar) AS "Código de Pedido",
+                twcs.fecha_entrega AS "Fecha de Pedido",
+                twcs.id_sportex as "Codigo producto",
+                coalesce(twcs.marca,'Sin Marca') AS "Descripción del Producto",
+                1 AS "Cantidad de Producto",
+                '' as "SKU",
+                twcs.verified as "Pistoleado"
+                from areati.ti_wms_carga_sportex twcs 
+                where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd') 
+                        """)           
+            return cur.fetchall()
+    
+    def read_recepcion_easy_cd(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                    select       CAST(easy.entrega AS varchar) AS "Código de Cliente",     
+                            initcap(easy.nombre) AS "Nombre",
+                            CASE 
+                                WHEN substring(easy.direccion from '^\d') ~ '\d' then substring(initcap(easy.direccion) from '\d+[\w\s]+\d+')
+                                WHEN lower(easy.direccion) ~ '^(pasaje|calle|avenida)\s+\d+\s+' THEN
+                                regexp_replace(REPLACE(regexp_replace(regexp_replace(initcap(split_part(easy.direccion,',',1)), ',.$', ''), '\s+(\d+\D+\d+).$', ' \1'), '\', ''), '', '') 
+                                else coalesce(substring(initcap(easy.direccion) from '^[^0-9]*[0-9]+'),initcap(easy.direccion))
+                                END "Calle y Número",
+                            CASE
+                                    WHEN easy.region='XIII - Metropolitana' THEN 'Region Metropolitana'
+                                    WHEN easy.region='V - Valparaíso' THEN 'Valparaíso'
+                                    else (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(easy.comuna)))
+                            END "Provincia/Estado",
+                            CAST(easy.entrega AS varchar) AS "Código de Pedido",   -- Agrupar Por
+                            easy.fecha_entrega AS "Fecha de Pedido",
+                            easy.carton AS "Código de Producto",
+                            easy.descripcion  AS "Descripción del Producto",
+                            CASE 
+                                WHEN easy.cant ~ '^\d+$' THEN (select count(*) 
+                                                                from areati.ti_wms_carga_easy easy_a 
+                                                                where easy_a.entrega = easy.entrega and easy_a.carton=easy.carton) 
+                                -- Si el campo es solo un número
+                                ELSE regexp_replace(easy.cant, '[^\d]', '', 'g')::numeric 
+                                -- Si el campo contiene una frase con cantidad
+                            END as "Cantidad de Producto",
+                            cast(easy.producto as text) as "Cod. SKU",                            -- no va a Quadminds
+                            easy.verified as "Pistoleado"
+                    from areati.ti_wms_carga_easy easy
+                    where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd') 
+                        """)           
+            return cur.fetchall()
+        
 class transyanezConnection():
     conn = None
     def __init__(self) -> None:

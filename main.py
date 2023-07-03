@@ -10,7 +10,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 from datetime import datetime, timedelta
 from lib.password import verify_password, hash_password
 from database.models.token import TokenPayload
-from routers import transyanez, reportes_cargas, pedidos, productos , rutas
+from routers import transyanez, reportes_cargas, pedidos, productos , rutas, recepcion
 from database.schema.roles_list import roles_list_schema
 
 ## documentacion api
@@ -37,6 +37,7 @@ app.include_router(reportes_cargas.router)
 app.include_router(pedidos.router)
 app.include_router(productos.router)
 app.include_router(rutas.router)
+app.include_router(recepcion.router)
 
 conn = UserConnection()
 
