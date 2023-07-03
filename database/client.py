@@ -2087,6 +2087,7 @@ class reportesConnection():
             eltx.created_at as "fecha"
         from areati.ti_wms_carga_electrolux eltx
         where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
+        order by created_at desc
                         """)           
             return cur.fetchall()
 
@@ -2107,7 +2108,8 @@ class reportesConnection():
              easygo.verified as "Pistoleado"   
         
             from areati.ti_carga_easy_go_opl easygo
-            where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')           
+            where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd') 
+            order by created_at desc          
                         """)           
             return cur.fetchall()
 
@@ -2127,6 +2129,7 @@ class reportesConnection():
                 twcs.verified as "Pistoleado"
                 from areati.ti_wms_carga_sportex twcs 
                 where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd') 
+                order by created_at desc
                         """)           
             return cur.fetchall()
     
@@ -2162,6 +2165,7 @@ class reportesConnection():
                             easy.verified as "Pistoleado"
                     from areati.ti_wms_carga_easy easy
                     where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd') 
+                    order by created_at desc
                         """)           
             return cur.fetchall()
         
