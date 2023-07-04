@@ -18,6 +18,8 @@ conn = reportesConnection()
 
 connHela = HelaConnection()
 
+## buscar los productos que llegan el dia de hoy
+
 @router.get("/electrolux", status_code=status.HTTP_202_ACCEPTED)
 async def get_recepcion_electrolux():
     results = conn.read_recepcion_electrolux()
@@ -42,7 +44,36 @@ async def get_recepcion_easy_cd():
 
     return recepcion_tiendas_schema(results)
 
-#### No estoy seguro si deba actualizar esto
+
+## buscar los productos que llegan el dia de hoy por su codigo de producto
+
+
+@router.get("/electrolux/{codigo_producto}", status_code=status.HTTP_202_ACCEPTED)
+async def get_recepcion_electrolux(codigo_producto:str):
+    results = conn.read_recepcion_electrolux_by_codigo_producto(codigo_producto)
+
+    return recepcion_tiendas_schema(results)
+
+@router.get("/sportex", status_code=status.HTTP_202_ACCEPTED)
+async def get_recepcion_sportex_by_codigo_producto():
+    results = conn.read_recepcion_sportex_by_codigo_producto()
+
+    return recepcion_tiendas_schema(results)
+
+@router.get("/easy_opl", status_code=status.HTTP_202_ACCEPTED)
+async def get_recepcion_easy_opl_by_codigo_producto():
+    results = conn.read_recepcion_easy_opl_by_codigo_producto()
+
+    return recepcion_tiendas_schema(results)
+
+@router.get("/easy_cd", status_code=status.HTTP_202_ACCEPTED)
+async def get_recepcion_easy_cd_by_codigo_producto():
+    results = conn.read_recepcion_easy_cd_by_codigo_producto()
+
+    return recepcion_tiendas_schema(results)
+
+
+### Actualización de los verificados de los productos
 @router.put("/verificar",status_code=status.HTTP_202_ACCEPTED)
 async def update_verificado_producto(body: bodyUpdateVerified):
     try:
@@ -52,3 +83,7 @@ async def update_verificado_producto(body: bodyUpdateVerified):
     except:
           print("error")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
+    
+#Bitacora podria ir junto al updateverificar
+
+# @router.post("/bitacora",status_code=status.HTTP_201_CREATED)

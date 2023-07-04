@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException, status, Depends
-from database.client import UserConnection
+from database.client import UserConnection 
+from database.hela_prod import HelaConnection
 from database.schema.user_schema import users_schema, user_schema
 from database.models.user import userSchema, loginSchema ,User
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -40,6 +41,7 @@ app.include_router(rutas.router)
 app.include_router(recepcion.router)
 
 conn = UserConnection()
+hela_conn = HelaConnection()
 
 origins = [
     "http://localhost:4200",
@@ -103,8 +105,12 @@ async def select():
 async def login_user(user_data:loginSchema):
     data = user_data.dict()
     user_db = conn.read_only_one(data)
+    
     if user_db is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="El usuario no existe")
+        user_db = hela_conn.read_only_one(data)
+
+        if user_db is None:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="El usuario no existe")
     
     if not verify_password(data["password"],user_db[3]):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="la contraseña no es correcto")

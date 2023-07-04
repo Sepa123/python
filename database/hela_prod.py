@@ -26,6 +26,16 @@ class HelaConnection():
     def __def__(self):
         self.conn.close()
 
+    
+    ##Login User hela
+
+    def read_only_one(self, data):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+           SELECT id, nombre ,mail,"password" ,activate ,rol_id  FROM hela.usuarios WHERE mail=%(mail)s 
+            """, data)
+            return cur.fetchone()
+
       ## Asignar rutas activas
     def insert_ruta_asignada(self,data):
         with self.conn.cursor() as cur: 
