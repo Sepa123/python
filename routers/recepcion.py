@@ -78,7 +78,7 @@ async def get_recepcion_easy_cd_by_codigo_producto():
 async def update_verificado_producto(body: bodyUpdateVerified):
     try:
         print(body.cod_producto)
-        # conn.update_verified(body.cod_producto)
+        conn.update_verified(body.cod_producto)
         return { "message": f"Producto de codigo {body.cod_producto} verificado." }
     except:
           print("error")
