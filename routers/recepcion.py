@@ -78,8 +78,8 @@ async def get_recepcion_easy_cd_by_codigo_producto():
 async def update_verificado_producto(body: bodyUpdateVerified):
     try:
         print(body.cod_producto)
-        # conn.update_producto_picking_OPL(body.cod_producto,body.cod_sku)
-        return { "message": f"Producto de codigo {body.cod_producto} verificado, na mentira" }
+        # conn.update_verified(body.cod_producto)
+        return { "message": f"Producto de codigo {body.cod_producto} verificado." }
     except:
           print("error")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
