@@ -3,7 +3,7 @@ from fastapi.responses import FileResponse
 from openpyxl import Workbook
 
 ## Modelos y schemas
-
+from database.models.recepcion.recepcion_tiendas import bodyUpdateVerified, Recepcion_tiendas
 from database.schema.recepcion.recepcion_tiendas import recepcion_tiendas_schema
 
 ##Conexiones
@@ -41,3 +41,14 @@ async def get_recepcion_easy_cd():
     results = conn.read_recepcion_easy_cd()
 
     return recepcion_tiendas_schema(results)
+
+#### No estoy seguro si deba actualizar esto
+@router.put("/verificar",status_code=status.HTTP_202_ACCEPTED)
+async def update_verificado_producto(body: bodyUpdateVerified):
+    try:
+        print(body.cod_producto)
+        # conn.update_producto_picking_OPL(body.cod_producto,body.cod_sku)
+        return { "message": f"Producto de codigo {body.cod_producto} verificado, na mentira" }
+    except:
+          print("error")
+          raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
