@@ -56,7 +56,7 @@ class HelaConnection():
             cur.execute("""
             INSERT INTO hela.bitacora_recepcion
             (id_usuario, cliente, guia)
-            VALUES(%(id_usuario)s, %(cliente)s, %(n_guia)s,);
+            VALUES(%(id_usuario)s, %(cliente)s, %(n_guia)s);
             """,data)
         
         self.conn.commit()

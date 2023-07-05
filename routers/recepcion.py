@@ -82,10 +82,10 @@ async def update_verificado_producto(body: bodyUpdateVerified):
         rows = conn.update_verified_recepcion(body.cod_pedido,body.cod_producto)
 
         if any(number != 0 for number in rows):
-            
+            connHela.insert_data_bitacora_recepcion(data)
             return { "message": f"Producto de codigo {body.cod_producto} verificado." }
         else:
-            return { "message": f"Producto de codigo {body.cod_producto} ya fue verificado." }
+            return { "message": f"Producto ya fue verificado." }
         
     except:
           print("error")

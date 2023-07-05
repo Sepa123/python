@@ -18,7 +18,7 @@ class Recepcion_tiendas(BaseModel):
 
 
 class bodyUpdateVerified(BaseModel):
-    id_usuario: Optional[str]
+    id_usuario: Optional[int]
     cliente: Optional[str]
     n_guia: Optional[str]
     cod_pedido: str
