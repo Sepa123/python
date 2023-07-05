@@ -45,3 +45,26 @@ class HelaConnection():
             VALUES(%(asigned_by)s, %(id_ruta)s, %(nombre_ruta)s, %(patente)s, %(conductor)s, %(cantidad_producto)s, true, %(region)s);
             """,data)
         self.conn.commit()
+
+    ##Bitacora de recepcion de productos
+
+    def insert_data_bitacora_recepcion(self, data):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            INSERT INTO hela.bitacora_recepcion
+            (id_usuario, cliente, guia)
+            VALUES(%(id_usuario)s, %(cliente)s, %(guia)s,);
+            """,data)
+        
+        self.conn.commit()
+
+
+    ##Registrar nuevo usuario
+
+    def insert_nuevo_usuario(self, data):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            INSERT INTO hela.usuarios (nombre, mail, "password", activate, rol_id) VALUES( %(nombre)s,  %(mail)s,  %(password)s , true, %(rol_id)s );
+
+            """,data)
+        self.conn.commit()

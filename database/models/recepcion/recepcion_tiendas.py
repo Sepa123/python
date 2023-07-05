@@ -1,5 +1,6 @@
 from datetime import datetime
 from pydantic import BaseModel
+from typing import Optional
 
 
 class Recepcion_tiendas(BaseModel):
@@ -17,6 +18,10 @@ class Recepcion_tiendas(BaseModel):
 
 
 class bodyUpdateVerified(BaseModel):
+    id_usuario: Optional[str]
+    cliente: Optional[str]
+    n_guia: Optional[str]
+    cod_pedido: str
     cod_producto : str
 
 

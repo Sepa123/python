@@ -1904,15 +1904,20 @@ class reportesConnection():
             "UPDATE areati.ti_wms_carga_electrolux SET verified = true WHERE areati.ti_wms_carga_electrolux.numero_guia = %s",
             "UPDATE areati.ti_carga_easy_go_opl SET verified = true WHERE areati.ti_carga_easy_go_opl.id_entrega = %s"
         ]
+
+        updates = []
         try:
             for query in sql_queries:
                 with self.conn.cursor() as cur:
                     cur.execute(query, (codigo_producto,))
+                    # print(cur.rowcount)
+                    updates.append(cur.rowcount)
                 self.conn.commit()
         except (Exception, psycopg2.DatabaseError) as error:
             print("Error durante la actualización:", error)
         finally:
-            pass
+            # pass
+            return updates
 
     ## Rutas en activo
 
@@ -2049,7 +2054,6 @@ class reportesConnection():
             from quadminds.datos_ruta_manual drm where nombre_ruta = '{nombre_ruta}'
             """)
             return cur.fetchone()
-
 
     # recepcion tiendas
 
@@ -2285,6 +2289,29 @@ class reportesConnection():
                     --order by created_at desc
                         """)           
             return cur.fetchall()
+
+
+    def update_verified_recepcion(self,codigo_pedido, codigo_producto):
+        sql_queries = [
+            f"UPDATE areati.ti_wms_carga_sportex SET verified = true WHERE areati.ti_wms_carga_sportex.id_sportex = '{codigo_producto}'",
+            f"UPDATE areati.ti_wms_carga_easy easy SET verified = true WHERE easy.entrega = '{codigo_pedido}' and easy.carton = '{codigo_producto}'",
+            f"update areati.ti_wms_carga_electrolux eltx set verified = true where eltx.numero_guia = '{codigo_pedido}' and eltx.codigo_item = '{codigo_producto}'",
+            f"UPDATE areati.ti_carga_easy_go_opl easygo SET verified = true where easygo.suborden = '{codigo_pedido}' AND easygo.id_entrega = '{codigo_producto}'"
+        ]
+
+        updates = []
+        try:
+            for query in sql_queries:
+                with self.conn.cursor() as cur:
+                    cur.execute(query)
+                    # print(cur.rowcount)
+                    updates.append(cur.rowcount)
+                self.conn.commit()
+        except (Exception, psycopg2.DatabaseError) as error:
+            print("Error durante la actualización:", error)
+        finally:
+            # pass
+            return updates
 
 class transyanezConnection():
     conn = None

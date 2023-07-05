@@ -77,8 +77,11 @@ async def get_recepcion_easy_cd_by_codigo_producto():
 @router.put("/verificar",status_code=status.HTTP_202_ACCEPTED)
 async def update_verificado_producto(body: bodyUpdateVerified):
     try:
+        print(body)
         print(body.cod_producto)
-        conn.update_verified(body.cod_producto)
+        rows = conn.update_verified_recepcion(body.cod_pedido,body.cod_producto)
+
+        print(rows)
         return { "message": f"Producto de codigo {body.cod_producto} verificado." }
     except:
           print("error")
