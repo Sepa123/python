@@ -31,14 +31,17 @@ class HelaConnection():
 
     def read_only_one(self, data):
         with self.conn.cursor() as cur:
-            cur.execute("""
-           SELECT id, nombre ,mail,"password" ,activate ,rol_id  FROM hela.usuarios WHERE mail=%(mail)s 
-            """, data)
+            print (data)
+            cur.execute(f"""
+           SELECT id, nombre ,mail,"password" ,activate ,rol_id  FROM hela.usuarios WHERE mail='{data}'
+            """)
             return cur.fetchone()
 
       ## Asignar rutas activas
+   
     def insert_ruta_asignada(self,data):
         with self.conn.cursor() as cur: 
+            
             cur.execute("""
             INSERT INTO hela.ruta_asignada
             (asigned_by, id_ruta, nombre_ruta, patente, driver, cant_producto, estado, region)
@@ -64,7 +67,7 @@ class HelaConnection():
     def insert_nuevo_usuario(self, data):
         with self.conn.cursor() as cur:
             cur.execute("""
-            INSERT INTO hela.usuarios (nombre, mail, "password", activate, rol_id) VALUES( %(nombre)s,  %(mail)s,  %(password)s , true, %(rol_id)s );
+            INSERT INTO hela.usuarios (nombre, mail, "password", activate, rol_id) VALUES( %(Nombre)s,  %(Mail)s,  %(Password)s , true, %(Rol)s );
 
             """,data)
         self.conn.commit()

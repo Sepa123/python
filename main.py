@@ -108,7 +108,7 @@ async def login_user(user_data:loginSchema):
     user_db = conn.read_only_one(data)
     
     if user_db is None:
-        user_db = hela_conn.read_only_one(data)
+        user_db = hela_conn.read_only_one(user_data.mail)
 
         if user_db is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="El usuario no existe")
