@@ -77,12 +77,16 @@ async def get_recepcion_easy_cd_by_codigo_producto():
 @router.put("/verificar",status_code=status.HTTP_202_ACCEPTED)
 async def update_verificado_producto(body: bodyUpdateVerified):
     try:
-        print(body)
+        data = body.dict()
         print(body.cod_producto)
         rows = conn.update_verified_recepcion(body.cod_pedido,body.cod_producto)
 
-        print(rows)
-        return { "message": f"Producto de codigo {body.cod_producto} verificado." }
+        if any(number != 0 for number in rows):
+            
+            return { "message": f"Producto de codigo {body.cod_producto} verificado." }
+        else:
+            return { "message": f"Producto de codigo {body.cod_producto} ya fue verificado." }
+        
     except:
           print("error")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
