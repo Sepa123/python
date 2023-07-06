@@ -2285,11 +2285,10 @@ class reportesConnection():
                             cast(easy.producto as text) as "Cod. SKU",                            -- no va a Quadminds
                             easy.verified as "Pistoleado"
                     from areati.ti_wms_carga_easy easy
-                    where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd') AND easy.carton = '{codigo_producto}'
+                    where easy.carton = '{codigo_producto}'
                     --order by created_at desc
                         """)           
             return cur.fetchall()
-
 
     def update_verified_recepcion(self,codigo_pedido, codigo_producto):
         sql_queries = [
@@ -2312,6 +2311,58 @@ class reportesConnection():
         finally:
             # pass
             return updates
+    
+
+    def update_verified_sportex(self,codigo_pedido):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""        
+                UPDATE areati.ti_wms_carga_sportex 
+                SET verified = true 
+                WHERE areati.ti_wms_carga_sportex.id_sportex = '{codigo_pedido}'
+            """)
+        self.conn.commit()
+
+    def update_verified_electrolux(self,codigo_pedido):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""        
+                update areati.ti_wms_carga_electrolux eltx 
+                set verified = true 
+                where eltx.numero_guia = '{codigo_pedido}'
+            """)
+        self.conn.commit()
+
+
+    def update_verified_opl(self,codigo_pedido):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""        
+            UPDATE areati.ti_carga_easy_go_opl easygo 
+            SET verified = true 
+            where easygo.suborden = '{codigo_pedido}'
+            """)
+        self.conn.commit()
+
+    def update_verified_cd(self,codigo_producto):
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute(f"""        
+                UPDATE areati.ti_wms_carga_easy easy 
+                SET verified = true 
+                WHERE easy.carton = '{codigo_producto}'
+                """)
+            self.conn.commit()
+        except (Exception, psycopg2.DatabaseError) as error:
+            print("Error durante la actualización:", error)
+        finally:
+            return cur.rowcount
+        
+
+
+    def get_codigo_pedido_opl(self, codigo):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                    SELECT substring('{codigo}', '\d+') 
+                        """)
+            return cur.fetchall()
 
 class transyanezConnection():
     conn = None
