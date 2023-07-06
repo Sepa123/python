@@ -52,7 +52,7 @@ async def get_recepcion_easy_cd():
 async def get_recepcion_electrolux(body: bodyUpdateVerified):
     try:
         data = body.dict()
-        rows = conn.update_verified_cd(body.cod_producto)
+        rows = conn.update_verified_electrolux(body.cod_producto)
         connHela.insert_data_bitacora_recepcion(data)
         return { "message": f"Producto {body.cod_producto} verificado." }
     except:
@@ -63,7 +63,7 @@ async def get_recepcion_electrolux(body: bodyUpdateVerified):
 async def get_recepcion_sportex_by_codigo_producto(body: bodyUpdateVerified):
     try:
         data = body.dict()
-        rows = conn.update_verified_cd(body.cod_producto)
+        rows = conn.update_verified_sportex(body.cod_producto)
         connHela.insert_data_bitacora_recepcion(data)
         return { "message": f"Producto {body.cod_producto} verificado." }
     except:
