@@ -2208,7 +2208,7 @@ class reportesConnection():
             eltx.verified as "Pistoleado",
             eltx.created_at as "fecha"
         from areati.ti_wms_carga_electrolux eltx
-        where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd') AND eltx.codigo_item = '{codigo_producto}'
+        where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd') AND eltx.numero_guia = '{codigo_producto}'
                         """)           
             return cur.fetchall()
         

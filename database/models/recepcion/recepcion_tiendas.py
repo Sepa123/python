@@ -23,6 +23,7 @@ class bodyUpdateVerified(BaseModel):
     n_guia: Optional[str]
     cod_pedido: str
     cod_producto : str
+    ids_usuario : Optional[str]
 
 
 

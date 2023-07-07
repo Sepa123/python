@@ -47,6 +47,13 @@ async def get_recepcion_easy_cd():
 
 ## buscar los productos que llegan el dia de hoy por su codigo de producto
 
+@router.get("/electrolux/{cod_pedido}", status_code=status.HTTP_202_ACCEPTED)
+async def get_recepcion_electrolux(cod_pedido : str):
+    results = conn.read_recepcion_electrolux_by_codigo_producto(cod_pedido)
+
+    return recepcion_tiendas_schema(results)
+
+## cambiar verificado a productos 
 
 @router.put("/electrolux", status_code=status.HTTP_202_ACCEPTED)
 async def get_recepcion_electrolux(body: bodyUpdateVerified):
