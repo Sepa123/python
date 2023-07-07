@@ -53,7 +53,7 @@ async def get_recepcion_electrolux(body: bodyUpdateVerified):
     try:
         data = body.dict()
         rows = conn.update_verified_electrolux(body.cod_producto)
-        connHela.insert_data_bitacora_recepcion(data)
+        # connHela.insert_data_bitacora_recepcion(data)
         return { "message": f"Producto {body.cod_producto} verificado." }
     except:
           print("error")
@@ -64,7 +64,7 @@ async def get_recepcion_sportex_by_codigo_producto(body: bodyUpdateVerified):
     try:
         data = body.dict()
         rows = conn.update_verified_sportex(body.cod_producto)
-        connHela.insert_data_bitacora_recepcion(data)
+        # connHela.insert_data_bitacora_recepcion(data)
         return { "message": f"Producto {body.cod_producto} verificado." }
     except:
           print("error")
@@ -78,7 +78,7 @@ async def get_recepcion_easy_opl_by_codigo_producto(body: bodyUpdateVerified):
     try:
         data = body.dict()
         rows = conn.update_verified_opl(codigo[0][0])
-        connHela.insert_data_bitacora_recepcion(data)
+        # connHela.insert_data_bitacora_recepcion(data)
 
         return { "message": f"Producto {codigo[0][0]} verificado." }
 
@@ -92,7 +92,7 @@ async def get_recepcion_easy_cd_by_codigo_producto(body: bodyUpdateVerified):
     try:
         data = body.dict()
         rows = conn.update_verified_cd(body.cod_producto)
-        connHela.insert_data_bitacora_recepcion(data)
+        # connHela.insert_data_bitacora_recepcion(data)
         return { "message": f"Producto {body.cod_producto} verificado." }
     except:
           print("error")
@@ -109,7 +109,7 @@ async def update_verificado_producto(body: bodyUpdateVerified):
         rows = conn.update_verified_recepcion(body.cod_pedido,body.cod_producto)
         print(rows)
         if any(number != 0 for number in rows):
-            connHela.insert_data_bitacora_recepcion(data)
+            # connHela.insert_data_bitacora_recepcion(data)
             return { "message": f"Producto de codigo {body.cod_producto} verificado." }
         else:
             return { "message": f"Producto ya fue verificado." }
