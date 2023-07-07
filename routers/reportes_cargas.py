@@ -40,6 +40,10 @@ from database.schema.pedidos_pendientes import pedidos_pendientes_schema
 from database.models.carga_easy_comparacion import CargaEasyComparacion
 from database.schema.carga_easy_comparacion import cargas_easy_comparacion_schema
 
+
+from database.models.operaciones.nro_cargas_hora import NroCargasHora
+from database.schema.operaciones.nro_cargas_hora import nro_cargas_hora_schema
+
 from typing import List
 from fastapi.params import Query
 
@@ -446,3 +450,12 @@ async def producto_picking_id(producto_id : str):
     if results is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El codigo del producto no existe")
     return producto_picking_schema(results)
+
+
+# cargas por hora
+
+@router.get("/cargas_por_hora",status_code=status.HTTP_202_ACCEPTED)
+async def cargas_por_hora():
+    results = conn.get_carga_hora()
+
+    return nro_cargas_hora_schema(results)

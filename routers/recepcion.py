@@ -73,7 +73,7 @@ async def get_recepcion_sportex_by_codigo_producto(body: bodyUpdateVerified):
 @router.put("/easy_opl", status_code=status.HTTP_202_ACCEPTED)
 async def get_recepcion_easy_opl_by_codigo_producto(body: bodyUpdateVerified):
     codigo = conn.get_codigo_pedido_opl(body.cod_producto)
-    print(codigo[0][0])
+    print(codigo)
     body.n_guia = codigo[0][0]
     try:
         data = body.dict()

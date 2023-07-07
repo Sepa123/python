@@ -2355,14 +2355,33 @@ class reportesConnection():
         finally:
             return cur.rowcount
         
-
-
     def get_codigo_pedido_opl(self, codigo):
         with self.conn.cursor() as cur:
             cur.execute(f"""
                     SELECT substring('{codigo}', '\d+') 
                         """)
             return cur.fetchall()
+
+    # Cargas por hora
+
+    def get_carga_hora(self):
+        with self.conn.cursor() as cur:
+            
+            cur.execute("""
+            select to_char(created_at,'HH24:mi') as "Hora Ingreso", 
+            easy.nro_carga as "N° Carga",
+            (select count(distinct(entrega)) from areati.ti_wms_carga_easy e where e.nro_carga = easy.nro_carga) as "Entregas",
+            (select count(*) from areati.ti_wms_carga_easy e where e.nro_carga = easy.nro_carga) as "Bultos",
+            (select count(*) from areati.ti_wms_carga_easy e where e.nro_carga = easy.nro_carga and verified=true) as "Verificados",
+            (select count(*) from areati.ti_wms_carga_easy e where e.nro_carga = easy.nro_carga and verified=false) as "Sin Verificar"
+            from areati.ti_wms_carga_easy easy 
+            where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
+            group by 1,2
+            order by 1 asc 
+                        """)
+            
+            return cur.fetchall()
+            
 
 class transyanezConnection():
     conn = None
