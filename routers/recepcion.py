@@ -98,6 +98,7 @@ async def get_recepcion_easy_cd_by_codigo_producto(body: bodyUpdateVerified):
     # results = conn.read_recepcion_easy_cd_by_codigo_producto(body.cod_producto)
     try:
         data = body.dict()
+        
         rows = conn.update_verified_cd(body.cod_producto)
         connHela.insert_data_bitacora_recepcion(data)
         return { "message": f"Producto {body.cod_producto} verificado." }
