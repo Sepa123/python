@@ -106,10 +106,11 @@ async def select():
 async def login_user(user_data:loginSchema):
     data = user_data.dict()
     user_db = conn.read_only_one(data)
-    
+    server = "portal"
+
     if user_db is None:
         user_db = hela_conn.read_only_one(user_data.mail)
-
+        server = "hela"
         if user_db is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="El usuario no existe")
     
@@ -119,6 +120,7 @@ async def login_user(user_data:loginSchema):
     # return user_db
     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
 
+    print(server)
     access_token = {"sub": user_db[1],
                     "exp": expire,
                     "uid": user_db[0],
@@ -131,7 +133,8 @@ async def login_user(user_data:loginSchema):
     return {
         "access_token": jwt.encode(access_token, SECRET_KEY,algorithm=ALGORITHM),
         "token_type":"bearer",
-        "rol_id" : user_db[5]
+        "rol_id" : user_db[5],
+        "server": server
     }
 
 async def auth_user(token:str = Depends(oauth2)):
