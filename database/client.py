@@ -2320,7 +2320,9 @@ class reportesConnection():
                 SET verified = true 
                 WHERE areati.ti_wms_carga_sportex.id_sportex = '{codigo_pedido}'
             """)
+            row = cur.rowcount
         self.conn.commit()
+        return row
 
     def update_verified_electrolux(self,codigo_pedido):
         with self.conn.cursor() as cur:
@@ -2329,7 +2331,10 @@ class reportesConnection():
                 set verified = true 
                 where eltx.numero_guia = '{codigo_pedido}'
             """)
+            row = cur.rowcount
         self.conn.commit()
+
+        return row
 
 
     def update_verified_opl(self,codigo_pedido):
@@ -2339,7 +2344,9 @@ class reportesConnection():
             SET verified = true 
             where easygo.suborden = '{codigo_pedido}'
             """)
+            row = cur.rowcount
         self.conn.commit()
+        return row
 
     def update_verified_cd(self,codigo_producto):
         try:

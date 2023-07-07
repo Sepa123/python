@@ -60,8 +60,11 @@ async def get_recepcion_electrolux(body: bodyUpdateVerified):
     try:
         data = body.dict()
         rows = conn.update_verified_electrolux(body.cod_producto)
-        connHela.insert_data_bitacora_recepcion(data)
-        return { "message": f"Producto {body.cod_producto} verificado." }
+        if rows != 0:
+            connHela.insert_data_bitacora_recepcion(data)
+        else:
+            print(" no se verifico ningun producto")
+        return { "message": f"Producto {rows} verificado." }
     except:
           print("error")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la verificación")
@@ -71,8 +74,11 @@ async def get_recepcion_sportex_by_codigo_producto(body: bodyUpdateVerified):
     try:
         data = body.dict()
         rows = conn.update_verified_sportex(body.cod_producto)
-        connHela.insert_data_bitacora_recepcion(data)
-        return { "message": f"Producto {body.cod_producto} verificado." }
+        if rows != 0:
+            connHela.insert_data_bitacora_recepcion(data)
+        else:
+            print(" no se verifico ningun producto")
+        return { "message": f"Producto {rows} verificado." }
     except:
           print("error")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la verificación") 
@@ -85,9 +91,12 @@ async def get_recepcion_easy_opl_by_codigo_producto(body: bodyUpdateVerified):
     try:
         data = body.dict()
         rows = conn.update_verified_opl(codigo[0][0])
-        connHela.insert_data_bitacora_recepcion(data)
+        if rows != 0:
+            connHela.insert_data_bitacora_recepcion(data)
+        else:
+            print(" no se verifico ningun producto")
 
-        return { "message": f"Producto {codigo[0][0]} verificado." }
+        return { "message": f"Producto {rows} verificado." }
 
     except:
           print("error")
@@ -100,8 +109,11 @@ async def get_recepcion_easy_cd_by_codigo_producto(body: bodyUpdateVerified):
         data = body.dict()
         
         rows = conn.update_verified_cd(body.cod_producto)
-        connHela.insert_data_bitacora_recepcion(data)
-        return { "message": f"Producto {body.cod_producto} verificado." }
+        if rows != 0:
+            connHela.insert_data_bitacora_recepcion(data)
+        else:
+            print(" no se verifico ningun producto")
+        return { "message": f"Producto {rows} verificado." }
     except:
           print("error")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la verificación")
