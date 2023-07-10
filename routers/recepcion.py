@@ -133,7 +133,7 @@ async def update_verificado_producto(body: bodyUpdateVerified):
     try:
         data = body.dict()
         print(body.cod_producto)
-        rows = conn.update_verified_recepcion(body.cod_pedido,body.cod_producto)
+        rows = conn.update_verified_recepcion(body.cod_pedido,body.cod_producto,body.sku)
         print(rows)
         if any(number != 0 for number in rows):
             connHela.insert_data_bitacora_recepcion(data)
