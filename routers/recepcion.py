@@ -103,7 +103,7 @@ async def get_recepcion_easy_opl_by_codigo_producto(body: bodyUpdateVerified):
         else:
             print(" no se verifico ningun producto")
 
-        return { "message": f"Producto {rows} verificado." }
+        return { "message": f"Producto {rows} verificado {body.sku}." }
 
     except:
           print("error")
