@@ -97,7 +97,7 @@ async def get_recepcion_easy_opl_by_codigo_producto(body: bodyUpdateVerified):
     body.n_guia = codigo[0][0]
     try:
         data = body.dict()
-        rows = conn.update_verified_opl(codigo[0][0])
+        rows = conn.update_verified_opl(codigo[0][0], body.sku)
         if rows != 0:
             connHela.insert_data_bitacora_recepcion(data)
         else:

@@ -2338,12 +2338,12 @@ class reportesConnection():
         return row
 
 
-    def update_verified_opl(self,codigo_pedido):
+    def update_verified_opl(self,codigo_pedido,sku):
         with self.conn.cursor() as cur:
             cur.execute(f"""        
             UPDATE areati.ti_carga_easy_go_opl easygo 
             SET verified = true 
-            where easygo.suborden = '{codigo_pedido}'
+            where easygo.suborden = '{codigo_pedido}' AND easygo.codigo_sku = '{sku}'
             """)
             row = cur.rowcount
         self.conn.commit()
