@@ -2212,7 +2212,7 @@ class reportesConnection():
                         """)           
             return cur.fetchall()
         
-    def read_recepcion_easy_opl_by_codigo_producto(self,codigo_producto):
+    def read_recepcion_easy_opl_by_codigo_producto(self,codigo_pedido):
         with self.conn.cursor() as cur:
             cur.execute(f"""
              select  easygo.rut_cliente AS "Rut de Cliente",
@@ -2229,7 +2229,8 @@ class reportesConnection():
              easygo.verified as "Pistoleado"   
         
             from areati.ti_carga_easy_go_opl easygo
-            where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd') AND easygo.id_entrega = '{codigo_producto}'
+            --where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd') AND easygo.suborden = '{codigo_pedido}'
+            where easygo.suborden = '{codigo_pedido}'
             order by created_at desc          
                         """)           
             return cur.fetchall()

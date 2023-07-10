@@ -53,6 +53,13 @@ async def get_recepcion_electrolux(cod_pedido : str):
 
     return recepcion_tiendas_schema(results)
 
+@router.get("/easy_opl/{cod_pedido}", status_code=status.HTTP_202_ACCEPTED)
+async def get_recepcion_easy_opl_by_codigo_pedido(cod_pedido : str):
+    codigo_pedido = conn.get_codigo_pedido_opl(cod_pedido)
+    results = conn.read_recepcion_easy_opl_by_codigo_producto(codigo_pedido[0][0])
+
+    return recepcion_tiendas_schema(results)
+
 ## cambiar verificado a productos 
 
 @router.put("/electrolux", status_code=status.HTTP_202_ACCEPTED)
