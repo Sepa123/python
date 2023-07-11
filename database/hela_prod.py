@@ -48,6 +48,17 @@ class HelaConnection():
             VALUES(%(asigned_by)s, %(id_ruta)s, %(nombre_ruta)s, %(patente)s, %(conductor)s, %(cantidad_producto)s, true, %(region)s);
             """,data)
         self.conn.commit()
+    
+
+    ## Obtener patente y drive por nombre_ruta
+
+    def read_id_ruta_activa_by_nombre(self, nombre_ruta):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            SELECT patente,driver
+            FROM hela.ruta_asignada where nombre_ruta = '{nombre_ruta}'
+            """)
+            return cur.fetchone()
 
     ##Bitacora de recepcion de productos
 

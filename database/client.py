@@ -2054,7 +2054,7 @@ class reportesConnection():
             from quadminds.datos_ruta_manual drm where nombre_ruta = '{nombre_ruta}'
             """)
             return cur.fetchone()
-
+        
     # recepcion tiendas
 
     def read_recepcion_electrolux(self):

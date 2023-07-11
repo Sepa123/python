@@ -23,6 +23,8 @@ from database.schema.nombres_rutas_activas import nombres_rutas_activas_schema
 
 from database.schema.datos_ruta_activa_editar import datos_rutas_activas_editar_schema
 
+from database.schema.rutas.driver_ruta_asignada import driver_ruta_asignada
+
 router = APIRouter(tags=["rutas"], prefix="/api/rutas")
 
 conn = reportesConnection()
@@ -263,3 +265,13 @@ async def asignar_ruta_activa(asignar : RutasAsignadas):
         return {"message": "ruta asignada correctamente"}
     except:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error al ingresar la ruta ")
+    
+
+@router.get("/buscar_patente")
+async def get_ruta_activa_by_nombre(nombre_ruta: str):
+    results = connHela.read_id_ruta_activa_by_nombre(nombre_ruta)
+
+    if results is None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error al ingresar la ruta ")
+
+    return driver_ruta_asignada(results)
