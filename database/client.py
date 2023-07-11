@@ -2378,16 +2378,65 @@ class reportesConnection():
         with self.conn.cursor() as cur:
             
             cur.execute("""
-            select to_char(created_at,'HH24:mi') as "Hora Ingreso", 
-            easy.nro_carga as "N° Carga",
-            (select count(distinct(entrega)) from areati.ti_wms_carga_easy e where e.nro_carga = easy.nro_carga) as "Entregas",
-            (select count(*) from areati.ti_wms_carga_easy e where e.nro_carga = easy.nro_carga) as "Bultos",
-            (select count(*) from areati.ti_wms_carga_easy e where e.nro_carga = easy.nro_carga and verified=true) as "Verificados",
-            (select count(*) from areati.ti_wms_carga_easy e where e.nro_carga = easy.nro_carga and verified=false) as "Sin Verificar"
-            from areati.ti_wms_carga_easy easy 
-            where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
-            group by 1,2
-            order by 1 asc 
+                ---------------------------------------------------------------------------------------
+                --  (1) Cuenta Easy CD
+                ---------------------------------------------------------------------------------------
+                select to_char(created_at,'HH24:mi') as "Hora Ingreso", 
+                'Easy CD' as "Cliente",
+                easy.nro_carga as "N° Carga",
+                (select count(distinct(entrega)) from areati.ti_wms_carga_easy e where e.nro_carga = easy.nro_carga) as "Entregas",
+                (select count(*) from areati.ti_wms_carga_easy e where e.nro_carga = easy.nro_carga) as "Bultos",
+                (select count(*) from areati.ti_wms_carga_easy e where e.nro_carga = easy.nro_carga and verified=true) as "Verificados",
+                (select count(*) from areati.ti_wms_carga_easy e where e.nro_carga = easy.nro_carga and verified=false) as "Sin Verificar"
+                from areati.ti_wms_carga_easy easy 
+                where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
+                group by 1,2,3
+                ---------------------------------------------------------------------------------------
+                --  (2) Cuenta Sportex
+                ---------------------------------------------------------------------------------------
+                union all
+                select to_char(twcs.created_at,'HH24:mi') as "Hora Ingreso", 
+                'Sportex' as "Cliente",
+                'Carga Unica' as "N° Carga",
+                count(*) as "Entregas",
+                count(*) as "Bultos",
+                (select count(*) from areati.ti_wms_carga_sportex s where verified=true and to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')) as "Verificados",
+                (select count(*) from areati.ti_wms_carga_sportex s where verified=false and to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')) as "Sin Verificar"
+                from areati.ti_wms_carga_sportex twcs 
+                where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
+                group by 1,2,3
+                ---------------------------------------------------------------------------------------
+                --  (3) Cuenta Electrolux
+                ---------------------------------------------------------------------------------------
+                union all
+                select to_char(twce.created_at,'HH24:mi') as "Hora Ingreso", 
+                'Electrolux' as "Cliente",
+                twce.ruta as "N° Carga",
+                (select count(distinct(numero_guia)) from areati.ti_wms_carga_electrolux e where to_char(e.created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')) as "Entregas",
+                count(*) as "Bultos",
+                (select count(*) from areati.ti_wms_carga_electrolux where verified=true and to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')) as "Verificados",
+                (select count(*) from areati.ti_wms_carga_electrolux where verified=false and to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')) as "Sin Verificar"
+                from areati.ti_wms_carga_electrolux twce 
+                where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
+                group by 1,2,3
+                ---------------------------------------------------------------------------------------
+                --  (4) Cuenta Easy OPL
+                ---------------------------------------------------------------------------------------
+                union all
+                select to_char(opl.created_at,'HH24:mi') as "Hora Ingreso", 
+                'Easy Tienda' as "Cliente",
+                opl.id_ruta as "N° Carga",
+                (select count(distinct(id_entrega)) from areati.ti_carga_easy_go_opl o where o.id_ruta = opl.id_ruta) as "Entregas",
+                (select count(*) from areati.ti_carga_easy_go_opl o where o.id_ruta = opl.id_ruta) as "Bultos",
+                (select count(*) from areati.ti_carga_easy_go_opl o where o.id_ruta = opl.id_ruta and verified=true) as "Verificados",
+                (select count(*) from areati.ti_carga_easy_go_opl o where o.id_ruta = opl.id_ruta and verified=false) as "Sin Verificar"
+                from areati.ti_carga_easy_go_opl opl 
+                where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
+                group by 1,2,3
+                ---------------------------------------------------------------------------------------
+                -- Orden por Hora de ingreso de productos al sistema
+                ---------------------------------------------------------------------------------------
+                order by 1 asc
                         """)
             
             return cur.fetchall()
