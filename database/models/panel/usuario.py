@@ -6,4 +6,4 @@ class Usuario(BaseModel):
     Mail: str
     Password: str
     Activate: bool
-    Rol: int
+    Rol: str
