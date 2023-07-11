@@ -23,7 +23,7 @@ async def registrar_usuario(usuario : Usuario):
     if mail is not None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Este correo ya esta registrado")
 
-    # connHela.insert_nuevo_usuario(data)
+    connHela.insert_nuevo_usuario(data)
 
     return {
         "message": "Usuario registrado correctamente"
