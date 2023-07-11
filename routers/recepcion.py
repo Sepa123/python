@@ -4,7 +4,7 @@ from openpyxl import Workbook
 
 ## Modelos y schemas
 from database.models.recepcion.recepcion_tiendas import bodyUpdateVerified, Recepcion_tiendas
-from database.schema.recepcion.recepcion_tiendas import recepcion_tiendas_schema
+from database.schema.recepcion.recepcion_tiendas import recepcion_tiendas_schema, recepcion_easy_cds_schema
 
 ##Conexiones
 
@@ -42,7 +42,7 @@ async def get_recepcion_easy_opl():
 async def get_recepcion_easy_cd():
     results = conn.read_recepcion_easy_cd()
 
-    return recepcion_tiendas_schema(results)
+    return recepcion_easy_cds_schema(results)
 
 
 ## buscar los productos que llegan el dia de hoy por su codigo de producto

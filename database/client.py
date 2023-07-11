@@ -2166,7 +2166,8 @@ class reportesConnection():
                                 -- Si el campo contiene una frase con cantidad
                             END as "Cantidad de Producto",
                             cast(easy.producto as text) as "Cod. SKU",                            -- no va a Quadminds
-                            easy.verified as "Pistoleado"
+                            easy.verified as "Pistoleado",
+                            easy.nro_carga as "Carga"
                     from areati.ti_wms_carga_easy easy
                     where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd') 
                     order by created_at desc
@@ -2284,7 +2285,8 @@ class reportesConnection():
                                 -- Si el campo contiene una frase con cantidad
                             END as "Cantidad de Producto",
                             cast(easy.producto as text) as "Cod. SKU",                            -- no va a Quadminds
-                            easy.verified as "Pistoleado"
+                            easy.verified as "Pistoleado",
+                            easy.nro_carga as "Carga"
                     from areati.ti_wms_carga_easy easy
                     where easy.carton = '{codigo_producto}'
                     --order by created_at desc
