@@ -2,6 +2,9 @@ from fastapi import APIRouter, status,HTTPException
 from fastapi.responses import FileResponse
 from openpyxl import Workbook
 from openpyxl.styles import Font , PatternFill, Border ,Side
+from datetime import datetime, timedelta
+
+
 
 import re
 import json
@@ -56,9 +59,11 @@ async def get_ruta_manual(pedido_id : str):
 
 
 @router.post("/agregar",status_code=status.HTTP_201_CREATED)
-async def insert_ruta_manual(rutas : List[List[RutaManual]]):
+async def insert_ruta_manual(rutas : List[List[RutaManual]], fecha_pedido : str):
     # try:
-        print(len(rutas))
+        # print(len(rutas))
+
+        print(fecha_pedido)
         id_ruta = conn.read_id_ruta()[0]
         nombre_ruta = conn.get_nombre_ruta_manual(rutas[0][0].Created_by)[0][0]
 
@@ -66,7 +71,7 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]]):
         check = re.sub(r'\(|\)', '',check[0])
         check = check.split(",")
 
-        print(check)
+        # print(check)
 
         if(check[0] == "1"):
             print("codigo pedido repetido")
@@ -79,6 +84,16 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]]):
                 data["Agrupador"] = nombre_ruta
                 data["Nombre_ruta"] = nombre_ruta
                 data["Pistoleado"] = True 
+                print(producto.Fecha_ruta)
+                data["Fecha_ruta"] = fecha_pedido
+                
+                if data["Fecha_ruta"] is None:
+                    # Obtener la fecha actual
+                    fecha_actual = datetime.now().date()
+                    # Obtener la fecha del día siguiente
+                    fecha_siguiente = fecha_actual + timedelta(days=1)
+                    # print(fecha_siguiente)
+                    data["Fecha_ruta"] =fecha_siguiente
                 # conn.update_verified(data["Codigo_producto"])
                 conn.write_rutas_manual(data)
         return { "message": f"La Ruta {nombre_ruta} fue guardada exitosamente" }

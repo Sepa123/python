@@ -37,3 +37,4 @@ class RutaManual(BaseModel):
     Estado: Optional[str]
     En_ruta: Optional[str]
     Created_by: Optional[int]
+    Fecha_ruta : Optional[str]
