@@ -24,8 +24,6 @@ from database.schema.nombres_rutas_activas import nombres_rutas_activas_schema
 from database.schema.datos_ruta_activa_editar import datos_rutas_activas_editar_schema
 from database.schema.rutas.driver_ruta_asignada import driver_ruta_asignada
 
-from database.models.rutas.update_ruta_asignada import UpdateRutaAsignada
-
 router = APIRouter(tags=["rutas"], prefix="/api/rutas")
 
 conn = reportesConnection()
