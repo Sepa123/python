@@ -82,3 +82,15 @@ class HelaConnection():
 
             """,data)
         self.conn.commit()
+
+    
+    ## Actualizar ruta asignada
+
+    def update_ruta_asignada(self,patente,driver,nombre_ruta):
+        with self.conn.cursor() as cur:
+                cur.execute(f"""        
+                UPDATE hela.ruta_asignada
+                set patente='{patente}', driver='{driver}'
+                WHERE nombre_ruta = '{nombre_ruta}'
+                """)
+        self.conn.commit()

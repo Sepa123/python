@@ -67,6 +67,7 @@ async def get_recepcion_electrolux(body: bodyUpdateVerified):
     try:
         data = body.dict()
         rows = conn.update_verified_electrolux(body.cod_producto)
+        print(rows)
         if rows != 0:
             connHela.insert_data_bitacora_recepcion(data)
         else:
@@ -95,6 +96,7 @@ async def get_recepcion_easy_opl_by_codigo_producto(body: bodyUpdateVerified):
     codigo = conn.get_codigo_pedido_opl(body.cod_producto)
     print(codigo)
     body.n_guia = codigo[0][0]
+    print(rows)
     try:
         data = body.dict()
         rows = conn.update_verified_opl(codigo[0][0], body.sku)
@@ -114,8 +116,10 @@ async def get_recepcion_easy_cd_by_codigo_producto(body: bodyUpdateVerified):
     # results = conn.read_recepcion_easy_cd_by_codigo_producto(body.cod_producto)
     try:
         data = body.dict()
+
         
         rows = conn.update_verified_cd(body.cod_producto)
+        print(rows)
         if rows != 0:
             connHela.insert_data_bitacora_recepcion(data)
         else:

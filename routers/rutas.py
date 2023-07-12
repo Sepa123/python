@@ -22,8 +22,9 @@ from database.schema.rutas_en_activo import rutas_en_activo_schema
 from database.schema.nombres_rutas_activas import nombres_rutas_activas_schema
 
 from database.schema.datos_ruta_activa_editar import datos_rutas_activas_editar_schema
-
 from database.schema.rutas.driver_ruta_asignada import driver_ruta_asignada
+
+from database.models.rutas.update_ruta_asignada import UpdateRutaAsignada
 
 router = APIRouter(tags=["rutas"], prefix="/api/rutas")
 
@@ -275,3 +276,14 @@ async def get_ruta_activa_by_nombre(nombre_ruta: str):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error al ingresar la ruta ")
 
     return driver_ruta_asignada(results)
+
+
+
+@router.put("/actualizar/ruta_asignada")
+async def update_ruta_asignada(body :RutasAsignadas):
+    try:
+          connHela.update_ruta_asignada(body.patente,body.conductor,body.nombre_ruta)
+          return { "message": "Ruta Actualizada Correctamente" }
+    except:
+          print("error")
+          raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
