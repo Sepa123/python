@@ -58,10 +58,28 @@ async def get_ruta_manual(pedido_id : str):
     return json_data
 
 
+
+def validar_fecha(fecha):
+    fecha_actual = datetime.now().date()  # Obtiene la fecha actual
+    
+    # Convierte la fecha dada a un objeto de tipo datetime
+    try:
+        fecha_ingresada = datetime.strptime(fecha, '%Y-%m-%d').date()
+    except ValueError:
+        return False  # La fecha no tiene el formato correcto
+    
+    # Compara las fechas
+    if fecha_ingresada >= fecha_actual:
+        return True
+    else:
+        return False
+
 @router.post("/agregar",status_code=status.HTTP_201_CREATED)
 async def insert_ruta_manual(rutas : List[List[RutaManual]], fecha_pedido : str):
     # try:
         # print(len(rutas))
+        if validar_fecha(fecha_pedido) == False: raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, 
+                            detail=f"No se puede crear ruta con la fecha {fecha_pedido}")
 
         print(fecha_pedido)
         id_ruta = conn.read_id_ruta()[0]
