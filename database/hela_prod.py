@@ -55,7 +55,7 @@ class HelaConnection():
     def read_id_ruta_activa_by_nombre(self, nombre_ruta):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            SELECT patente,driver
+            SELECT patente,driver, id_ruta, region
             FROM hela.ruta_asignada where nombre_ruta = '{nombre_ruta}'
             """)
             return cur.fetchone()
