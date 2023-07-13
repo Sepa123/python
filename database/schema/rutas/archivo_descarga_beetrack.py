@@ -1,0 +1,43 @@
+def datos_descarga_beetrack(datos):
+    return {
+    "N_guia": datos[0],
+    "Vehiculo": datos[1],
+    "Nombre_item": datos[2],
+    "Cantidad": datos[3],
+    "Codigo_item": datos[4],
+    "Iden_contacto": datos[5],
+    "Nombre_contacto": datos[6],
+    "Telefono": datos[7],
+    "Email_contacto": datos[8],
+    "Direccion_1": datos[9],
+    "Latitud": datos[10],
+    "Longitud": datos[11],
+    "Fecha_min_entrega": datos[12],
+    "Fecha_max_entrega": datos[13],
+    "Ct_destino": datos[14],
+    "Direccion_2": datos[15],
+    "Dpto": datos[16],
+    "Comuna": datos[17],
+    "Ciudad": datos[18],
+    "Pais": datos[19],
+    "Email": datos[20],
+    "FechaEntrega": datos[21],
+    "Fechahr": datos[22],
+    "Conductor": datos[23],
+    "Cliente": datos[24],
+    "Servicio": datos[25],
+    "Origen": datos[26],
+    "Region_despacho": datos[27],
+    "CMN": datos[28],
+    "Peso": datos[29],
+    "Volumen": datos[30],
+    "Bultos": datos[31],
+    "Entrega": datos[32],
+    "Factura": datos[33],
+    "OC": datos[34],
+    "Ruta": datos[35],
+    "Tienda": datos[36]
+}
+
+def datos_descarga_beetracks_schema(datos):
+    return [datos_descarga_beetrack(dato) for dato in datos] 

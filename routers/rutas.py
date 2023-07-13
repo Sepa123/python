@@ -27,6 +27,8 @@ from database.schema.nombres_rutas_activas import nombres_rutas_activas_schema
 from database.schema.datos_ruta_activa_editar import datos_rutas_activas_editar_schema
 from database.schema.rutas.driver_ruta_asignada import driver_ruta_asignada
 
+
+from database.schema.rutas.archivo_descarga_beetrack import datos_descarga_beetracks_schema
 router = APIRouter(tags=["rutas"], prefix="/api/rutas")
 
 conn = reportesConnection()
@@ -318,3 +320,38 @@ async def update_ruta_asignada(body :RutasAsignadas):
     except:
           print("error")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
+
+
+@router.get("/beetrack/descargar")
+async def descargar_archivo_beetrack():
+    results = conn.read_datos_descarga_beetrack(1)
+
+    wb = Workbook()
+    ws = wb.active
+    print("/rutas/beetrack/descargar")
+    results.insert(0, ("",))
+    results.insert(1, ("NÚMERO GUÍA *","VEHÍCULO *","NOMBRE ITEM *","CANTIDAD","CODIGO ITEM","IDENTIFICADOR CONTACTO *","NOMBRE CONTACTO", "TELÉFONO","EMAIL CONTACTO","DIRECCIÓN *",
+    "LATITUD","LONGITUD","FECHA MIN ENTREGA","FECHA MAX ENTREGA","CT DESTINO","DIRECCION","DEPARTAMENTO","COMUNA","CIUDAD","PAIS","EMAIL","Fechaentrega","fechahr",
+    "conductor","Cliente","Servicio","Origen","Región de despacho","CMN","Peso","Volumen", "Bultos","ENTREGA","FACTURA","OC","RUTA", "TIENDA"))
+
+    for row in results:
+        # print(row)
+        ws.append(row)
+
+    for col in ws.columns:
+        max_length = 0
+        column = col[0].column_letter# get column letter
+        for cell in col:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(str(cell.value))
+            except:
+                pass
+        adjusted_width = (max_length + 2)
+        ws.column_dimensions[column].width = adjusted_width
+    results.insert(0, ("",))
+    wb.save("excel/prueba_beetrack.xlsx")
+
+    return FileResponse("excel/prueba_beetrack.xlsx")
+
+    # return datos_descarga_beetracks_schema(results)

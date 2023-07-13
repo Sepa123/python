@@ -2440,7 +2440,53 @@ class reportesConnection():
                         """)
             
             return cur.fetchall()
-            
+
+    def read_datos_descarga_beetrack(self, id_ruta):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""            
+                select drm.cod_pedido as "NÚMERO GUÍA *",
+                ra.patente as "VEHÍCULO *",
+                split_part(drm.desc_producto, ') ', 2) as "NOMBRE ITEM *",
+                drm.cant_producto as "CANTIDAD",
+                drm.sku as "CODIGO ITEM",
+                drm.cod_cliente as "IDENTIFICADOR CONTACTO *",
+                drm.nombre as "NOMBRE CONTACTO",
+                drm.telefono as "TELÉFONO",
+                drm.email as "EMAIL CONTACTO",
+                drm.calle_numero as "DIRECCIÓN *",
+                '' as "LATITUD",
+                '' as "LONGITUD",
+                to_char(current_date,'yyyy-mm-dd') || ' 09:00' as "FECHA MIN ENTREGA",
+                to_char(current_date,'yyyy-mm-dd') || ' 21:00' as "FECHA MAX ENTREGA",
+                '' as "CT DESTINO",
+                drm.calle_numero || ', ' || drm.ciudad || ', ' || drm.provincia_estado as "DIRECCION",
+                '' as "DEPARTAMENTO",
+                drm.ciudad as "COMUNA",
+                drm.provincia_estado as "CIUDAD",
+                'Chile' as "PAIS",
+                drm.email as "EMAIL",
+                drm.fecha_pedido as "Fechaentrega",
+                drm.fecha_pedido as "fechahr",
+                ra.driver as "conductor",
+                initcap((regexp_matches(drm.desc_producto, '\((.*?)\)'))[1]) as "Cliente",
+                'Entrega a domicilio' as "Servicio",
+                'CD ' || initcap((regexp_matches(drm.desc_producto, '\((.*?)\)'))[1])as "Origen",
+                ra.region as "Región de despacho",
+                drm.ciudad as "CMN",
+                '' as "Peso",
+                'S/I' as "Volumen",
+                drm.cant_producto as "Bultos",
+                '' as "ENTREGA",
+                etlx.factura as "FACTURA",
+                etlx.oc as "OC",
+                etlx.ruta as "RUTA",
+                etlx.tienda as "TIENDA"
+                from quadminds.datos_ruta_manual drm
+                left join hela.ruta_asignada ra on ra.id_ruta = drm.id_ruta
+                left join areati.ti_wms_carga_electrolux etlx on etlx.numero_guia = drm.cod_pedido and etlx.codigo_item = drm.sku
+                where drm.id_ruta = 7
+                        """)
+            return cur.fetchall()
 
 class transyanezConnection():
     conn = None
