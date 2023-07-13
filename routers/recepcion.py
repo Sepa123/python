@@ -96,7 +96,6 @@ async def get_recepcion_easy_opl_by_codigo_producto(body: bodyUpdateVerified):
     codigo = conn.get_codigo_pedido_opl(body.cod_producto)
     print(codigo)
     body.n_guia = codigo[0][0]
-    print(rows)
     try:
         data = body.dict()
         rows = conn.update_verified_opl(codigo[0][0], body.sku)
