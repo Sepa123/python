@@ -322,9 +322,9 @@ async def update_ruta_asignada(body :RutasAsignadas):
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
 
 
-@router.get("/beetrack/descargar")
-async def descargar_archivo_beetrack():
-    results = conn.read_datos_descarga_beetrack(1)
+@router.get("/beetrack/{id_ruta}/descargar")
+async def descargar_archivo_beetrack(id_ruta : int):
+    results = conn.read_datos_descarga_beetrack(id_ruta)
 
     wb = Workbook()
     ws = wb.active
