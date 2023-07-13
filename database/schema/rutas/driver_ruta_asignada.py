@@ -3,5 +3,6 @@ def driver_ruta_asignada(ruta) :
         "Patente": ruta[0],
         "Driver" : ruta[1],
         "Id_ruta": ruta[2],
-        "Region":  ruta[3]
+        "Region":  ruta[3],
+        "OK" : True
     }

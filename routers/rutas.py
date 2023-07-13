@@ -303,12 +303,16 @@ async def asignar_ruta_activa(asignar : RutasAsignadas):
 
 @router.get("/buscar_patente")
 async def get_ruta_activa_by_nombre(nombre_ruta: str):
-    results = connHela.read_id_ruta_activa_by_nombre(nombre_ruta)
 
-    if results is None:
+    try:
+        results = connHela.read_id_ruta_activa_by_nombre(nombre_ruta)
+        print(results)
+        if results is None:
+            return { "OK": False}
+
+        return driver_ruta_asignada(results)
+    except:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error al ingresar la ruta ")
-
-    return driver_ruta_asignada(results)
 
 
 
