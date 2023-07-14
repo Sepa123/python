@@ -1897,6 +1897,17 @@ class reportesConnection():
             """,data)
         self.conn.commit()
 
+
+    def get_fecha_ruta(self,id_ruta : int):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+             SELECT distinct(fecha_ruta)
+            FROM quadminds.datos_ruta_manual
+            where id_ruta = {id_ruta}
+            """)
+
+            return cur.fetchone()
+
     def update_verified(self, codigo_producto):
         sql_queries = [
             "UPDATE areati.ti_wms_carga_sportex SET verified = true WHERE areati.ti_wms_carga_sportex.id_sportex = %s",

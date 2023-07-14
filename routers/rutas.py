@@ -150,6 +150,8 @@ async def insert_ruta_existente_activa(rutas : List[List[RutaManual]]):
         id_ruta = rutas[0][0].Id_ruta
         nombre_ruta = rutas[0][0].Nombre_ruta
 
+        fecha_ruta = conn.get_fecha_ruta(id_ruta)
+
         check = conn.check_producto_existe(rutas[0][0].Codigo_pedido)
         check = re.sub(r'\(|\)', '',check[0])
         check = check.split(",")
@@ -167,7 +169,7 @@ async def insert_ruta_existente_activa(rutas : List[List[RutaManual]]):
                 data["Agrupador"] = nombre_ruta
                 data["Nombre_ruta"] = nombre_ruta
                 data["Pistoleado"] = True 
-                data["Fecha_ruta"] = "2023-07-14"
+                data["Fecha_ruta"] = fecha_ruta[0]
                 # conn.update_verified(data["Codigo_producto"])
                 conn.write_rutas_manual(data)
         return { "message": f"La Ruta {nombre_ruta} fue actualizada exitosamente" }
@@ -360,3 +362,8 @@ async def descargar_archivo_beetrack(id_ruta : int):
     return FileResponse("excel/prueba_beetrack.xlsx")
 
     # return datos_descarga_beetracks_schema(results)
+
+@router.get("/prueba/{id}")
+async def get(id : int):
+    result = conn.get_fecha_ruta(id)
+    return result
