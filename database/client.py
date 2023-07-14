@@ -2466,7 +2466,30 @@ class reportesConnection():
                 'Chile' as "PAIS",
                 drm.email as "EMAIL",
                 drm.fecha_pedido as "Fechaentrega",
-                drm.fecha_pedido as "fechahr",
+                (SELECT MAX(fecha_final) 
+                FROM (
+                SELECT TO_CHAR(MAX(created_at), 'yyyy-mm-dd') AS fecha_final
+                FROM areati.ti_wms_carga_easy
+                WHERE entrega = drm.cod_pedido
+                
+                UNION ALL
+                
+                SELECT TO_CHAR(MAX(created_at), 'yyyy-mm-dd') AS fecha_final
+                FROM areati.ti_wms_carga_sportex
+                WHERE id_sportex = drm.cod_pedido
+                
+                UNION ALL
+                
+                SELECT TO_CHAR(MAX(created_at), 'yyyy-mm-dd') AS fecha_final
+                FROM areati.ti_wms_carga_electrolux
+                WHERE numero_guia = drm.cod_pedido
+                
+                UNION ALL
+                
+                SELECT TO_CHAR(MAX(created_at), 'yyyy-mm-dd') AS fecha_final
+                FROM areati.ti_carga_easy_go_opl
+                WHERE suborden = drm.cod_pedido
+                ) AS subconsulta) AS "fechahr",
                 ra.driver as "conductor",
                 initcap((regexp_matches(drm.desc_producto, '\((.*?)\)'))[1]) as "Cliente",
                 'Entrega a domicilio' as "Servicio",
