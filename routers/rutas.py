@@ -167,6 +167,7 @@ async def insert_ruta_existente_activa(rutas : List[List[RutaManual]]):
                 data["Agrupador"] = nombre_ruta
                 data["Nombre_ruta"] = nombre_ruta
                 data["Pistoleado"] = True 
+                data["Fecha_ruta"] = "2023-07-14"
                 # conn.update_verified(data["Codigo_producto"])
                 conn.write_rutas_manual(data)
         return { "message": f"La Ruta {nombre_ruta} fue actualizada exitosamente" }
