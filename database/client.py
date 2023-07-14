@@ -2169,7 +2169,9 @@ class reportesConnection():
                             easy.verified as "Pistoleado",
                             easy.nro_carga as "Carga"
                     from areati.ti_wms_carga_easy easy
-                    where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd') 
+                    --where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd') 
+                    WHERE to_char(created_at,'yyyy-mm-dd hh24:mi')  >= to_char((obtener_dia_anterior() + INTERVAL '17 hours 30 minutes'),'yyyy-mm-dd hh24:mi')
+                    AND to_char(created_at,'yyyy-mm-dd') <= to_char(CURRENT_DATE,'yyyy-mm-dd')
                     order by created_at desc
                         """)           
             return cur.fetchall()
