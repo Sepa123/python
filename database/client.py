@@ -1773,8 +1773,7 @@ class reportesConnection():
             cur.execute("""
             -- WMS
             select nro_carga,count(distinct(entrega)) from public.ti_wms_carga_easy_paso
-            WHERE to_char(created_at,'yyyy-mm-dd hh24:mi')  >= to_char((obtener_dia_anterior() + INTERVAL '17 hours 30 minutes'),'yyyy-mm-dd hh24:mi')
-            AND to_char(created_at,'yyyy-mm-dd') <= to_char(CURRENT_DATE,'yyyy-mm-dd')
+            where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
             group by 1
             order by 1 asc
             """)
