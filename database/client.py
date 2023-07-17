@@ -2100,9 +2100,9 @@ class reportesConnection():
             cast(eltx.codigo_item as text) as "Cod. SKU",					
             eltx.verified as "Pistoleado",
             eltx.created_at as "fecha"
-        -- from areati.ti_wms_carga_electrolux eltx
-        from areati.ti_wms_carga_electrolux_hoy as eltx 
-        -- where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
+        from areati.ti_wms_carga_electrolux eltx
+        -- from areati.ti_wms_carga_electrolux_hoy as eltx 
+        where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
         order by created_at desc
                         """)           
             return cur.fetchall()
