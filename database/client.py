@@ -1861,7 +1861,7 @@ class reportesConnection():
         with self.conn.cursor() as cur:
             cur.execute(f"""
             SELECT
-            TO_CHAR(count(distinct(id_ruta))+1::integer, 'FM00000')
+            TO_CHAR(coalesce (max(id_ruta)+1,1)::integer, 'FM00000')
             || '-' ||
             to_char({created_by}::integer, 'FM0000') || '-' ||
             TO_CHAR(current_date, 'YYYYMMDD') AS numero_unico
@@ -2314,7 +2314,7 @@ class reportesConnection():
     def update_verified_recepcion(self,codigo_pedido, codigo_producto,cod_sku):
         sql_queries = [
             f"UPDATE areati.ti_wms_carga_sportex SET verified = true WHERE areati.ti_wms_carga_sportex.id_sportex = '{codigo_producto}'",
-            f"UPDATE areati.ti_wms_carga_easy easy SET verified = true, recepcion = true WHERE easy.entrega = '{codigo_pedido}' and easy.carton = '{codigo_producto}'",
+            f"UPDATE areati.ti_wms_carga_easy easy SET verified = true WHERE easy.entrega = '{codigo_pedido}' and easy.carton = '{codigo_producto}'",
             f"update areati.ti_wms_carga_electrolux eltx set verified = true where eltx.numero_guia = '{codigo_pedido}' and eltx.codigo_item = '{codigo_producto}'",
             f"UPDATE areati.ti_carga_easy_go_opl easygo SET verified = true where easygo.suborden = '{codigo_pedido}' AND easygo.codigo_sku = '{cod_sku}'"
         ]
@@ -2374,7 +2374,21 @@ class reportesConnection():
             with self.conn.cursor() as cur:
                 cur.execute(f"""        
                 UPDATE areati.ti_wms_carga_easy easy 
-                SET verified = true, recepcion = true
+                SET verified = true
+                WHERE easy.carton = '{codigo_producto}'
+                """)
+            self.conn.commit()
+        except (Exception, psycopg2.DatabaseError) as error:
+            print("Error durante la actualización:", error)
+        finally:
+            return cur.rowcount
+    
+    def update_recepcion_cd(self,codigo_producto):
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute(f"""        
+                UPDATE areati.ti_wms_carga_easy easy 
+                SET recepcion = true
                 WHERE easy.carton = '{codigo_producto}'
                 """)
             self.conn.commit()
