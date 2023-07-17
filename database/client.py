@@ -2311,7 +2311,7 @@ class reportesConnection():
     def update_verified_recepcion(self,codigo_pedido, codigo_producto,cod_sku):
         sql_queries = [
             f"UPDATE areati.ti_wms_carga_sportex SET verified = true WHERE areati.ti_wms_carga_sportex.id_sportex = '{codigo_producto}'",
-            f"UPDATE areati.ti_wms_carga_easy easy SET verified = true WHERE easy.entrega = '{codigo_pedido}' and easy.carton = '{codigo_producto}'",
+            f"UPDATE areati.ti_wms_carga_easy easy SET verified = true, recepcion = true WHERE easy.entrega = '{codigo_pedido}' and easy.carton = '{codigo_producto}'",
             f"update areati.ti_wms_carga_electrolux eltx set verified = true where eltx.numero_guia = '{codigo_pedido}' and eltx.codigo_item = '{codigo_producto}'",
             f"UPDATE areati.ti_carga_easy_go_opl easygo SET verified = true where easygo.suborden = '{codigo_pedido}' AND easygo.codigo_sku = '{cod_sku}'"
         ]
@@ -2371,7 +2371,7 @@ class reportesConnection():
             with self.conn.cursor() as cur:
                 cur.execute(f"""        
                 UPDATE areati.ti_wms_carga_easy easy 
-                SET verified = true 
+                SET verified = true, recepcion = true
                 WHERE easy.carton = '{codigo_producto}'
                 """)
             self.conn.commit()
