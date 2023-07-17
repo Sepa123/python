@@ -22,6 +22,10 @@ class HelaConnection():
         except psycopg2.OperationalError as err:
             print(err)
             self.conn.close()
+            self.conn = psycopg2.connect(config("POSTGRES_DB_HELA"), options=options)
+            # self.conn.encoding("")
+            self.conn.autocommit = True
+            self.conn.set_client_encoding("UTF-8")
         
     def __def__(self):
         self.conn.close()

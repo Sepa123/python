@@ -17,6 +17,7 @@ class UserConnection():
         except psycopg2.OperationalError as err:
             print(err)
             self.conn.close()
+            self.conn = psycopg2.connect(config("POSTGRES_DB_TR"))
         
     def __def__(self):
         self.conn.close()
@@ -70,6 +71,10 @@ class reportesConnection():
         except psycopg2.OperationalError as err:
             print(err)
             self.conn.close()
+            self.conn = psycopg2.connect(config("POSTGRES_DB_CARGA"), options=options)
+            # self.conn.encoding("")
+            self.conn.autocommit = True
+            self.conn.set_client_encoding("UTF-8")
         
     def __def__(self):
         self.conn.close()
@@ -1096,8 +1101,6 @@ class reportesConnection():
 
             """)
             return cur.fetchall()
-
-
 
     def read_NS_beetrack_mensual(self):
         with self.conn.cursor() as cur:
@@ -2540,6 +2543,7 @@ class transyanezConnection():
         except psycopg2.OperationalError as err:
             print(err)
             self.conn.close()
+            self.conn = psycopg2.connect(config("POSTGRES_DB_TR"))
     #Vehiculos Portal
     def get_vehiculos_portal(self):
         with self.conn.cursor() as cur:
