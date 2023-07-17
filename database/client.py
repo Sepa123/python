@@ -2152,39 +2152,40 @@ class reportesConnection():
     def read_recepcion_easy_cd(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-                    select       CAST(easy.entrega AS varchar) AS "Código de Cliente",     
-                            initcap(easy.nombre) AS "Nombre",
-                            CASE 
-                                WHEN substring(easy.direccion from '^\d') ~ '\d' then substring(initcap(easy.direccion) from '\d+[\w\s]+\d+')
-                                WHEN lower(easy.direccion) ~ '^(pasaje|calle|avenida)\s+\d+\s+' THEN
-                                regexp_replace(REPLACE(regexp_replace(regexp_replace(initcap(split_part(easy.direccion,',',1)), ',.$', ''), '\s+(\d+\D+\d+).$', ' \1'), '\', ''), '', '') 
-                                else coalesce(substring(initcap(easy.direccion) from '^[^0-9]*[0-9]+'),initcap(easy.direccion))
-                                END "Calle y Número",
-                            CASE
-                                    WHEN easy.region='XIII - Metropolitana' THEN 'Region Metropolitana'
-                                    WHEN easy.region='V - Valparaíso' THEN 'Valparaíso'
-                                    else (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(easy.comuna)))
-                            END "Provincia/Estado",
-                            CAST(easy.entrega AS varchar) AS "Código de Pedido",   -- Agrupar Por
-                            easy.fecha_entrega AS "Fecha de Pedido",
-                            easy.carton AS "Código de Producto",
-                            easy.descripcion  AS "Descripción del Producto",
-                            CASE 
-                                WHEN easy.cant ~ '^\d+$' THEN (select count(*) 
-                                                                from areati.ti_wms_carga_easy easy_a 
-                                                                where easy_a.entrega = easy.entrega and easy_a.carton=easy.carton) 
-                                -- Si el campo es solo un número
-                                ELSE regexp_replace(easy.cant, '[^\d]', '', 'g')::numeric 
-                                -- Si el campo contiene una frase con cantidad
-                            END as "Cantidad de Producto",
-                            cast(easy.producto as text) as "Cod. SKU",                            -- no va a Quadminds
-                            easy.verified as "Pistoleado",
-                            easy.nro_carga as "Carga"
-                    from areati.ti_wms_carga_easy easy
-                    --where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd') 
-                    WHERE to_char(created_at,'yyyy-mm-dd hh24:mi')  >= to_char((obtener_dia_anterior() + INTERVAL '17 hours 30 minutes'),'yyyy-mm-dd hh24:mi')
-                    AND to_char(created_at,'yyyy-mm-dd') <= to_char(CURRENT_DATE,'yyyy-mm-dd')
-                    order by created_at desc
+            select  CAST(easy.entrega AS varchar) AS "Código de Cliente",     
+                    initcap(easy.nombre) AS "Nombre",
+                    CASE 
+                        WHEN substring(easy.direccion from '^\d') ~ '\d' then substring(initcap(easy.direccion) from '\d+[\w\s]+\d+')
+                        WHEN lower(easy.direccion) ~ '^(pasaje|calle|avenida)\s+\d+\s+' THEN
+                        regexp_replace(REPLACE(regexp_replace(regexp_replace(initcap(split_part(easy.direccion,',',1)), ',.$', ''), '\s+(\d+\D+\d+).$', ' \1'), '\', ''), '', '') 
+                        else coalesce(substring(initcap(easy.direccion) from '^[^0-9]*[0-9]+'),initcap(easy.direccion))
+                        END "Calle y Número",
+                    CASE
+                            WHEN easy.region='XIII - Metropolitana' THEN 'Region Metropolitana'
+                            WHEN easy.region='V - Valparaíso' THEN 'Valparaíso'
+                            else (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(easy.comuna)))
+                    END "Provincia/Estado",
+                    CAST(easy.entrega AS varchar) AS "Código de Pedido",   -- Agrupar Por
+                    easy.fecha_entrega AS "Fecha de Pedido",
+                    easy.carton AS "Código de Producto",
+                    easy.descripcion  AS "Descripción del Producto",
+                    CASE 
+                        WHEN easy.cant ~ '^\d+$' THEN (select count(*) 
+                                                        from areati.ti_wms_carga_easy easy_a 
+                                                        where easy_a.entrega = easy.entrega and easy_a.carton=easy.carton) 
+                        -- Si el campo es solo un número
+                        ELSE regexp_replace(easy.cant, '[^\d]', '', 'g')::numeric 
+                        -- Si el campo contiene una frase con cantidad
+                    END as "Cantidad de Producto",
+                    cast(easy.producto as text) as "Cod. SKU",                            -- no va a Quadminds
+                    easy.verified as "Pistoleado",
+                    easy.nro_carga as "Carga",
+                    easy.recepcion as "Recepcion"                 
+            from areati.ti_wms_carga_easy easy
+            --where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd') 
+            WHERE to_char(created_at,'yyyy-mm-dd hh24:mi')  >= to_char((obtener_dia_anterior() + INTERVAL '17 hours 30 minutes'),'yyyy-mm-dd hh24:mi')
+            AND to_char(created_at,'yyyy-mm-dd') <= to_char(CURRENT_DATE,'yyyy-mm-dd')
+            order by created_at desc
                         """)           
             return cur.fetchall()
         
@@ -2510,7 +2511,7 @@ class reportesConnection():
                 WHERE suborden = drm.cod_pedido
                 ) AS subconsulta) AS "fechahr",
                 ra.driver as "conductor",
-                initcap((regexp_matches(drm.desc_producto, '\((.*?)\)'))[1]) as "Cliente",
+                split_part(initcap((regexp_matches(drm.desc_producto, '\((.*?)\)'))[1]), ' ', 1) as "Cliente",
                 'Entrega a domicilio' as "Servicio",
                 'CD ' || initcap((regexp_matches(drm.desc_producto, '\((.*?)\)'))[1])as "Origen",
                 ra.region as "Región de despacho",
