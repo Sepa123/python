@@ -372,6 +372,14 @@ async def get(id : int):
 
 @router.get("/recuperar/tracking")
 async def recuperar_tracking_beetrack(codigo : str):
-    results = conn.recuperar_track_beetrack(codigo)
-    # return results
-    return recuperar_tracking_beetrack_schema(results)
+
+    try:
+        results = conn.recuperar_track_beetrack(codigo)
+        print(results)
+        if results is []:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Codigo no encontrado")
+        
+        return recuperar_tracking_beetrack_schema(results)
+    except:
+        print("error")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
