@@ -2548,6 +2548,14 @@ class reportesConnection():
                         """)
             return cur.fetchall()
 
+    # recuperar track de beetrack
+
+    def recuperar_track_beetrack(self):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+                select areati.recupera_tracking_beetrack('1217351001');
+                        """)
+            return cur.fetchall()
 class transyanezConnection():
     conn = None
     def __init__(self) -> None:

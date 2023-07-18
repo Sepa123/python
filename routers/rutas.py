@@ -27,6 +27,8 @@ from database.schema.nombres_rutas_activas import nombres_rutas_activas_schema
 from database.schema.datos_ruta_activa_editar import datos_rutas_activas_editar_schema
 from database.schema.rutas.driver_ruta_asignada import driver_ruta_asignada
 
+from database.schema.rutas.recuperar_tracking_beetrack import recuperar_tracking_beetrack_schema
+
 
 from database.schema.rutas.archivo_descarga_beetrack import datos_descarga_beetracks_schema
 router = APIRouter(tags=["rutas"], prefix="/api/rutas")
@@ -367,3 +369,9 @@ async def descargar_archivo_beetrack(id_ruta : int):
 async def get(id : int):
     result = conn.get_fecha_ruta(id)
     return result
+
+@router.get("/recuperar/tracking")
+async def recuperar_tracking_beetrack():
+    results = conn.recuperar_track_beetrack()
+    # return results
+    return recuperar_tracking_beetrack_schema(results)
