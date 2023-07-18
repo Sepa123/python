@@ -371,7 +371,7 @@ async def get(id : int):
     return result
 
 @router.get("/recuperar/tracking")
-async def recuperar_tracking_beetrack():
-    results = conn.recuperar_track_beetrack()
+async def recuperar_tracking_beetrack(codigo : str):
+    results = conn.recuperar_track_beetrack(codigo)
     # return results
     return recuperar_tracking_beetrack_schema(results)

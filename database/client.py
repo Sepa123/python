@@ -2550,10 +2550,10 @@ class reportesConnection():
 
     # recuperar track de beetrack
 
-    def recuperar_track_beetrack(self):
+    def recuperar_track_beetrack(self,codigo_pick):
         with self.conn.cursor() as cur:
-            cur.execute("""
-                select areati.recupera_tracking_beetrack('1217351001');
+            cur.execute(f"""
+                select areati.recupera_tracking_beetrack('{codigo_pick}');
                         """)
             return cur.fetchall()
 class transyanezConnection():

@@ -13,7 +13,6 @@
 def recuperar_tracking_beetrack_schema(results):
     json_data = []
     keys = ["Id_ruta", "PPU", "Fecha_ingreso_beetrack", "Cliente", "Fecha_entrega", "Estado", "Subestado"]
-    print(type(results))
     for result in results:
         values = result[0].split(",")
         data = {}
@@ -22,7 +21,6 @@ def recuperar_tracking_beetrack_schema(results):
             if k == "Id_ruta" or k == "Subestado":
                 v = v.strip('()\"" ')
             data[k] = v
-        # data["RutaEnTabla"] = ""
         json_data.append(data)
 
     return json_data
