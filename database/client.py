@@ -2556,6 +2556,15 @@ class reportesConnection():
                 select areati.recupera_tracking_beetrack('{codigo_pick}');
                         """)
             return cur.fetchall()
+    
+    def recupera_linea_producto(self,codigo_pick):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                select areati.recupera_linea_producto('{codigo_pick}');
+                        """)
+            return cur.fetchall()
+        
+
 class transyanezConnection():
     conn = None
     def __init__(self) -> None:

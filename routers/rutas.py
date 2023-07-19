@@ -29,6 +29,7 @@ from database.schema.rutas.driver_ruta_asignada import driver_ruta_asignada
 
 from database.schema.rutas.recuperar_tracking_beetrack import recuperar_tracking_beetrack_schema
 
+from database.schema.rutas.linea_producto import recuperar_linea_producto_schema
 
 from database.schema.rutas.archivo_descarga_beetrack import datos_descarga_beetracks_schema
 router = APIRouter(tags=["rutas"], prefix="/api/rutas")
@@ -379,4 +380,14 @@ async def recuperar_tracking_beetrack(codigo : str):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Codigo no encontrado")
     
     return recuperar_tracking_beetrack_schema(results)
+
+@router.get("/recuperar/linea/producto")
+async def recuperar_linea_producto(codigo : str):
+
+    results = conn.recupera_linea_producto(codigo)
+    # print(results)
+    if results == []:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Codigo no encontrado")
+    
+    return recuperar_linea_producto_schema(results)
    
