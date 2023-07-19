@@ -214,7 +214,7 @@ async def delete_producto_ruta_activa(cod_producto : str):
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
        
 @router.get("/descargar")
-async def download_excel(nombre_ruta : str):
+async def download_excel(nombre_ruta : str,patente: str,driver:str):
 
     datos = [[]]
   
@@ -241,6 +241,9 @@ async def download_excel(nombre_ruta : str):
     negrita = Font(bold=True, size=20,  color='000000')
     # hoja.merge_cells('A1:D1')
     hoja.append(("Ruta : "+nombre_ruta,))
+    hoja.append(("Patente : "+patente,))
+
+    # "Patente : "+patente, "driver : "+driver
 
     for ruta in rutas_activas:
         arrayProductos = ruta["Producto"].split("@")
@@ -275,18 +278,25 @@ async def download_excel(nombre_ruta : str):
     for celda in hoja[1]:
         celda.font = negrita
 
-    for celda in hoja[3]:
+    for celda in hoja[2]:
+        celda.font = negrita
+
+    for celda in hoja[4]:
         celda.font = Font(bold=True, color="FFFFFF")
         celda.fill = PatternFill(start_color="000000FF", end_color="000000FF", fill_type="solid")
         celda.border = border
     
     # print(nHoja)
     for n in range(nHoja):
-         for celda in hoja[n+4]:
+         for celda in hoja[n+5]:
              celda.font = Font(bold=True, color="070707")
              celda.fill = PatternFill(start_color="FFFFFF", end_color="FFFFFF", fill_type="solid")
              celda.border = border
-         
+    # 
+    hoja.append(("",)) 
+    hoja.append(("","Driver : "+driver,))  
+    hoja.append(("",))  
+    hoja.append(("","Firma : ","______________________"))   
     # Guardar el archivo
     nombre_archivo = "nombre_ruta.xlsx"
     libro_excel.save(nombre_archivo)
