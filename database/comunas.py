@@ -43,3 +43,20 @@ class ComunasConnection():
                 FROM public.op_regiones;
             """)
             return cur.fetchall()
+        
+    def get_comunas_chile_by_id_region(self,id_region):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                SELECT  comuna_name, id_region
+                FROM public.op_comunas
+                where id_region = '{id_region}'
+            """)
+            return cur.fetchall()
+        
+    def get_comunas_chile(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                SELECT  comuna_name, id_region
+                FROM public.op_comunas
+            """)
+            return cur.fetchall()
