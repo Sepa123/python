@@ -15,8 +15,8 @@ def regiones_schema(regiones):
 
 def comuna_lista(comuna):
     return {
-        "nombre_comuna": comuna[0],
-        "id_region": comuna[1],
+        "Nombre_comuna": comuna[0],
+        "Id_region": comuna[1],
     }
 
 def comunas_lista_schema(comunas):
