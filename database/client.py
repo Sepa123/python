@@ -2582,6 +2582,18 @@ class reportesConnection():
                         """)
             return cur.fetchall()
         
+    def registrar_retiro_cliente(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            INSERT INTO areati.ti_retiro_cliente
+            (cliente, cod_pedido, tipo, envio_asociado, fecha_pedido, sku, descripcion, cantidad, bultos, nombre_cliente, direccion, comuna, telefono, email, estado, subestado, verified)
+            VALUES(%(Cliente)s, %(Codigo_pedido)s, %(Tipo)s, %(Envio_asociado)s, 
+            %(Fecha_pedido)s, %(SKU)s, %(Descripcion_producto)s, %(Cantidad)s, %(Bultos)s,
+            %(Nombre_cliente)s, %(Direccion)s, %(Comuna)s,%(Telefono)s, %(Email)s, 0, 0, false);
+
+            """,data)
+        self.conn.commit()
+        
 
 class transyanezConnection():
     conn = None

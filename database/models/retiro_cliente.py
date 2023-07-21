@@ -7,10 +7,10 @@ class RetiroCliente(BaseModel):
     Tipo: str
     Envio_asociado: str
     Fecha_pedido: str
-    SKU: str
+    SKU: int
     Descripcion_producto: str
-    Cantidad: str
-    Bultos: str
+    Cantidad: int
+    Bultos: int
     Nombre_cliente: str
     Direccion: str
     Comuna: str
