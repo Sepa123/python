@@ -2548,6 +2548,24 @@ class reportesConnection():
                         """)
             return cur.fetchall()
 
+
+
+    # Recuperar fecha ingreso sistema al cliente
+
+    def recuperar_fecha_ingreso_cliente(self,cod_pedido):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                (select to_char(created_at, 'yyyy-mm-dd hh24:mi') from areati.ti_wms_carga_easy e where e.entrega='{cod_pedido}'
+                    union all
+                    select to_char(created_at, 'yyyy-mm-dd hh24:mi') from areati.ti_wms_carga_electrolux e where e.numero_guia='{cod_pedido}'
+                    union all
+                    select to_char(created_at, 'yyyy-mm-dd hh24:mi') from areati.ti_wms_carga_sportex e where e.id_sportex='{cod_pedido}'
+                    union all
+                    select to_char(created_at, 'yyyy-mm-dd hh24:mi') from areati.ti_carga_easy_go_opl e where e.suborden='{cod_pedido}'
+                    limit 1
+                    )
+                        """)
+            return cur.fetchall()
     # recuperar track de beetrack
 
     def recuperar_track_beetrack(self,codigo_pick):

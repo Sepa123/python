@@ -1,14 +1,3 @@
-# def recuperar_tracking_beetrack(beetrack):
-#     return {
-#   "Id Ruta": beetrack[1],
-#   "PPU": null,
-#   "Fecha Ingreso Beetrack": null,
-#   "Cliente": null,
-#   "Fecha Entrega": null,
-#   "Estado": null,
-#   "Subestado": null
-# }
-
 
 def recuperar_tracking_beetrack_schema(results):
     json_data = []
@@ -26,6 +15,9 @@ def recuperar_tracking_beetrack_schema(results):
     return json_data
 
 
-
+def recuperar_fecha_ingreso_sistema_schema(fecha):
+    return {
+        'Fecha_ingreso_sistema': fecha[0][0]
+            }
 
 

@@ -27,7 +27,7 @@ from database.schema.nombres_rutas_activas import nombres_rutas_activas_schema
 from database.schema.datos_ruta_activa_editar import datos_rutas_activas_editar_schema
 from database.schema.rutas.driver_ruta_asignada import driver_ruta_asignada
 
-from database.schema.rutas.recuperar_tracking_beetrack import recuperar_tracking_beetrack_schema
+from database.schema.rutas.recuperar_tracking_beetrack import recuperar_tracking_beetrack_schema, recuperar_fecha_ingreso_sistema_schema
 
 from database.schema.rutas.linea_producto import recuperar_linea_producto_schema
 
@@ -401,3 +401,8 @@ async def recuperar_linea_producto(codigo : str):
     
     return recuperar_linea_producto_schema(results)
    
+@router.get("/fecha_ingreso_sistema/{cod_pedido}")
+async def recuperar_fecha_ingreso_sistema(cod_pedido : str):
+    result = conn.recuperar_fecha_ingreso_cliente(cod_pedido)
+
+    return recuperar_fecha_ingreso_sistema_schema(result)
