@@ -17,3 +17,4 @@ class RetiroCliente(BaseModel):
     Telefono: str
     Email: str
     Region: int
+    Id_usuario : str
