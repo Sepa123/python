@@ -7,7 +7,9 @@ def pedido_compromiso_sin_despacho_schema(pedido_compromiso):
         "Region": pedido_compromiso[4],
         "Comuna": pedido_compromiso[5],
         "Descripcion": pedido_compromiso[6],
-        "Bultos": pedido_compromiso[7]
+        "Bultos": pedido_compromiso[7],
+        "Estado": pedido_compromiso[8],
+        "Subestado": pedido_compromiso[9]
     }
 
 def pedidos_compromiso_sin_despacho_schema(pedidos_compromiso):

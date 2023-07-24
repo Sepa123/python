@@ -37,7 +37,7 @@ async def get_pedidos_sin_despacho():
 async def get_pedidos_sin_despacho_descarga():
 
     results = conn.read_pedido_compromiso_sin_despacho()
-
+    print(results)
     wb = Workbook()
     ws = wb.active
     
