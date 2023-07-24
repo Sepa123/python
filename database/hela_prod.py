@@ -21,6 +21,7 @@ class HelaConnection():
             self.conn.set_client_encoding("UTF-8")
         except psycopg2.OperationalError as err:
             print(err)
+            print("Se conectara ???")
             self.conn.close()
             self.conn = psycopg2.connect(config("POSTGRES_DB_HELA"), options=options)
             # self.conn.encoding("")

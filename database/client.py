@@ -16,12 +16,21 @@ class UserConnection():
             self.conn = psycopg2.connect(config("POSTGRES_DB_TR"))
         except psycopg2.OperationalError as err:
             print(err)
+            print("Se conectara ???")
             self.conn.close()
             self.conn = psycopg2.connect(config("POSTGRES_DB_TR"))
         
     def __def__(self):
         self.conn.close()
     
+    def conectar_bd(self):
+        try:
+            self.conn = psycopg2.connect(config("POSTGRES_DB_TR"))
+        except psycopg2.OperationalError as err:
+            print(err)
+            print("Se conectara ???")
+            self.conn.close()
+
     def write(self, data):
         with self.conn.cursor() as cur:
             cur.execute("""
@@ -29,7 +38,7 @@ class UserConnection():
 
             """,data)
         self.conn.commit()
-
+    
     def read_all(self):
         with self.conn.cursor() as cur:
             cur.execute("""
@@ -46,6 +55,7 @@ class UserConnection():
             return cur.fetchall()
         
     def read_only_one(self, data):
+        # self.conn = self.conectar_bd()
         with self.conn.cursor() as cur:
             cur.execute("""
             SELECT id, full_name ,mail,"password" ,active ,rol_id  FROM "user".users WHERE mail=%(mail)s 
@@ -2448,13 +2458,19 @@ class reportesConnection():
                 to_char(created_at,'HH24:mi') as "Hora Ingreso",  
                 'Electrolux' as "Cliente",
                 twce.ruta as "N° Carga",
-                (select count(distinct(numero_guia)) from areati.ti_wms_carga_electrolux e where to_char(e.created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')) as "Entregas",
+                (select count(distinct(numero_guia)) 
+                from areati.ti_wms_carga_electrolux e 
+                where to_char(e.created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd') and twce.ruta=e.ruta) as "Entregas",
                 count(*) as "Bultos",
-                (select count(*) from areati.ti_wms_carga_electrolux where verified=true and to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')) as "Verificados",
-                (select count(*) from areati.ti_wms_carga_electrolux where verified=false and to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')) as "Sin Verificar"
+                (select count(*) 
+                from areati.ti_wms_carga_electrolux e
+                where verified=true and to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd') and twce.ruta=e.ruta) as "Verificados",
+                (select count(*) from areati.ti_wms_carga_electrolux e
+                where verified=false and to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd') and twce.ruta=e.ruta) as "Sin Verificar"
                 from areati.ti_wms_carga_electrolux twce 
                 where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
                 group by 1,2,3,4
+
                 ---------------------------------------------------------------------------------------
                 --  (4) Cuenta Easy OPL
                 ---------------------------------------------------------------------------------------
@@ -2595,6 +2611,13 @@ class reportesConnection():
 
             """,data)
         self.conn.commit()
+
+    def find_retiro_cliente_existente(self,cod_pedido):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select estado from areati.ti_retiro_cliente trc where trc.cod_pedido = '{cod_pedido}'         
+                        """)
+            return cur.fetchall()
         
 
 class transyanezConnection():
