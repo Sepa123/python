@@ -125,10 +125,10 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]], fecha_pedido : str)
     #     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
 
 @router.put("/actualizar/estado/{cod_producto}",status_code=status.HTTP_202_ACCEPTED)
-async def update_estado_producto(cod_producto:str ):
+async def update_estado_producto(cod_producto:str, body : bodyUpdateVerified ):
      try:
-        #   print(body)
-          conn.update_verified(cod_producto)
+          print(body)
+        #   conn.update_verified(cod_producto)
         #   connHela.insert_data_bitacora_recepcion()
           return { "message": "Producto Actualizado Correctamente" }
      except:
