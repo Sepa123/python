@@ -17,7 +17,7 @@ from database.hela_prod import HelaConnection
 
 ## modelos y schemas
 from database.models.asignar_ruta import RutasAsignadas
-from database.models.actualizar_verified.update_verified import UpdateVerified
+from database.models.recepcion.recepcion_tiendas import bodyUpdateVerified
 from database.models.ruta_manual import RutaManual
 from database.schema.ruta_manual import convert_to_json
 from database.models.ruta_en_activo import RutaEnActivo
@@ -125,11 +125,12 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]], fecha_pedido : str)
     #     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
 
 @router.put("/actualizar/estado/{cod_producto}",status_code=status.HTTP_202_ACCEPTED)
-async def update_estado_producto(cod_producto:str, body : UpdateVerified ):
+async def update_estado_producto(cod_producto:str ):
      try:
-          print(cod_producto)
+        #   print(body)
           conn.update_verified(cod_producto)
-          return { "message": body }
+        #   connHela.insert_data_bitacora_recepcion()
+          return { "message": "Producto Actualizado Correctamente" }
      except:
           print("error")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
