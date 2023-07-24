@@ -1437,12 +1437,13 @@ class reportesConnection():
             initcap(easy.comuna) as "Comuna",
             easy.descripcion as "Descripcion",
             easy.bultos as "Bultos"
-            --,easy.estado,(select se."name"  from areati.subestado_entregas se where se.code = easy.subestado)
+            ,easy.estado as "Estado",
+            (select se."name"  from areati.subestado_entregas se where se.code = easy.subestado) as "Subestado"
             from areati.ti_wms_carga_easy easy 
             where to_char(easy.fecha_entrega,'yyyymmdd') <= to_char(current_date,'yyyymmdd')
             and (easy.estado=0 or (easy.estado=2 and easy.subestado not in (7,10,12,19,43,44,50,51,70,80)))
             and easy.entrega not in (select guia from quadminds.ti_respuesta_beetrack)
-            group by 1,2,3,4,5,6,7,8
+            group by 1,2,3,4,5,6,7,8,9,10
             union all
             ------------------------------------------------------------------------------------------------------------------------------
             select 'Electrolux' as "Origen",
@@ -1453,6 +1454,8 @@ class reportesConnection():
             initcap(split_part(direccion,',',2))  AS "Comuna",
             nombre_item as "Descripcion",
             cantidad as "Bultos"
+            ,estado as "Estado",
+            (select se."name"  from areati.subestado_entregas se where se.code = twce.subestado) as "Subestado"
             from areati.ti_wms_carga_electrolux twce 
             where to_char(twce.fecha_min_entrega,'yyyymmdd') <= to_char(current_date,'yyyymmdd')
             and (twce.estado=0 or (twce.estado=2 and twce.subestado not in (7,10,12,19,43,44,50,51,70,80)))
@@ -1471,11 +1474,13 @@ class reportesConnection():
             initcap(comuna)  AS "Comuna",
             marca as "Descripcion",
             1 as "Bultos"
+            ,estado as "Estado",
+            (select se."name"  from areati.subestado_entregas se where se.code = twcs.subestado) as "Subestado"
             from areati.ti_wms_carga_sportex twcs  
             where to_char(twcs.fecha_entrega ,'yyyymmdd') <= to_char(current_date,'yyyymmdd')
             and (twcs.estado=0 or (twcs.estado=2 and twcs.subestado not in (7,10,12,19,43,44,50,51,70,80)))
             and twcs.id_sportex not in (select guia from quadminds.ti_respuesta_beetrack)
-   
+            
             union all
             ------------------------------------------------------------------------------------------------------------------------------
             select 'Easy Tienda' as "Origen",
@@ -1490,11 +1495,32 @@ class reportesConnection():
             initcap(easy.comuna_despacho) as "Comuna",
             easy.descripcion as "Descripcion",
             easy.unidades as "Bultos"
-            --select *
+            ,estado as "Estado",
+            (select se."name"  from areati.subestado_entregas se where se.code = easy.subestado) as "Subestado"
             from areati.ti_carga_easy_go_opl easy 
             where to_char(easy.fec_compromiso,'yyyymmdd') <= to_char(current_date,'yyyymmdd')
             and (easy.estado=0 or (easy.estado=2 and easy.subestado not in (7,10,12,19,43,44,50,51,70,80)))
             and easy.suborden not in (select guia from quadminds.ti_respuesta_beetrack)
+            union all
+            ------------------------------------------------------------------------------------------------------------------------------
+            select 'Retiro ' || rtc.cliente as "Origen", -- select * from areati.ti_retiro_cliente trc 
+            rtc.cod_pedido as "Cod. Entrega",
+            to_char(rtc.created_at,'yyyy-mm-dd') as "Fecha Ingreso",
+            to_char(rtc.fecha_pedido,'yyyy-mm-dd') as "Fecha Compromiso",
+            CASE
+                WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(rtc.comuna))) = 'Region Metropolitana' THEN 'Region Metropolitana'
+                WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(rtc.comuna))) = 'Valparaíso' THEN 'Valparaíso'
+                else 'N/A'
+            END "Region",
+            initcap(rtc.comuna) as "Comuna",
+            rtc.descripcion as "Descripcion",
+            rtc.cantidad as "Bultos"
+            ,estado as "Estado",
+            (select se."name"  from areati.subestado_entregas se where se.code = rtc.subestado) as "Subestado"
+            from areati.ti_retiro_cliente rtc 
+            where to_char(rtc.fecha_pedido,'yyyymmdd') <= to_char(current_date,'yyyymmdd')
+            and (rtc.estado=0 or (rtc.estado=2 and rtc.subestado not in (7,10,12,19,43,44,50,51,70,80)))
+            and rtc.cod_pedido not in (select guia from quadminds.ti_respuesta_beetrack)
 
             """)
 

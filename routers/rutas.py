@@ -4,8 +4,6 @@ from openpyxl import Workbook
 from openpyxl.styles import Font , PatternFill, Border ,Side
 from datetime import datetime, timedelta
 
-
-
 import re
 import json
 from typing import List
@@ -109,15 +107,12 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]], fecha_pedido : str)
                 data["Pistoleado"] = True 
                 print(producto.Fecha_ruta)
                 data["Fecha_ruta"] = fecha_pedido
-                
                 if data["Fecha_ruta"] is None:
                     # Obtener la fecha actual
                     fecha_actual = datetime.now().date()
                     # Obtener la fecha del día siguiente
                     fecha_siguiente = fecha_actual + timedelta(days=1)
-                    # print(fecha_siguiente)
                     data["Fecha_ruta"] =fecha_siguiente
-                # conn.update_verified(data["Codigo_producto"])
                 conn.write_rutas_manual(data)
         return { "message": f"La Ruta {nombre_ruta} fue guardada exitosamente" }
     # except:
