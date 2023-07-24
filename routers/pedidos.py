@@ -44,7 +44,7 @@ async def get_pedidos_sin_despacho_descarga():
     results.insert(0, ("",))
     results.insert(1,('Origen', 'Cod. Entrega', "Fecha Ingreso", "Fecha Compromiso", 
                       "Region", "Comuna","Descripcion","Bultos","Estado","Subestado"))
-
+    # update
     for row in results:
         # print(row)
         ws.append(row)
