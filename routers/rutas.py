@@ -130,7 +130,7 @@ async def update_estado_producto(cod_producto:str, body : bodyUpdateVerified ):
           print(body)
         #   conn.update_verified(cod_producto)
         #   connHela.insert_data_bitacora_recepcion()
-          return { "message": "Producto Actualizado Correctamente" }
+          return { "message": body }
      except:
           print("error")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
