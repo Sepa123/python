@@ -2211,7 +2211,8 @@ class reportesConnection():
         
             from areati.ti_carga_easy_go_opl easygo
             where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd') 
-            order by created_at desc          
+            -- order by created_at desc  
+            order by easygo.suborden      
                         """)           
             return cur.fetchall()
 
@@ -2231,7 +2232,8 @@ class reportesConnection():
                 twcs.verified as "Pistoleado"
                 from areati.ti_wms_carga_sportex twcs 
                 where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd') 
-                order by created_at desc
+                --order by created_at desc
+                order by twcs.id_sportex
                         """)           
             return cur.fetchall()
     
@@ -2271,7 +2273,8 @@ class reportesConnection():
             --where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd') 
             WHERE to_char(created_at,'yyyy-mm-dd hh24:mi')  >= to_char((obtener_dia_anterior() + INTERVAL '17 hours 30 minutes'),'yyyy-mm-dd hh24:mi')
             AND to_char(created_at,'yyyy-mm-dd') <= to_char(CURRENT_DATE,'yyyy-mm-dd')
-            order by created_at desc
+            --order by created_at desc
+            order by easy.carton
                         """)           
             return cur.fetchall()
         
