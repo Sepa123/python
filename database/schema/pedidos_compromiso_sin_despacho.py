@@ -9,7 +9,9 @@ def pedido_compromiso_sin_despacho_schema(pedido_compromiso):
         "Descripcion": pedido_compromiso[6],
         "Bultos": pedido_compromiso[7],
         "Estado": pedido_compromiso[8],
-        "Subestado": pedido_compromiso[9]
+        "Subestado": pedido_compromiso[9],
+        "Verificado": pedido_compromiso[10],
+        "Recibido": pedido_compromiso[11]
     }
 
 def pedidos_compromiso_sin_despacho_schema(pedidos_compromiso):

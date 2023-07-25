@@ -41,7 +41,6 @@ async def get_recepcion_easy_opl():
 @router.get("/easy_cd", status_code=status.HTTP_202_ACCEPTED)
 async def get_recepcion_easy_cd():
     results = conn.read_recepcion_easy_cd()
-
     return recepcion_easy_cds_schema(results)
 
 

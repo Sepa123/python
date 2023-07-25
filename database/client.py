@@ -1425,6 +1425,9 @@ class reportesConnection():
     def read_pedido_compromiso_sin_despacho(self):
         with self.conn.cursor() as cur:
             cur.execute("""
+            ---------------------------------------------------------------------------------------------------------------------------
+            -- (1) Corrección para ver estados y subestados para Productos con fecha de compromiso sin despacho
+            ---------------------------------------------------------------------------------------------------------------------------
             select 'Easy CD' as "Origen",
             entrega as "Cod. Entrega",
             to_char(created_at,'yyyy-mm-dd') as "Fecha Ingreso",
@@ -1437,9 +1440,16 @@ class reportesConnection():
             initcap(easy.comuna) as "Comuna",
             easy.descripcion as "Descripcion",
             easy.bultos as "Bultos",
-            --easy.estado as "Estado",
             (select ee.descripcion from areati.estado_entregas ee where ee.estado = easy.estado) as "Estado",
-            (select se."name"  from areati.subestado_entregas se where se.code = easy.subestado) as "Subestado"
+            (select se."name"  from areati.subestado_entregas se where se.code = easy.subestado) as "Subestado",
+            CASE
+            WHEN MAX(verified::int) = 1 THEN 1
+            ELSE 0
+            END AS "Verificado",
+            CASE
+            WHEN MAX(recepcion::int) = 1 THEN 1
+            ELSE 0
+            END AS "Recibido"
             from areati.ti_wms_carga_easy easy 
             where to_char(easy.fecha_entrega,'yyyymmdd') <= to_char(current_date,'yyyymmdd')
             and (easy.estado=0 or (easy.estado=2 and easy.subestado not in (7,10,12,19,43,44,50,51,70,80)))
@@ -1456,11 +1466,20 @@ class reportesConnection():
             nombre_item as "Descripcion",
             cantidad as "Bultos",
             (select ee.descripcion from areati.estado_entregas ee where ee.estado = twce.estado) as "Estado",
-            (select se."name"  from areati.subestado_entregas se where se.code = twce.subestado) as "Subestado"
+            (select se."name"  from areati.subestado_entregas se where se.code = twce.subestado) as "Subestado",
+            CASE
+            WHEN MAX(verified::int) = 1 THEN 1
+            ELSE 0
+            END AS "Verificado",
+            CASE
+            WHEN MAX(recepcion::int) = 1 THEN 1
+            ELSE 0
+            END AS "Recibido"
             from areati.ti_wms_carga_electrolux twce 
             where to_char(twce.fecha_min_entrega,'yyyymmdd') <= to_char(current_date,'yyyymmdd')
             and (twce.estado=0 or (twce.estado=2 and twce.subestado not in (7,10,12,19,43,44,50,51,70,80)))
             and twce.numero_guia not in (select guia from quadminds.ti_respuesta_beetrack)
+            group by 1,2,3,4,5,6,7,8,9,10
             union all
             ------------------------------------------------------------------------------------------------------------------------------
             select 'Sportex' as "Origen",
@@ -1476,12 +1495,20 @@ class reportesConnection():
             marca as "Descripcion",
             1 as "Bultos",
             (select ee.descripcion from areati.estado_entregas ee where ee.estado = twcs.estado) as "Estado",
-            (select se."name"  from areati.subestado_entregas se where se.code = twcs.subestado) as "Subestado"
+            (select se."name"  from areati.subestado_entregas se where se.code = twcs.subestado) as "Subestado",
+            CASE
+            WHEN MAX(verified::int) = 1 THEN 1
+            ELSE 0
+            END AS "Verificado",
+            CASE
+            WHEN MAX(recepcion::int) = 1 THEN 1
+            ELSE 0
+            END AS "Recibido"
             from areati.ti_wms_carga_sportex twcs  
             where to_char(twcs.fecha_entrega ,'yyyymmdd') <= to_char(current_date,'yyyymmdd')
             and (twcs.estado=0 or (twcs.estado=2 and twcs.subestado not in (7,10,12,19,43,44,50,51,70,80)))
             and twcs.id_sportex not in (select guia from quadminds.ti_respuesta_beetrack)
-            
+            group by 1,2,3,4,5,6,7,8,9,10
             union all
             ------------------------------------------------------------------------------------------------------------------------------
             select 'Easy Tienda' as "Origen",
@@ -1497,11 +1524,20 @@ class reportesConnection():
             easy.descripcion as "Descripcion",
             easy.unidades as "Bultos",
             (select ee.descripcion from areati.estado_entregas ee where ee.estado = easy.estado) as "Estado",
-            (select se."name"  from areati.subestado_entregas se where se.code = easy.subestado) as "Subestado"
+            (select se."name"  from areati.subestado_entregas se where se.code = easy.subestado) as "Subestado",
+            CASE
+            WHEN MAX(verified::int) = 1 THEN 1
+            ELSE 0
+            END AS "Verificado",
+            CASE
+            WHEN MAX(recepcion::int) = 1 THEN 1
+            ELSE 0
+            END AS "Recibido"
             from areati.ti_carga_easy_go_opl easy 
             where to_char(easy.fec_compromiso,'yyyymmdd') <= to_char(current_date,'yyyymmdd')
             and (easy.estado=0 or (easy.estado=2 and easy.subestado not in (7,10,12,19,43,44,50,51,70,80)))
             and easy.suborden not in (select guia from quadminds.ti_respuesta_beetrack)
+            group by 1,2,3,4,5,6,7,8,9,10
             union all
             ------------------------------------------------------------------------------------------------------------------------------
             select 'Retiro ' || rtc.cliente as "Origen", -- select * from areati.ti_retiro_cliente trc 
@@ -1517,12 +1553,21 @@ class reportesConnection():
             rtc.descripcion as "Descripcion",
             rtc.cantidad as "Bultos",
             (select ee.descripcion from areati.estado_entregas ee where ee.estado = rtc.estado) as "Estado",
-            (select se."name"  from areati.subestado_entregas se where se.code = rtc.subestado) as "Subestado"
+            (select se."name"  from areati.subestado_entregas se where se.code = rtc.subestado) as "Subestado",
+            CASE
+            WHEN MAX(verified::int) = 1 THEN 1
+            ELSE 0
+            END AS "Verificado",
+            CASE
+            WHEN MAX(verified::int) = 1 THEN 1
+            ELSE 0
+            END AS "Recibido"
             from areati.ti_retiro_cliente rtc 
             where to_char(rtc.fecha_pedido,'yyyymmdd') <= to_char(current_date,'yyyymmdd')
             and (rtc.estado=0 or (rtc.estado=2 and rtc.subestado not in (7,10,12,19,43,44,50,51,70,80)))
             and rtc.cod_pedido not in (select guia from quadminds.ti_respuesta_beetrack)
-            """)
+            group by 1,2,3,4,5,6,7,8,9,10
+                       """)
 
             return cur.fetchall()
         
