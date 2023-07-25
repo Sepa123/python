@@ -2188,7 +2188,8 @@ class reportesConnection():
         from areati.ti_wms_carga_electrolux eltx
         -- from areati.ti_wms_carga_electrolux_hoy as eltx 
         where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
-        order by created_at desc
+        -- order by created_at desc
+        order by eltx.numero_guia 
                         """)           
             return cur.fetchall()
 
