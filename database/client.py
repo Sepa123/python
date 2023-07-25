@@ -1436,8 +1436,9 @@ class reportesConnection():
             END "Region",
             initcap(easy.comuna) as "Comuna",
             easy.descripcion as "Descripcion",
-            easy.bultos as "Bultos"
-            ,easy.estado as "Estado",
+            easy.bultos as "Bultos",
+            --easy.estado as "Estado",
+            (select ee.descripcion from areati.estado_entregas ee where ee.estado = easy.estado) as "Estado",
             (select se."name"  from areati.subestado_entregas se where se.code = easy.subestado) as "Subestado"
             from areati.ti_wms_carga_easy easy 
             where to_char(easy.fecha_entrega,'yyyymmdd') <= to_char(current_date,'yyyymmdd')
@@ -1453,8 +1454,8 @@ class reportesConnection():
             initcap(split_part(direccion,',',3)) AS "Region",
             initcap(split_part(direccion,',',2))  AS "Comuna",
             nombre_item as "Descripcion",
-            cantidad as "Bultos"
-            ,estado as "Estado",
+            cantidad as "Bultos",
+            (select ee.descripcion from areati.estado_entregas ee where ee.estado = twce.estado) as "Estado",
             (select se."name"  from areati.subestado_entregas se where se.code = twce.subestado) as "Subestado"
             from areati.ti_wms_carga_electrolux twce 
             where to_char(twce.fecha_min_entrega,'yyyymmdd') <= to_char(current_date,'yyyymmdd')
@@ -1473,8 +1474,8 @@ class reportesConnection():
             END "Region",
             initcap(comuna)  AS "Comuna",
             marca as "Descripcion",
-            1 as "Bultos"
-            ,estado as "Estado",
+            1 as "Bultos",
+            (select ee.descripcion from areati.estado_entregas ee where ee.estado = twcs.estado) as "Estado",
             (select se."name"  from areati.subestado_entregas se where se.code = twcs.subestado) as "Subestado"
             from areati.ti_wms_carga_sportex twcs  
             where to_char(twcs.fecha_entrega ,'yyyymmdd') <= to_char(current_date,'yyyymmdd')
@@ -1494,8 +1495,8 @@ class reportesConnection():
             END "Region",
             initcap(easy.comuna_despacho) as "Comuna",
             easy.descripcion as "Descripcion",
-            easy.unidades as "Bultos"
-            ,estado as "Estado",
+            easy.unidades as "Bultos",
+            (select ee.descripcion from areati.estado_entregas ee where ee.estado = easy.estado) as "Estado",
             (select se."name"  from areati.subestado_entregas se where se.code = easy.subestado) as "Subestado"
             from areati.ti_carga_easy_go_opl easy 
             where to_char(easy.fec_compromiso,'yyyymmdd') <= to_char(current_date,'yyyymmdd')
@@ -1514,14 +1515,13 @@ class reportesConnection():
             END "Region",
             initcap(rtc.comuna) as "Comuna",
             rtc.descripcion as "Descripcion",
-            rtc.cantidad as "Bultos"
-            ,estado as "Estado",
+            rtc.cantidad as "Bultos",
+            (select ee.descripcion from areati.estado_entregas ee where ee.estado = rtc.estado) as "Estado",
             (select se."name"  from areati.subestado_entregas se where se.code = rtc.subestado) as "Subestado"
             from areati.ti_retiro_cliente rtc 
             where to_char(rtc.fecha_pedido,'yyyymmdd') <= to_char(current_date,'yyyymmdd')
             and (rtc.estado=0 or (rtc.estado=2 and rtc.subestado not in (7,10,12,19,43,44,50,51,70,80)))
             and rtc.cod_pedido not in (select guia from quadminds.ti_respuesta_beetrack)
-
             """)
 
             return cur.fetchall()
