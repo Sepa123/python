@@ -3,7 +3,7 @@ from fastapi import APIRouter, status,HTTPException
 ##Modelos 
 
 from database.models.retiro_cliente import RetiroCliente
-from database.schema.cargas.easy_cd import carga_easy_cd_schema
+from database.schema.cargas.quadminds import cargas_quadminds_schema
 
 ##Conexiones
 from database.client import reportesConnection
@@ -14,6 +14,12 @@ from openpyxl.styles import Font , PatternFill, Border ,Side
 router = APIRouter(tags=["Cargas"], prefix="/api/cargas")
 
 conn = reportesConnection()
+
+@router.get("/quadminds" , status_code=status.HTTP_202_ACCEPTED)
+async def get_carga_easy_cd():
+    results = conn.get_cargas_quadmind()
+
+    return cargas_quadminds_schema(results)
 
 # @router.get("/easy_cd" , status_code=status.HTTP_202_ACCEPTED)
 # async def get_carga_easy_cd():

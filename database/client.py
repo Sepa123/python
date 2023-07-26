@@ -2700,14 +2700,13 @@ class reportesConnection():
                         """)
             return cur.fetchall()
         
-    def get_cargas_easy_cd(self):
+    def get_cargas_quadmind(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            select * from areati.ti_wms_carga_easy twce
-            WHERE to_char(created_at,'yyyy-mm-dd hh24:mi')  >= to_char((obtener_dia_anterior() + INTERVAL '17 hours 30 minutes'),'yyyy-mm-dd hh24:mi')
-            AND to_char(created_at,'yyyy-mm-dd') <= to_char(CURRENT_DATE,'yyyy-mm-dd')        
+            select * from quadminds.recupera_productos_a_quadminds();
                         """)
             return cur.fetchall()
+
         
 
 class transyanezConnection():
