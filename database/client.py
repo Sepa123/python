@@ -2210,7 +2210,7 @@ class reportesConnection():
              easygo.verified as "Pistoleado"   
         
             from areati.ti_carga_easy_go_opl easygo
-            where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd') 
+            where to_char(created_at,'yyyymmdd')=to_char(current_date - 1,'yyyymmdd') 
             -- order by created_at desc  
             order by easygo.suborden      
                         """)           
