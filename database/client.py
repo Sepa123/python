@@ -2618,6 +2618,13 @@ class reportesConnection():
                 SELECT TO_CHAR(MAX(created_at), 'yyyy-mm-dd') AS fecha_final
                 FROM areati.ti_carga_easy_go_opl
                 WHERE suborden = drm.cod_pedido
+                        
+                UNION ALL
+
+                SELECT TO_CHAR(MAX(created_at), 'yyyy-mm-dd') AS fecha_final
+                FROM areati.ti_retiro_cliente trc 
+                WHERE cod_pedido = drm.cod_pedido
+
                 ) AS subconsulta) AS "fechahr",
                 ra.driver as "conductor",
                 split_part(initcap((regexp_matches(drm.desc_producto, '\((.*?)\)'))[1]), ' ', 1) as "Cliente",
