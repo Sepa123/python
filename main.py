@@ -11,7 +11,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 from datetime import datetime, timedelta
 from lib.password import verify_password, hash_password
 from database.models.token import TokenPayload
-from routers import panel, transyanez, reportes_cargas, pedidos, productos , rutas, recepcion, comunas, clientes
+from routers import carga,panel, transyanez, reportes_cargas, pedidos, productos, rutas, recepcion, comunas, clientes
 from database.schema.roles_list import roles_list_schema
 
 ## documentacion api
@@ -42,6 +42,7 @@ app.include_router(recepcion.router)
 app.include_router(panel.router)
 app.include_router(comunas.router)
 app.include_router(clientes.router)
+app.include_router(carga.router)
 
 conn = UserConnection()
 hela_conn = HelaConnection()
@@ -136,6 +137,7 @@ async def login_user(user_data:loginSchema):
         "access_token": jwt.encode(access_token, SECRET_KEY,algorithm=ALGORITHM),
         "token_type":"bearer",
         "rol_id" : user_db[5],
+        "sub": user_db[1],
         "server": server
     }
 

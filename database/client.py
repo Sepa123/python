@@ -2647,8 +2647,6 @@ class reportesConnection():
                         """)
             return cur.fetchall()
 
-
-
     # Recuperar fecha ingreso sistema al cliente
 
     def recuperar_fecha_ingreso_cliente(self,cod_pedido):
@@ -2699,6 +2697,15 @@ class reportesConnection():
         with self.conn.cursor() as cur:
             cur.execute(f"""
             select estado from areati.ti_retiro_cliente trc where trc.cod_pedido = '{cod_pedido}'         
+                        """)
+            return cur.fetchall()
+        
+    def get_cargas_easy_cd(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select * from areati.ti_wms_carga_easy twce
+            WHERE to_char(created_at,'yyyy-mm-dd hh24:mi')  >= to_char((obtener_dia_anterior() + INTERVAL '17 hours 30 minutes'),'yyyy-mm-dd hh24:mi')
+            AND to_char(created_at,'yyyy-mm-dd') <= to_char(CURRENT_DATE,'yyyy-mm-dd')        
                         """)
             return cur.fetchall()
         
