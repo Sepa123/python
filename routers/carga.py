@@ -24,7 +24,7 @@ async def get_carga_quadminds():
 
 
 @router.post("/quadminds/descargar", status_code=status.HTTP_202_ACCEPTED)
-async def descargar_quadminds_excel():
+async def descargar_quadminds_excel(body : list[CargaQuadmind]):
 
     results = body
 

@@ -3,32 +3,32 @@ from datetime import datetime
 from pydantic import BaseModel
 
 class CargaQuadmind(BaseModel):
-    codigo_cliente: str
-    nombre: str
-    calle: str
-    ciudad: str
-    provincia: Optional[str]
-    latitud: Optional[str]
-    longitud: Optional[str]
-    telefono: str
-    email: str
-    codigo_pedido: str
-    fecha_pedido: datetime
-    operacion: str
-    codigo_producto: str
-    descripcion_producto: str
-    cantidad_producto: int
-    peso: int
-    volumen: int
-    dinero: int
-    duracion_min: int
-    ventana_horaria_1: str
-    ventana_horaria_2: str
-    notas: str
-    agrupador: str
-    email_remitentes: str
-    eliminar_pedido: str
-    vehiculo: str
-    habilidades: str
-    # arrayCodigo: Optional[List(str)]
-    # arrayDescripcion: Optional[List(str)] 
+    Codigo_cliente: str
+    Nombre: str
+    Calle: str
+    Ciudad: str
+    Provincia: Optional[str]
+    Latitud: Optional[str]
+    Longitud: Optional[str]
+    Telefono: str
+    Email: str
+    Codigo_pedido: str
+    Fecha_pedido: str
+    Operacion: str
+    Codigo_producto: str
+    Descripcion_producto: str
+    Cantidad_producto: int
+    Peso: int
+    Volumen: int
+    Dinero: int
+    Duracion_min: int
+    Ventana_horaria_1: str
+    Ventana_horaria_2: str
+    Notas: str
+    Agrupador: str
+    Email_remitentes: str
+    Eliminar_pedido: str
+    Vehiculo: str
+    Habilidades: str
+    arrayCodigo: Optional[list]
+    arrayDescripcion: Optional[list]
