@@ -14,7 +14,7 @@ def carga_quadminds(quadminds):
 	"Operacion": quadminds[11],
 	"Codigo_producto": quadminds[12],
 	"Descripcion_producto": quadminds[13],
-	"Cantidad": quadminds[14],
+	"Cantidad_producto": quadminds[14],
 	"Peso": quadminds[15],
 	"Volumen": quadminds[16],
 	"Dinero": quadminds[17],
