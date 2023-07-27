@@ -269,6 +269,8 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str):
     for i,fila in enumerate(datos):
         hoja.append(fila)
         nHoja = i
+    
+    
         
     # Aplicar estilo en negrita a la primera fila
     for celda in hoja[1]:
@@ -289,10 +291,36 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str):
              celda.fill = PatternFill(start_color="FFFFFF", end_color="FFFFFF", fill_type="solid")
              celda.border = border
     # 
+    
+    # Ajustar el ancho de las columnas para las celdas de datos (filas después de la 2)
+    for columna_cells in hoja.iter_cols(min_row=3):  # Ajustar solo las filas desde la tercera fila en adelante
+        longitud_maxima = 0
+        for cell in columna_cells:
+            if cell.value:
+                longitud = len(str(cell.value))
+                if longitud > longitud_maxima:
+                    longitud_maxima = longitud
+        ajuste_ancho = (longitud_maxima + 2) * 1.2
+        hoja.column_dimensions[columna_cells[0].column_letter].width = ajuste_ancho
+
+    # Ajustar el ancho de las columnas para las celdas fusionadas (primera y segunda fila)
+    for cell_range in hoja.merged_cells.ranges:
+        min_col, min_row, max_col, max_row = cell_range.bounds
+        if min_row >= 3:  # Ajustar solo las filas desde la tercera fila en adelante
+            for columna_index in range(min_col, max_col + 1):
+                longitud_maxima = max(len(str(cell.value)) for cell in hoja[hoja.cell(row=min_row, column=columna_index):hoja.cell(row=max_row, column=columna_index)])
+                ajuste_ancho = (longitud_maxima + 2) * 1.2
+                hoja.column_dimensions[hoja.cell(row=min_row, column=columna_index).column_letter].width = ajuste_ancho
+
     hoja.append(("",)) 
     hoja.append(("","Driver : "+driver,))  
     hoja.append(("",))  
-    hoja.append(("","Firma : ","______________________"))   
+    hoja.append(("","Firma : ______________________"))    
+
+    hoja.merge_cells('A1:M1')
+    hoja.merge_cells('A2:M2')
+
+  # Fusionar celdas para las últimas cuatro filas
     # Guardar el archivo
     nombre_archivo = "nombre_ruta.xlsx"
     libro_excel.save(nombre_archivo)
