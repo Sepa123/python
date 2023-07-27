@@ -1,4 +1,9 @@
+from database.models.cargas.quadmind import CargaQuadmind
+
 def carga_quadminds(quadminds):
+    if quadminds[4] is None:
+        quadminds[4] = "Otro"
+        
     return {
 	"Codigo_cliente": quadminds[0],
 	"Nombre": quadminds[1],
@@ -31,3 +36,13 @@ def carga_quadminds(quadminds):
 
 def cargas_quadminds_schema(cquadminds):
     return [ carga_quadminds(quadminds) for quadminds in cquadminds]
+
+
+def carga_quadminds_tupla(quadminds : CargaQuadmind ):
+    return (quadminds.Codigo_cliente, quadminds[1], quadminds[2], quadminds[3], quadminds[4], quadminds[5], quadminds[6], quadminds[7], quadminds[8], quadminds[9], quadminds[10],
+	quadminds[11], quadminds[12], quadminds[13], quadminds[14], quadminds[15],quadminds[16], quadminds[17], quadminds[18], quadminds[19], quadminds[20], quadminds[21], 
+    quadminds[22], quadminds[23], quadminds[24], quadminds[25],  quadminds[26]
+	)
+
+def cargas_quadminds_tuple_schema(cquadminds):
+    return [carga_quadminds_tupla (quadminds) for quadminds in cquadminds]
