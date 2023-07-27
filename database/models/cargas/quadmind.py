@@ -7,7 +7,7 @@ class CargaQuadmind(BaseModel):
     Nombre: str
     Calle: str
     Ciudad: str
-    Provincia: Optional[str]
+    Provincia: str
     Latitud: Optional[str]
     Longitud: Optional[str]
     Telefono: str

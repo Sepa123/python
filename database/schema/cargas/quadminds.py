@@ -1,9 +1,6 @@
 from database.models.cargas.quadmind import CargaQuadmind
 
 def carga_quadminds(quadminds):
-    if quadminds[4] is None:
-        quadminds[4] = "Otro"
-        
     return {
 	"Codigo_cliente": quadminds[0],
 	"Nombre": quadminds[1],
