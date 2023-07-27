@@ -1,5 +1,5 @@
 from fastapi import APIRouter, status,HTTPException
-
+from typing import List
 ##Modelos 
 
 from database.models.retiro_cliente import RetiroCliente
@@ -24,7 +24,7 @@ async def get_carga_quadminds():
 
 
 @router.post("/quadminds/descargar", status_code=status.HTTP_202_ACCEPTED)
-async def descargar_quadminds_excel(body):
+async def descargar_quadminds_excel(body : List[CargaQuadmind]):
 
     results = body
 
