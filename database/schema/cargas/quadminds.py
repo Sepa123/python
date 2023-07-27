@@ -9,7 +9,7 @@ def carga_quadminds(quadminds):
 	"Longitud": quadminds[6],
 	"Telefono": quadminds[7],
 	"Email": quadminds[8],
-	"Código_pedido": quadminds[9],
+	"Codigo_pedido": quadminds[9],
 	"Fecha_pedido": quadminds[10],
 	"Operacion": quadminds[11],
 	"Codigo_producto": quadminds[12],
