@@ -105,10 +105,8 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]], fecha_pedido : str)
                 data["Agrupador"] = nombre_ruta
                 data["Nombre_ruta"] = nombre_ruta
                 data["Pistoleado"] = True 
-                print(producto.Fecha_ruta)
                 print('Nombre', producto.Nombre)
                 data["Posicion"] = i + 1
-                print(data["Posicion"])
                 data["Fecha_ruta"] = fecha_pedido
                 if data["Fecha_ruta"] is None:
                     # Obtener la fecha actual
