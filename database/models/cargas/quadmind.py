@@ -13,7 +13,7 @@ class CargaQuadmind(BaseModel):
     Telefono: str
     Email: str
     Codigo_pedido: str
-    Fecha_pedido: datetime
+    Fecha_pedido: str
     Operacion: str
     Codigo_producto: str
     Descripcion_producto: str
