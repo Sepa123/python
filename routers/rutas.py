@@ -106,7 +106,9 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]], fecha_pedido : str)
                 data["Nombre_ruta"] = nombre_ruta
                 data["Pistoleado"] = True 
                 print(producto.Fecha_ruta)
-                print(i)
+                print('Nombre', producto.Nombre)
+                data["Posicion"] = i + 1
+                print(data["Posicion"])
                 data["Fecha_ruta"] = fecha_pedido
                 if data["Fecha_ruta"] is None:
                     # Obtener la fecha actual
@@ -114,7 +116,7 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]], fecha_pedido : str)
                     # Obtener la fecha del día siguiente
                     fecha_siguiente = fecha_actual + timedelta(days=1)
                     data["Fecha_ruta"] =fecha_siguiente
-                # conn.write_rutas_manual(data)
+                conn.write_rutas_manual(data)
         return { "message": f"La Ruta {nombre_ruta} fue guardada exitosamente" }
     # except:
     #     print("error")
