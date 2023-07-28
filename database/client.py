@@ -2038,6 +2038,7 @@ class reportesConnection():
             from quadminds.datos_ruta_manual drm 
             where nombre_ruta = '{nombre_ruta}'
             group by 1,2,7,8,9,10,11
+            order by posicion
             ) datos_base
             """)
             return cur.fetchall()
