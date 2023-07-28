@@ -2644,6 +2644,7 @@ class reportesConnection():
                 left join hela.ruta_asignada ra on ra.id_ruta = drm.id_ruta
                 left join areati.ti_wms_carga_electrolux etlx on etlx.numero_guia = drm.cod_pedido and etlx.codigo_item = drm.sku
                 where drm.id_ruta = {id_ruta}
+                order by posicion
                         """)
             return cur.fetchall()
 
