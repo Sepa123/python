@@ -98,7 +98,7 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]], fecha_pedido : str)
             print("codigo pedido repetido")
             raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, 
                                 detail=f"El Producto {rutas[0][0].Codigo_pedido} se encuentra en la ruta {check[1]}")
-        for ruta in rutas:
+        for i, ruta in enumerate(rutas):
             for producto in ruta:
                 data = producto.dict()
                 data["Id_ruta"] = id_ruta
@@ -106,6 +106,7 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]], fecha_pedido : str)
                 data["Nombre_ruta"] = nombre_ruta
                 data["Pistoleado"] = True 
                 print(producto.Fecha_ruta)
+                print(i)
                 data["Fecha_ruta"] = fecha_pedido
                 if data["Fecha_ruta"] is None:
                     # Obtener la fecha actual
@@ -113,7 +114,7 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]], fecha_pedido : str)
                     # Obtener la fecha del día siguiente
                     fecha_siguiente = fecha_actual + timedelta(days=1)
                     data["Fecha_ruta"] =fecha_siguiente
-                conn.write_rutas_manual(data)
+                # conn.write_rutas_manual(data)
         return { "message": f"La Ruta {nombre_ruta} fue guardada exitosamente" }
     # except:
     #     print("error")
