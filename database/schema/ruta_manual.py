@@ -1,6 +1,6 @@
 def convert_to_json(results):
     json_data = []
-    keys = ['Codigo_cliente', 'Nombre', 'Calle', 'Ciudad', 'Provincia', 'Latitud', 'Longitud', 'Telefono', 'Email', 'Codigo_pedido', 'Fecha_pedido', 'Operacion', 'Codigo_producto',
+    keys = ['Codigo_cliente', 'Nombre', 'Calle', 'Direccion_textual', 'Ciudad', 'Provincia', 'Latitud', 'Longitud', 'Telefono', 'Email', 'Codigo_pedido', 'Fecha_pedido', 'Operacion', 'Codigo_producto',
              'Descripcion_producto', 'Cantidad_producto', 'Peso', 'Volumen', 'Dinero', 'Duracion_min', 'Ventana_horaria_1', 'Ventana_horaria_2', 'Notas', 'Agrupador', 
              'Email_remitentes', 'Eliminar_pedido', 'Vehiculo', 'Habilidades','SKU', 'Pistoleado', 'Tamaño', 'Estado', 'En_ruta']
     print(type(results))
