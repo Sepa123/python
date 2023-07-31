@@ -2064,7 +2064,7 @@ class reportesConnection():
     def read_ruta_activa_by_nombre_ruta(self,nombre_ruta):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            select id_ruta, nombre_ruta, cod_cliente, nombre, calle_numero, ciudad, provincia_estado, telefono, email, cod_pedido, fecha_pedido, cod_producto, desc_producto, cant_producto, notas, agrupador, sku, talla, estado, created_by
+            select id_ruta, nombre_ruta, cod_cliente, nombre, calle_numero, ciudad, provincia_estado, telefono, email, cod_pedido, fecha_pedido, cod_producto, desc_producto, cant_producto, notas, agrupador, sku, talla, estado, posicion
             from quadminds.datos_ruta_manual drm where nombre_ruta = '{nombre_ruta}'
             order by posicion
             """)
