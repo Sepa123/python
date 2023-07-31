@@ -1959,6 +1959,16 @@ class reportesConnection():
             """)
             return cur.fetchone()
         
+    def check_producto_codigo_repetido(self,nombre_ruta : str, cod_pedido : str, cod_producto : str, sku : str) :
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+             select * from quadminds.datos_ruta_manual drm 
+            where nombre_ruta = '{nombre_ruta}' 
+            and cod_pedido = '{cod_pedido}' and cod_producto = '{cod_producto}'
+            and sku = '{sku}'
+            """)
+            return cur.fetchone()
+        
     def read_id_ruta(self):
         with self.conn.cursor() as cur:
             cur.execute("""
@@ -2076,6 +2086,17 @@ class reportesConnection():
             cur.execute(f"""
                 DELETE FROM quadminds.datos_ruta_manual
                 WHERE nombre_ruta = '{nombre_ruta}' 
+                        """)
+            rows_delete = cur.rowcount
+        self.conn.commit() 
+        return rows_delete
+    
+    def update_posicion(self, posicion : int, cod_pedido : str, cod_producto : str): 
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                UPDATE quadminds.datos_ruta_manual  
+                SET posicion  = {posicion}  
+                WHERE quadminds.datos_ruta_manual.cod_pedido = '{cod_pedido}' AND quadminds.datos_ruta_manual.cod_producto = '{cod_producto}'
                         """)
             rows_delete = cur.rowcount
         self.conn.commit() 

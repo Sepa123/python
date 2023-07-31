@@ -1,6 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
-
+from typing import Optional,List
 class RutaEnActivo(BaseModel):
     Pos: str
     Codigo_pedido: str
@@ -15,3 +14,5 @@ class RutaEnActivo(BaseModel):
     Validacion: Optional[str]
     DE: Optional[str]
     DP: Optional[str]
+    arrayProductos : List[str]
+    arraySKU : List[str]

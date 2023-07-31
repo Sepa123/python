@@ -152,33 +152,31 @@ async def insert_ruta_existente_activa(rutas : List[List[RutaManual]]):
 
         fecha_ruta = conn.get_fecha_ruta(id_ruta)
 
-        check = conn.check_producto_existe(rutas[0][0].Codigo_pedido)
-        check = re.sub(r'\(|\)', '',check[0])
-        check = check.split(",")
-
-        print(check)
-
-        if(check[0] == "1"):
-            print("codigo pedido repetido")
-            raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, 
-                                detail=f"El Producto {rutas[0][0].Codigo_pedido} se encuentra en la ruta {check[1]}")
-        
-
-
-        delete_row = conn.delete_ruta_antigua(nombre_ruta)
-
-        print("Cantidad de elimnadas",delete_row)
+        # print(rutas)
 
         for i,ruta in enumerate(rutas):
             for producto in ruta:
                 data = producto.dict()
-                data["Id_ruta"] = id_ruta
-                data["Agrupador"] = nombre_ruta
-                data["Nombre_ruta"] = nombre_ruta
-                data["Pistoleado"] = True 
-                data["Fecha_ruta"] = fecha_ruta[0]
-                # conn.update_verified(data["Codigo_producto"])
-                conn.write_rutas_manual(data)
+
+                # print(data)
+                check = conn.check_producto_codigo_repetido(nombre_ruta,data["Codigo_pedido"],data["Codigo_producto"], data["SKU"])
+                
+                if check is not None:
+                    print(data["Codigo_pedido"])
+                     
+                    print(data["Posicion"])
+
+                    count = conn.update_posicion(data["Posicion"], data["Codigo_pedido"], data["Codigo_producto"])
+                    print(count)
+                else :
+                    data["Id_ruta"] = id_ruta
+                    data["Agrupador"] = nombre_ruta
+                    data["Nombre_ruta"] = nombre_ruta
+                    data["Pistoleado"] = True 
+                    data["Fecha_ruta"] = fecha_ruta[0]
+                    # conn.update_verified(data["Codigo_producto"])
+                    print(data)
+                    conn.write_rutas_manual(data)
         return { "message": f"La Ruta {nombre_ruta} fue actualizada exitosamente" }
     except:
         print("error")
@@ -217,25 +215,27 @@ async def delete_producto_ruta_activa(cod_producto : str):
           print("error")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
        
-@router.get("/descargar")
-async def download_excel(nombre_ruta : str,patente: str,driver:str):
+@router.post("/descargar")
+async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list):
 
     datos = [[]]
-  
+    
     datos.append([
         "Posición", "Pedido", "Comuna","Producto","SKU", "UND", "Bultos", "Nombre",
         "Direccion Cliente", "Teléfono", "Validado", "DE", "DP"
     ])
   
-    result = conn.read_rutas_en_activo(nombre_ruta) 
-    
+    # result = conn.read_rutas_en_activo(nombre_ruta) 
 
     border = Border(left=Side(border_style='thin', color='000000'),   
                 right=Side(border_style='thin', color='000000'),   
                 top=Side(border_style='thin', color='000000'),     
                 bottom=Side(border_style='thin', color='000000')) 
     
-    rutas_activas = rutas_en_activo_schema(result)
+    # rutas_activas = rutas_en_activo_schema(result)
+
+    rutas_activas = body
+
     # Crear un libro de Excel y seleccionar la hoja activa
     libro_excel = Workbook()
     hoja = libro_excel.active
