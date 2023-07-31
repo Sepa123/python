@@ -2066,6 +2066,7 @@ class reportesConnection():
             cur.execute(f"""
             select id_ruta, nombre_ruta, cod_cliente, nombre, calle_numero, ciudad, provincia_estado, telefono, email, cod_pedido, fecha_pedido, cod_producto, desc_producto, cant_producto, notas, agrupador, sku, talla, estado, created_by
             from quadminds.datos_ruta_manual drm where nombre_ruta = '{nombre_ruta}'
+            order by posicion
             """)
             return cur.fetchall()
     
