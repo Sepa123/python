@@ -205,7 +205,7 @@ async def get_ruta_by_nombre_ruta(nombre_ruta: str):
 async def delete_producto_ruta_activa(cod_producto : str):
      try:
           results = conn.delete_producto_ruta_activa(cod_producto)
-          if (results == 0): return { "message" : "El producto no existe en ninguna ruta"}
+          if (results == 0): print("El producto no existe en ninguna ruta")
           return { "message" : "producto eliminado"}
      except:
           print("error")
