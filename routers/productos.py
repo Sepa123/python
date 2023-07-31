@@ -14,7 +14,7 @@ from database.schema.producto_picking import productos_picking_schema ,producto_
 from database.models.producto_sku import ProductoSKU
 from database.schema.productos_sku import productos_sku_schema
 
-from database.schema.ruta_manual import convert_to_json
+from database.schema.ruta_manual import convert_to_json , rutas_manuales_schema
 
 
 from database.models.producto_picking_easy_opl import bodyUpdate, ProductoEasyOPL
@@ -69,7 +69,7 @@ async def get_productos_sku(codigo_sku : str):
     # print(results)
     if not results:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="SKU no encontrado")
-    json_data = convert_to_json(results)
+    json_data = productos_sku_schema(results)
     return json_data
 
 @router.get("/recepcion/OPL",status_code=status.HTTP_202_ACCEPTED)

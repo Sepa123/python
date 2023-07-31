@@ -17,7 +17,7 @@ from database.hela_prod import HelaConnection
 from database.models.asignar_ruta import RutasAsignadas
 from database.models.recepcion.recepcion_tiendas import bodyUpdateVerified
 from database.models.ruta_manual import RutaManual
-from database.schema.ruta_manual import convert_to_json
+from database.schema.ruta_manual import convert_to_json, rutas_manuales_schema
 from database.models.ruta_en_activo import RutaEnActivo
 from database.schema.rutas_en_activo import rutas_en_activo_schema
 from database.schema.nombres_rutas_activas import nombres_rutas_activas_schema
@@ -54,7 +54,7 @@ async def get_ruta_manual(pedido_id : str):
     if results is None or results == []:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El codigo del producto no existe")
     
-    json_data = convert_to_json(results)
+    json_data = rutas_manuales_schema(results)
     # print(results)
     print("/buscar/ruta")
 

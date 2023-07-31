@@ -1823,7 +1823,7 @@ class reportesConnection():
 
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            select * from areati.buscar_producto_picking('{producto_id}');
+            select areati.buscar_producto_picking('{producto_id}');
             """)
             return cur.fetchone()
         
@@ -1833,7 +1833,7 @@ class reportesConnection():
 
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            select areati.busca_producto_sku('{codigo_sku}')
+            select * from areati.busca_producto_sku('{codigo_sku}')
             """)
             return cur.fetchall()
 
@@ -1933,7 +1933,7 @@ class reportesConnection():
 
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            select areati.busca_ruta_manual('{pedido_id}')
+            select * from areati.busca_ruta_manual('{pedido_id}')
             """)
             return cur.fetchall()
 
