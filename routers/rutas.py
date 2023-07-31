@@ -162,6 +162,13 @@ async def insert_ruta_existente_activa(rutas : List[List[RutaManual]]):
             print("codigo pedido repetido")
             raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, 
                                 detail=f"El Producto {rutas[0][0].Codigo_pedido} se encuentra en la ruta {check[1]}")
+        
+
+
+        delete_row = conn.delete_ruta_antigua(nombre_ruta)
+
+        print("Cantidad de elimnadas",delete_row)
+
         for i,ruta in enumerate(rutas):
             for producto in ruta:
                 data = producto.dict()
@@ -170,7 +177,6 @@ async def insert_ruta_existente_activa(rutas : List[List[RutaManual]]):
                 data["Nombre_ruta"] = nombre_ruta
                 data["Pistoleado"] = True 
                 data["Fecha_ruta"] = fecha_ruta[0]
-                data["Posicion"] = i + 1
                 # conn.update_verified(data["Codigo_producto"])
                 conn.write_rutas_manual(data)
         return { "message": f"La Ruta {nombre_ruta} fue actualizada exitosamente" }

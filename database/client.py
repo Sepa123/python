@@ -2069,6 +2069,18 @@ class reportesConnection():
             order by posicion
             """)
             return cur.fetchall()
+        
+
+    def delete_ruta_antigua(self, nombre_ruta): 
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                DELETE FROM quadminds.datos_ruta_manual
+                WHERE nombre_ruta = '{nombre_ruta}' 
+                        """)
+            rows_delete = cur.rowcount
+        self.conn.commit() 
+        return rows_delete
+
     
     def delete_producto_ruta_activa(self,cod_producto):
         with self.conn.cursor() as cur:
