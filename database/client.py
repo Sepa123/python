@@ -2030,7 +2030,7 @@ class reportesConnection():
     def read_rutas_en_activo(self,nombre_ruta):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            select ROW_NUMBER() over (ORDER BY datos_base."Cod. Pedido") as "Pos.",* from
+            select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
             (
             select cod_pedido as "Cod. Pedido",
             ciudad as "Comuna",
@@ -2044,10 +2044,12 @@ class reportesConnection():
             estado as "Estado",
             '' as "Validado",
             '' as "DE",
-            '' as "DP"
+            '' as "DP",
+            id_ruta,
+            posicion
             from quadminds.datos_ruta_manual drm 
             where nombre_ruta = '{nombre_ruta}'
-            group by 1,2,7,8,9,10,11
+            group by 1,2,7,8,9,10,11, id_ruta, posicion
             ) datos_base
             """)
             return cur.fetchall()
@@ -2187,6 +2189,7 @@ class reportesConnection():
         
     # recepcion tiendas
 
+    # CTN000026344881
     def read_recepcion_electrolux(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""
@@ -2742,7 +2745,12 @@ class reportesConnection():
                         """)
             return cur.fetchall()
 
-        
+    def get_pedidos_planificados_quadmind(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select * from quadminds.pedidos_planificados
+                        """)
+            return cur.fetchall()
 
 class transyanezConnection():
     conn = None

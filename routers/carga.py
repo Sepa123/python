@@ -6,6 +6,9 @@ from database.models.retiro_cliente import RetiroCliente
 from database.schema.cargas.quadminds import cargas_quadminds_schema , cargas_quadminds_tuple_schema
 from database.models.cargas.quadmind import CargaQuadmind
 
+
+from database.schema.cargas.pedidos_planificados import pedidos_planificados_schema
+
 ##Conexiones
 from database.client import reportesConnection
 from fastapi.responses import FileResponse
@@ -21,6 +24,15 @@ async def get_carga_quadminds():
     results = conn.get_cargas_quadmind()
 
     return cargas_quadminds_schema(results)
+
+
+@router.get("/quadminds/pedidos_planificados" , status_code=status.HTTP_202_ACCEPTED)
+async def get_carga_quadminds():
+    results = conn.get_pedidos_planificados_quadmind()
+
+    print(len(results))
+
+    return pedidos_planificados_schema(results)
 
 
 # @router.post("/quadminds/descargar", status_code=status.HTTP_202_ACCEPTED)
