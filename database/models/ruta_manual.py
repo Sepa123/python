@@ -31,7 +31,7 @@ class RutaManual(BaseModel):
     Eliminar_pedido: Optional[str]
     Vehiculo: Optional[str]
     Habilidades: Optional[str]
-    SKU: Optional[int]
+    SKU: Optional[str]
     Pistoleado: Optional[str]
     Tamaño: Optional[str]
     Estado: Optional[str]
