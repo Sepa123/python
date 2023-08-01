@@ -2085,7 +2085,7 @@ class reportesConnection():
     def asignar_ruta_quadmind_manual(self, id ):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            select quadminds.convierte_en_ruta_manual({id});
+            select quadminds.convierte_en_ruta_manual('{id}');
             """)
             return cur.fetchall()
         
