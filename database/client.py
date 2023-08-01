@@ -2749,6 +2749,7 @@ class reportesConnection():
         with self.conn.cursor() as cur:
             cur.execute(f"""
             select * from quadminds.pedidos_planificados
+            where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
                         """)
             return cur.fetchall()
 
