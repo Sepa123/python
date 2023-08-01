@@ -56,9 +56,11 @@ async def subir_archivo(file: UploadFile = File(...)):
 @router.post('/quadminds/asignar')
 async def asignar_ruta(id_usuario : int):
     try:
-        conn.asignar_ruta_quadmind_manual(id_usuario)
+        result = conn.asignar_ruta_quadmind_manual(id_usuario)
+        
         return {
-            "message" : "Ruta asignada Correctamente"
+            "message" : "Ruta asignada Correctamente",
+            "resultado" : result
         }
     except:
          raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Error")
