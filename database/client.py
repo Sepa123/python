@@ -2082,6 +2082,13 @@ class reportesConnection():
             """)
             return cur.fetchall()
         
+    def asignar_ruta_quadmind_manual(self, id ):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select quadminds.convierte_en_ruta_manual({id});
+            """)
+            return cur.fetchall()
+        
 
     def delete_ruta_antigua(self, nombre_ruta): 
         with self.conn.cursor() as cur:

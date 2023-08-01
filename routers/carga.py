@@ -1,5 +1,6 @@
-from fastapi import APIRouter, status,HTTPException
+from fastapi import APIRouter, status,HTTPException, UploadFile, File
 from typing import List
+import pandas as pd
 ##Modelos 
 
 from database.models.retiro_cliente import RetiroCliente
@@ -33,6 +34,34 @@ async def get_carga_quadminds():
     print(len(results))
 
     return pedidos_planificados_schema(results)
+
+@router.post("/quadminds/subir-archivo")
+async def subir_archivo(file: UploadFile = File(...)):
+    # Aquí puedes procesar el archivo
+    # Por ejemplo, podrías guardarlo en el servidor con un nombre único
+    with open(f"excel/{file.filename}", "wb") as f:
+        contents = await file.read()
+        f.write(contents)
+
+    df = pd.read_excel(f"excel/{file.filename}",skiprows=4)
+
+    lista = df.to_dict(orient='records')
+ 
+    for data in lista:
+        print(data['Codigo de Pedido'])
+  
+
+    return {"filename": file.filename, "message": "Archivo subido exitosamente"}
+
+@router.post('/quadminds/asignar')
+async def asignar_ruta(id_usuario : int):
+    try:
+        conn.asignar_ruta_quadmind_manual(id_usuario)
+        return {
+            "message" : "Ruta asignada Correctamente"
+        }
+    except:
+         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Error")
 
 
 # @router.post("/quadminds/descargar", status_code=status.HTTP_202_ACCEPTED)
