@@ -59,6 +59,7 @@ async def asignar_ruta(id_usuario : int):
         result = conn.asignar_ruta_quadmind_manual(id_usuario)
         
         return {
+            "id_usuario" : id_usuario,
             "message" : "Ruta asignada Correctamente",
             "resultado" : result
         }
