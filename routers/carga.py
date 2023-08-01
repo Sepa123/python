@@ -54,7 +54,7 @@ async def subir_archivo(file: UploadFile = File(...)):
     return {"filename": file.filename, "message": "Archivo subido exitosamente"}
 
 @router.post('/quadminds/asignar')
-async def asignar_ruta(id_usuario : list):
+async def asignar_ruta(id_usuario : dict):
     try:
         conn.asignar_ruta_quadmind_manual(id_usuario['id_usuario'])
         return {
