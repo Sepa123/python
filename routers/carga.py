@@ -1,7 +1,9 @@
 from fastapi import APIRouter, status,HTTPException, UploadFile, File
 from typing import List
 import pandas as pd
-##Modelos 
+
+from datetime import datetime
+##Modelos
 
 from database.models.retiro_cliente import RetiroCliente
 from database.schema.cargas.quadminds import cargas_quadminds_schema , cargas_quadminds_tuple_schema
@@ -9,6 +11,9 @@ from database.models.cargas.quadmind import CargaQuadmind
 
 
 from database.schema.cargas.pedidos_planificados import pedidos_planificados_schema
+
+from database.models.ruta_manual import RutaManual
+from database.schema.ruta_manual import convert_to_json, rutas_manuales_schema
 
 ##Conexiones
 from database.client import reportesConnection
@@ -35,10 +40,11 @@ async def get_carga_quadminds():
 
     return pedidos_planificados_schema(results)
 
-@router.post("/quadminds/subir-archivo")
-async def subir_archivo(file: UploadFile = File(...)):
-    # Aquí puedes procesar el archivo
-    # Por ejemplo, podrías guardarlo en el servidor con un nombre único
+@router.post("/quadminds/subir-archivo", status_code=status.HTTP_202_ACCEPTED)
+async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
+
+    # select quadminds.convierte_en_ruta_manual(1,'202308021040');
+
     with open(f"excel/{file.filename}", "wb") as f:
         contents = await file.read()
         f.write(contents)
@@ -46,18 +52,38 @@ async def subir_archivo(file: UploadFile = File(...)):
     df = pd.read_excel(f"excel/{file.filename}",skiprows=4)
 
     lista = df.to_dict(orient='records')
- 
-    for data in lista:
-        print(data['Codigo de Pedido'])
-  
 
-    return {"filename": file.filename, "message": "Archivo subido exitosamente"}
+    for i, data in enumerate(lista):
+        # print(f"codigo cliente : {data['Código cliente']}, producto : {data['Producto']}, codigo pedido : {data['Codigo de Pedido']}")
+        direccion = data['Domicilio']
+        posicion = i + 1
+        conn.write_pedidos_planificados(data ,posicion, direccion)
+
+        print(posicion)
+
+    fecha_hora_actual = datetime.now()
+
+    fecha_dia = fecha_hora_actual.strftime("%Y%m%d")
+
+    fecha_hora_formateada = fecha_hora_actual.strftime("%Y%m%d%H%M")
+
+    # print(lista[0])
+
+    conn.asignar_ruta_quadmind_manual(id_usuario, fecha_hora_formateada)
+
+    diferencia = conn.calcular_diferencia_tiempo(fecha_dia)
+    print(id_usuario)
+
+    return {"filename": file.filename, 
+            "message": f"Archivo subido exitosamente, tiempo de espera : {diferencia[0][0]}", 
+            "termino" : True 
+            }
 
 @router.post('/quadminds/asignar')
 async def asignar_ruta(id_usuario : int):
     try:
         result = conn.asignar_ruta_quadmind_manual(id_usuario)
-        
+
         return {
             "id_usuario" : id_usuario,
             "message" : "Ruta asignada Correctamente",

@@ -1926,14 +1926,47 @@ class reportesConnection():
             """,data)
         self.conn.commit()
 
+    ### insertar datos en quadmind.pedidos_planificados
+
+    def write_pedidos_planificados(self, data, posicion, direccion):
+        # print(data)
+        with self.conn.cursor() as cur: 
+            consulta = f"""
+            INSERT INTO quadminds.pedidos_planificados
+            (cod_cliente, razon_social, domicilio, tipo_cliente, fecha_reparto, cod_reparto, maquina, chofer, fecha_pedido, 
+            cod_pedido, cod_producto, producto, cantidad, horario, arribo, partida, peso, volumen, dinero, posicion)
+            values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+            """
+            # Ejecutar la consulta con los parámetros
+            cur.execute(consulta, (
+                data['Código cliente'], data['Razón social'], direccion,
+                data['Tipo de Cliente'], data['Fecha de Reparto'], data['Codigo Reparto'],
+                data['Máquina'], data['Chofer'], data['Fecha De Pedido'], data['Codigo de Pedido'],
+                data['Codigo de Producto'], data['Producto'], data['Cantidad'], data['Ventana Horaria'],
+                data['Arribo'], data['Partida'], data['Peso (kg)'], data['Volumen (m3)'],
+                data['Dinero ($)'], posicion
+            ))
+
+        self.conn.commit()
+
     
     ### Insertar datos en tabla quadmind.ruta_manual
+
+
 
     def get_ruta_manual(self,pedido_id):
 
         with self.conn.cursor() as cur:
             cur.execute(f"""
             select * from areati.busca_ruta_manual('{pedido_id}')
+            """)
+            return cur.fetchall()
+        
+    def get_cod_producto_ruta_manual(self,pedido_id):
+
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select "Código de Producto", "Descripción del Producto"  from areati.busca_ruta_manual('{pedido_id}')
             """)
             return cur.fetchall()
 
@@ -1978,7 +2011,7 @@ class reportesConnection():
             return cur.fetchone()
         
     def write_rutas_manual(self, data):
-        print(data)
+        # print(data)
         with self.conn.cursor() as cur: 
             cur.execute("""
             INSERT INTO quadminds.datos_ruta_manual (id_ruta, fecha_ruta, nombre_ruta, cod_cliente, nombre, calle_numero, ciudad, provincia_estado, latitud, longitud, telefono, email, cod_pedido, fecha_pedido, operacion, cod_producto, desc_producto, cant_producto, peso, volumen, dinero, duracion, vent_horaria_1, vent_horaria_2, notas, agrupador, email_rem, eliminar_pedido, vehiculo, habilidades, sku, talla, estado, created_by, posicion)
@@ -2076,16 +2109,36 @@ class reportesConnection():
     def read_ruta_activa_by_nombre_ruta(self,nombre_ruta):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            select id_ruta, nombre_ruta, cod_cliente, nombre, calle_numero, ciudad, provincia_estado, telefono, email, cod_pedido, fecha_pedido, cod_producto, desc_producto, cant_producto, notas, agrupador, sku, talla, estado, posicion
+            select id_ruta, nombre_ruta, cod_cliente, nombre, calle_numero, ciudad, provincia_estado, telefono, email, cod_pedido, fecha_pedido, cod_producto, desc_producto, cant_producto, notas, agrupador, sku, talla, estado, posicion, fecha_ruta
             from quadminds.datos_ruta_manual drm where nombre_ruta = '{nombre_ruta}'
             order by posicion
             """)
             return cur.fetchall()
         
-    def asignar_ruta_quadmind_manual(self, id ):
+    def asignar_ruta_quadmind_manual(self, id , fecha):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            select quadminds.convierte_en_ruta_manual('{id}');
+            select quadminds.convierte_en_ruta_manual({id}, '{fecha}');
+            """)
+            return cur.fetchall()
+    
+    def calcular_diferencia_tiempo(self, fecha_hoy):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            SELECT
+            -- EXTRACT(HOUR FROM hora2 - hora1) || ':' ||
+            EXTRACT(MINUTE FROM hora2 - hora1) || ':' ||
+            EXTRACT(SECOND FROM hora2 - hora1)::integer AS diferencia
+            FROM
+            (
+            SELECT
+                MIN(created_at::TIME) as hora1,
+                MAX(created_at::TIME) as hora2
+            FROM
+                quadminds.pedidos_planificados
+            WHERE
+                to_char(created_at, 'yyyymmdd') = '{fecha_hoy}'
+            ) AS t;
             """)
             return cur.fetchall()
         

@@ -19,7 +19,8 @@ def datos_ruta_activa_editar(ruta):
         "SKU": ruta[16],
         "Tamaño": ruta[17],
         "Estado": ruta[18],
-        "Posicion" : ruta[19]
+        "Posicion" : ruta[19],
+        "Fecha_ruta": ruta[20]
 }
 
 def datos_rutas_activas_editar_schema(rutas):
