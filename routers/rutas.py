@@ -49,7 +49,7 @@ async def get_ruta_manual(pedido_id : str):
     if(check[0] == "1"):
         print("codigo pedido repetido")
         raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, 
-                            detail=f"El Producto {pedido_id} se encuentra en la ruta {check[1]}")
+                            detail=f'El Producto "{pedido_id}" se encuentra en la ruta: {check[1]}' )
     
     if results is None or results == []:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El codigo del producto no existe")
@@ -97,7 +97,7 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]], fecha_pedido : str)
         if(check[0] == "1"):
             print("codigo pedido repetido")
             raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, 
-                                detail=f"El Producto {rutas[0][0].Codigo_pedido} se encuentra en la ruta {check[1]}")
+                                detail=f'El Producto "{rutas[0][0].Codigo_pedido}" se encuentra en la ruta {check[1]}')
         for i, ruta in enumerate(rutas):
             for producto in ruta:
                 data = producto.dict()
