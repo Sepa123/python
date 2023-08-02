@@ -2153,11 +2153,11 @@ class reportesConnection():
         self.conn.commit() 
         return rows_delete
     
-    def update_posicion(self, posicion : int, cod_pedido : str, cod_producto : str): 
+    def update_posicion(self, posicion : int, cod_pedido : str, cod_producto : str, fecha_ruta : str): 
         with self.conn.cursor() as cur:
             cur.execute(f"""
                 UPDATE quadminds.datos_ruta_manual  
-                SET posicion  = {posicion}  
+                SET posicion  = {posicion}, fecha_ruta = '{fecha_ruta}'
                 WHERE quadminds.datos_ruta_manual.cod_pedido = '{cod_pedido}' AND quadminds.datos_ruta_manual.cod_producto = '{cod_producto}'
                         """)
             rows_delete = cur.rowcount

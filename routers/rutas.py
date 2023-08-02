@@ -144,13 +144,13 @@ async def get_rutas_en_activo(nombre_ruta : str):
 # rutas activas
 
 @router.post("/agregar/ruta_activa_existente",status_code=status.HTTP_201_CREATED)
-async def insert_ruta_existente_activa(rutas : List[List[RutaManual]]):
+async def insert_ruta_existente_activa(fecha_ruta_nueva : str, rutas : List[List[RutaManual]]):
     try:
         print(len(rutas))
         id_ruta = rutas[0][0].Id_ruta
         nombre_ruta = rutas[0][0].Nombre_ruta
 
-        fecha_ruta = conn.get_fecha_ruta(id_ruta)
+        fecha_ruta = fecha_ruta_nueva
 
         # print(rutas)
 
@@ -166,14 +166,14 @@ async def insert_ruta_existente_activa(rutas : List[List[RutaManual]]):
                      
                     print(data["Posicion"])
 
-                    count = conn.update_posicion(data["Posicion"], data["Codigo_pedido"], data["Codigo_producto"])
+                    count = conn.update_posicion(data["Posicion"], data["Codigo_pedido"], data["Codigo_producto"], fecha_ruta)
                     print(count)
                 else :
                     data["Id_ruta"] = id_ruta
                     data["Agrupador"] = nombre_ruta
                     data["Nombre_ruta"] = nombre_ruta
                     data["Pistoleado"] = True 
-                    data["Fecha_ruta"] = fecha_ruta[0]
+                    data["Fecha_ruta"] = fecha_ruta
                     # conn.update_verified(data["Codigo_producto"])
                     print(data)
                     conn.write_rutas_manual(data)
