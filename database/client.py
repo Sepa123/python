@@ -2812,6 +2812,18 @@ class reportesConnection():
             where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
                         """)
             return cur.fetchall()
+        
+
+    ## NS_beetrack por rango de fecha
+
+    def get_NS_beetrack_por_rango_fecha(self,fecha_inicio,fecha_termino):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select * from areati.recupera_ns_beetrack('{fecha_inicio}','{fecha_termino}');
+                        """)
+            return cur.fetchall()
+
+    
 
 class transyanezConnection():
     conn = None

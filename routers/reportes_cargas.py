@@ -44,20 +44,14 @@ from database.schema.carga_easy_comparacion import cargas_easy_comparacion_schem
 from database.models.operaciones.nro_cargas_hora import NroCargasHora
 from database.schema.operaciones.nro_cargas_hora import nro_cargas_hora_schema
 
+from database.schema.cargas.beetrack_rango import beetrack_rango_schema
+
 from typing import List
 from fastapi.params import Query
 
 router = APIRouter(tags=["reportes"],prefix="/api/reportes")
 
 conn = reportesConnection()
-
-# @router.get("/clientes/json/filter",status_code=status.HTTP_202_ACCEPTED)
-# async def get_data_cliente(Ciudad: List[str] = Query(...)):
-#     results = conn.read_clientes()
-#     # print(len(productos_picking_schema(results)))
-#     # usuarios_filtrados = [producto_picking_schema(producto) for producto in productos]
-#     usuarios_filtrados = [producto for producto in results if producto.Ciudad in Ciudad]
-#     return usuarios_filtrados
 
 @router.get("/cargas_easy",status_code=status.HTTP_202_ACCEPTED)
 async def get_cuenta():
@@ -217,7 +211,11 @@ async def get_beetrack_mensual():
     wb.save("excel/NS_Beetrack_Mensual.xlsx")
 
     return FileResponse("excel/NS_Beetrack_Mensual.xlsx")
-    
+
+@router.get("/NS_beetrack/rango",status_code=status.HTTP_202_ACCEPTED)
+async def get_beetrack_rango(fecha_inicio: str, fecha_fin : str):
+    results = conn.get_NS_beetrack_por_rango_fecha(fecha_inicio,fecha_fin)
+    return beetrack_rango_schema(results)
 ## Reportes Historicos
 @router.get("/historico/mensual",status_code=status.HTTP_202_ACCEPTED)
 async def get_historico_mensual():
