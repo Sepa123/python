@@ -79,7 +79,7 @@ def validar_fecha(fecha):
 
 @router.post("/agregar",status_code=status.HTTP_201_CREATED)
 async def insert_ruta_manual(rutas : List[List[RutaManual]], fecha_pedido : str):
-    # try:
+    try:
         # print(len(rutas))
         if validar_fecha(fecha_pedido) == False: raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, 
                             detail=f"No se puede crear ruta con la fecha {fecha_pedido}")
@@ -101,6 +101,7 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]], fecha_pedido : str)
         for i, ruta in enumerate(rutas):
             for producto in ruta:
                 data = producto.dict()
+                print(data)
                 data["Id_ruta"] = id_ruta
                 data["Agrupador"] = nombre_ruta
                 data["Nombre_ruta"] = nombre_ruta
@@ -116,9 +117,9 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]], fecha_pedido : str)
                     data["Fecha_ruta"] =fecha_siguiente
                 conn.write_rutas_manual(data)
         return { "message": f"La Ruta {nombre_ruta} fue guardada exitosamente" }
-    # except:
-    #     print("error")
-    #     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
+    except:
+        print("error")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
 
 @router.put("/actualizar/estado/{cod_producto}",status_code=status.HTTP_202_ACCEPTED)
 async def update_estado_producto(cod_producto:str, body : bodyUpdateVerified ):
