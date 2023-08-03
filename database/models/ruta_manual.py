@@ -4,21 +4,21 @@ from typing import Optional
 class RutaManual(BaseModel):
     Id_ruta: Optional[int]
     Nombre_ruta: Optional[str]
-    Codigo_cliente: str
-    Nombre: str
-    Calle: str
+    Codigo_cliente: Optional[str]
+    Nombre: Optional[str]
+    Calle: Optional[str]
     Ciudad: Optional[str]
-    Provincia: str
+    Provincia: Optional[str]
     Latitud: Optional[str]
     Longitud: Optional[str]
-    Telefono: str
-    Email: str
-    Codigo_pedido: str
-    Fecha_pedido: str
+    Telefono: Optional[str]
+    Email: Optional[str]
+    Codigo_pedido: Optional[str]
+    Fecha_pedido: Optional[str]
     Operacion: Optional[str]
-    Codigo_producto: str
-    Descripcion_producto: str
-    Cantidad_producto: int
+    Codigo_producto: Optional[str]
+    Descripcion_producto: Optional[str]
+    Cantidad_producto: Optional[int]
     Peso: Optional[str]
     Volumen: Optional[int]
     Dinero: Optional[int]
