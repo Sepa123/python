@@ -437,5 +437,7 @@ async def recuperar_linea_producto(codigo : str):
 @router.get("/fecha_ingreso_sistema/{cod_pedido}")
 async def recuperar_fecha_ingreso_sistema(cod_pedido : str):
     result = conn.recuperar_fecha_ingreso_cliente(cod_pedido)
+    if(result == []) :
+         return {"Fecha_ingreso_sistema":"Sin Fecha de ingreso al sistema"}
 
     return recuperar_fecha_ingreso_sistema_schema(result)
