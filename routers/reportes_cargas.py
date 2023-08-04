@@ -216,6 +216,13 @@ async def get_beetrack_mensual():
 async def get_beetrack_rango(fecha_inicio: str, fecha_fin : str):
     results = conn.get_NS_beetrack_por_rango_fecha(fecha_inicio,fecha_fin)
     return beetrack_rango_schema(results)
+
+@router.get("/NS_beetrack/rango/descargar",status_code=status.HTTP_202_ACCEPTED)
+async def get_beetrack_rango(fecha_inicio: str, fecha_fin : str):
+    results = conn.get_NS_beetrack_por_rango_fecha(fecha_inicio,fecha_fin)
+    return beetrack_rango_schema(results)
+
+
 ## Reportes Historicos
 @router.get("/historico/mensual",status_code=status.HTTP_202_ACCEPTED)
 async def get_historico_mensual():

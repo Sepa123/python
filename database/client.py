@@ -1962,6 +1962,14 @@ class reportesConnection():
             """)
             return cur.fetchall()
         
+    def direccion_textual(self,pedido_id):
+
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select "Dirección Textual" from areati.busca_ruta_manual('{pedido_id}')
+            """)
+            return cur.fetchall()
+        
     def get_cod_producto_ruta_manual(self,pedido_id):
 
         with self.conn.cursor() as cur:

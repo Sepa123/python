@@ -102,6 +102,7 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]], fecha_pedido : str)
             for producto in ruta:
                 data = producto.dict()
                 print(data)
+                data["Calle"] = conn.direccion_textual(data["Codigo_pedido"])
                 data["Id_ruta"] = id_ruta
                 data["Agrupador"] = nombre_ruta
                 data["Nombre_ruta"] = nombre_ruta
@@ -159,6 +160,8 @@ async def insert_ruta_existente_activa(fecha_ruta_nueva : str, rutas : List[List
             for producto in ruta:
                 data = producto.dict()
 
+                # direccion_textual = conn.direccion_textual(data["Codigo_pedido"])
+
                 # print(data)
                 check = conn.check_producto_codigo_repetido(nombre_ruta,data["Codigo_pedido"],data["Codigo_producto"], data["SKU"])
                 
@@ -170,6 +173,7 @@ async def insert_ruta_existente_activa(fecha_ruta_nueva : str, rutas : List[List
                     count = conn.update_posicion(data["Posicion"], data["Codigo_pedido"], data["Codigo_producto"], fecha_ruta)
                     print(count)
                 else :
+                    data["Calle"] = conn.direccion_textual(data["Codigo_pedido"])
                     data["Id_ruta"] = id_ruta
                     data["Agrupador"] = nombre_ruta
                     data["Nombre_ruta"] = nombre_ruta
@@ -438,6 +442,7 @@ async def recuperar_linea_producto(codigo : str):
 async def recuperar_fecha_ingreso_sistema(cod_pedido : str):
     result = conn.recuperar_fecha_ingreso_cliente(cod_pedido)
     if(result == []) :
+         print(f"codigo {cod_pedido} no encontrado")
          return {"Fecha_ingreso_sistema":"Sin Fecha de ingreso al sistema"}
 
     return recuperar_fecha_ingreso_sistema_schema(result)
