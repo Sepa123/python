@@ -220,7 +220,34 @@ async def get_beetrack_rango(fecha_inicio: str, fecha_fin : str):
 @router.get("/NS_beetrack/rango/descargar",status_code=status.HTTP_202_ACCEPTED)
 async def get_beetrack_rango(fecha_inicio: str, fecha_fin : str):
     results = conn.get_NS_beetrack_por_rango_fecha(fecha_inicio,fecha_fin)
-    return beetrack_rango_schema(results)
+    # beetrack_dict = beetrack_rango_schema(results) 
+    wb = Workbook()
+    ws = wb.active
+    
+    results.insert(0, ("",))
+    results.insert(1,("FECHA", "ID. RUTA","DRIVER","PATENTE","REGION","Km. Ruta","T-PED","Easy","Electrolux","Sportex","Imperial","PBB","Virutex","R1","R2","R3","VR",
+    "C11","(%) 11","C13","(%) 13","C15","(%)15","C17","(%)17","C18","(%)18","C20","(%)20","Final_D","OBSERV-RUTA","H_INIC","H_TERM","TT-RUTA","Prom. ENT","T-ENT",
+    "N-ENT","EE","SM","CA","DA","RxD","DNE","DNCC","D.ERR","INC.T","DFORM","PINCOM","SPELI","PNCORR","PFALT","PPARC","P.DUPL","R","Pedidos"
+))
+    for row in results:
+        # print(row)
+        ws.append(row)
+
+    for col in ws.columns:
+        max_length = 0
+        column = col[0].column_letter# get column letter
+        for cell in col:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(str(cell.value))
+            except:
+                pass
+        adjusted_width = (max_length + 2)
+        ws.column_dimensions[column].width = adjusted_width
+    results.insert(0, ("",))
+    wb.save("excel/NS_beetrack_rango.xlsx")
+
+    return FileResponse("excel/NS_beetrack_rango.xlsx")
 
 
 ## Reportes Historicos
@@ -296,30 +323,6 @@ async def get_productos_por_rango_fecha(inicio, termino):
 @router.get("/productos/anual",status_code=status.HTTP_202_ACCEPTED)
 async def get_productos_anual():
     results = conn.read_reporte_producto_entregado_anual()
-    # wb = Workbook()
-    # ws = wb.active
-    
-    # results.insert(0, ("",))
-    # results.insert(1,('Día', 'Fecha', 'Electrolux', 'Sportex', 'Easy', 'Tiendas', "Easy OPL"))
-    # for row in results:
-    #     # print(row)
-    #     ws.append(row)
-
-    # for col in ws.columns:
-    #     max_length = 0
-    #     column = col[0].column_letter# get column letter
-    #     for cell in col:
-    #         try:
-    #             if len(str(cell.value)) > max_length:
-    #                 max_length = len(str(cell.value))
-    #         except:
-    #             pass
-    #     adjusted_width = (max_length + 2)
-    #     ws.column_dimensions[column].width = adjusted_width
-    # results.insert(0, ("",))
-    # wb.save("excel/Reporte_producto_mensual.xlsx")
-
-    # return FileResponse("excel/Reporte_producto_mensual.xlsx")
     return reportes_producto_schema(results)
 
 # Cantidad de Entregas por hora
