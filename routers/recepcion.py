@@ -179,7 +179,21 @@ async def update_recepcion_easy_cd_by_codigo_producto(body: bodyUpdateVerified):
           print("error")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la verificación")
 
-
+@router.put("/easy_opl/actualizar")
+async def update_recepcion_easy_opl_by_codigo_producto_sko(body: bodyUpdateVerified):
+    # results = conn.read_recepcion_easy_cd_by_codigo_producto(body.cod_producto)
+    try:
+        data = body.dict()        
+        rows = conn.update_recepcion_cd(body.cod_producto)
+        print(rows)
+        if rows != 0:
+            connHela.insert_data_bitacora_recepcion(data)
+        else:
+            print(" no se verifico ningun producto")
+        return { "message": f"Producto {rows} verificado." }
+    except:
+          print("error")
+          raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la verificación")
 #Bitacora podria ir junto al updateverificar
 
 # @router.post("/bitacora",status_code=status.HTTP_201_CREATED)

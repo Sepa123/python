@@ -227,7 +227,7 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
     
     datos.append([
         "Posición", "Pedido", "Comuna","Producto","SKU", "UND", "Bultos", "Nombre",
-        "Direccion Cliente", "Teléfono", "Validado", "DE", "DP"
+        "Direccion Cliente", "Teléfono", "DE", "DP"
     ])
   
     # result = conn.read_rutas_en_activo(nombre_ruta) 
