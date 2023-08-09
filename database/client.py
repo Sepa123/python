@@ -2312,7 +2312,8 @@ class reportesConnection():
              easygo.descripcion AS "Descripción del Producto",
              cast(easygo.unidades as numeric) AS "Cantidad de Producto",
              easygo.codigo_sku as "Cod. SKU",                         
-             easygo.verified as "Pistoleado"   
+             easygo.verified as "Pistoleado",
+             easygo.recepcion as "Recepcion"   
         
             from areati.ti_carga_easy_go_opl easygo
             where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd') 
