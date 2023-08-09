@@ -2418,7 +2418,7 @@ class reportesConnection():
                 cast(eltx.cantidad as numeric) AS "Cantidad de Producto",
             cast(eltx.codigo_item as text) as "Cod. SKU",					
             eltx.verified as "Pistoleado",
-            eltx.created_at as "fecha"
+            eltx.recepcion as "Recepcion"
         from areati.ti_wms_carga_electrolux eltx
         where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd') AND eltx.numero_guia = '{codigo_producto}'
                         """)           
