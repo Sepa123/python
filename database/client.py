@@ -2510,7 +2510,7 @@ class reportesConnection():
             f"UPDATE areati.ti_wms_carga_sportex SET verified = true, recepcion = true  WHERE areati.ti_wms_carga_sportex.id_sportex = '{codigo_producto}'",
             f"UPDATE areati.ti_wms_carga_easy easy SET verified = true WHERE easy.entrega = '{codigo_pedido}' and easy.carton = '{codigo_producto}'",
             f"UPDATE areati.ti_wms_carga_electrolux eltx set verified = true, recepcion = true  where eltx.numero_guia = '{codigo_pedido}' and eltx.codigo_item = '{codigo_producto}'",
-            f"UPDATE areati.ti_carga_easy_go_opl easygo SET verified = true, recepcion = true where easygo.suborden = '{codigo_pedido}' AND easygo.codigo_sku = '{cod_sku}'"
+            f"UPDATE areati.ti_carga_easy_go_opl easygo SET verified = true where easygo.suborden = '{codigo_pedido}' AND easygo.codigo_sku = '{cod_sku}'"
         ]
 
         updates = []
@@ -2556,7 +2556,7 @@ class reportesConnection():
         with self.conn.cursor() as cur:
             cur.execute(f"""        
             UPDATE areati.ti_carga_easy_go_opl easygo 
-            SET verified = true, recepcion = true  
+            SET verified = true
             where easygo.suborden = '{codigo_pedido}' AND easygo.codigo_sku = '{sku}'
             """)
             row = cur.rowcount
