@@ -183,14 +183,17 @@ async def update_recepcion_easy_cd_by_codigo_producto(body: bodyUpdateVerified):
 async def update_recepcion_easy_opl_by_codigo_producto_sko(body: bodyUpdateVerified):
     # results = conn.read_recepcion_easy_cd_by_codigo_producto(body.cod_producto)
     try:
-        data = body.dict()        
-        rows = conn.update_recepcion_opl(body.cod_producto)
-        print(rows)
-        if rows != 0:
-            connHela.insert_data_bitacora_recepcion(data)
-        else:
-            print(" no se verifico ningun producto")
-        return { "message": f"Producto {rows} verificado." }
+        data = body.dict()     
+        print(body.cod_pedido, body.sku)   
+        # rows = conn.update_recepcion_opl(body.cod_producto)
+        # print(rows)
+        # if rows != 0:
+        #     connHela.insert_data_bitacora_recepcion(data)
+        # else:
+        #     print(" no se verifico ningun producto")
+        # return { "message": f"Producto {rows} verificado." }
+        return { "cod_pedido": body.cod_pedido,
+                 "sku": body.sku }
     except:
           print("error")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la verificación")
