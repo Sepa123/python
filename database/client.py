@@ -2289,7 +2289,7 @@ class reportesConnection():
                 cast(eltx.cantidad as numeric) AS "Cantidad de Producto",
             cast(eltx.codigo_item as text) as "Cod. SKU",					
             eltx.verified as "Pistoleado",
-            eltx.created_at as "fecha"
+            eltx.recepcion as "Recepcion"
         from areati.ti_wms_carga_electrolux eltx
         -- from areati.ti_wms_carga_electrolux_hoy as eltx 
         where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
@@ -2335,7 +2335,8 @@ class reportesConnection():
                 coalesce(twcs.marca,'Sin Marca') AS "Descripción del Producto",
                 1 AS "Cantidad de Producto",
                 '' as "SKU",
-                twcs.verified as "Pistoleado"
+                twcs.verified as "Pistoleado",
+                twcs.recepcion as "Recepcion"
                 from areati.ti_wms_carga_sportex twcs 
                 where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd') 
                 --order by created_at desc
