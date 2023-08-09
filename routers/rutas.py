@@ -4,6 +4,7 @@ from openpyxl import Workbook
 from openpyxl.styles import Font , PatternFill, Border ,Side
 from datetime import datetime, timedelta
 
+import time
 import re
 import json
 from typing import List
@@ -28,6 +29,9 @@ from database.schema.rutas.driver_ruta_asignada import driver_ruta_asignada
 from database.schema.rutas.recuperar_tracking_beetrack import recuperar_tracking_beetrack_schema, recuperar_fecha_ingreso_sistema_schema
 
 from database.schema.rutas.linea_producto import recuperar_linea_producto_schema
+
+from database.schema.geolocalizacion.latlng import latlng_schema
+from database.models.geolocalizacion.latlong import Latlong
 
 from database.schema.rutas.archivo_descarga_beetrack import datos_descarga_beetracks_schema
 router = APIRouter(tags=["rutas"], prefix="/api/rutas")
@@ -411,13 +415,6 @@ async def descargar_archivo_beetrack(id_ruta : int):
 
     return FileResponse("excel/prueba_beetrack.xlsx")
 
-    # return datos_descarga_beetracks_schema(results)
-
-@router.get("/prueba/{id}")
-async def get(id : int):
-    result = conn.get_fecha_ruta(id)
-    return result
-
 @router.get("/recuperar/tracking")
 async def recuperar_tracking_beetrack(codigo : str):
 
@@ -446,3 +443,10 @@ async def recuperar_fecha_ingreso_sistema(cod_pedido : str):
          return {"Fecha_ingreso_sistema":"Sin Fecha de ingreso al sistema"}
 
     return recuperar_fecha_ingreso_sistema_schema(result)
+
+
+@router.get("/tiempo")
+async def test():
+
+    time.sleep(90)
+    return "hola"
