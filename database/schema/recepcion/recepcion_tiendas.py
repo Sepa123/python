@@ -10,7 +10,8 @@ def recepcion_tienda(producto):
             "Descripcion_producto":producto[7],
             "Cantidad_producto":producto[8],
             "SKU":producto[9],
-            "Pistoleado":producto[10]
+            "Pistoleado":producto[10],
+            "Recepcion":producto[11]
             }
 
 def recepcion_tiendas_schema(productos):
