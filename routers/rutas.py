@@ -467,6 +467,9 @@ async def geolocalizar_direccion(body : Latlong):
     geolocalizacion = Nominatim(user_agent="backend/1.0")
     # ubicacion = geolocalizacion.reverse(f"{body.lat},{body.lng}",exactly_one=False)
     ubicacion = geolocalizacion.geocode(body.direccion, exactly_one=True)
+
+    if ubicacion is None :
+        return "No se encontro la ubicacion"
     body.lat = ubicacion.latitude
     body.lng = ubicacion.longitude
     body.display_name = ubicacion.address
