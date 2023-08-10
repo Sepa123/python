@@ -9,8 +9,8 @@ import re
 import json
 from typing import List
 
-from geopy.geocoders import Nominatim
-from geopy.extra.rate_limiter import RateLimiter
+# from geopy.geocoders import Nominatim
+# from geopy.extra.rate_limiter import RateLimiter
 
 ## conexion
 
@@ -454,16 +454,16 @@ async def test():
     return "hola"
 
 
-@router.post("/geolocalizacion")
-async def geolocalizar_direccion(body : Latlong):
-    geolocalizacion = Nominatim(user_agent="backend/1.0")
-    time.sleep(1)
-    # ubicacion = geolocalizacion.reverse(f"{body.lat},{body.lng}",exactly_one=False)
-    ubicacion = geolocalizacion.geocode(body.direccion)
-    body.lat = ubicacion.latitude
-    body.lng = ubicacion.longitude
-    body.display_name = ubicacion.address
+# @router.post("/geolocalizacion")
+# async def geolocalizar_direccion(body : Latlong):
+#     geolocalizacion = Nominatim(user_agent="backend/1.0")
+#     time.sleep(1)
+#     # ubicacion = geolocalizacion.reverse(f"{body.lat},{body.lng}",exactly_one=False)
+#     ubicacion = geolocalizacion.geocode(body.direccion)
+#     body.lat = ubicacion.latitude
+#     body.lng = ubicacion.longitude
+#     body.display_name = ubicacion.address
 
-    
-    return body
+
+#     return body
 
