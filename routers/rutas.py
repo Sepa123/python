@@ -113,7 +113,7 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]], fecha_pedido : str)
             for producto in ruta:
                 data = producto.dict()
                 print(data)
-                # data["Calle"] = conn.direccion_textual(data["Codigo_pedido"])[0][0]
+                data["Calle"] = conn.direccion_textual(data["Codigo_pedido"])[0][0]
                 data["Id_ruta"] = id_ruta
                 data["Agrupador"] = nombre_ruta
                 data["Nombre_ruta"] = nombre_ruta
@@ -184,7 +184,7 @@ async def insert_ruta_existente_activa(fecha_ruta_nueva : str, rutas : List[List
                     count = conn.update_posicion(data["Posicion"], data["Codigo_pedido"], data["Codigo_producto"], fecha_ruta)
                     print(count)
                 else :
-                    # data["Calle"] = conn.direccion_textual(data["Codigo_pedido"])[0][0]
+                    data["Calle"] = conn.direccion_textual(data["Codigo_pedido"])[0][0]
                     data["Id_ruta"] = id_ruta
                     data["Agrupador"] = nombre_ruta
                     data["Nombre_ruta"] = nombre_ruta
