@@ -3,11 +3,14 @@ from fastapi import APIRouter, status,HTTPException
 ##Modelos 
 
 from database.models.panel.usuario import Usuario
+from database.models.user import loginSchema
 
 ##Conexiones
 
 from database.client import reportesConnection
 from database.hela_prod import HelaConnection
+
+from lib.password import hash_password
 
 router = APIRouter(tags=["panel"], prefix="/api/panel")
 
@@ -30,4 +33,16 @@ async def registrar_usuario(usuario : Usuario):
     }
     
 
+@router.post("/password")
+async def cambiar_password(body : loginSchema):
     
+    row = connHela.cambiar_password(hash_password(body.password),body.mail)
+
+    if row == 1:
+        return {
+            "message": "Se ha actualizado la contraseña correctamente"
+        }
+    else:
+        return {
+            "message": "No se ha actualizado la contraseña"
+        }

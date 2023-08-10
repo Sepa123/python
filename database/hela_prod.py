@@ -42,6 +42,21 @@ class HelaConnection():
             """)
             return cur.fetchone()
 
+    ##Cambiar Contraseña Hela
+
+    def cambiar_password(self,password,mail):
+        with self.conn.cursor() as cur:
+                cur.execute(f"""        
+                UPDATE hela.usuarios
+                SET "password"='{password}'
+                WHERE mail='{mail}'
+                """)
+                row = cur.rowcount
+                
+        self.conn.commit()
+
+        return row
+
       ## Asignar rutas activas
    
     def insert_ruta_asignada(self,data):

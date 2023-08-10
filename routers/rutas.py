@@ -457,6 +457,11 @@ async def test():
     time.sleep(90)
     return "hola"
 
+@router.get("/geolocalizacion")
+async def geolocalizar_direccion():
+
+    time.sleep(1)
+    return "body"
 
 # @router.post("/geolocalizacion")
 # async def geolocalizar_direccion(body : Latlong):
@@ -467,6 +472,8 @@ async def test():
 #     body.lat = ubicacion.latitude
 #     body.lng = ubicacion.longitude
 #     body.display_name = ubicacion.address
+
+#     print(ubicacion)
 
 
 #     return body
