@@ -460,7 +460,7 @@ async def test():
 @router.get("/geolocalizacion")
 async def geolocalizar_direccion():
 
-    time.sleep(1)
+    time.sleep(2)
     return "body"
 
 # @router.post("/geolocalizacion")
