@@ -120,6 +120,10 @@ async def login_user(user_data:loginSchema):
     if not verify_password(data["password"],user_db[3]):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="la contraseña no es correcto")
     
+
+    if not user_db[4]:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="El usuario esta inactivo")
+    
     # return user_db
     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
 
