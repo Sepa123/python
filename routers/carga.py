@@ -69,15 +69,23 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
 
     # print(lista[0])
 
-    conn.asignar_ruta_quadmind_manual(id_usuario, fecha_hora_formateada)
+    error = conn.asignar_ruta_quadmind_manual(id_usuario, fecha_hora_formateada)
 
     diferencia = conn.calcular_diferencia_tiempo(fecha_dia)
     print(id_usuario)
 
-    return {"filename": file.filename, 
-            "message": f"Archivo subido exitosamente, tiempo de espera : {diferencia[0][0]}", 
-            "termino" : True 
-            }
+    # error 1 : codigos inexistentes
+
+    if error[0][0] == 1:
+        return {"filename": file.filename, 
+                "message": f"Error al subir el archivo, Codigos inexistentes : {error[0][1]}", 
+                "termino" : True 
+                }
+    else:
+        return {"filename": file.filename, 
+                "message": f"Archivo subido exitosamente, tiempo de espera : {diferencia[0][0]}, parametro ingreso : {fecha_hora_formateada}", 
+                "termino" : True 
+                }
 
 @router.post('/quadminds/asignar')
 async def asignar_ruta(id_usuario : int):
@@ -91,7 +99,6 @@ async def asignar_ruta(id_usuario : int):
         }
     except:
          raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Error")
-
 
 # @router.post("/quadminds/descargar", status_code=status.HTTP_202_ACCEPTED)
 # async def descargar_quadminds_excel(body : List[CargaQuadmind]):
