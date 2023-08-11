@@ -72,6 +72,7 @@ async def get_ruta_manual(pedido_id : str):
 
 @router.get("/buscar/sin_filtro/{pedido_id}",status_code=status.HTTP_202_ACCEPTED)
 async def get_ruta_manual(pedido_id : str):
+    
     results = conn.get_ruta_manual(pedido_id)
 
     if results is None or results == []:
