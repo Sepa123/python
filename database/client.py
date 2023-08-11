@@ -2859,6 +2859,16 @@ class reportesConnection():
             """,data)
         self.conn.commit() 
 
+
+    ## checar si la direccion ya esta registrada
+
+    def check_direccion_existe(self, direccion):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select count(*) from rutas.latlng where direccion = '{direccion}'
+                        """)
+            return cur.fetchone()
+
 class transyanezConnection():
     conn = None
     def __init__(self) -> None:
