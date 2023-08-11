@@ -2086,11 +2086,12 @@ class reportesConnection():
             '' as "Validado",
             '' as "DE",
             '' as "DP",
+            provincia_estado,
             id_ruta,
             posicion
             from quadminds.datos_ruta_manual drm 
             where nombre_ruta = '{nombre_ruta}'
-            group by 1,2,7,8,9,10,11, id_ruta, posicion
+            group by 1,2,7,8,9,10,11, id_ruta, posicion, provincia_estado
             ) datos_base
             """)
             return cur.fetchall()
@@ -2126,7 +2127,7 @@ class reportesConnection():
     def asignar_ruta_quadmind_manual(self, id , fecha):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            select quadminds.convierte_en_ruta_manual({id}, '{fecha}');
+            select * from quadminds.convierte_en_ruta_manual({id}, '{fecha}');
             """)
             return cur.fetchall()
     
@@ -2786,6 +2787,8 @@ class reportesConnection():
                     )
                         """)
             return cur.fetchall()
+        
+    
     # recuperar track de beetrack
 
     def recuperar_track_beetrack(self,codigo_pick):
@@ -2845,8 +2848,16 @@ class reportesConnection():
             select * from areati.recupera_ns_beetrack('{fecha_inicio}','{fecha_termino}');
                         """)
             return cur.fetchall()
+        
+    ## Insertar datos latitud longitud
 
-    
+    def insert_latlng(self, data):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            INSERT INTO rutas.latlng (id_usuario, direccion, comuna, region, lat, lng, ids_usuario, display_name, "type")
+            VALUES(%(Id_usuario)s, %(Direccion)s, %(Comuna)s, %(Region)s, %(Lat)s, %(Lng)s, %(Ids_usuario)s, %(Display_name)s, %(Type)s);
+            """,data)
+        self.conn.commit() 
 
 class transyanezConnection():
     conn = None

@@ -2,12 +2,12 @@ from typing import Optional
 from pydantic import BaseModel
 
 class Latlong (BaseModel):
-    id_usuario: Optional[int]
-    direccion: Optional[str]
-    comuna: Optional[str]
-    region: Optional[str]
-    lat: Optional[str]
-    lng: Optional[str]
-    ids_usuario: Optional[str]
-    display_name: Optional[str]
-    type: Optional[str]
+    Id_usuario: Optional[int]
+    Direccion: Optional[str]
+    Comuna: Optional[str]
+    Region: Optional[str]
+    Lat: Optional[str]
+    Lng: Optional[str]
+    Ids_usuario: Optional[str]
+    Display_name: Optional[str]
+    Type: Optional[str]
