@@ -488,7 +488,7 @@ async def geolocalizar_direccion(body : Latlong):
         check = conn.check_direccion_existe(body.Direccion)
         print(check[0])
         if check[0] >= 1:
-            return "La direccion ya se encuentra registrada"
+            return f"La direccion {body.Direccion} ya se encuentra registrada"
         
         geolocalizacion = Nominatim(user_agent="backend/1.0")
         # ubicacion = geolocalizacion.reverse(f"{body.lat},{body.lng}",exactly_one=False)
@@ -496,7 +496,7 @@ async def geolocalizar_direccion(body : Latlong):
         ubicacion = geolocalizacion.geocode(body.Direccion, exactly_one=True)
 
         if ubicacion is None :
-            return "No se encontro la ubicacion"
+            return f"No se encontro la ubicacion de {body.Direccion}"
         
         body.Lat = ubicacion.latitude
         body.Lng = ubicacion.longitude
