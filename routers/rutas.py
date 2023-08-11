@@ -70,6 +70,23 @@ async def get_ruta_manual(pedido_id : str):
 
     return json_data
 
+@router.get("/buscar/sin_filtro/{pedido_id}",status_code=status.HTTP_202_ACCEPTED)
+async def get_ruta_manual(pedido_id : str):
+    results = conn.get_ruta_manual(pedido_id)
+
+    if results is None or results == []:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El codigo del producto no existe")
+    
+    json_data = rutas_manuales_schema(results)
+
+    if json_data[0]['Calle'] is None:
+        print("La direccion es null")
+        json_data[0]['Calle'] = json_data[0]['Direccion_textual']
+    # print(results)
+    print("/buscar/ruta")
+
+    return json_data
+
 
 
 def validar_fecha(fecha):
@@ -464,16 +481,25 @@ async def test():
 
 @router.post("/geolocalizacion")
 async def geolocalizar_direccion(body : Latlong):
-    geolocalizacion = Nominatim(user_agent="backend/1.0")
-    # ubicacion = geolocalizacion.reverse(f"{body.lat},{body.lng}",exactly_one=False)
-    ubicacion = geolocalizacion.geocode(body.direccion, exactly_one=True)
 
-    if ubicacion is None :
-        return "No se encontro la ubicacion"
-    body.lat = ubicacion.latitude
-    body.lng = ubicacion.longitude
-    body.display_name = ubicacion.address
-    body.type = ubicacion.raw['type']
+    try:
+        geolocalizacion = Nominatim(user_agent="backend/1.0")
+        # ubicacion = geolocalizacion.reverse(f"{body.lat},{body.lng}",exactly_one=False)
+        time.sleep(1)
+        ubicacion = geolocalizacion.geocode(body.Direccion, exactly_one=True)
+
+        if ubicacion is None :
+            return "No se encontro la ubicacion"
+        body.Lat = ubicacion.latitude
+        body.Lng = ubicacion.longitude
+        body.Display_name = ubicacion.address
+        body.Type = ubicacion.raw['type']
+
+        data = body.dict()
+        conn.insert_latlng(data)
+
+        return "direccion guardada en la tabla latlng "
     
-    return body
+    except:
 
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="hubo un error")
