@@ -50,10 +50,10 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
 
     ruta = os.path.join(directorio,file.filename)
 
-    # with open(ruta, "wb") as f:
-    #     contents = await file.read()
-    #     print("pase por aqui")
-    #     f.write(contents)
+    with open(ruta, "wb") as f:
+        contents = await file.read()
+        print("pase por aqui")
+        f.write(contents)
 
     df = pd.read_excel(ruta,skiprows=4)
 
@@ -74,7 +74,7 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
 
     error = conn.asignar_ruta_quadmind_manual(id_usuario, fecha_hora_formateada)
 
-    diferencia = conn.calcular_diferencia_tiempo(fecha_dia)
+    # diferencia = conn.calcular_diferencia_tiempo(fecha_dia)
 
     # error 1 : codigos inexistentes
 
@@ -82,7 +82,7 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
         return {"filename": file.filename, 
                 "message": "Error al subir el archivo", 
                 "codigos": f"{error[0][1]}",
-                "tiempo": diferencia[0][0],
+                # "tiempo": diferencia[0][0],
                 "termino" : True ,
                 "error" : 1,
                 "ruta" : ruta
@@ -91,7 +91,7 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
         return {"filename": file.filename, 
                 "message": error[0][1], 
                 "codigos": "",
-                "tiempo": diferencia[0][0],
+                # "tiempo": diferencia[0][0],
                 "termino" : True,
                 "error" : 0,
                 "ruta" : ruta
