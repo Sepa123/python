@@ -57,13 +57,16 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
 
     df = pd.read_excel(ruta,skiprows=4)
 
+    direccionesEX = []
+
     lista = df.to_dict(orient='records')
 
     for i, data in enumerate(lista):
         # print(f"codigo cliente : {data['Código cliente']}, producto : {data['Producto']}, codigo pedido : {data['Codigo de Pedido']}")
         direccion = data['Domicilio']
+        direccionesEX.append(direccion)
         posicion = i + 1
-        conn.write_pedidos_planificados(data ,posicion, direccion)
+        # conn.write_pedidos_planificados(data ,posicion, direccion)
         print(posicion)
 
     fecha_hora_actual = datetime.now()
@@ -79,7 +82,7 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
                 # "tiempo": diferencia[0][0],
                 "termino" : True,
                 "error" : 0,
-                "ruta" : ruta
+                "ruta" : direccionesEX
                 }
    
     # error = conn.asignar_ruta_quadmind_manual(id_usuario, fecha_hora_formateada)
