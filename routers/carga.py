@@ -55,7 +55,7 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
         print("pase por aqui")
         f.write(contents)
 
-    df = pd.read_excel(f"excel/{file.filename}",skiprows=4)
+    df = pd.read_excel(ruta,skiprows=4)
 
     lista = df.to_dict(orient='records')
 
