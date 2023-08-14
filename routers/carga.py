@@ -50,10 +50,10 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
 
     ruta = os.path.join(directorio,file.filename)
 
-    with open(ruta, "wb") as f:
-        contents = await file.read()
-        print("pase por aqui")
-        f.write(contents)
+    # with open(ruta, "wb") as f:
+    #     contents = await file.read()
+    #     print("pase por aqui")
+    #     f.write(contents)
 
     df = pd.read_excel(ruta,skiprows=4)
 
