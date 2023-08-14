@@ -50,7 +50,6 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
 
     ruta = os.path.join(directorio,file.filename)
 
-
     with open(ruta, "wb") as f:
         contents = await file.read()
         print("pase por aqui")
@@ -64,7 +63,7 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
         # print(f"codigo cliente : {data['Código cliente']}, producto : {data['Producto']}, codigo pedido : {data['Codigo de Pedido']}")
         direccion = data['Domicilio']
         posicion = i + 1
-        # conn.write_pedidos_planificados(data ,posicion, direccion)
+        conn.write_pedidos_planificados(data ,posicion, direccion)
 
         print(posicion)
 
