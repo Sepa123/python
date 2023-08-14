@@ -45,12 +45,12 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
 
     # select quadminds.convierte_en_ruta_manual(1,'202308021040');
 
-    with open(f"/home/ubuntu/backend/python/excel/{file.filename}", "wb") as f:
+    with open(f"excel/{file.filename}", "wb") as f:
         contents = await file.read()
         print("pase por aqui")
         f.write(contents)
 
-    df = pd.read_excel(f"/home/ubuntu/backend/python/excel/{file.filename}",skiprows=4)
+    df = pd.read_excel(f"excel/{file.filename}",skiprows=4)
 
     lista = df.to_dict(orient='records')
 
@@ -73,7 +73,9 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
     error = conn.asignar_ruta_quadmind_manual(id_usuario, fecha_hora_formateada)
 
     diferencia = conn.calcular_diferencia_tiempo(fecha_dia)
+
     print(error)
+    print(id_usuario)
 
     # error 1 : codigos inexistentes
 
