@@ -78,13 +78,17 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
 
     if error[0][0] == 1:
         return {"filename": file.filename, 
-                "message": f"Error al subir el archivo, Codigos inexistentes : {error[0][1]}", 
-                "termino" : True 
+                "message": f"Error al subir el archivo, Codigos inexistentes : {error[0][1]}, tiempo de espera : {diferencia[0][0]}", 
+                "codigos": f"{error[0][1]}",
+                "termino" : True ,
+                "error" : 1
                 }
     else:
         return {"filename": file.filename, 
                 "message": f"Archivo subido exitosamente, tiempo de espera : {diferencia[0][0]}, parametro ingreso : {fecha_hora_formateada}", 
-                "termino" : True 
+                "codigos": "",
+                "termino" : True,
+                "error" : 0
                 }
 
 @router.post('/quadminds/asignar')
