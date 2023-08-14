@@ -47,6 +47,7 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
 
     with open(f"excel/{file.filename}", "wb") as f:
         contents = await file.read()
+        print("pase por aqui")
         f.write(contents)
 
     df = pd.read_excel(f"excel/{file.filename}",skiprows=4)
