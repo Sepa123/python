@@ -73,37 +73,33 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
 
     fecha_hora_formateada = fecha_hora_actual.strftime("%Y%m%d%H%M")
 
-
     # error = conn.asignar_ruta_quadmind_manual(id_usuario, fecha_hora_formateada)
+    error = [(1,"")]
 
     diferencia = conn.calcular_diferencia_tiempo(fecha_dia)
 
-
-    return {
-        "lista" : lista[1]['Domicilio'],
-        "termino" : True ,
-    }
-
     # error 1 : codigos inexistentes
 
-    # if error[0][0] == 1:
-    #     return {"filename": file.filename, 
-    #             "message": "Error al subir el archivo", 
-    #             "codigos": f"{error[0][1]}",
-    #             "tiempo": diferencia[0][0],
-    #             "termino" : True ,
-    #             "error" : 1,
-    #             "ruta" : ruta
-    #             }
-    # else:
-    #     return {"filename": file.filename, 
-    #             "message": error[0][1], 
-    #             "codigos": "",
-    #             "tiempo": diferencia[0][0],
-    #             "termino" : True,
-    #             "error" : 0,
-    #             "ruta" : ruta
-    #             }
+    if error[0][0] == 1:
+        return {"filename": file.filename, 
+                "message": "Error al subir el archivo", 
+                "codigos": f"{error[0][1]}",
+                "tiempo": diferencia[0][0],
+                "termino" : True ,
+                "error" : 1,
+                "ruta" : ruta,
+                "lista" : lista[180]
+                }
+    else:
+        return {"filename": file.filename, 
+                "message": error[0][1], 
+                "codigos": "",
+                "tiempo": diferencia[0][0],
+                "termino" : True,
+                "error" : 0,
+                "ruta" : ruta,
+                "lista" : lista[180]
+                }
 
 @router.post('/quadminds/asignar')
 async def asignar_ruta(id_usuario : int):
