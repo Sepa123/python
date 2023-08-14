@@ -73,7 +73,7 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
     error = conn.asignar_ruta_quadmind_manual(id_usuario, fecha_hora_formateada)
 
     diferencia = conn.calcular_diferencia_tiempo(fecha_dia)
-    print(id_usuario)
+    print(error)
 
     # error 1 : codigos inexistentes
 
