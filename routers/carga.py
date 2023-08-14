@@ -63,7 +63,7 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
         # print(f"codigo cliente : {data['Código cliente']}, producto : {data['Producto']}, codigo pedido : {data['Codigo de Pedido']}")
         direccion = data['Domicilio']
         posicion = i + 1
-        conn.write_pedidos_planificados(data ,posicion, direccion)
+        # conn.write_pedidos_planificados(data ,posicion, direccion)
 
         print(posicion)
 
@@ -73,34 +73,37 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
 
     fecha_hora_formateada = fecha_hora_actual.strftime("%Y%m%d%H%M")
 
-    # print(lista[0])
 
-    error = conn.asignar_ruta_quadmind_manual(id_usuario, fecha_hora_formateada)
+    # error = conn.asignar_ruta_quadmind_manual(id_usuario, fecha_hora_formateada)
 
     diferencia = conn.calcular_diferencia_tiempo(fecha_dia)
 
-    print(error)
-    print(id_usuario)
+
+    return {
+        "lista" : lista[1]['Domicilio'],
+        "termino" : True ,
+    }
 
     # error 1 : codigos inexistentes
 
-    if error[0][0] == 1:
-        return {"filename": file.filename, 
-                "message": "Error al subir el archivo", 
-                "codigos": f"{error[0][1]}",
-                "tiempo": diferencia[0][0],
-                "termino" : True ,
-                "error" : 1
-                }
-    else:
-        return {"filename": file.filename, 
-                "message": error[0][1], 
-                "codigos": "",
-                "tiempo": diferencia[0][0],
-                "termino" : True,
-                "error" : 0,
-                "ruta" : ruta
-                }
+    # if error[0][0] == 1:
+    #     return {"filename": file.filename, 
+    #             "message": "Error al subir el archivo", 
+    #             "codigos": f"{error[0][1]}",
+    #             "tiempo": diferencia[0][0],
+    #             "termino" : True ,
+    #             "error" : 1,
+    #             "ruta" : ruta
+    #             }
+    # else:
+    #     return {"filename": file.filename, 
+    #             "message": error[0][1], 
+    #             "codigos": "",
+    #             "tiempo": diferencia[0][0],
+    #             "termino" : True,
+    #             "error" : 0,
+    #             "ruta" : ruta
+    #             }
 
 @router.post('/quadminds/asignar')
 async def asignar_ruta(id_usuario : int):
