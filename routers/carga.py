@@ -1,6 +1,7 @@
 from fastapi import APIRouter, status,HTTPException, UploadFile, File
 from typing import List
 import pandas as pd
+import os 
 
 from datetime import datetime
 ##Modelos
@@ -93,7 +94,8 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
                 "codigos": "",
                 "tiempo": diferencia[0][0],
                 "termino" : True,
-                "error" : 0
+                "error" : 0,
+                "lista" : lista
                 }
 
 @router.post('/quadminds/asignar')
