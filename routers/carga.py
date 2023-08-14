@@ -63,8 +63,7 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
         # print(f"codigo cliente : {data['Código cliente']}, producto : {data['Producto']}, codigo pedido : {data['Codigo de Pedido']}")
         direccion = data['Domicilio']
         posicion = i + 1
-        # conn.write_pedidos_planificados(data ,posicion, direccion)
-
+        conn.write_pedidos_planificados(data ,posicion, direccion)
         print(posicion)
 
     fecha_hora_actual = datetime.now()
@@ -73,8 +72,7 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
 
     fecha_hora_formateada = fecha_hora_actual.strftime("%Y%m%d%H%M")
 
-    # error = conn.asignar_ruta_quadmind_manual(id_usuario, fecha_hora_formateada)
-    error = [(1,"")]
+    error = conn.asignar_ruta_quadmind_manual(id_usuario, fecha_hora_formateada)
 
     diferencia = conn.calcular_diferencia_tiempo(fecha_dia)
 
@@ -87,8 +85,7 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
                 "tiempo": diferencia[0][0],
                 "termino" : True ,
                 "error" : 1,
-                "ruta" : ruta,
-                "lista" : lista[180]
+                "ruta" : ruta
                 }
     else:
         return {"filename": file.filename, 
@@ -97,8 +94,7 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
                 "tiempo": diferencia[0][0],
                 "termino" : True,
                 "error" : 0,
-                "ruta" : ruta,
-                "lista" : lista[180]
+                "ruta" : ruta
                 }
 
 @router.post('/quadminds/asignar')
