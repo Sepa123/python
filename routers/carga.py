@@ -46,6 +46,10 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
 
     # select quadminds.convierte_en_ruta_manual(1,'202308021040');
 
+    directorio  = os.path.abspath("excel")
+
+
+
     with open(f"excel/{file.filename}", "wb") as f:
         contents = await file.read()
         print("pase por aqui")
@@ -59,7 +63,7 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
         # print(f"codigo cliente : {data['Código cliente']}, producto : {data['Producto']}, codigo pedido : {data['Codigo de Pedido']}")
         direccion = data['Domicilio']
         posicion = i + 1
-        conn.write_pedidos_planificados(data ,posicion, direccion)
+        # conn.write_pedidos_planificados(data ,posicion, direccion)
 
         print(posicion)
 
@@ -94,8 +98,8 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
                 "codigos": "",
                 "tiempo": diferencia[0][0],
                 "termino" : True,
-                "error" : 0
-                # "lista" : lista
+                "error" : 0,
+                "lista" : directorio
                 }
 
 @router.post('/quadminds/asignar')
