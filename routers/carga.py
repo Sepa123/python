@@ -94,8 +94,8 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
                 "codigos": "",
                 "tiempo": diferencia[0][0],
                 "termino" : True,
-                "error" : 0,
-                "lista" : lista
+                "error" : 0
+                # "lista" : lista
                 }
 
 @router.post('/quadminds/asignar')
