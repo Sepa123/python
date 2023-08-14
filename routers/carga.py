@@ -72,6 +72,16 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
 
     fecha_hora_formateada = fecha_hora_actual.strftime("%Y%m%d%H%M")
 
+
+    return {"filename": file.filename, 
+                # "message": error[0][1], 
+                "codigos": "",
+                # "tiempo": diferencia[0][0],
+                "termino" : True,
+                "error" : 0,
+                "ruta" : ruta
+                }
+   
     # error = conn.asignar_ruta_quadmind_manual(id_usuario, fecha_hora_formateada)
 
     # # diferencia = conn.calcular_diferencia_tiempo(fecha_dia)
