@@ -2765,6 +2765,7 @@ class reportesConnection():
                 left join hela.ruta_asignada ra on ra.id_ruta = drm.id_ruta
                 left join areati.ti_wms_carga_electrolux etlx on etlx.numero_guia = drm.cod_pedido and etlx.codigo_item = drm.sku
                 where drm.id_ruta = {id_ruta}
+                -- where drm.nombre_ruta  = '{id_ruta}'
                 order by posicion
                         """)
             return cur.fetchall()
@@ -2839,6 +2840,14 @@ class reportesConnection():
                         """)
             return cur.fetchall()
         
+    def get_pedido_planificados_quadmind_by_cod_pedido(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select count(*) from quadminds.pedidos_planificados
+            where cod_pedido = '2907132378'
+                        """)
+            return cur.fetchone()
+        
 
     ## NS_beetrack por rango de fecha
 
@@ -2868,6 +2877,13 @@ class reportesConnection():
             select count(*) from rutas.latlng where direccion = '{direccion}'
                         """)
             return cur.fetchone()
+        
+    def buscar_producto_toc(self, codigo):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select * from rutas.toc_buscar_producto('{codigo}')
+                        """)
+            return cur.fetchone() 
 
 class transyanezConnection():
     conn = None
