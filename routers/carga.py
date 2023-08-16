@@ -90,6 +90,8 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
     fecha_dia = fecha_hora_actual.strftime("%Y%m%d")
 
     fecha_hora_formateada = fecha_hora_actual.strftime("%Y%m%d%H%M")
+
+
    
     # # # return {
     # # #             "filename": file.filename, 
@@ -142,6 +144,20 @@ async def asignar_ruta(id_usuario : int):
     except:
          raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Error")
 
+@router.get('/hora_actual')
+
+async def asignar_ruta():
+    fecha_hora_actual = datetime.now()
+
+    fecha_dia = fecha_hora_actual.strftime("%Y%m%d")
+
+    fecha_hora_formateada = fecha_hora_actual.strftime("%Y%m%d%H%M")
+
+
+    return {
+        "fecha_dia" : fecha_dia,
+        "fecha_hora_formateada": fecha_hora_formateada
+    }
 # @router.post("/quadminds/descargar", status_code=status.HTTP_202_ACCEPTED)
 # async def descargar_quadminds_excel(body : List[CargaQuadmind]):
 
