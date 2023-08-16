@@ -66,23 +66,19 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
 
     df = pd.read_excel(ruta,skiprows=4)
 
-    direccionesEX = []
-
     lista = df.to_dict(orient='records')
 
     for i, data in enumerate(lista):
-        # print(f"codigo cliente : {data['Código cliente']}, producto : {data['Producto']}, codigo pedido : {data['Codigo de Pedido']}")
         # cantidad_encontrada = conn.get_pedido_planificados_quadmind_by_cod_pedido()
         # if cantidad_encontrada[0] >= 1:
         #     print("Producto ya esta registrado") 
         # else:
         direccion = data['Domicilio']
-        direccionesEX.append(direccion)
         posicion = i + 1
         conn.write_pedidos_planificados(data ,posicion, direccion)
         print(posicion)
 
-        
+
     fecha_hora_actual = datetime.now()
 
     fecha_dia = fecha_hora_actual.strftime("%Y%m%d")
@@ -90,21 +86,6 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
     fecha_hora_formateada = fecha_hora_actual.strftime("%Y%m%d%H%M")
     
     time.sleep(8)
-
-    
-
-
-   
-    # # # return {
-    # # #             "filename": file.filename, 
-    # # #             "message": "archivo", 
-    # # #             "codigos": "",
-    # # #             # "tiempo": diferencia[0][0],
-    # # #             "termino" : True ,
-    # # #             "error" : 0,
-    # # #             "ruta" : ruta,
-    # # #             "direcciones": direccionesEX
-    # # #             }
    
     error = conn.asignar_ruta_quadmind_manual(id_usuario, fecha_hora_formateada)
 
@@ -120,8 +101,6 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
                 "tiempo": diferencia[0][0],
                 "termino" : True ,
                 "error" : 1,
-                "ruta" : ruta,
-                "direcciones": direccionesEX
                 }
     else:   
         return {"filename": file.filename, 
@@ -130,7 +109,6 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
                 "tiempo": diferencia[0][0],
                 "termino" : True,
                 "error" : 0,
-                "ruta" : ruta
                 }
 
 @router.post('/quadminds/asignar')
