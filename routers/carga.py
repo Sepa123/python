@@ -66,7 +66,7 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
         direccion = data['Domicilio']
         direccionesEX.append(direccion)
         posicion = i + 1
-        # conn.write_pedidos_planificados(data ,posicion, direccion)
+        conn.write_pedidos_planificados(data ,posicion, direccion)
         print(posicion)
 
     fecha_hora_actual = datetime.now()
