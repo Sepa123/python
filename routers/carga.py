@@ -82,14 +82,16 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
         conn.write_pedidos_planificados(data ,posicion, direccion)
         print(posicion)
 
-    
-    time.sleep(8)
-
+        
     fecha_hora_actual = datetime.now()
 
     fecha_dia = fecha_hora_actual.strftime("%Y%m%d")
 
     fecha_hora_formateada = fecha_hora_actual.strftime("%Y%m%d%H%M")
+    
+    time.sleep(8)
+
+    
 
 
    
@@ -152,7 +154,6 @@ async def asignar_ruta():
     fecha_dia = fecha_hora_actual.strftime("%Y%m%d")
 
     fecha_hora_formateada = fecha_hora_actual.strftime("%Y%m%d%H%M")
-
 
     return {
         "fecha_dia" : fecha_dia,
