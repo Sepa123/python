@@ -89,7 +89,8 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
             # "tiempo": diferencia[0][0],
             "termino" : True ,
             "error" : 1,
-            "ruta" : ruta
+            "ruta" : ruta,
+            "direcciones": direccionesEX
             }
     # else:
     #     return {"filename": file.filename, 
