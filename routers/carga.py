@@ -85,7 +85,7 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
     return {
             "filename": file.filename, 
             "message": "Error al subir el archivo", 
-            # "codigos": f"{error[0][1]}",
+            "codigos": f"2,3,4",
             # "tiempo": diferencia[0][0],
             "termino" : True ,
             "error" : 1,
