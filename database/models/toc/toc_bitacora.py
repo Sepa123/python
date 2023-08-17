@@ -25,3 +25,4 @@ class BitacoraToc(BaseModel):
     Id_usuario: Optional[int]
     Ids_usuario: Optional[str]
     Alerta: Optional[bool]
+    Codigo1: Optional[str]
