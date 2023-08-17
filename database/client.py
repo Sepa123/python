@@ -2894,6 +2894,14 @@ class reportesConnection():
                         """)
             return cur.fetchall() 
         
+    def buscar_codigos1(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            SELECT id, descripcion, descripcion_larga
+            FROM rutas.def_codigo1;
+                        """)
+            return cur.fetchall() 
+
     def insert_bitacora_toc(self, data):
         with self.conn.cursor() as cur:
             cur.execute("""

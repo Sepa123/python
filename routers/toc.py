@@ -10,6 +10,7 @@ from database.models.toc.toc_bitacora import BitacoraToc
 from database.schema.toc.producto_toc import buscar_producto_toc_schema
 
 from database.schema.toc.subestados import subestados_schema
+from database.schema.toc.codigo1 import codigos1_schema
 
 router = APIRouter(tags=["TOC"], prefix="/api/toc")
 
@@ -28,6 +29,11 @@ async def buscar_producto(cod_producto : str):
 async def obtener_subestados():
      results = conn.buscar_subestados()
      return subestados_schema(results)
+
+@router.get("/codigos1", status_code=status.HTTP_202_ACCEPTED)
+async def obtener_subestados():
+     results = conn.buscar_codigos1()
+     return codigos1_schema(results)
 
 @router.post("/registrar_bitacora")
 async def buscar_producto(body : BitacoraToc , status_code=status.HTTP_201_CREATED):
