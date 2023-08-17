@@ -1,11 +1,10 @@
 from pydantic import BaseModel
 from typing import Optional
-from datetime import datetime
 
 
 class BitacoraToc(BaseModel):
     Codigo_producto: Optional[str]
-    Fecha: Optional[datetime]
+    Fecha: Optional[str]
     PPU: Optional[str]
     Guia: Optional[str]
     Cliente: Optional[str]
@@ -15,10 +14,10 @@ class BitacoraToc(BaseModel):
     Subestado: Optional[str]
     Driver: Optional[str]
     Nombre_cliente: Optional[str]
-    Fecha_compromiso: Optional[datetime]
+    Fecha_compromiso: Optional[str]
     Direccion_correcta: Optional[str]
     Comuna_correcta: Optional[str]
-    Fecha_reprogramada: Optional[datetime]
+    Fecha_reprogramada: Optional[str]
     Observacion: Optional[str]
     Subestado_esperado: Optional[str]
     Id_transyanez: Optional[str]
