@@ -38,7 +38,7 @@ async def obtener_subestados():
 @router.post("/registrar_bitacora", status_code=status.HTTP_201_CREATED)
 async def buscar_producto(body : BitacoraToc):
     try:
-        if body.Codigo1Str == "":
+        if body.Codigo1Str == "" or body.Codigo1Str is None:
              body.Codigo1 = None
         else:
              body.Codigo1 = int(body.Codigo1Str)
