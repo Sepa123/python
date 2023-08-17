@@ -35,7 +35,7 @@ async def obtener_subestados():
      results = conn.buscar_codigos1()
      return codigos1_schema(results)
 
-@router.post("/registrar_bitacora")
-async def buscar_producto(body : BitacoraToc , status_code=status.HTTP_201_CREATED):
+@router.post("/registrar_bitacora", status_code=status.HTTP_201_CREATED)
+async def buscar_producto(body : BitacoraToc):
     data = body.dict()
     return data
