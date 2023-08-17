@@ -2901,6 +2901,13 @@ class reportesConnection():
             FROM rutas.def_codigo1;
                         """)
             return cur.fetchall() 
+        
+    def id_transyanez_bitacora(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select coalesce (max(id_transyanez)+1,1) from rutas.toc_bitacora_mae tbm 
+                        """)
+            return cur.fetchone() 
 
     def insert_bitacora_toc(self, data):
         with self.conn.cursor() as cur:
