@@ -40,7 +40,7 @@ async def buscar_producto(body : BitacoraToc):
     try:
         id_transyanez = conn.id_transyanez_bitacora()[0]
         body.Id_transyanez = id_transyanez
-        body.Ids_transyanez = f"TY-{id_transyanez}"
+        body.Ids_transyanez = f"ty{id_transyanez}"
         data = body.dict()
         conn.insert_bitacora_toc(data)
         return {"message" : f"Bitacora {body.Ids_transyanez} registrada correctamente"}
