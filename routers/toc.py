@@ -62,7 +62,7 @@ async def get_observaciones_usuario(ids_usuario : str):
      results = conn.obtener_observaciones_usuario(ids_usuario)
      return observaciones_usuario_schema(results)
 
-router.get("/alertas-vigentes")
+@router.get("/alertas-vigentes")
 async def get_alertas_vigentes():
      results = conn.obtener_alertas_vigentes()
      return alertas_vigentes_schema(results)
