@@ -55,7 +55,10 @@ async def buscar_producto(body : BitacoraToc):
 
         if body.Subestado_esperado == "":
              body.Subestado_esperado = None
-             
+        
+        if body.Observacion == "":
+             body.Observacion = None
+
         id_transyanez = conn.id_transyanez_bitacora()[0]
         body.Id_transyanez = id_transyanez
         body.Ids_transyanez = f"ty{id_transyanez}"
