@@ -2933,7 +2933,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             coalesce(trb.identificador,null) as en_ruta
             from rutas.toc_bitacora_mae tbm
             left join quadminds.ti_respuesta_beetrack trb on trb.guia = tbm.guia
-            where to_char(tbm.created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
+            where to_char(tbm.created_at,'yyyymmdd')=to_char(current_date - 1,'yyyymmdd')
             and ids_usuario = '{ids_usuario}'
             order by tbm.created_at desc
                         """)
