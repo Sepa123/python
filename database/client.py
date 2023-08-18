@@ -2922,7 +2922,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def obtener_observaciones_usuario(self, id_usuario):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            select observacion, id_usuario , ids_usuario,ids_transyanez, alerta 
+            select observacion ,ids_transyanez, alerta 
             FROM rutas.toc_bitacora_mae
             WHERE to_char(created_at,'yyyymmdd')=to_char(current_date - 1,'yyyymmdd') and  
             id_usuario = {id_usuario}
