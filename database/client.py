@@ -2919,14 +2919,23 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             """,data)
         self.conn.commit()
 
-    def obtener_observaciones_usuario(self, id_usuario):
+    def obtener_observaciones_usuario(self, ids_usuario):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            select observacion ,ids_transyanez, alerta 
-            FROM rutas.toc_bitacora_mae
-            WHERE to_char(created_at,'yyyymmdd')=to_char(current_date - 1,'yyyymmdd') and  
-            id_usuario = {id_usuario}
-            order by created_at desc;
+            select tbm.guia as "Guía", 
+            tbm.cliente as "Cliente", 
+            tbm.comuna as "Comuna", 
+            tbm.fec_compromiso as "Fec. Comp.", 
+            tbm.fec_reprogramada "Fec. Reprog.",
+            tbm.observacion as "Observación", 
+            tbm.ids_transyanez as "Código TY", 
+            tbm.alerta as "Alerta",
+            coalesce(trb.identificador,null) as en_ruta
+            from rutas.toc_bitacora_mae tbm
+            left join quadminds.ti_respuesta_beetrack trb on trb.guia = tbm.guia
+            where to_char(tbm.created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
+            and ids_usuario = '{ids_usuario}'
+            order by tbm.created_at desc
                         """)
             return cur.fetchall()
 

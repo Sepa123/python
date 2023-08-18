@@ -55,8 +55,8 @@ async def buscar_producto(body : BitacoraToc):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error al registrar la bitacora")
     
 
-@router.get("/observaciones/{id_usuario}")
-async def get_observaciones_usuario(id_usuario : int):
-     results = conn.obtener_observaciones_usuario(id_usuario)
+@router.get("/observaciones/{ids_usuario}")
+async def get_observaciones_usuario(ids_usuario : str):
+     results = conn.obtener_observaciones_usuario(ids_usuario)
 
      return observaciones_usuario_schema(results)
