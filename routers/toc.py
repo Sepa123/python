@@ -46,6 +46,16 @@ async def buscar_producto(body : BitacoraToc):
              body.Codigo1 = None
         else:
              body.Codigo1 = int(body.Codigo1Str)
+          
+        if body.Direccion_correcta == "":
+             body.Direccion_correcta = None
+        
+        if body.Fecha_reprogramada == "":
+             body.Fecha_reprogramada = None
+
+        if body.Subestado_esperado == "":
+             body.Subestado_esperado = None
+             
         id_transyanez = conn.id_transyanez_bitacora()[0]
         body.Id_transyanez = id_transyanez
         body.Ids_transyanez = f"ty{id_transyanez}"
