@@ -12,6 +12,8 @@ from database.schema.toc.producto_toc import buscar_producto_toc_schema
 from database.schema.toc.subestados import subestados_schema
 from database.schema.toc.codigo1 import codigos1_schema
 
+from database.schema.toc.observaciones_usuario import observaciones_usuario_schema
+
 router = APIRouter(tags=["TOC"], prefix="/api/toc")
 
 conn = reportesConnection()
@@ -51,3 +53,10 @@ async def buscar_producto(body : BitacoraToc):
     except:
         print("error")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error al registrar la bitacora")
+    
+
+@router.get("/observaciones/{id_usuario}")
+async def get_observaciones_usuario(id_usuario : int):
+     results = conn.obtener_observaciones_usuario(id_usuario)
+
+     return observaciones_usuario_schema(results)

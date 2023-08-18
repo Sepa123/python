@@ -2917,7 +2917,18 @@ class reportesConnection():
 VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Subestado)s, %(Driver)s, %(Nombre_cliente)s, %(Fecha_compromiso)s, %(Comuna)s, %(Direccion_correcta)s, %(Comuna_correcta)s
       , %(Fecha_reprogramada)s, %(Observacion)s, %(Subestado_esperado)s, %(Id_transyanez)s, %(Ids_transyanez)s, %(Id_usuario)s, %(Ids_usuario)s, %(Alerta)s, %(Codigo1)s);
             """,data)
-        self.conn.commit() 
+        self.conn.commit()
+
+    def obtener_observaciones_usuario(self, id_usuario):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select observacion, id_usuario , ids_usuario,ids_transyanez, alerta 
+            FROM rutas.toc_bitacora_mae
+            WHERE to_char(created_at,'yyyymmdd')=to_char(current_date - 1,'yyyymmdd') and  
+            id_usuario = {id_usuario}
+            order by created_at desc;
+                        """)
+            return cur.fetchall()
 
 class transyanezConnection():
     conn = None
