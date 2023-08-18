@@ -14,6 +14,8 @@ from database.schema.toc.codigo1 import codigos1_schema
 
 from database.schema.toc.observaciones_usuario import observaciones_usuario_schema
 
+from database.schema.toc.alertas_vigentes import alertas_vigentes_schema
+
 router = APIRouter(tags=["TOC"], prefix="/api/toc")
 
 conn = reportesConnection()
@@ -58,5 +60,9 @@ async def buscar_producto(body : BitacoraToc):
 @router.get("/observaciones/{ids_usuario}")
 async def get_observaciones_usuario(ids_usuario : str):
      results = conn.obtener_observaciones_usuario(ids_usuario)
-
      return observaciones_usuario_schema(results)
+
+router.get("/alertas-vigentes")
+async def get_alertas_vigentes():
+     results = conn.obtener_alertas_vigentes()
+     return alertas_vigentes_schema(results)

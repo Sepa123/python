@@ -2940,6 +2940,34 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             order by tbm.created_at desc
                         """)
             return cur.fetchall()
+        
+    def obtener_alertas_vigentes(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select to_char(tbm.created_at,'yyyy-mm-dd') as "Fec. Creación", 
+            tbm.guia as "Guía", 
+            tbm.cliente as "Cliente", 
+            tbm.comuna as "Comuna", 
+            tbm.fec_compromiso as "Fec. Comp.", 
+            tbm.fec_reprogramada "Fec. Reprog.",
+            tbm.observacion as "Observación", 
+            tbm.ids_transyanez as "Código TY", 
+            tbm.alerta as "Alerta",
+            coalesce(trb.identificador,null) as en_ruta,
+            tbm.id
+            from rutas.toc_bitacora_mae tbm
+            left join quadminds.ti_respuesta_beetrack trb on trb.guia = tbm.guia
+            where tbm.alerta = true
+            ORDER BY
+            CASE
+                WHEN tbm.fec_reprogramada < CURRENT_DATE THEN 0  -- Atrasadas
+                WHEN tbm.fec_reprogramada = CURRENT_DATE THEN 1  -- Hoy
+                ELSE 2                                           -- Adelantadas
+            END,
+            tbm.fec_reprogramada asc, tbm.fec_compromiso asc;
+ 
+                        """)
+            return cur.fetchall()
 
 class transyanezConnection():
     conn = None
