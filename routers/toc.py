@@ -100,11 +100,11 @@ async def get_bitacoras_usuarios(fecha_inicio : str, fecha_fin : str):
           if re.search(pattern,usu['Ids_usuario']) :
                id = usu['Ids_usuario'].replace("portal-","")
                nombre_usu = connUser.get_nombre_usuario(id)[0]
-               usu['Ids_usuario'] = nombre_usu
+               usu['Nombre'] = nombre_usu
           else:
                id_hela = usu['Ids_usuario'].replace("hela-","")
                nombre_usu_hela = connHela.get_nombre_usuario_hela(id_hela)[0]
-               usu['Ids_usuario'] = nombre_usu_hela
+               usu['Nombre'] = nombre_usu_hela
      return bitacora_usuario
 
 @router.get("/bitacoras/rango")
