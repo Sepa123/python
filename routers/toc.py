@@ -14,6 +14,8 @@ from database.schema.toc.codigo1 import codigos1_schema
 
 from database.schema.toc.observaciones_usuario import observaciones_usuario_schema
 
+from database.schema.toc.bitacora_toc_usuarios import bitacoras_usuarios_schema
+
 from database.schema.toc.alertas_vigentes import alertas_vigentes_schema
 
 router = APIRouter(tags=["TOC"], prefix="/api/toc")
@@ -79,3 +81,9 @@ async def get_observaciones_usuario(ids_usuario : str):
 async def get_alertas_vigentes():
      results = conn.obtener_alertas_vigentes()
      return alertas_vigentes_schema(results)
+
+
+@router.get("/bitacoras/usuarios")
+async def get_bitacoras_usuarios():
+     results = conn.obtener_nombres_usu_toc()
+     return bitacoras_usuarios_schema(results)
