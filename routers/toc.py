@@ -1,5 +1,6 @@
 from fastapi import APIRouter, status,HTTPException
 from typing import List
+import re
 
 ##Conexiones
 from database.client import reportesConnection , UserConnection
@@ -91,7 +92,20 @@ async def get_alertas_vigentes():
 @router.get("/bitacoras/usuarios")
 async def get_bitacoras_usuarios(fecha_inicio : str, fecha_fin : str):
      results = conn.obtener_nombres_usu_toc(fecha_inicio,fecha_fin)
-     return bitacoras_usuarios_schema(results)
+     pattern = r'\bportal-\b'
+
+     bitacora_usuario = bitacoras_usuarios_schema(results)
+
+     for usu in bitacora_usuario:
+          if re.search(pattern,usu['Ids_usuario']) :
+               id = usu['Ids_usuario'].replace("portal-","")
+               nombre_usu = connUser.get_nombre_usuario(id)[0]
+               usu['Ids_usuario'] = nombre_usu
+          else:
+               id_hela = usu['Ids_usuario'].replace("hela-","")
+               nombre_usu_hela = connHela.get_nombre_usuario_hela(id_hela)[0]
+               usu['Ids_usuario'] = nombre_usu_hela
+     return bitacora_usuario
 
 @router.get("/bitacoras/rango")
 async def get_bitacoras_usuarios(fecha_inicio : str, fecha_fin : str):
@@ -109,3 +123,8 @@ async def get_bitacoras_usuarios(id_usuario : str):
      id = id_usuario.replace("hela-","")
      results = connUser.get_nombre_usuario(id)
      return results[0]
+
+
+
+
+

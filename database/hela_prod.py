@@ -115,7 +115,7 @@ class HelaConnection():
                 """)
         self.conn.commit()
 
-    def get_nombre_usuario(self, id_usuario : int):
+    def get_nombre_usuario_hela(self, id_usuario : int):
         with self.conn.cursor() as cur:
             cur.execute(f"""
             SELECT nombre
