@@ -18,6 +18,8 @@ from database.schema.toc.bitacora_toc_usuarios import bitacoras_usuarios_schema
 
 from database.schema.toc.alertas_vigentes import alertas_vigentes_schema
 
+from database.schema.toc.bitacora_rango_fecha import bitacoras_rango_fecha_schema
+
 router = APIRouter(tags=["TOC"], prefix="/api/toc")
 
 conn = reportesConnection()
@@ -87,3 +89,8 @@ async def get_alertas_vigentes():
 async def get_bitacoras_usuarios():
      results = conn.obtener_nombres_usu_toc()
      return bitacoras_usuarios_schema(results)
+
+@router.get("/bitacoras/rango")
+async def get_bitacoras_usuarios(fecha_inicio : str, fecha_fin : str):
+     results = conn.bitacoras_rango_fecha(fecha_inicio,fecha_fin)
+     return bitacoras_rango_fecha_schema(results)

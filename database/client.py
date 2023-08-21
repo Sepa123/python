@@ -2979,6 +2979,17 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             group by id_usuario, ids_usuario, u.nombre 
                         """)
             return cur.fetchall()
+        
+    def bitacoras_rango_fecha(self, fecha_inicio : str, fecha_fin : str):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+             select * from rutas.listar_bitacora_fechas('{fecha_inicio}','{fecha_fin}'); 
+                        """)
+            return cur.fetchall()
+
+
+
+
 class transyanezConnection():
     conn = None
     def __init__(self) -> None:
