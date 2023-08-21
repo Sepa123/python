@@ -86,8 +86,8 @@ async def get_alertas_vigentes():
 
 
 @router.get("/bitacoras/usuarios")
-async def get_bitacoras_usuarios():
-     results = conn.obtener_nombres_usu_toc()
+async def get_bitacoras_usuarios(fecha_inicio : str, fecha_fin : str):
+     results = conn.obtener_nombres_usu_toc(fecha_inicio,fecha_fin)
      return bitacoras_usuarios_schema(results)
 
 @router.get("/bitacoras/rango")

@@ -2969,14 +2969,14 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                         """)
             return cur.fetchall()
 
-    def obtener_nombres_usu_toc(self):
+    def obtener_nombres_usu_toc(self,fecha_inicio: str, fecha_fin: str):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            select count(id_usuario) as "Cantidad bitacoras", ids_usuario, u.nombre 
+            select count(id_usuario) as "Cantidad bitacoras", ids_usuario
             from rutas.toc_bitacora_mae 
-            left JOIN hela.usuarios u  ON u.id  = rutas.toc_bitacora_mae.id_usuario
-            --WHERE to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
-            group by id_usuario, ids_usuario, u.nombre 
+            where to_char(created_at,'yyyymmdd')>='{fecha_inicio}'
+			and to_char(created_at,'yyyymmdd')<='{fecha_fin}'
+            group by id_usuario, ids_usuario
                         """)
             return cur.fetchall()
         
@@ -2986,9 +2986,6 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
              select * from rutas.listar_bitacora_fechas('{fecha_inicio}','{fecha_fin}'); 
                         """)
             return cur.fetchall()
-
-
-
 
 class transyanezConnection():
     conn = None
