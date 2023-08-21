@@ -99,11 +99,13 @@ async def get_bitacoras_usuarios(fecha_inicio : str, fecha_fin : str):
      return bitacoras_rango_fecha_schema(results)
 
 @router.get("/usuario/portal/{id_usuario}")
-async def get_bitacoras_usuarios(id_usuario : int):
-     results = connUser.get_nombre_usuario(id_usuario)
+async def get_bitacoras_usuarios(id_usuario : str):
+     id = id_usuario.replace("portal-","")
+     results = connUser.get_nombre_usuario(id)
      return results[0]
 
 @router.get("/usuario/hela/{id_usuario}")
-async def get_bitacoras_usuarios(id_usuario : int):
-     results = connUser.get_nombre_usuario(id_usuario)
+async def get_bitacoras_usuarios(id_usuario : str):
+     id = id_usuario.replace("hela-","")
+     results = connUser.get_nombre_usuario(id)
      return results[0]
