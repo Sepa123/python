@@ -2,7 +2,8 @@ from fastapi import APIRouter, status,HTTPException
 from typing import List
 
 ##Conexiones
-from database.client import reportesConnection
+from database.client import reportesConnection , UserConnection
+from database.hela_prod import HelaConnection
 
 ##Modelos Schemas
 
@@ -23,6 +24,8 @@ from database.schema.toc.bitacora_rango_fecha import bitacoras_rango_fecha_schem
 router = APIRouter(tags=["TOC"], prefix="/api/toc")
 
 conn = reportesConnection()
+connHela = HelaConnection()
+connUser = UserConnection()
 
 @router.get("/buscar_producto/{cod_producto}")
 async def buscar_producto(cod_producto : str):
@@ -94,3 +97,13 @@ async def get_bitacoras_usuarios(fecha_inicio : str, fecha_fin : str):
 async def get_bitacoras_usuarios(fecha_inicio : str, fecha_fin : str):
      results = conn.bitacoras_rango_fecha(fecha_inicio,fecha_fin)
      return bitacoras_rango_fecha_schema(results)
+
+@router.get("/usuario/portal/{id_usuario}")
+async def get_bitacoras_usuarios(id_usuario : int):
+     results = connUser.get_nombre_usuario(id_usuario)
+     return results[0]
+
+@router.get("/usuario/hela/{id_usuario}")
+async def get_bitacoras_usuarios(id_usuario : int):
+     results = connUser.get_nombre_usuario(id_usuario)
+     return results[0]

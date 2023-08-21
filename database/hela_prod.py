@@ -114,3 +114,12 @@ class HelaConnection():
                 WHERE nombre_ruta = '{nombre_ruta}'
                 """)
         self.conn.commit()
+
+    def get_nombre_usuario(self, id_usuario : int):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            SELECT nombre
+            FROM hela.usuarios;
+            WHERE id = {id_usuario}
+            """)
+            return cur.fetchone()

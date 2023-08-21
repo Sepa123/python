@@ -53,6 +53,14 @@ class UserConnection():
                 FROM "user".rol;
             """)
             return cur.fetchall()
+    
+    def get_nombre_usuario(self, id_usuario : int):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            SELECT full_name from "user".users
+            where id = {id_usuario}
+            """)
+            return cur.fetchone()
         
     def read_only_one(self, data):
         # self.conn = self.conectar_bd()
@@ -2986,7 +2994,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
              select * from rutas.listar_bitacora_fechas('{fecha_inicio}','{fecha_fin}'); 
                         """)
             return cur.fetchall()
-
+        
 class transyanezConnection():
     conn = None
     def __init__(self) -> None:
