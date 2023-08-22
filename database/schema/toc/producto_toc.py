@@ -10,5 +10,7 @@ def buscar_producto_toc_schema(producto):
 		"Usuario_movil" : producto[7],
 		"Nombre_cliente" : producto[8],
 		"Fecha_compromiso" : producto[9],
-		"Comuna" : producto[10]
+		"Comuna" : producto[10],
+        "Telefono" : producto[11],
+        "Correo": producto[12]
 	}
