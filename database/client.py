@@ -2995,6 +2995,20 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                         """)
             return cur.fetchall()
         
+    def actividad_diaria_usuario(self, ids_usuario : str, fecha : str):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+             select * from rutas.toc_actividad_diaria('{ids_usuario}', '{fecha}');
+                        """)
+            return cur.fetchall()
+        
+    def toc_backoffice_usuario(self, ids_usuario : str):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+             select * from rutas.toc_backoffice_usuario('{ids_usuario}');
+                        """)
+            return cur.fetchall()
+        
 class transyanezConnection():
     conn = None
     def __init__(self) -> None:

@@ -22,6 +22,9 @@ from database.schema.toc.alertas_vigentes import alertas_vigentes_schema
 
 from database.schema.toc.bitacora_rango_fecha import bitacoras_rango_fecha_schema
 
+from database.schema.toc.actividad_diaria import actividades_diaria_schema
+from database.schema.toc.backoffice_usuario import backoffices_usuario_schema
+
 router = APIRouter(tags=["TOC"], prefix="/api/toc")
 
 conn = reportesConnection()
@@ -123,6 +126,19 @@ async def get_bitacoras_usuarios(id_usuario : str):
      id = id_usuario.replace("hela-","")
      results = connUser.get_nombre_usuario(id)
      return results[0]
+
+
+@router.get("/actividad_diaria")
+async def get_actividad_diaria_usuario(ids_usuario : str, fecha : str):
+     # id = id_usuario.replace("hela-","")
+     results = conn.actividad_diaria_usuario(ids_usuario,fecha)
+     return actividades_diaria_schema(results)
+
+@router.get("/backoffice/usuario")
+async def get_backoffice_usuario(ids_usuario : str):
+     # id = id_usuario.replace("hela-","")
+     results = conn.toc_backoffice_usuario(ids_usuario)
+     return backoffices_usuario_schema(results)
 
 
 
