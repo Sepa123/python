@@ -1970,6 +1970,15 @@ class reportesConnection():
             """)
             return cur.fetchall()
         
+    def get_factura_electrolux(self,pedido_id):
+
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select factura from areati.ti_wms_carga_electrolux twce 
+            where eltx.numero_guia = '{pedido_id}' or trim(eltx.factura) = trim('{pedido_id}')
+            """)
+            return cur.fetchone()
+        
     def direccion_textual(self,pedido_id):
 
         with self.conn.cursor() as cur:

@@ -88,7 +88,12 @@ async def get_ruta_manual(pedido_id : str):
 
     return json_data
 
-
+@router.get("/buscar/factura/electrolux/{pedido_id}",status_code=status.HTTP_202_ACCEPTED)
+async def get_factura_electrolux(pedido_id : str):
+    result = conn.get_factura_electrolux(pedido_id)
+    return {
+        "Factura" : result[0]
+    }
 
 def validar_fecha(fecha):
     fecha_actual = datetime.now().date()  # Obtiene la fecha actual
