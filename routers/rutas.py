@@ -1,8 +1,9 @@
 from fastapi import APIRouter, status,HTTPException
 from fastapi.responses import FileResponse
 from openpyxl import Workbook
-from openpyxl.styles import Font , PatternFill, Border ,Side
+from openpyxl.styles import Font , PatternFill, Border ,Side, Alignment
 from datetime import datetime, timedelta
+from openpyxl.worksheet.page import PageMargins
 
 import time
 import re
@@ -259,8 +260,8 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
     datos = [[]]
     
     datos.append([
-        "Posición", "Pedido", "Comuna","Producto","SKU", "UND", "Bultos", "Nombre",
-        "Direccion Cliente", "Teléfono","Fecha Compromiso", "DE", "DP"
+        "N°", "Pedido", "Comuna","Nombre","Direccion", "Teléfono", "SKU", "Producto",
+        "UND", "Bult","Fech. Com.","Obs"
     ])
   
     # result = conn.read_rutas_en_activo(nombre_ruta) 
@@ -278,7 +279,9 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
     libro_excel = Workbook()
     hoja = libro_excel.active
     hoja.title = 'Hoja1'
-  
+    
+    
+
     # Estilo para el texto en negrita
     negrita = Font(bold=True, size=20,  color='000000')
     # hoja.merge_cells('A1:D1')
@@ -292,22 +295,22 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
         arraySKU = ruta["SKU"].split("@")
         if len(arrayProductos) == 1:
             fila = [
-                ruta["Pos"], ruta["Codigo_pedido"], ruta["Comuna"], arrayProductos[0], arraySKU[0],
-                ruta["Unidades"], ruta["Bultos"], ruta["Nombre_cliente"], ruta["Direccion_cliente"], ruta["Telefono"], ruta["Fecha_pedido"]
+                ruta["Pos"], ruta["Codigo_pedido"], ruta["Comuna"] ,ruta["Nombre_cliente"],ruta["Direccion_cliente"], ruta["Telefono"], arraySKU[0], arrayProductos[0],
+                ruta["Unidades"], ruta["Bultos"],  ruta["Fecha_pedido"]
             ]
             datos.append(fila)
         elif len(arrayProductos) > 1:
             for i, producto in enumerate(arrayProductos):
                 if i == 0:
                     fila = [
-                        ruta["Pos"], ruta["Codigo_pedido"], ruta["Comuna"], producto, arraySKU[0],
-                        ruta["Unidades"], ruta["Bultos"], ruta["Nombre_cliente"], ruta["Direccion_cliente"], ruta["Telefono"], ruta["Fecha_pedido"]
+                        ruta["Pos"], ruta["Codigo_pedido"], ruta["Comuna"] ,ruta["Nombre_cliente"],ruta["Direccion_cliente"], ruta["Telefono"], arraySKU[0], producto,
+                        ruta["Unidades"], ruta["Bultos"],  ruta["Fecha_pedido"]
                     ]
                     datos.append(fila)
                 else:
                     fila_producto = [
-                        "", "", "",producto, arraySKU[i],
-                        "", "", "", "", ""
+                        "", "", "", "",
+                        "", "", arraySKU[i], producto , "", ""
                     ]
                     datos.append(fila_producto)
   
@@ -316,8 +319,6 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
         hoja.append(fila)
         nHoja = i
     
-    
-        
     # Aplicar estilo en negrita a la primera fila
     for celda in hoja[1]:
         celda.font = negrita
@@ -330,34 +331,39 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
         celda.fill = PatternFill(start_color="000000FF", end_color="000000FF", fill_type="solid")
         celda.border = border
     
+    # aplicar largo a celdas
+
+    for col_letter in ['A']:
+      hoja.column_dimensions[col_letter].width = 3
+
+    for col_letter in ['I','J']:
+      hoja.column_dimensions[col_letter].width = 4
+
+    for col_letter in ['B','G','K']:
+      hoja.column_dimensions[col_letter].width = 12
+
+    for col_letter in ['C','F']:
+      hoja.column_dimensions[col_letter].width = 14
+    
+    for col_letter in ['L']:
+      hoja.column_dimensions[col_letter].width = 15
+
+    for col_letter in ['D']:
+      hoja.column_dimensions[col_letter].width = 20
+
+    for col_letter in ['E']:
+      hoja.column_dimensions[col_letter].width = 25
+    
+    for col_letter in ['H']:
+      hoja.column_dimensions[col_letter].width = 30
+
     # print(nHoja)
     for n in range(nHoja):
          for celda in hoja[n+5]:
-             celda.font = Font(bold=True, color="070707")
+             celda.font = Font(color="070707")
              celda.fill = PatternFill(start_color="FFFFFF", end_color="FFFFFF", fill_type="solid")
              celda.border = border
-    # 
-    
-    # Ajustar el ancho de las columnas para las celdas de datos (filas después de la 2)
-    for columna_cells in hoja.iter_cols(min_row=3):  # Ajustar solo las filas desde la tercera fila en adelante
-        longitud_maxima = 0
-        for cell in columna_cells:
-            if cell.value:
-                longitud = len(str(cell.value))
-                if longitud > longitud_maxima:
-                    longitud_maxima = longitud
-        ajuste_ancho = (longitud_maxima + 1) * 1.2
-        hoja.column_dimensions[columna_cells[0].column_letter].width = ajuste_ancho
-
-    # Ajustar el ancho de las columnas para las celdas fusionadas (primera y segunda fila)
-    for cell_range in hoja.merged_cells.ranges:
-        min_col, min_row, max_col, max_row = cell_range.bounds
-        if min_row >= 3:  # Ajustar solo las filas desde la tercera fila en adelante
-            for columna_index in range(min_col, max_col + 1):
-                longitud_maxima = max(len(str(cell.value)) for cell in hoja[hoja.cell(row=min_row, column=columna_index):hoja.cell(row=max_row, column=columna_index)])
-                ajuste_ancho = (longitud_maxima + 1) * 1.2
-                hoja.column_dimensions[hoja.cell(row=min_row, column=columna_index).column_letter].width = ajuste_ancho
-
+  
     hoja.append(("",)) 
     hoja.append(("","Driver : "+driver,))  
     hoja.append(("",))  
@@ -366,8 +372,17 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
     hoja.merge_cells('A1:M1')
     hoja.merge_cells('A2:M2')
 
+    for row in hoja.iter_rows(min_row=5, max_row=nHoja+5, min_col=0, max_col=13):
+        for celda in row:
+            celda.alignment = Alignment(wrap_text=True, horizontal = 'center' , vertical='center')
+
   # Fusionar celdas para las últimas cuatro filas
     # Guardar el archivo
+
+    margins = PageMargins(top=1, bottom=1.5, header=1.3, footer=1.3 , left=1,right=0.5)
+
+    hoja.page_margins = margins
+
     nombre_archivo = "nombre_ruta.xlsx"
     libro_excel.save(nombre_archivo)
 
