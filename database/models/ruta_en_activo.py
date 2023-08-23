@@ -14,5 +14,6 @@ class RutaEnActivo(BaseModel):
     Validacion: Optional[str]
     DE: Optional[str]
     DP: Optional[str]
+    Fecha_pedido: Optional[str]
     arrayProductos : List[str]
     arraySKU : List[str]

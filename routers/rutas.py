@@ -135,7 +135,7 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]], fecha_pedido : str)
             for producto in ruta:
                 data = producto.dict()
                 print(data)
-                # data["Calle"] = conn.direccion_textual(data["Codigo_pedido"])[0][0]
+                data["Calle"] = conn.direccion_textual(data["Codigo_pedido"])[0][0]
                 data["Id_ruta"] = id_ruta
                 data["Agrupador"] = nombre_ruta
                 data["Nombre_ruta"] = nombre_ruta
@@ -206,7 +206,7 @@ async def insert_ruta_existente_activa(fecha_ruta_nueva : str, rutas : List[List
                     count = conn.update_posicion(data["Posicion"], data["Codigo_pedido"], data["Codigo_producto"], fecha_ruta)
                     print(count)
                 else :
-                    # data["Calle"] = conn.direccion_textual(data["Codigo_pedido"])[0][0]
+                    data["Calle"] = conn.direccion_textual(data["Codigo_pedido"])[0][0]
                     data["Id_ruta"] = id_ruta
                     data["Agrupador"] = nombre_ruta
                     data["Nombre_ruta"] = nombre_ruta
@@ -260,7 +260,7 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
     
     datos.append([
         "Posición", "Pedido", "Comuna","Producto","SKU", "UND", "Bultos", "Nombre",
-        "Direccion Cliente", "Teléfono", "DE", "DP"
+        "Direccion Cliente", "Teléfono","Fecha Compromiso", "DE", "DP"
     ])
   
     # result = conn.read_rutas_en_activo(nombre_ruta) 
@@ -293,7 +293,7 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
         if len(arrayProductos) == 1:
             fila = [
                 ruta["Pos"], ruta["Codigo_pedido"], ruta["Comuna"], arrayProductos[0], arraySKU[0],
-                ruta["Unidades"], ruta["Bultos"], ruta["Nombre_cliente"], ruta["Direccion_cliente"], ruta["Telefono"]
+                ruta["Unidades"], ruta["Bultos"], ruta["Nombre_cliente"], ruta["Direccion_cliente"], ruta["Telefono"], ruta["Fecha_pedido"]
             ]
             datos.append(fila)
         elif len(arrayProductos) > 1:
@@ -301,7 +301,7 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
                 if i == 0:
                     fila = [
                         ruta["Pos"], ruta["Codigo_pedido"], ruta["Comuna"], producto, arraySKU[0],
-                        ruta["Unidades"], ruta["Bultos"], ruta["Nombre_cliente"], ruta["Direccion_cliente"], ruta["Telefono"]
+                        ruta["Unidades"], ruta["Bultos"], ruta["Nombre_cliente"], ruta["Direccion_cliente"], ruta["Telefono"], ruta["Fecha_pedido"]
                     ]
                     datos.append(fila)
                 else:
@@ -346,7 +346,7 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
                 longitud = len(str(cell.value))
                 if longitud > longitud_maxima:
                     longitud_maxima = longitud
-        ajuste_ancho = (longitud_maxima + 2) * 1.2
+        ajuste_ancho = (longitud_maxima + 1) * 1.2
         hoja.column_dimensions[columna_cells[0].column_letter].width = ajuste_ancho
 
     # Ajustar el ancho de las columnas para las celdas fusionadas (primera y segunda fila)
@@ -355,7 +355,7 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
         if min_row >= 3:  # Ajustar solo las filas desde la tercera fila en adelante
             for columna_index in range(min_col, max_col + 1):
                 longitud_maxima = max(len(str(cell.value)) for cell in hoja[hoja.cell(row=min_row, column=columna_index):hoja.cell(row=max_row, column=columna_index)])
-                ajuste_ancho = (longitud_maxima + 2) * 1.2
+                ajuste_ancho = (longitud_maxima + 1) * 1.2
                 hoja.column_dimensions[hoja.cell(row=min_row, column=columna_index).column_letter].width = ajuste_ancho
 
     hoja.append(("",)) 

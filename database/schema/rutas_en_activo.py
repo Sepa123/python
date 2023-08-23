@@ -14,7 +14,8 @@ def ruta_en_activo_schema(ruta):
             "Validacion": ruta[11],
             "DE": ruta[12],
             "DP": ruta[13],
-            "Region": ruta[14]
+            "Region": ruta[14],
+            "Fecha_pedido" : ruta[15]
         }
 
 def rutas_en_activo_schema(rutas): 

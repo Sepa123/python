@@ -2104,11 +2104,12 @@ class reportesConnection():
             '' as "DE",
             '' as "DP",
             provincia_estado,
+            fecha_pedido,
             id_ruta,
             posicion
             from quadminds.datos_ruta_manual drm 
             where nombre_ruta = '{nombre_ruta}'
-            group by 1,2,7,8,9,10,11, id_ruta, posicion, provincia_estado
+            group by 1,2,7,8,9,10,11, id_ruta, posicion, provincia_estado, fecha_pedido
             ) datos_base
             """)
             return cur.fetchall()
