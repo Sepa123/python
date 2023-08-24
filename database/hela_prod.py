@@ -119,7 +119,7 @@ class HelaConnection():
         with self.conn.cursor() as cur:
             cur.execute(f"""
             SELECT nombre
-            FROM hela.usuarios;
+            FROM hela.usuarios
             WHERE id = {id_usuario}
             """)
             return cur.fetchone()
