@@ -261,7 +261,7 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
     
     datos.append([
         "N°", "Pedido", "Comuna","Nombre","Direccion", "Teléfono", "SKU", "Producto",
-        "UND", "Bult","Fech. Com.","Obs"
+        "UND", "Bult","Obs"
     ])
   
     # result = conn.read_rutas_en_activo(nombre_ruta) 
@@ -294,7 +294,7 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
         if len(arrayProductos) == 1:
             fila = [
                 ruta["Pos"], ruta["Codigo_pedido"], ruta["Comuna"] ,ruta["Nombre_cliente"],ruta["Direccion_cliente"], ruta["Telefono"], arraySKU[0], arrayProductos[0],
-                ruta["Unidades"], ruta["Bultos"],  ruta["Fecha_pedido"]
+                ruta["Unidades"], ruta["Bultos"]
             ]
             datos.append(fila)
         elif len(arrayProductos) > 1:
@@ -302,7 +302,7 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
                 if i == 0:
                     fila = [
                         ruta["Pos"], ruta["Codigo_pedido"], ruta["Comuna"] ,ruta["Nombre_cliente"],ruta["Direccion_cliente"], ruta["Telefono"], arraySKU[0], producto,
-                        ruta["Unidades"], ruta["Bultos"],  ruta["Fecha_pedido"]
+                        ruta["Unidades"], ruta["Bultos"]
                     ]
                     datos.append(fila)
                 else:
@@ -337,13 +337,13 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
     for col_letter in ['I','J']:
       hoja.column_dimensions[col_letter].width = 4
 
-    for col_letter in ['B','G','K']:
+    for col_letter in ['B','G']:
       hoja.column_dimensions[col_letter].width = 12
 
     for col_letter in ['C','F']:
       hoja.column_dimensions[col_letter].width = 14
     
-    for col_letter in ['L']:
+    for col_letter in ['K']:
       hoja.column_dimensions[col_letter].width = 15
 
     for col_letter in ['D']:
