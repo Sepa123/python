@@ -379,6 +379,8 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
 
     margins = PageMargins(top=1, bottom=1.5, header=1.3, footer=1.3 , left=1,right=0.5)
 
+    hoja.page_setup.orientation = hoja.ORIENTATION_PORTRAIT
+
     hoja.page_margins = margins
 
     nombre_archivo = "nombre_ruta.xlsx"
