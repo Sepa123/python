@@ -278,13 +278,7 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
     # Crear un libro de Excel y seleccionar la hoja activa
     libro_excel = Workbook()
     hoja = libro_excel.active
-    hoja.title = 'Hoja1'
-
-    page_setup = PrintPageSetup(orientation='portrait')
-
-    hoja.page_setup = page_setup
-    
-    
+    hoja.title = 'Hoja1'    
 
     # Estilo para el texto en negrita
     negrita = Font(bold=True, size=20,  color='000000')
