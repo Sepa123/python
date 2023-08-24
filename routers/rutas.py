@@ -280,6 +280,9 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
     hoja = libro_excel.active
     hoja.title = 'Hoja1'    
 
+    margins = PageMargins(top=0.3, bottom=0.6, left=0.4, right=0.5, header=0.3, footer=0.3)
+    hoja.page_margins = margins
+
     # Estilo para el texto en negrita
     negrita = Font(bold=True, size=20,  color='000000')
     # hoja.merge_cells('A1:D1')
@@ -377,15 +380,13 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
   # Fusionar celdas para las últimas cuatro filas
     # Guardar el archivo
 
-    margins = PageMargins(top=1, bottom=1.5, header=1.3, footer=1.3 , left=1,right=0.5)
+    hoja.page_setup.orientation = 'landscape'
 
-    hoja.page_setup.orientation = hoja.ORIENTATION_PORTRAIT
-
-    hoja.page_margins = margins
+    # hoja.print_options.horizontalCentered = True  # Centrar horizontalmente
+    # hoja.print_options.verticalCentered = True  # Centrar verticalmente
 
     nombre_archivo = "nombre_ruta.xlsx"
     libro_excel.save(nombre_archivo)
-
 
     return FileResponse("nombre_ruta.xlsx")
 
