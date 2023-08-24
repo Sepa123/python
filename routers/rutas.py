@@ -3,7 +3,7 @@ from fastapi.responses import FileResponse
 from openpyxl import Workbook
 from openpyxl.styles import Font , PatternFill, Border ,Side, Alignment
 from datetime import datetime, timedelta
-from openpyxl.worksheet.page import PageMargins
+from openpyxl.worksheet.page import PageMargins , PrintPageSetup
 
 import time
 import re
@@ -279,6 +279,10 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
     libro_excel = Workbook()
     hoja = libro_excel.active
     hoja.title = 'Hoja1'
+
+    page_setup = PrintPageSetup(orientation='portrait')
+
+    hoja.page_setup = page_setup
     
     
 
