@@ -54,7 +54,11 @@ def ruta_manual(ruta):
         "Pistoleado": ruta[29],
         "Tamaño": ruta[30],
         "Estado": ruta[31],
-        "En_ruta": ruta[32]
+        "En_ruta": ruta[32],
+        "TOC" : ruta[33],
+        "Obs_TOC": ruta[34],
+        "Sistema": ruta[35],
+        "Obs_sistema": ruta[36]
     }
 
 
