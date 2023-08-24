@@ -1966,7 +1966,7 @@ class reportesConnection():
 
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            select * from areati.busca_ruta_manual('{pedido_id}')
+            select * from areati.busca_ruta_manual_resp('{pedido_id}')
             """)
             return cur.fetchall()
         
