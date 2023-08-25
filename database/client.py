@@ -2986,6 +2986,18 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
  
                         """)
             return cur.fetchall()
+        
+    def update_alerta_bitacora_toc_by_guia(self, guia : str):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""        
+            UPDATE rutas.toc_bitacora_mae
+            SET alerta = false
+            WHERE guia = '{guia}'
+            """)
+            row = cur.rowcount
+        self.conn.commit()
+        return row
+
 
     def obtener_nombres_usu_toc(self,fecha_inicio: str, fecha_fin: str):
         with self.conn.cursor() as cur:

@@ -53,6 +53,8 @@ async def obtener_subestados():
 @router.post("/registrar_bitacora", status_code=status.HTTP_201_CREATED)
 async def buscar_producto(body : BitacoraToc):
     try:
+        conn.update_alerta_bitacora_toc_by_guia(body.Guia)
+
         if body.Codigo1Str == "" or body.Codigo1Str is None:
              body.Codigo1 = None
         else:
