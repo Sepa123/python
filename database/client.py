@@ -2154,7 +2154,9 @@ class reportesConnection():
             SELECT drm.id_ruta, drm.nombre_ruta, drm.cod_cliente, drm.nombre, drm.calle_numero, drm.ciudad, drm.provincia_estado, drm.telefono, drm.email, drm.cod_pedido, drm.fecha_pedido, drm.cod_producto, drm.desc_producto, drm.cant_producto, drm.notas, drm.agrupador, drm.sku, drm.talla, drm.estado, drm.posicion, drm.fecha_ruta, drm.de, drm.dp, tbm.alerta as "alerta TOC", tbm.observacion as "Obs. TOC" 
             ,(select "Obs. Sistema" from areati.busca_ruta_manual(drm.cod_pedido) limit 1) as "obs Sistema"
             FROM quadminds.datos_ruta_manual drm 
-            LEFT JOIN rutas.toc_bitacora_mae tbm ON tbm.guia = drm.cod_pedido 
+            LEFT join
+            (select * from rutas.toc_bitacora_mae tbm where tbm.alerta = true 
+            ) as tbm ON tbm.guia = drm.cod_pedido 
             WHERE drm.nombre_ruta = '{nombre_ruta}' 
             ORDER BY drm.posicion;
             """)
