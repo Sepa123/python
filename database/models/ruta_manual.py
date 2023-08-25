@@ -39,3 +39,5 @@ class RutaManual(BaseModel):
     Created_by: Optional[int]
     Fecha_ruta : Optional[str]
     Posicion: Optional[int]
+    DE: Optional[bool]
+    DP: Optional[bool]

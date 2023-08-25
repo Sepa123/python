@@ -20,7 +20,12 @@ def datos_ruta_activa_editar(ruta):
         "Tamaño": ruta[17],
         "Estado": ruta[18],
         "Posicion" : ruta[19],
-        "Fecha_ruta": ruta[20]
+        "Fecha_ruta": ruta[20],
+        "DE" : ruta[21],
+        "DP" : ruta[22],
+        "TOC" : ruta[23],
+        "Obs_TOC": ruta[24],
+        "Obs_sistema": ruta[25]
 }
 
 def datos_rutas_activas_editar_schema(rutas):

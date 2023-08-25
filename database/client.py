@@ -2039,13 +2039,13 @@ class reportesConnection():
         # print(data)
         with self.conn.cursor() as cur: 
             cur.execute("""
-            INSERT INTO quadminds.datos_ruta_manual (id_ruta, fecha_ruta, nombre_ruta, cod_cliente, nombre, calle_numero, ciudad, provincia_estado, latitud, longitud, telefono, email, cod_pedido, fecha_pedido, operacion, cod_producto, desc_producto, cant_producto, peso, volumen, dinero, duracion, vent_horaria_1, vent_horaria_2, notas, agrupador, email_rem, eliminar_pedido, vehiculo, habilidades, sku, talla, estado, created_by, posicion)
+            INSERT INTO quadminds.datos_ruta_manual (id_ruta, fecha_ruta, nombre_ruta, cod_cliente, nombre, calle_numero, ciudad, provincia_estado, latitud, longitud, telefono, email, cod_pedido, fecha_pedido, operacion, cod_producto, desc_producto, cant_producto, peso, volumen, dinero, duracion, vent_horaria_1, vent_horaria_2, notas, agrupador, email_rem, eliminar_pedido, vehiculo, habilidades, sku, talla, estado, created_by, posicion, de, dp)
             VALUES (%(Id_ruta)s, %(Fecha_ruta)s, %(Nombre_ruta)s, %(Codigo_cliente)s, %(Nombre)s, %(Calle)s, %(Ciudad)s,
               %(Provincia)s, %(Latitud)s, %(Longitud)s, %(Telefono)s, %(Email)s, %(Codigo_pedido)s, %(Fecha_pedido)s,
               %(Operacion)s, %(Codigo_producto)s, %(Descripcion_producto)s, %(Cantidad_producto)s, %(Peso)s, 
               %(Volumen)s, %(Dinero)s, %(Duracion_min)s, %(Ventana_horaria_1)s, %(Ventana_horaria_2)s, %(Notas)s, 
               %(Nombre_ruta)s, %(Email_remitentes)s, %(Eliminar_pedido)s, %(Vehiculo)s, %(Habilidades)s, %(SKU)s,
-              %(Tamaño)s, true , %(Created_by)s, %(Posicion)s );
+              %(Tamaño)s, true , %(Created_by)s, %(Posicion)s,%(DE)s, %(DP)s);
             """,data)
         self.conn.commit()
 
@@ -2101,16 +2101,22 @@ class reportesConnection():
             telefono as "Telefono",
             estado as "Estado",
             '' as "Validado",
-            '' as "DE",
-            '' as "DP",
+            CASE
+                WHEN bool_or(de) THEN 'Embalaje con Daño'
+                ELSE ''
+            END AS "DE",
+            CASE
+                WHEN bool_or(dp) THEN 'Producto con Daño'
+                ELSE ''
+            END as "DP",
             provincia_estado,
             fecha_pedido,
             id_ruta,
             posicion
-            from quadminds.datos_ruta_manual drm 
+            from quadminds.datos_ruta_manual drm
             where nombre_ruta = '{nombre_ruta}'
             group by 1,2,7,8,9,10,11, id_ruta, posicion, provincia_estado, fecha_pedido
-            ) datos_base
+            ) datos_base;
             """)
             return cur.fetchall()
 
@@ -2133,14 +2139,27 @@ class reportesConnection():
     
     ## editar rutas activas
 
+    # def read_ruta_activa_by_nombre_ruta(self,nombre_ruta):
+    #     with self.conn.cursor() as cur:
+    #         cur.execute(f"""
+    #         select id_ruta, nombre_ruta, cod_cliente, nombre, calle_numero, ciudad, provincia_estado, telefono, email, cod_pedido, fecha_pedido, cod_producto, desc_producto, cant_producto, notas, agrupador, sku, talla, estado, posicion, fecha_ruta
+    #         from quadminds.datos_ruta_manual drm where nombre_ruta = '{nombre_ruta}'
+    #         order by posicion
+    #         """)
+    #         return cur.fetchall()
+
     def read_ruta_activa_by_nombre_ruta(self,nombre_ruta):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            select id_ruta, nombre_ruta, cod_cliente, nombre, calle_numero, ciudad, provincia_estado, telefono, email, cod_pedido, fecha_pedido, cod_producto, desc_producto, cant_producto, notas, agrupador, sku, talla, estado, posicion, fecha_ruta
-            from quadminds.datos_ruta_manual drm where nombre_ruta = '{nombre_ruta}'
-            order by posicion
+            SELECT drm.id_ruta, drm.nombre_ruta, drm.cod_cliente, drm.nombre, drm.calle_numero, drm.ciudad, drm.provincia_estado, drm.telefono, drm.email, drm.cod_pedido, drm.fecha_pedido, drm.cod_producto, drm.desc_producto, drm.cant_producto, drm.notas, drm.agrupador, drm.sku, drm.talla, drm.estado, drm.posicion, drm.fecha_ruta, drm.de, drm.dp, tbm.alerta as "alerta TOC", tbm.observacion as "Obs. TOC" 
+            ,(select "Obs. Sistema" from areati.busca_ruta_manual(drm.cod_pedido) limit 1) as "obs Sistema"
+            FROM quadminds.datos_ruta_manual drm 
+            LEFT JOIN rutas.toc_bitacora_mae tbm ON tbm.guia = drm.cod_pedido 
+            WHERE drm.nombre_ruta = '{nombre_ruta}' 
+            ORDER BY drm.posicion;
             """)
             return cur.fetchall()
+
         
     def asignar_ruta_quadmind_manual(self, id , fecha):
         with self.conn.cursor() as cur:
@@ -2180,11 +2199,11 @@ class reportesConnection():
         self.conn.commit() 
         return rows_delete
     
-    def update_posicion(self, posicion : int, cod_pedido : str, cod_producto : str, fecha_ruta : str): 
+    def update_posicion(self, posicion : int, cod_pedido : str, cod_producto : str, fecha_ruta : str, de : bool , dp : bool): 
         with self.conn.cursor() as cur:
             cur.execute(f"""
                 UPDATE quadminds.datos_ruta_manual  
-                SET posicion  = {posicion}, fecha_ruta = '{fecha_ruta}'
+                SET posicion  = {posicion}, fecha_ruta = '{fecha_ruta}', de = {de}, dp = {dp}
                 WHERE quadminds.datos_ruta_manual.cod_pedido = '{cod_pedido}' AND quadminds.datos_ruta_manual.cod_producto = '{cod_producto}'
                         """)
             rows_delete = cur.rowcount

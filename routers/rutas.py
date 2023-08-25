@@ -297,7 +297,7 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
         if len(arrayProductos) == 1:
             fila = [
                 ruta["Pos"], ruta["Codigo_pedido"], ruta["Comuna"] ,ruta["Nombre_cliente"],ruta["Direccion_cliente"], ruta["Telefono"], arraySKU[0], arrayProductos[0],
-                ruta["Unidades"], ruta["Bultos"]
+                ruta["Unidades"], ruta["Bultos"] , ruta["DE"] + " " + ruta["DP"]
             ]
             datos.append(fila)
         elif len(arrayProductos) > 1:
@@ -305,7 +305,7 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
                 if i == 0:
                     fila = [
                         ruta["Pos"], ruta["Codigo_pedido"], ruta["Comuna"] ,ruta["Nombre_cliente"],ruta["Direccion_cliente"], ruta["Telefono"], arraySKU[0], producto,
-                        ruta["Unidades"], ruta["Bultos"]
+                        ruta["Unidades"], ruta["Bultos"], ruta["DE"] + " " + ruta["DP"]
                     ]
                     datos.append(fila)
                 else:
