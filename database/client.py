@@ -2014,8 +2014,8 @@ class reportesConnection():
     def update_id_ruta_rutas_manuales(self ,id_ruta ,nombre_ruta ,cod_pedido ,cod_producto):
         with self.conn.cursor() as cur:
             cur.execute(f"""        
-            update set id_ruta = {id_ruta}, agrupador = '{nombre_ruta}', nombre_ruta = '{nombre_ruta}'
-            set quadminds.datos_ruta_manual 
+            update quadminds.datos_ruta_manual 
+            set id_ruta = {id_ruta}, agrupador = '{nombre_ruta}', nombre_ruta = '{nombre_ruta}'
             where cod_pedido = '{cod_pedido}' and cod_producto='{cod_producto}' 
             """)
             row = cur.rowcount
