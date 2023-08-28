@@ -2730,7 +2730,7 @@ class reportesConnection():
             
             return cur.fetchall()
 
-    def read_datos_descarga_beetrack(self, id_ruta : int):
+    def read_datos_descarga_beetrack(self, id_ruta : str):
         with self.conn.cursor() as cur:
             cur.execute(f"""            
                 select drm.cod_pedido as "NÚMERO GUÍA *",
@@ -2803,8 +2803,8 @@ class reportesConnection():
                 from quadminds.datos_ruta_manual drm
                 left join hela.ruta_asignada ra on ra.id_ruta = drm.id_ruta
                 left join areati.ti_wms_carga_electrolux etlx on etlx.numero_guia = drm.cod_pedido and etlx.codigo_item = drm.sku
-                where drm.id_ruta = {id_ruta}
-                -- where drm.nombre_ruta  = '{id_ruta}'
+                -- where drm.id_ruta = {id_ruta}
+                where drm.nombre_ruta  = '{id_ruta}'
                 order by posicion
                         """)
             return cur.fetchall()

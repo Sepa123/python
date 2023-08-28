@@ -429,7 +429,7 @@ async def update_ruta_asignada(body :RutasAsignadas):
 
 
 @router.get("/beetrack/{id_ruta}/descargar")
-async def descargar_archivo_beetrack(id_ruta : int):
+async def descargar_archivo_beetrack(id_ruta : str):
     results = conn.read_datos_descarga_beetrack(id_ruta)
 
     wb = Workbook()
