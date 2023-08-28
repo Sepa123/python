@@ -119,11 +119,11 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]], fecha_pedido : str)
                             detail=f"No se puede crear ruta con la fecha {fecha_pedido}")
 
         print(fecha_pedido)
-        # id_ruta = conn.read_id_ruta()[0]
-        # nombre_ruta = conn.get_nombre_ruta_manual(rutas[0][0].Created_by)[0][0]
+        id_ruta = conn.read_id_ruta()[0]
+        nombre_ruta = conn.get_nombre_ruta_manual(rutas[0][0].Created_by)[0][0]
 
-        id_ruta = 1
-        nombre_ruta = ''
+        # id_ruta = 1
+        # nombre_ruta = ''
 
         check = conn.check_producto_existe(rutas[0][0].Codigo_pedido)
         check = re.sub(r'\(|\)', '',check[0])
@@ -155,10 +155,10 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]], fecha_pedido : str)
                     data["Fecha_ruta"] =fecha_siguiente
                 conn.write_rutas_manual(data)
 
-                if id_ruta == 1 and nombre_ruta == '':
-                    id_ruta = conn.read_id_ruta()[0]
-                    nombre_ruta = conn.get_nombre_ruta_manual(rutas[0][0].Created_by)[0][0]
-                    conn.update_id_ruta_rutas_manuales(id_ruta,nombre_ruta, data["Codigo_pedido"], data["Codigo_producto"])
+                # if id_ruta == 1 and nombre_ruta == '':
+                #     id_ruta = conn.read_id_ruta()[0]
+                #     nombre_ruta = conn.get_nombre_ruta_manual(rutas[0][0].Created_by)[0][0]
+                #     conn.update_id_ruta_rutas_manuales(id_ruta,nombre_ruta, data["Codigo_pedido"], data["Codigo_producto"])
 
         return { "message": f"La Ruta {nombre_ruta} fue guardada exitosamente" }
     except:
