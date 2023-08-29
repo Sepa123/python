@@ -18,6 +18,7 @@ from database.client import reportesConnection
 from database.hela_prod import HelaConnection
 
 ## modelos y schemas
+from database.models.rutas.rango_fecha import RangoFecha
 from database.models.asignar_ruta import RutasAsignadas
 from database.models.recepcion.recepcion_tiendas import bodyUpdateVerified
 from database.models.ruta_manual import RutaManual
@@ -25,6 +26,8 @@ from database.schema.ruta_manual import convert_to_json, rutas_manuales_schema
 from database.models.ruta_en_activo import RutaEnActivo
 from database.schema.rutas_en_activo import rutas_en_activo_schema
 from database.schema.nombres_rutas_activas import nombres_rutas_activas_schema
+
+from database.schema.rutas.rutas_de_pendientes import rutas_de_pendientes_schema
 
 from database.schema.datos_ruta_activa_editar import datos_rutas_activas_editar_schema
 from database.schema.rutas.driver_ruta_asignada import driver_ruta_asignada
@@ -543,10 +546,10 @@ async def geolocalizar_direccion(body : Latlong):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="hubo un error")
     
 
-# @router.post("/pendientes")
-# async def get_rutas_de_pendientes_por_rango(body):
+@router.post("/pendientes")
+async def get_rutas_de_pendientes_por_rango(body : RangoFecha):
 
-#     data = body.dict
-#     results = conn.read_rutas_pendientes_rango_fecha(body)
+    data = body.dict()
+    results = conn.read_rutas_pendientes_rango_fecha(data)
 
-#     return
+    return rutas_de_pendientes_schema(results)
