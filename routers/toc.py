@@ -78,6 +78,9 @@ async def buscar_producto(body : BitacoraToc):
         
         if body.Fecha_compromiso == "":
              body.Fecha_compromiso = formatted_date
+        
+        if body.Fecha == "":
+             body.Fecha_compromiso = formatted_date
 
         id_transyanez = conn.id_transyanez_bitacora()[0]
         body.Id_transyanez = id_transyanez
