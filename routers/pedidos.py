@@ -18,6 +18,9 @@ from database.schema.pedidos_tiendas_easy_opl import pedidos_tiendas_easy_opl_sc
 from database.models.pedidos_pendientes import PedidosPendientes
 from database.schema.pedidos_pendientes import pedidos_pendientes_schema
 
+from database.models.rutas.rango_fecha import RangoFecha
+from database.schema.rutas.rutas_de_pendientes import rutas_de_pendientes_schema
+
 from database.client import reportesConnection
 from fastapi.responses import FileResponse
 
@@ -106,3 +109,10 @@ async def pedidos_pendientes_total():
 async def pedidos_pendientes_total():
     results = conn.read_pedidos_pendientes_en_ruta()
     return pedidos_pendientes_schema(results)
+
+
+@router.post("/pendientes")
+async def get_rutas_de_pendientes_por_rango(body : RangoFecha):
+    data = body.dict()
+    results = conn.read_rutas_pendientes_rango_fecha(data)
+    return rutas_de_pendientes_schema(results)
