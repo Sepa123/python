@@ -53,7 +53,7 @@ async def obtener_subestados():
 
 @router.post("/registrar_bitacora", status_code=status.HTTP_201_CREATED)
 async def buscar_producto(body : BitacoraToc):
-    try:
+#     try:
         conn.update_alerta_bitacora_toc_by_guia(body.Guia)
 
         current_date = datetime.now()
@@ -85,9 +85,9 @@ async def buscar_producto(body : BitacoraToc):
         data = body.dict()
         conn.insert_bitacora_toc(data)
         return {"message" : f"Bitacora {body.Ids_transyanez} registrada correctamente"}
-    except:
-        print("error")
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error al registrar la bitacora")
+#     except:
+#         print("error")
+#         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error al registrar la bitacora")
     
 
 @router.get("/observaciones/{ids_usuario}")
