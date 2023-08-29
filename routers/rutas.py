@@ -213,7 +213,7 @@ async def insert_ruta_existente_activa(fecha_ruta_nueva : str, rutas : List[List
                      
                     print(data["Posicion"])
 
-                    count = conn.update_posicion(data["Posicion"], data["Codigo_pedido"], data["Codigo_producto"], fecha_ruta)
+                    count = conn.update_posicion(data["Posicion"], data["Codigo_pedido"], data["Codigo_producto"], fecha_ruta, data["DE"], data["DP"])
                     print(count)
                 else :
                     data["Calle"] = conn.direccion_textual(data["Codigo_pedido"])[0][0]
