@@ -541,3 +541,12 @@ async def geolocalizar_direccion(body : Latlong):
     except:
 
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="hubo un error")
+    
+
+# @router.post("/pendientes")
+# async def get_rutas_de_pendientes_por_rango(body):
+
+#     data = body.dict
+#     results = conn.read_rutas_pendientes_rango_fecha(body)
+
+#     return

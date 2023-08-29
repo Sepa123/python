@@ -3064,6 +3064,13 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                         """)
             return cur.fetchall()
         
+    def read_rutas_pendientes_rango_fecha(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+             select * from rutas.toc_actividad_diaria(%(fecha_inicio)s,%(fecha_fin)s);
+                        """,data)
+            return cur.fetchall()
+            
 class transyanezConnection():
     conn = None
     def __init__(self) -> None:

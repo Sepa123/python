@@ -5,6 +5,7 @@ import re
 ##Conexiones
 from database.client import reportesConnection , UserConnection
 from database.hela_prod import HelaConnection
+from datetime import datetime
 
 ##Modelos Schemas
 
@@ -55,6 +56,9 @@ async def buscar_producto(body : BitacoraToc):
     try:
         conn.update_alerta_bitacora_toc_by_guia(body.Guia)
 
+        current_date = datetime.now()
+        formatted_date = current_date.strftime('%Y-%m-%d')
+
         if body.Codigo1Str == "" or body.Codigo1Str is None:
              body.Codigo1 = None
         else:
@@ -71,6 +75,9 @@ async def buscar_producto(body : BitacoraToc):
         
         if body.Observacion == "":
              body.Observacion = None
+        
+        if body.Fecha_compromiso == "":
+             body.Fecha_compromiso = formatted_date
 
         id_transyanez = conn.id_transyanez_bitacora()[0]
         body.Id_transyanez = id_transyanez
