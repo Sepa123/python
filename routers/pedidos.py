@@ -2,6 +2,7 @@ from fastapi import APIRouter, status,HTTPException
 from fastapi.responses import FileResponse
 from openpyxl import Workbook
 import re
+import time
 
 from database.models.pedidos import Pedidos
 from database.schema.pedidos import pedidos_schema
@@ -116,3 +117,9 @@ async def get_rutas_de_pendientes_por_rango(body : RangoFecha):
     data = body.dict()
     results = conn.read_rutas_pendientes_rango_fecha(data)
     return rutas_de_pendientes_schema(results)
+
+
+@router.get("/pendientes/test")
+async def test_tiempo():
+    time.sleep(80)
+    return "rutas_de_pendientes_schema(results)"
