@@ -55,6 +55,32 @@ async def obtener_subestados():
 async def buscar_producto(body : BitacoraToc):
 #     try:
         conn.update_alerta_bitacora_toc_by_guia(body.Guia)
+        if body.PPU == '':
+             body.PPU = None
+
+        if body.Guia == '':
+             body.Guia = None
+        
+        if body.Cliente == '':
+             body.Cliente = None
+
+        if body.Region == '':
+             body.Region = None
+        
+        if body.Estado == '':
+             body.Estado = None
+        
+        if body.Subestado == '':
+             body.Subestado = None
+
+        if body.Driver == '':
+             body.Driver = None
+
+        if body.Comuna == '':
+             body.Nombre_cliente = None
+
+        if body.Nombre_cliente == '':
+             body.Nombre_cliente = None
 
         current_date = datetime.now()
         formatted_date = current_date.strftime('%Y-%m-%d')
