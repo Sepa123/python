@@ -76,9 +76,6 @@ async def buscar_producto(body : BitacoraToc):
         if body.Driver == '':
              body.Driver = None
 
-        if body.Comuna == '':
-             body.Nombre_cliente = None
-
         if body.Nombre_cliente == '':
              body.Nombre_cliente = None
 
@@ -90,8 +87,8 @@ async def buscar_producto(body : BitacoraToc):
         else:
              body.Codigo1 = int(body.Codigo1Str)
           
-        if body.Direccion_correcta == "":
-             body.Direccion_correcta = None
+     #    if body.Direccion_correcta == "":
+     #         body.Direccion_correcta = None
         
         if body.Fecha_reprogramada == "":
              body.Fecha_reprogramada = None
