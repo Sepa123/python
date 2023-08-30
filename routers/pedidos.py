@@ -119,6 +119,21 @@ async def get_rutas_de_pendientes_por_rango(body : RangoFecha):
     return rutas_de_pendientes_schema(results)
 
 
+@router.get("/pendientes")
+async def get_rutas_de_pendientes_por_rango(fecha_inicio, fecha_fin):
+    if fecha_fin == 'null':
+        fecha_fin = None
+
+    if fecha_inicio == 'null':
+        fecha_inicio = None
+    
+    body = RangoFecha(Fecha_inicio=fecha_inicio,Fecha_fin=fecha_fin)
+    data = body.dict()
+    results = conn.read_rutas_pendientes_rango_fecha(data)
+    return rutas_de_pendientes_schema(results)
+    # return body
+
+
 @router.get("/pendientes/test")
 async def test_tiempo():
     time.sleep(80)
