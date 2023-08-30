@@ -134,7 +134,7 @@ async def get_rutas_de_pendientes_por_rango(fecha_inicio, fecha_fin):
         return rutas_de_pendientes_schema(results)
     except:
         print("error pedidos/pendientes")
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No se pudieron cargar los pendientes,por favor vuelva a cargar la pagina")
     # return body
 
 
