@@ -1,4 +1,8 @@
 def datos_ruta_activa_editar(ruta):
+   datos_extra = ruta[25].split('@')
+
+   
+
    return {
         "Id_ruta": ruta[0],
         "Nombre_ruta": ruta[1],
@@ -25,7 +29,11 @@ def datos_ruta_activa_editar(ruta):
         "DP" : ruta[22],
         "TOC" : ruta[23],
         "Obs_TOC": ruta[24],
-        "Obs_sistema": ruta[25]
+        "Obs_sistema": datos_extra[1],
+        "Sistema" : int(datos_extra[0]),
+        "Pistoleado": int(datos_extra[2]),
+        "En_ruta": int(datos_extra[3]),
+        "Estado_entrega" : datos_extra[4]
 }
 
 def datos_rutas_activas_editar_schema(rutas):
