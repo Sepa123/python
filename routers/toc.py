@@ -87,8 +87,8 @@ async def buscar_producto(body : BitacoraToc):
         else:
              body.Codigo1 = int(body.Codigo1Str)
           
-     #    if body.Direccion_correcta == "":
-     #         body.Direccion_correcta = None
+        if body.Direccion_correcta == "":
+             body.Direccion_correcta = None
         
         if body.Fecha_reprogramada == "":
              body.Fecha_reprogramada = None
@@ -103,7 +103,10 @@ async def buscar_producto(body : BitacoraToc):
              body.Fecha_compromiso = formatted_date
         
         if body.Fecha == "":
-             body.Fecha_compromiso = formatted_date
+             body.Fecha = formatted_date
+
+        if body.Comuna == "":
+             body.Comuna = None
 
         id_transyanez = conn.id_transyanez_bitacora()[0]
         body.Id_transyanez = id_transyanez
