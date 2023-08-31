@@ -140,5 +140,5 @@ async def get_rutas_de_pendientes_por_rango(fecha_inicio, fecha_fin):
 
 @router.get("/pendientes/test")
 async def test_tiempo():
-    time.sleep(80)
+    time.sleep(100)
     return "rutas_de_pendientes_schema(results)"

@@ -33,7 +33,9 @@ def datos_ruta_activa_editar(ruta):
         "Sistema" : int(datos_extra[0]),
         "Pistoleado": int(datos_extra[2]),
         "En_ruta": int(datos_extra[3]),
-        "Estado_entrega" : datos_extra[4]
+        "Estado_entrega" : datos_extra[4],
+        "Carga_v": ruta[26]
+
 }
 
 def datos_rutas_activas_editar_schema(rutas):
