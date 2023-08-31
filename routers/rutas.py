@@ -482,7 +482,7 @@ async def recuperar_tracking_beetrack(codigo : str):
     
     return recuperar_tracking_beetrack_schema(results)
 
-@router.get("/alerta/conductor")
+@router.get("/alerta/conductor",status_code=status.HTTP_202_ACCEPTED)
 async def recuperar_alerta_ruta_activa(nombre_ruta :str):
     results = conn.get_alerta_carga_ruta_activa(nombre_ruta)
     return alertas_conductor_ruta_schema(results)
