@@ -27,7 +27,7 @@ from database.models.ruta_en_activo import RutaEnActivo
 from database.schema.rutas_en_activo import rutas_en_activo_schema
 from database.schema.nombres_rutas_activas import nombres_rutas_activas_schema
 
-
+from database.schema.rutas.toc_tracking import toc_tracking_schema
 
 from database.schema.datos_ruta_activa_editar import datos_rutas_activas_editar_schema
 from database.schema.rutas.driver_ruta_asignada import driver_ruta_asignada
@@ -502,22 +502,19 @@ async def recuperar_fecha_ingreso_sistema(cod_pedido : str):
     return recuperar_fecha_ingreso_sistema_schema(result)
 
 
+@router.get("/toc/tracking")
+async def toc_tracking(cod_producto : str):
+    results = conn.read_toc_tracking(cod_producto)
+    return toc_tracking_schema(results)
+
 @router.get("/tiempo")
 async def test():
     time.sleep(90)
     return "hola"
 
-# @router.get("/geolocalizacion")
-# async def geolocalizar_direccion():
-
-#     time.sleep(2)
-#     return "body"
-
 @router.post("/geolocalizacion")
 async def geolocalizar_direccion(body : Latlong):
-
     try:
-
         check = conn.check_direccion_existe(body.Direccion)
         print(check[0])
         if check[0] >= 1:

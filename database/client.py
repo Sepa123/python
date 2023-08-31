@@ -3090,6 +3090,14 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
              select * from rutas.pendientes(%(Fecha_inicio)s,%(Fecha_fin)s);
                         """,data)
             return cur.fetchall()
+        
+    def read_toc_tracking(self,cod_producto):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+              select * from rutas.toc_tracking('{cod_producto}')
+                        """)
+            return cur.fetchall()
+            
             
 class transyanezConnection():
     conn = None
