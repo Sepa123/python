@@ -27,6 +27,7 @@ from database.models.ruta_en_activo import RutaEnActivo
 from database.schema.rutas_en_activo import rutas_en_activo_schema
 from database.schema.nombres_rutas_activas import nombres_rutas_activas_schema
 
+from database.schema.rutas.alertas_conductor_ruta_activa import alertas_conductor_ruta_schema
 
 from database.schema.datos_ruta_activa_editar import datos_rutas_activas_editar_schema
 from database.schema.rutas.driver_ruta_asignada import driver_ruta_asignada
@@ -480,6 +481,11 @@ async def recuperar_tracking_beetrack(codigo : str):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Codigo no encontrado")
     
     return recuperar_tracking_beetrack_schema(results)
+
+@router.get("/alerta/conductor")
+async def recuperar_alerta_ruta_activa(nombre_ruta :str):
+    results = conn.get_alerta_carga_ruta_activa(nombre_ruta)
+    return alertas_conductor_ruta_schema(results)
 
 @router.get("/recuperar/linea/producto")
 async def recuperar_linea_producto(codigo : str):

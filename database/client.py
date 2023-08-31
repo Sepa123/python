@@ -3097,6 +3097,16 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
               select * from rutas.toc_tracking('{cod_producto}')
                         """)
             return cur.fetchall()
+        
+    def get_alerta_carga_ruta_activa(self,nombre_ruta):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select cod_pedido ,cod_producto, posicion, carga_v from quadminds.datos_ruta_manual drm 
+            where nombre_ruta = '{nombre_ruta}'
+            order by posicion
+                        """)
+            return cur.fetchall()
+        
             
             
 class transyanezConnection():
