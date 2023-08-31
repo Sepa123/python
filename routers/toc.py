@@ -26,6 +26,8 @@ from database.schema.toc.bitacora_rango_fecha import bitacoras_rango_fecha_schem
 from database.schema.toc.actividad_diaria import actividades_diaria_schema
 from database.schema.toc.backoffice_usuario import backoffices_usuario_schema
 
+from database.schema.rutas.toc_tracking import toc_tracking_schema
+
 router = APIRouter(tags=["TOC"], prefix="/api/toc")
 
 conn = reportesConnection()
@@ -178,7 +180,23 @@ async def get_backoffice_usuario(ids_usuario : str):
      results = conn.toc_backoffice_usuario(ids_usuario)
      return backoffices_usuario_schema(results)
 
+@router.get("/tracking")
+async def toc_tracking(cod_producto : str):
+    results = conn.read_toc_tracking(cod_producto)
+    toc_tracking = toc_tracking_schema(results)
+    pattern = r'\bportal-\b'
 
+    for usu in toc_tracking:
+          if re.search(pattern,usu['Creado_por']) :
+               id = usu['Creado_por'].replace("portal-","")
+               nombre_usu = connUser.get_nombre_usuario(id)[0]
+               usu['Creado_por'] = nombre_usu
+          else:
+               id_hela = usu['Creado_por'].replace("hela-","")
+               nombre_usu_hela = connHela.get_nombre_usuario_hela(id_hela)[0]
+               usu['Creado_por'] = nombre_usu_hela
+
+    return toc_tracking
 
 
 
