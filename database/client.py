@@ -3101,7 +3101,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def get_alerta_carga_ruta_activa(self,nombre_ruta):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            select cod_pedido ,cod_producto, posicion, alerta from quadminds.datos_ruta_manual drm 
+             select cod_pedido ,cod_producto, posicion, alerta, desc_producto  from quadminds.datos_ruta_manual drm 
             where nombre_ruta = '{nombre_ruta}'
             order by posicion
                         """)
