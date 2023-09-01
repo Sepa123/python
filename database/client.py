@@ -2184,7 +2184,7 @@ class reportesConnection():
 			    ) AS concatenated_data
 			FROM areati.busca_ruta_manual(drm.cod_pedido)
 			LIMIT 1) as "Datos Extra",
-            drm.carga_v
+            drm.alerta
             FROM quadminds.datos_ruta_manual drm 
             LEFT join
             (select * from rutas.toc_bitacora_mae tbm where tbm.alerta = true 
