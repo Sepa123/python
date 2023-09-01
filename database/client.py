@@ -2245,11 +2245,11 @@ class reportesConnection():
         return rows_delete
 
     
-    def delete_producto_ruta_activa(self,cod_producto):
+    def delete_producto_ruta_activa(self,cod_producto, nombre_ruta):
         with self.conn.cursor() as cur:
             cur.execute(f"""
                 DELETE FROM quadminds.datos_ruta_manual
-                WHERE cod_producto = '{cod_producto}' 
+                WHERE cod_producto = '{cod_producto}' and nombre_ruta = '{nombre_ruta}'
                         """)
             rows_delete = cur.rowcount
         self.conn.commit() 

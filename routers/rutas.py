@@ -256,10 +256,10 @@ async def get_ruta_by_nombre_ruta(nombre_ruta: str):
      results = conn.read_ruta_activa_by_nombre_ruta(nombre_ruta)
      return datos_rutas_activas_editar_schema(results)
 
-@router.delete("/eliminar/producto/{cod_producto}") 
-async def delete_producto_ruta_activa(cod_producto : str):
+@router.delete("/eliminar/producto/{cod_producto}/{nombre_ruta}") 
+async def delete_producto_ruta_activa(cod_producto : str, nombre_ruta : str):
      try:
-          results = conn.delete_producto_ruta_activa(cod_producto)
+          results = conn.delete_producto_ruta_activa(cod_producto, nombre_ruta)
           if (results == 0): print("El producto no existe en ninguna ruta")
           return { "message" : "producto eliminado"}
      except:
