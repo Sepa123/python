@@ -34,7 +34,7 @@ def datos_ruta_activa_editar(ruta):
         "Pistoleado": int(datos_extra[2]),
         "En_ruta": int(datos_extra[3]),
         "Estado_entrega" : datos_extra[4],
-        "Carga_v": ruta[26]
+        "Alerta_conductor": ruta[26]
 
 }
 
