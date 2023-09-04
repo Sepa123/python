@@ -6,7 +6,7 @@ def buscar_alerta(alerta):
 		"Comuna_correcta" : alerta[3],
 		"Subestado" : alerta[4],
 		"Subestado_esperado" : alerta[5],
-		"0bservacion" : alerta[6],
+		"Observacion" : alerta[6],
 		"Codigo1" : alerta[7]
 	}
 
