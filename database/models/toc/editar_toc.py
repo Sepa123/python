@@ -6,5 +6,9 @@ class EditarTOC(BaseModel):
     Subestado_esperado: Optional[str]
     Ids_transyanez: Optional[str]
     Alerta: bool
-    # Codigo1: Optional[int]
-
+    Origen: Optional[str]
+    Fecha_reprogramada: Optional[str]
+    Codigo1: Optional[int]
+    Codigo1Str: Optional[str]
+    Direccion_correcta: Optional[str]
+    Comuna_correcta: Optional[str]
