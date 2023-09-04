@@ -3115,7 +3115,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
         with self.conn.cursor() as cur:
             cur.execute("""        
             UPDATE rutas.toc_bitacora_mae
-            SET subestado_esperado = %(Subestado_esperado)s , observacion = %(Observacion)s, alerta = %(Alerta)s , fec_reprogramada = %(Fecha_reprogramada)s
+            SET created_at = current_timestamp, subestado_esperado = %(Subestado_esperado)s , observacion = %(Observacion)s, alerta = %(Alerta)s , fec_reprogramada = %(Fecha_reprogramada)s
             , direccion_correcta = %(Direccion_correcta)s, comuna_correcta = %(Comuna_correcta)s, codigo1 = %(Codigo1)s
             where ids_transyanez = %(Ids_transyanez)s
             """, data)
@@ -3126,11 +3126,11 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def buscar_alerta_by_ids_transyanez(self, ids_ty):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            select tbm.alerta, 
+            select tbm.alerta,  
             coalesce(to_char(tbm.fec_reprogramada,'yyyy-mm-dd'), to_char(tbm.fec_compromiso,'yyyy-mm-dd')) as "Fec. Comp.", 
             coalesce(tbm.direccion_correcta ,  (select "Calle y Número" from areati.busca_ruta_manual(tbm.guia) limit 1)) as "Dirección",
             coalesce(tbm.comuna_correcta ,tbm.comuna) as "Comuna", 
-            tbm.subestado, tbm.subestado_esperado, tbm.observacion, tbm.codigo1
+            tbm.subestado, tbm.subestado_esperado, tbm.observacion, tbm.codigo1 , guia
             from  rutas.toc_bitacora_mae as tbm
             where ids_transyanez  = '{ids_ty}' limit 1
                         """)

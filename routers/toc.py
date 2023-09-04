@@ -206,14 +206,19 @@ async def toc_tracking(cod_producto : str):
 async def editar_alerta(body : EditarTOC):
      try:
           data = body.dict()
+          if body.Alerta == True:
+               conn.update_alerta_bitacora_toc_by_guia(body.Guia)
+
           row = conn.update_subestado_esperado(data)
+
           if row != 0:
                print("Se registra")
                #   connHela.insert_data_bitacora_recepcion(data)
           else:
                print(" no se actualizaron ")
 
-          return { "message": f"alertas actualizadas : {row}." }
+          return { "message": f"alerta actualizada correctamente",
+                    "extra": f"alerta : {body.Alerta}"}
      except:
           print("error")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la actualizacion")
