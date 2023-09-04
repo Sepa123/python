@@ -3125,8 +3125,11 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def buscar_alerta_by_ids_transyanez(self, ids_ty):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            select alerta, fec_reprogramada, direccion_correcta, comuna_correcta, subestado, subestado_esperado, 
-	              observacion, codigo1, comuna from  rutas.toc_bitacora_mae where ids_transyanez  = '{ids_ty}' limit 1
+            select tbm.alerta, tbm.fec_reprogramada, tbm.direccion_correcta, tbm.comuna_correcta, tbm.subestado, tbm.subestado_esperado, 
+            tbm.observacion, tbm.codigo1, coalesce(tbm.direccion_correcta || '*',  (select "Calle y Número" from areati.busca_ruta_manual(tbm.guia) limit 1)) as "Dirección",
+            comuna  
+            from  rutas.toc_bitacora_mae as tbm
+            where ids_transyanez  = '{ids_ty}' limit 1
                         """)
             return cur.fetchall()
             
