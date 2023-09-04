@@ -3130,7 +3130,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             coalesce(to_char(tbm.fec_reprogramada,'yyyy-mm-dd'), to_char(tbm.fec_compromiso,'yyyy-mm-dd')) as "Fec. Comp.", 
             coalesce(tbm.direccion_correcta ,  (select "Calle y Número" from areati.busca_ruta_manual(tbm.guia) limit 1)) as "Dirección",
             coalesce(tbm.comuna_correcta ,tbm.comuna) as "Comuna", 
-            tbm.subestado, tbm.subestado_esperado, tbm.observacion, tbm.codigo1 , guia
+            tbm.subestado, tbm.subestado_esperado, tbm.observacion, tbm.codigo1 ,tbm.guia
             from  rutas.toc_bitacora_mae as tbm
             where ids_transyanez  = '{ids_ty}' limit 1
                         """)
