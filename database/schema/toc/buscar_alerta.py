@@ -10,5 +10,5 @@ def buscar_alerta(alerta):
 		"codigo1" : alerta[7]
 	}
 
-# def buscar_alertas_schema(alertas):
-#     return [buscar_alerta(alerta) for alerta in alertas]
+def buscar_alertas_schema(alertas):
+    return [buscar_alerta(alerta) for alerta in alertas]

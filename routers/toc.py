@@ -27,7 +27,7 @@ from database.schema.toc.actividad_diaria import actividades_diaria_schema
 from database.schema.toc.backoffice_usuario import backoffices_usuario_schema
 
 from database.schema.rutas.toc_tracking import toc_tracking_schema
-from database.schema.toc.buscar_alerta import buscar_alerta
+from database.schema.toc.buscar_alerta import buscar_alerta, buscar_alertas_schema
 
 from database.models.toc.editar_toc import EditarTOC
 
@@ -206,9 +206,7 @@ async def toc_tracking(cod_producto : str):
 async def editar_alerta(body : EditarTOC):
      try:
           data = body.dict()
-
           row = conn.update_subestado_esperado(data)
-
           if row != 0:
                print("Se registra")
                #   connHela.insert_data_bitacora_recepcion(data)
@@ -224,7 +222,10 @@ async def editar_alerta(body : EditarTOC):
 @router.get("/buscar/alerta/{ids_ty}")
 async def buscar_alerta(ids_ty : str):
      results = conn.buscar_alerta_by_ids_transyanez(ids_ty)
-     return buscar_alerta(results)
+     print(results)
+     return buscar_alertas_schema(results)
+
+
 
 
 
