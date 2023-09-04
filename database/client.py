@@ -3126,7 +3126,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
         with self.conn.cursor() as cur:
             cur.execute(f"""
             select alerta, fec_reprogramada, direccion_correcta, comuna_correcta, subestado, subestado_esperado, 
-	              observacion, codigo1  from  rutas.toc_bitacora_mae where ids_transyanez  = '{ids_ty}' limit 1
+	              observacion, codigo1 , direccion, comuna from  rutas.toc_bitacora_mae where ids_transyanez  = '{ids_ty}' limit 1
                         """)
             return cur.fetchall()
             
