@@ -28,6 +28,8 @@ from database.schema.toc.backoffice_usuario import backoffices_usuario_schema
 
 from database.schema.rutas.toc_tracking import toc_tracking_schema
 
+from database.models.toc.editar_toc import EditarTOC
+
 router = APIRouter(tags=["TOC"], prefix="/api/toc")
 
 conn = reportesConnection()
@@ -197,6 +199,28 @@ async def toc_tracking(cod_producto : str):
                usu['Creado_por'] = nombre_usu_hela
 
     return toc_tracking
+
+
+@router.put("/editar")
+async def editar_alerta(body : EditarTOC):
+     try:
+          data = body.dict()
+
+          row = conn.update_subestado_esperado(data)
+
+          if row != 0:
+               print("Se registra")
+               #   connHela.insert_data_bitacora_recepcion(data)
+          else:
+               print(" no se actualizaron ")
+
+          return { "message": f"alertas actualizadas : {row}." }
+     except:
+          print("error")
+          raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la actualizacion")
+
+
+
 
 
 
