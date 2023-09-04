@@ -8,7 +8,9 @@ def buscar_alerta(alerta):
 		"Subestado_esperado" : alerta[5],
 		"Observacion" : alerta[6],
 		"Codigo1" : alerta[7],
-        "Comuna" : alerta[8]
+        "Direccion" : alerta[8],
+        "Comuna" : alerta[9],
+        
 	}
 
 def buscar_alertas_schema(alertas):
