@@ -27,6 +27,7 @@ from database.schema.toc.actividad_diaria import actividades_diaria_schema
 from database.schema.toc.backoffice_usuario import backoffices_usuario_schema
 
 from database.schema.rutas.toc_tracking import toc_tracking_schema
+from database.schema.toc.buscar_alerta import buscar_alerta
 
 from database.models.toc.editar_toc import EditarTOC
 
@@ -218,6 +219,12 @@ async def editar_alerta(body : EditarTOC):
      except:
           print("error")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la actualizacion")
+
+
+@router.get("/buscar/alerta/{ids_ty}")
+async def buscar_alerta(ids_ty : str):
+     results = conn.buscar_alerta_by_ids_transyanez(ids_ty)
+     return buscar_alerta(results)
 
 
 

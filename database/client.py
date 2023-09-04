@@ -3121,6 +3121,14 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             row = cur.rowcount
         self.conn.commit()
         return row    
+    
+    def buscar_alerta_by_ids_transyanez(self, ids_ty):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select alerta, fec_reprogramada, direccion_correcta, comuna_correcta, subestado, subestado_esperado, 
+	              observacion, codigo1  from  rutas.toc_bitacora_mae where ids_transyanez  = '{ids_ty}' limit 1
+                        """)
+            return cur.fetchall()
             
 class transyanezConnection():
     conn = None
