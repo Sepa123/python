@@ -119,7 +119,7 @@ async def get_rutas_de_pendientes_por_rango(body : RangoFecha):
     return rutas_de_pendientes_schema(results)
 
 
-@router.get("/pendientes")
+@router.get("/pendientes/test")
 async def get_rutas_de_pendientes_por_rango(fecha_inicio, fecha_fin):
     try:
         if fecha_fin == 'null':
@@ -138,7 +138,11 @@ async def get_rutas_de_pendientes_por_rango(fecha_inicio, fecha_fin):
     # return body
 
 
-@router.get("/pendientes/test")
-async def prueba(offset : int):
-     result = conn.prueba_ty(offset)
-     return rutas_de_pendientes_schema(result)
+@router.get("/pendientes")
+async def get_rutas_de_pendientes_limitada(offset : int):
+     try:
+        result = conn.prueba_ty(offset)
+        return rutas_de_pendientes_schema(result)
+     except:
+        print("error pedidos/pendientes")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No se pudieron cargar los pendientes,por favor vuelva a cargar la pagina")
