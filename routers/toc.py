@@ -230,6 +230,12 @@ async def buscar_alerta(ids_ty : str):
      print(results)
      return buscar_alertas_schema(results)
 
+@router.get("/guia/{codigo}")
+async def get_guia_by_codigo(codigo : str):
+     result = conn.read_guia_toc(codigo)
+     return {
+          "Guia" : result[0]
+          }
 
 
 

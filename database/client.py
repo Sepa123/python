@@ -3108,6 +3108,17 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             return cur.fetchall()
         
 
+    def read_guia_toc(self,codigo):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                SELECT guia
+                FROM rutas.toc_bitacora_mae
+                where guia = '{codigo}' or ids_transyanez = '{codigo}'
+                limit 1
+                        """)
+            return cur.fetchone()
+        
+
     ## Editar subestado esperado
     #        
 
@@ -3133,6 +3144,14 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             tbm.subestado, tbm.subestado_esperado, tbm.observacion, tbm.codigo1 ,tbm.guia
             from  rutas.toc_bitacora_mae as tbm
             where ids_transyanez  = '{ids_ty}' limit 1
+                        """)
+            return cur.fetchall()
+        
+
+    def prueba_ty(self, offset):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                select * from rutas.pendientes_prueba(null, null,{offset})
                         """)
             return cur.fetchall()
             
