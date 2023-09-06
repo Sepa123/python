@@ -549,5 +549,5 @@ async def geolocalizar_direccion(body : Latlong):
 async def armar_rutas_predictivas(body : ArmarRutaBloque):
     data = body.dict()
 
-    
-    return body
+    result = conn.armar_rutas_bloque(data)
+    return result
