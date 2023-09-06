@@ -3154,6 +3154,13 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 select * from rutas.pendientes_prueba(null, null,{offset})
                         """)
             return cur.fetchall()
+        
+    def armar_rutas_bloque(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+                select * from rutas.armar_ruta_bloque(%(Codigos)s, %(Fecha_ruta)s, %(Id_user)s)
+                        """,data)
+            return cur.fetchall()
             
 class transyanezConnection():
     conn = None

@@ -40,6 +40,9 @@ from database.schema.geolocalizacion.latlng import latlng_schema
 from database.models.geolocalizacion.latlong import Latlong
 
 from database.schema.rutas.archivo_descarga_beetrack import datos_descarga_beetracks_schema
+
+from database.models.rutas.armar_rutas import ArmarRutaBloque
+
 router = APIRouter(tags=["rutas"], prefix="/api/rutas")
 
 conn = reportesConnection()
@@ -542,4 +545,9 @@ async def geolocalizar_direccion(body : Latlong):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="hubo un error")
     
 
+@router.post("/armar/bloque")
+async def armar_rutas_predictivas(body : ArmarRutaBloque):
+    data = body.dict()
 
+    
+    return body

@@ -55,6 +55,7 @@ def beetrack_rango(beetrack):
         "P_DUPL": beetrack[52],
         "R": beetrack[53],
         "Pedidos": beetrack[54]
+        # "Valor_ruta" : beetrack[55]
     }
 
 
