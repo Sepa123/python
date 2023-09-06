@@ -221,7 +221,7 @@ async def get_beetrack_rango(fecha_inicio: str, fecha_fin : str):
 
 
 #asignar valor a la ruta existente
-@router.put("/NS_beetrack/rango/{Id_ruta}",status_code=status.HTTP_202_ACCEPTED)
+@router.put("/NS_beetrack/rango",status_code=status.HTTP_202_ACCEPTED)
 async def update_beetrack_valor_ruta(body :asignarValor):
 
     conn.update_valor_rutas(body.Valor_ruta,body.Id_ruta)
