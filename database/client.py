@@ -1138,7 +1138,7 @@ class reportesConnection():
     
 
      ##asginar valor de ruta a nivel de servicio
-    def update_valor_rutas(self,Id_ruta, Valor_ruta):
+    def update_valor_rutas(self, Valor_ruta, Id_ruta):
         with self.conn.cursor() as cur:
             cur.execute(f"""        
             update areati.mae_ns_ruta_beetrack
