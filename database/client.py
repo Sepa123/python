@@ -1135,6 +1135,17 @@ class reportesConnection():
             """)
 
             return cur.fetchall()
+
+    ##asginar valor de ruta a nivel de servicio
+    def update_valor_rutas(self,Id_ruta, Valor_ruta):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""        
+            update areati.mae_ns_ruta_beetrack
+            set Valor_ruta = '{Valor_ruta}'
+            where areati.mae_ns_ruta_beetrack.Id_ruta  = '{Id_ruta}'
+            """)
+        self.conn.commit()
+    
     
     ## Reportes de productos entregados
     def read_reporte_producto_entregado_mensual(self):
