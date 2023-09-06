@@ -550,4 +550,4 @@ async def armar_rutas_predictivas(body : ArmarRutaBloque):
     data = body.dict()
 
     result = conn.armar_rutas_bloque(data)
-    return result
+    return result[0][1]
