@@ -1142,12 +1142,12 @@ class reportesConnection():
         with self.conn.cursor() as cur:
             cur.execute(f"""        
             update areati.mae_ns_ruta_beetrack
-            set Valor_ruta = '{Valor_ruta}'
-            where areati.mae_ns_ruta_beetrack.Id_ruta  = '{Id_ruta}'
+            set valor_ruta = {Valor_ruta}
+            where areati.mae_ns_ruta_beetrack.id_ruta  = {Id_ruta}
             """)
         self.conn.commit()
 
-        
+
     ## Reportes de productos entregados
     def read_reporte_producto_entregado_mensual(self):
         with self.conn.cursor() as cur:
