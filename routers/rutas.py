@@ -551,3 +551,15 @@ async def armar_rutas_predictivas(body : ArmarRutaBloque):
 
     result = conn.armar_rutas_bloque(data)
     return result[0][1]
+
+
+@router.get("/pedido/en_ruta/{pedido_id}")
+async def pedido_en_ruta(pedido_id : str):
+    check = conn.check_producto_existe(pedido_id)
+    check = re.sub(r'\(|\)', '',check[0])
+    check = check.split(",")
+
+    return {
+        "en_ruta" : check[0],
+        "message": f"El pedido {pedido_id} no esta en ruta"
+    }
