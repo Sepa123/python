@@ -25,7 +25,7 @@ from database.models.ruta_manual import RutaManual
 from database.schema.ruta_manual import convert_to_json, rutas_manuales_schema
 from database.models.ruta_en_activo import RutaEnActivo
 from database.schema.rutas_en_activo import rutas_en_activo_schema
-from database.schema.nombres_rutas_activas import nombres_rutas_activas_schema
+from database.schema.nombres_rutas_activas import nombres_rutas_activas_schema, comunas_ruta_schema
 
 from database.schema.rutas.alertas_conductor_ruta_activa import alertas_conductor_ruta_schema
 
@@ -239,8 +239,23 @@ async def insert_ruta_existente_activa(fecha_ruta_nueva : str, rutas : List[List
   
 @router.get("/activo/nombre_ruta")
 async def get_nombres_ruta(fecha : str):
+    # read_nombres_rutas_comunas v1
     results = conn.read_nombres_rutas(fecha)
     return nombres_rutas_activas_schema(results)
+
+
+@router.get("/activo/comunas")
+async def get_nombres_ruta(fecha : str):
+
+    results = conn.read_comunas_ruta_by_fecha(fecha)
+    return comunas_ruta_schema(results)
+
+
+@router.get("/activo/nombre_ruta/filtro")
+async def filter_nombre_ruta_by_comuna(fecha: str, comuna : str):
+    results = conn.filter_nombres_rutas_by_comuna(fecha,comuna)
+    return nombres_rutas_activas_schema(results)
+
 
 
 @router.put("/actualizar/estado/activo/{nombre_ruta}",status_code=status.HTTP_202_ACCEPTED)
