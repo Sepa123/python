@@ -45,6 +45,7 @@ from database.models.operaciones.nro_cargas_hora import NroCargasHora
 from database.schema.operaciones.nro_cargas_hora import nro_cargas_hora_schema
 
 from database.schema.cargas.beetrack_rango import beetrack_rango_schema
+from database.models.ns_valor_ruta import asignarValor
 
 from typing import List
 from fastapi.params import Query
@@ -52,6 +53,14 @@ from fastapi.params import Query
 router = APIRouter(tags=["reportes"],prefix="/api/reportes")
 
 conn = reportesConnection()
+
+#asignar valor a la ruta existente
+@router.put("/NS_beetrack/rango",status_code=status.HTTP_202_ACCEPTED)
+async def update_beetrack_valor_ruta(body: List[asignarValor]):
+    output = conn.update_valor_rutas(body)
+    print(output)
+    return { "message":f"Valor agregado correctamente "}
+
 
 @router.get("/cargas_easy",status_code=status.HTTP_202_ACCEPTED)
 async def get_cuenta():
