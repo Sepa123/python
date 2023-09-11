@@ -1137,15 +1137,30 @@ class reportesConnection():
             return cur.fetchall()
     
 
-     ##asginar valor de ruta a nivel de servicio
-    def update_valor_rutas(self, Valor_ruta, Id_ruta):
+     # def update_valor_rutas(self, valoresActualizados):
+    #      with self.conn.cursor() as cur:
+    #     #se transforma los datos obtenidos en tupla de objetos
+    #         data = [(item.id_ruta, item.valor_ruta, item.id_user, item.ids_user) for item in valoresActualizados]
+    #         print(data)
+    #         #se debe realizar un cast debido a que el objeto que se recibe es distinto al que se requiere, se transforma
+    #         #al objeto de la bd que seria una lista de objetos
+    #         cur.execute("""
+    #             SELECT rutas.asignar_valor_ruta(CAST(%s AS rutas.objeto_exo[]));
+    #             """, (data,))
+    #         self.conn.commit()
+
+    def update_valor_rutas(self, valoresActualizados):
         with self.conn.cursor() as cur:
-            cur.execute(f"""        
-            update areati.mae_ns_ruta_beetrack
-            set valor_ruta = {Valor_ruta}
-            where areati.mae_ns_ruta_beetrack.id_ruta  = {Id_ruta}
-            """)
-        self.conn.commit()
+        
+            data = [(item.id_ruta, item.valor_ruta, item.id_user, item.ids_user) for item in valoresActualizados]
+
+        # Transforma los datos en una cadena de texto se le concatena ROW y el CAST 
+            records_str = ','.join([f"ROW{record}::rutas.objeto_exo" for record in data])
+            print(records_str)
+
+            cur.execute(f"SELECT rutas.asignar_valor_ruta(ARRAY[{records_str}])")
+            return cur.fetchone()
+        #self.conn.commit()
 
 
     ## Reportes de productos entregados
