@@ -57,8 +57,8 @@ conn = reportesConnection()
 #asignar valor a la ruta existente
 @router.put("/NS_beetrack/rango",status_code=status.HTTP_202_ACCEPTED)
 async def update_beetrack_valor_ruta(body: List[asignarValor]):
-    output = conn.update_valor_rutas(body)
-    print(output)
+    conn.update_valor_rutas(body)
+    print(body)
     return { "message":f"Valor agregado correctamente "}
 
 

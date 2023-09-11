@@ -101,17 +101,17 @@ class reportesConnection():
         self.conn.close()
 
     
-        def update_valor_rutas(self, valoresActualizados):
-            with self.conn.cursor() as cur:
-            #se transforma los datos obtenidos en tupla de objetos
-                data = [(item.id_ruta, item.valor_ruta, item.id_user, item.ids_user) for item in valoresActualizados]
-                print(data)
-                #se debe realizar un cast debido a que el objeto que se recibe es distinto al que se requiere, se transforma
-                #al objeto de la bd que seria una lista de objetos
-                cur.execute("""
-                    SELECT rutas.asignar_valor_ruta(CAST(%s AS rutas.objeto_exo[]));
+    def update_valor_rutas(self, valoresActualizados):
+         with self.conn.cursor() as cur:
+        #se transforma los datos obtenidos en tupla de objetos
+            data = [(item.id_ruta, item.valor_ruta, item.id_user, item.ids_user) for item in valoresActualizados]
+            print(data)
+            #se debe realizar un cast debido a que el objeto que se recibe es distinto al que se requiere, se transforma
+            #al objeto de la bd que seria una lista de objetos
+            cur.execute("""
+                SELECT rutas.asignar_valor_ruta(CAST(%s AS rutas.objeto_exo[]));
                 """, (data,))
-                self.conn.commit()
+            self.conn.commit()
   
     
     # Reporte historico 
