@@ -99,6 +99,36 @@ class reportesConnection():
 
     def closeDB(self):
         self.conn.close()
+
+    
+    # def update_valor_rutas(self, valoresActualizados):
+    #      with self.conn.cursor() as cur:
+    #     #se transforma los datos obtenidos en tupla de objetos
+    #         data = [(item.id_ruta, item.valor_ruta, item.id_user, item.ids_user) for item in valoresActualizados]
+    #         print(data)
+    #         #se debe realizar un cast debido a que el objeto que se recibe es distinto al que se requiere, se transforma
+    #         #al objeto de la bd que seria una lista de objetos
+    #         cur.execute("""
+    #             SELECT rutas.asignar_valor_ruta(CAST(%s AS rutas.objeto_exo[]));
+    #             """, (data,))
+    #         self.conn.commit()
+
+    def update_valor_rutas(self, valoresActualizados):
+        with self.conn.cursor() as cur:
+        
+            data = [(item.id_ruta, item.valor_ruta, item.id_user, item.ids_user) for item in valoresActualizados]
+
+        # Transforma los datos en una cadena de texto se le concatena ROW y el CAST 
+            records_str = ','.join([f"ROW{record}::rutas.objeto_exo" for record in data])
+            print(records_str)
+
+            cur.execute(f"SELECT rutas.asignar_valor_ruta(ARRAY[{records_str}])")
+            return cur.fetchone()
+        #self.conn.commit()
+
+
+  
+    
     # Reporte historico 
     def read_reporte_historico_mensual(self):
         with self.conn.cursor() as cur:
@@ -3136,9 +3166,11 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def buscar_alerta_by_ids_transyanez(self, ids_ty):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            select tbm.alerta, tbm.fec_reprogramada, tbm.direccion_correcta, tbm.comuna_correcta, tbm.subestado, tbm.subestado_esperado, 
-            tbm.observacion, tbm.codigo1, coalesce(tbm.direccion_correcta || '*',  (select "Calle y Número" from areati.busca_ruta_manual(tbm.guia) limit 1)) as "Dirección",
-            comuna  
+            select tbm.alerta, 
+            coalesce(to_char(tbm.fec_reprogramada,'yyyy-mm-dd'), to_char(tbm.fec_compromiso,'yyyy-mm-dd')) as "Fec. Comp.", 
+            coalesce(tbm.direccion_correcta ,  (select "Calle y Número" from areati.busca_ruta_manual(tbm.guia) limit 1)) as "Dirección",
+            coalesce(tbm.comuna_correcta ,tbm.comuna) as "Comuna", 
+            tbm.subestado, tbm.subestado_esperado, tbm.observacion, tbm.codigo1
             from  rutas.toc_bitacora_mae as tbm
             where ids_transyanez  = '{ids_ty}' limit 1
                         """)

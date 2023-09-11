@@ -1,5 +1,8 @@
 from pydantic import BaseModel
 
 class asignarValor(BaseModel):
-    Id_ruta: int
-    Valor_ruta: int
+    id_ruta: int
+    valor_ruta: float
+    id_user: int
+    ids_user: str
+
