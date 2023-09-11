@@ -57,7 +57,7 @@ conn = reportesConnection()
 #asignar valor a la ruta existente
 @router.put("/NS_beetrack/rango",status_code=status.HTTP_202_ACCEPTED)
 async def update_beetrack_valor_ruta(body: List[asignarValor]):
-    conn.update_valor_rutas(body)
+    output = conn.update_valor_rutas(body)
     print(body)
     return { "message":f"Valor agregado correctamente "}
 
@@ -236,7 +236,7 @@ async def get_beetrack_rango(fecha_inicio: str, fecha_fin : str):
     results.insert(0, ("",))
     results.insert(1,("FECHA", "ID. RUTA","DRIVER","PATENTE","REGION","Km. Ruta","T-PED","Easy","Electrolux","Sportex","Imperial","PBB","Virutex","R1","R2","R3","VR",
     "C11","(%) 11","C13","(%) 13","C15","(%)15","C17","(%)17","C18","(%)18","C20","(%)20","Final_D","OBSERV-RUTA","H_INIC","H_TERM","TT-RUTA","Prom. ENT","T-ENT",
-    "N-ENT","EE","SM","CA","DA","RxD","DNE","DNCC","D.ERR","INC.T","DFORM","PINCOM","SPELI","PNCORR","PFALT","PPARC","P.DUPL","R","Pedidos"
+    "N-ENT","EE","SM","CA","DA","RxD","DNE","DNCC","D.ERR","INC.T","DFORM","PINCOM","SPELI","PNCORR","PFALT","PPARC","P.DUPL","R","Pedidos", "Valor Ruta"
 ))
     for row in results:
         # print(row)
