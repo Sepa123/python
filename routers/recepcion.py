@@ -5,6 +5,7 @@ from openpyxl import Workbook
 ## Modelos y schemas
 from database.models.recepcion.recepcion_tiendas import bodyUpdateVerified, Recepcion_tiendas
 from database.schema.recepcion.recepcion_tiendas import recepcion_tiendas_schema, recepcion_easy_cds_schema
+from database.schema.recepcion.recepcion_pendiente import recepcion_pendiente_schema
 
 ##Conexiones
 
@@ -18,7 +19,14 @@ conn = reportesConnection()
 
 connHela = HelaConnection()
 
+##productos sin recepcion todos los clientes
+
 ## buscar los productos que llegan el dia de hoy
+
+@router.get("/producto_sin_recepcion" , status_code=status.HTTP_202_ACCEPTED)
+async def get_productos_no_recepcionados():
+    results = conn.read_productos_sin_recepcion()
+    return recepcion_pendiente_schema(results)
 
 @router.get("/electrolux", status_code=status.HTTP_202_ACCEPTED)
 async def get_recepcion_electrolux():

@@ -241,7 +241,14 @@ class reportesConnection():
 
             return cur.fetchall()
     
-
+    #Productos sin recepcion
+    def read_productos_sin_recepcion(self):
+        with self.conn.cursor() as cur:
+            cur.execute(
+                """select * from hela.picking_anteriores();
+                """
+            )
+            return cur.fetchall()
     
     #Cargas Verificadas y Total
     def read_cargas_easy(self):
