@@ -223,6 +223,8 @@ async def get_beetrack_rango(fecha_inicio: str, fecha_fin : str):
 #asignar valor a la ruta existente
 @router.put("/NS_beetrack/rango",status_code=status.HTTP_202_ACCEPTED)
 async def update_beetrack_valor_ruta(body: List[asignarValor]):
+    if body == []:
+         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Error, no se enviaron datos")
     output = conn.update_valor_rutas(body)
     print(output)
     return { "message":f"Valor agregado correctamente "}
