@@ -2006,6 +2006,15 @@ class reportesConnection():
             """)
             return cur.fetchall()
         
+    def get_numero_guia_by_factura(self,factura):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select numero_guia from areati.ti_wms_carga_electrolux eltx 
+            where trim(eltx.factura) = trim('{factura}')
+            limit 1
+            """)
+            return cur.fetchone()
+        
     def direccion_textual(self,pedido_id):
 
         with self.conn.cursor() as cur:
