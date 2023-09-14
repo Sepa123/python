@@ -2087,13 +2087,13 @@ class reportesConnection():
         # print(data)
         with self.conn.cursor() as cur: 
             cur.execute("""
-            INSERT INTO quadminds.datos_ruta_manual (id_ruta, fecha_ruta, nombre_ruta, cod_cliente, nombre, calle_numero, ciudad, provincia_estado, latitud, longitud, telefono, email, cod_pedido, fecha_pedido, operacion, cod_producto, desc_producto, cant_producto, peso, volumen, dinero, duracion, vent_horaria_1, vent_horaria_2, notas, agrupador, email_rem, eliminar_pedido, vehiculo, habilidades, sku, talla, estado, created_by, posicion, de, dp)
+            INSERT INTO quadminds.datos_ruta_manual (id_ruta, fecha_ruta, nombre_ruta, cod_cliente, nombre, calle_numero, ciudad, provincia_estado, latitud, longitud, telefono, email, cod_pedido, fecha_pedido, operacion, cod_producto, desc_producto, cant_producto, peso, volumen, dinero, duracion, vent_horaria_1, vent_horaria_2, notas, agrupador, email_rem, eliminar_pedido, vehiculo, habilidades, sku, talla, estado, created_by, posicion, de, dp, pickeado)
             VALUES (%(Id_ruta)s, %(Fecha_ruta)s, %(Nombre_ruta)s, %(Codigo_cliente)s, %(Nombre)s, %(Calle)s, %(Ciudad)s,
               %(Provincia)s, %(Latitud)s, %(Longitud)s, %(Telefono)s, %(Email)s, %(Codigo_pedido)s, %(Fecha_pedido)s,
               %(Operacion)s, %(Codigo_producto)s, %(Descripcion_producto)s, %(Cantidad_producto)s, %(Peso)s, 
               %(Volumen)s, %(Dinero)s, %(Duracion_min)s, %(Ventana_horaria_1)s, %(Ventana_horaria_2)s, %(Notas)s, 
               %(Nombre_ruta)s, %(Email_remitentes)s, %(Eliminar_pedido)s, %(Vehiculo)s, %(Habilidades)s, %(SKU)s,
-              %(Tamaño)s, true , %(Created_by)s, %(Posicion)s,%(DE)s, %(DP)s);
+              %(Tamaño)s, true , %(Created_by)s, %(Posicion)s,%(DE)s, %(DP)s,%(Pistoleado)s);
             """,data)
         self.conn.commit()
 
@@ -2167,11 +2167,36 @@ class reportesConnection():
             ) datos_base;
             """)
             return cur.fetchall()
+        
+    def verificar_pistoledos_en_ruta(self,cod_pedido):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select easy.verified as "Pistoleado" from areati.ti_wms_carga_easy easy where easy.entrega = '{cod_pedido}' and easy.verified = false
+            union all 
+            select eltx.verified as "Pistoleado" from areati.ti_wms_carga_electrolux eltx where eltx.numero_guia = '{cod_pedido}' and eltx.verified = false
+            union all 
+            select twcs.verified as "Pistoleado" from areati.ti_wms_carga_sportex twcs where twcs.id_sportex = '{cod_pedido}' and twcs.verified = false
+            union all 
+            select easygo.verified as "Pistoleado" from areati.ti_carga_easy_go_opl easygo where easygo.suborden = '{cod_pedido}' and easygo.verified = false
+            union all
+            select retc.verified as "Pistoleado"  from areati.ti_retiro_cliente retc where retc.cod_pedido = '{cod_pedido}' and retc.verified = false  
+            limit 1  
+             """)
+            return cur.fetchall()
+
 
     def read_nombres_rutas(self,fecha):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            select distinct (nombre_ruta),estado from quadminds.datos_ruta_manual where TO_CHAR(fecha_ruta, 'YYYY-MM-DD') = '{fecha}'
+            SELECT nombre_ruta,
+                CASE WHEN bool_or(estado = FALSE) THEN FALSE ELSE TRUE END AS estado,
+                CASE WHEN bool_or(pickeado = FALSE) THEN FALSE ELSE TRUE END AS pickeado,
+                CASE WHEN bool_or(alerta = TRUE) THEN TRUE ELSE FALSE END AS alerta
+            FROM quadminds.datos_ruta_manual
+            WHERE TO_CHAR(fecha_ruta, 'YYYY-MM-DD') = '{fecha}'
+            GROUP BY nombre_ruta;
+
+
             """)
 
             return cur.fetchall()
@@ -2286,11 +2311,11 @@ class reportesConnection():
         self.conn.commit() 
         return rows_delete
     
-    def update_posicion(self, posicion : int, cod_pedido : str, cod_producto : str, fecha_ruta : str, de : bool , dp : bool , nombre_ruta :str): 
+    def update_posicion(self, posicion : int, cod_pedido : str, cod_producto : str, fecha_ruta : str, de : bool , dp : bool , nombre_ruta :str, pickeado : bool): 
         with self.conn.cursor() as cur:
             cur.execute(f"""
                 UPDATE quadminds.datos_ruta_manual  
-                SET posicion  = {posicion}, fecha_ruta = '{fecha_ruta}', de = {de}, dp = {dp}
+                SET posicion  = {posicion}, fecha_ruta = '{fecha_ruta}', de = {de}, dp = {dp}, pickeado = {pickeado}
                 WHERE quadminds.datos_ruta_manual.cod_pedido = '{cod_pedido}' AND quadminds.datos_ruta_manual.cod_producto = '{cod_producto}' and quadminds.datos_ruta_manual.nombre_ruta  = '{nombre_ruta}'
                            """)
             rows_delete = cur.rowcount

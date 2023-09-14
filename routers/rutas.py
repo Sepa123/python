@@ -132,9 +132,6 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]], fecha_pedido : str)
         id_ruta = conn.read_id_ruta()[0]
         nombre_ruta = conn.get_nombre_ruta_manual(rutas[0][0].Created_by)[0][0]
 
-        # id_ruta = 1
-        # nombre_ruta = ''
-
         check = conn.check_producto_existe(rutas[0][0].Codigo_pedido)
         check = re.sub(r'\(|\)', '',check[0])
         check = check.split(",")
@@ -153,10 +150,11 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]], fecha_pedido : str)
                 data["Id_ruta"] = id_ruta
                 data["Agrupador"] = nombre_ruta
                 data["Nombre_ruta"] = nombre_ruta
-                data["Pistoleado"] = True 
+                # data["Pistoleado"]  
                 print('Nombre', producto.Nombre)
                 data["Posicion"] = i + 1
                 data["Fecha_ruta"] = fecha_pedido
+                data["Pickeado"] = data["Pistoleado"] 
                 if data["Fecha_ruta"] is None:
                     # Obtener la fecha actual
                     fecha_actual = datetime.now().date()
@@ -207,8 +205,6 @@ async def insert_ruta_existente_activa(fecha_ruta_nueva : str, rutas : List[List
 
         fecha_ruta = fecha_ruta_nueva
 
-        # print(rutas)
-
         for i,ruta in enumerate(rutas):
             for producto in ruta:
                 data = producto.dict()
@@ -220,17 +216,19 @@ async def insert_ruta_existente_activa(fecha_ruta_nueva : str, rutas : List[List
                 
                 if check is not None:
                     print(data["Codigo_pedido"])
-                     
-                    print(data["Posicion"])
-
-                    count = conn.update_posicion(data["Posicion"], data["Codigo_pedido"], data["Codigo_producto"], fecha_ruta, data["DE"], data["DP"], nombre_ruta)
+                    data["Pickeado"] = data["Pistoleado"] 
+                    if data["Pickeado"] == '1':
+                        data["Pickeado"] = True
+                    else: 
+                        data["Pickeado"] = False
+                    count = conn.update_posicion(data["Posicion"], data["Codigo_pedido"], data["Codigo_producto"], fecha_ruta, data["DE"], data["DP"], nombre_ruta, data["Pickeado"])
                     print(count)
                 else :
                     data["Calle"] = conn.direccion_textual(data["Codigo_pedido"])[0][0]
                     data["Id_ruta"] = id_ruta
                     data["Agrupador"] = nombre_ruta
                     data["Nombre_ruta"] = nombre_ruta
-                    data["Pistoleado"] = True 
+                    data["Pickeado"] = data["Pistoleado"] 
                     data["Fecha_ruta"] = fecha_ruta
                     # conn.update_verified(data["Codigo_producto"])
                     print(data)
@@ -249,7 +247,7 @@ async def get_nombres_ruta(fecha : str):
 
 
 @router.get("/activo/comunas")
-async def get_nombres_ruta(fecha : str):
+async def get_nombres_ruta_comuna(fecha : str):
 
     results = conn.read_comunas_ruta_by_fecha(fecha)
     return comunas_ruta_schema(results)

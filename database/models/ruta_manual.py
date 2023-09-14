@@ -41,3 +41,4 @@ class RutaManual(BaseModel):
     Posicion: Optional[int]
     DE: Optional[bool]
     DP: Optional[bool]
+    Pickeado: Optional[bool]

@@ -3,7 +3,10 @@
 def nombre_ruta_activas(nombre_ruta):
     return {
         "Nombre_ruta" : nombre_ruta[0],
-        "Estado"      : nombre_ruta[1]
+        "Estado"      : nombre_ruta[1],
+        "Verificado"  : nombre_ruta[2],
+        "Alerta"      : nombre_ruta[3],
+
     }
 
 def nombres_rutas_activas_schema(nombres_ruta):
