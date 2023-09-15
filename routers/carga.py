@@ -27,6 +27,32 @@ router = APIRouter(tags=["Cargas"], prefix="/api/cargas")
 
 conn = reportesConnection()
 
+@router.get("/quadminds/easy_cd" , status_code=status.HTTP_202_ACCEPTED)
+async def get_carga_quadminds_easy_cd():
+    results = conn.get_cargas_quadmind_easy_cd()
+    return cargas_quadminds_schema(results)
+
+@router.get("/quadminds/easy_opl" , status_code=status.HTTP_202_ACCEPTED)
+async def get_carga_quadminds_easy_opl():
+    results = conn.get_cargas_quadmind_easy_opl()
+    return cargas_quadminds_schema(results)
+
+@router.get("/quadminds/electrolux" , status_code=status.HTTP_202_ACCEPTED)
+async def get_carga_quadminds_electrolux():
+    results = conn.get_cargas_quadmind_electrolux()
+    return cargas_quadminds_schema(results)
+
+@router.get("/quadminds/sportex" , status_code=status.HTTP_202_ACCEPTED)
+async def get_carga_quadminds_sportex():
+    results = conn.get_cargas_quadmind_sportex()
+    return cargas_quadminds_schema(results)
+
+@router.get("/quadminds/retiro_tienda" , status_code=status.HTTP_202_ACCEPTED)
+async def get_carga_quadminds_retiro_tienda():
+    results = conn.get_cargas_quadmind_retiro_cliente()
+    return cargas_quadminds_schema(results)
+
+
 @router.get("/quadminds" , status_code=status.HTTP_202_ACCEPTED)
 async def get_carga_quadminds():
     results = conn.get_cargas_quadmind()
@@ -36,9 +62,7 @@ async def get_carga_quadminds():
 @router.get("/quadminds/limit" , status_code=status.HTTP_202_ACCEPTED)
 async def get_carga_quadminds_offset(offset : int):
     results = conn.get_cargas_quadmind_offset(offset)
-
     return cargas_quadminds_schema(results)
-
 
 @router.get("/quadminds/pedidos_planificados" , status_code=status.HTTP_202_ACCEPTED)
 async def get_carga_quadminds():

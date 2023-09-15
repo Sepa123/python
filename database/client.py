@@ -2981,6 +2981,474 @@ class reportesConnection():
                         """)
             return cur.fetchall()
         
+    ##### funcion select * from quadminds.recupera_productos_a_quadminds(); por separado
+        
+    def get_cargas_quadmind_easy_cd(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select	CAST(easy.entrega AS varchar) AS "Código de Cliente",     
+            initcap(easy.nombre) AS "Nombre",
+            coalesce(tbm.direccion,
+            CASE 
+                WHEN substring(easy.direccion from '^\d') ~ '\d' then substring(initcap(easy.direccion) from '\d+[\w\s]+\d+')
+                WHEN lower(easy.direccion) ~ '^(pasaje|calle|avenida)\s+\d+\s+' THEN
+                regexp_replace(REPLACE(regexp_replace(regexp_replace(initcap(split_part(easy.direccion,',',1)), ',.$', ''), '\s+(\d+\D+\d+).$', ' \1'), '\', ''), '', '') 
+                else coalesce(substring(initcap(easy.direccion) from '^[^0-9]*[0-9]+'),initcap(easy.direccion))
+            end) as "Calle y Número",
+            coalesce(tbm.comuna,
+            case
+                when unaccent(lower(easy.comuna)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                    (select oc.comuna_name from public.op_comunas oc 
+                    where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+                                            where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(easy.comuna))
+                                        )
+                    )
+                else (select initcap(oc2.comuna_name) from public.op_comunas oc2 
+                    where unaccent(lower(easy.comuna)) = unaccent(lower(oc2.comuna_name))
+                    )
+            end) as "Ciudad",
+            case
+                when unaccent(lower(easy.comuna)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                (select opr.region_name  from public.op_regiones opr 
+                where opr.id_region = (select oc.id_region from public.op_comunas oc 
+                    where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+                    where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(easy.comuna))
+                    )	
+                ))
+                else(select opr.region_name  from public.op_regiones opr 
+                where opr.id_region =(select oc2.id_region from public.op_comunas oc2 
+                where unaccent(lower(easy.comuna)) = unaccent(lower(oc2.comuna_name))
+                ))
+            end as "Provincia/Estado",
+            '' AS "Latitud",
+            '' AS "Longitud", --7
+            coalesce(easy.telefono,'0') AS "Teléfono con código de país",
+            lower(easy.Correo) AS "Email",
+            CAST(easy.entrega AS varchar) AS "Código de Pedido",   -- Agrupar Por
+            coalesce(tbm.fecha,
+            CASE
+                WHEN twcep.fecha_entrega <> easy.fecha_entrega THEN twcep.fecha_entrega			-- Alertado por el Sistema
+                ELSE easy.fecha_entrega
+            END
+            ) AS "Fecha de Pedido",
+            'E' AS "Operación E/R",
+            (select string_agg(CAST(aux.carton AS varchar) , ' @ ') from areati.ti_wms_carga_easy aux
+            where aux.entrega = easy.entrega) AS "Código de Producto",
+            '(EASY) ' || (select string_agg(aux.descripcion , ' @ ') from areati.ti_wms_carga_easy aux
+                        where aux.entrega = easy.entrega) AS "Descripción del Producto",
+            (select count(*) from areati.ti_wms_carga_easy easy_a where easy_a.entrega = easy.entrega) AS "Cantidad de Producto", --15
+            1 AS "Peso", --16
+            1 AS "Volumen",
+            1 AS "Dinero",
+            '8' AS "Duración min",
+            '09:00 - 21:00' AS "Ventana horaria 1",
+            '' AS "Ventana horaria 2",
+            'EASY CD' AS "Notas", -- 22
+            CASE
+                WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(easy.comuna)))='Region Metropolitana' 
+                THEN 'RM' || ' - ' || coalesce (tts.tamano,'?')
+                WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(easy.comuna)))='Valparaíso' THEN 'V - ' ||  initcap(easy.comuna)
+                else 'S/A'
+            END "Agrupador",
+            '' AS "Email de Remitentes",
+            '' AS "Eliminar Pedido Si - No - Vacío",
+            '' AS "Vehículo",
+            '' AS "Habilidades"
+    from areati.ti_wms_carga_easy easy
+    left join public.ti_tamano_sku tts on tts.sku = cast(easy.producto as text)
+    left join public.ti_wms_carga_easy_paso twcep on twcep.entrega = easy.entrega
+    LEFT JOIN (
+        SELECT DISTINCT ON (guia) guia as guia, 
+        direccion_correcta as direccion, 
+        comuna_correcta as comuna,
+        fec_reprogramada as fecha,
+        observacion,
+        alerta
+        FROM rutas.toc_bitacora_mae
+        WHERE alerta = true
+        ORDER BY guia, created_at desc
+    ) AS tbm ON easy.entrega=tbm.guia
+    where (easy.estado=0 or (easy.estado=2 and easy.subestado not in (7,10,12,13,19,43,44,50,51,70,80))) and easy.estado not in (1,3)
+    and easy.entrega not in (select drm.cod_pedido from quadminds.datos_ruta_manual drm where drm.estado=true)
+    and easy.entrega not in (select trb.guia from quadminds.ti_respuesta_beetrack trb)
+    -- and (easy.verified = true or easy.recepcion=true)
+    group by easy.entrega,2,3,4,5,6,7,8,9,11,12,16,17,18,19,20,21,22,23,24,25,26,27
+                        """)
+            return cur.fetchall()
+        
+    def get_cargas_quadmind_easy_opl(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select  easygo.rut_cliente AS "Código de Cliente",
+            initcap(easygo.nombre_cliente) AS "Nombre",
+            coalesce(tbm.direccion,
+            CASE 
+                WHEN substring(easygo.direc_despacho from '^\d') ~ '\d' then substring(initcap(easygo.direc_despacho) from '\d+[\w\s]+\d+')
+                WHEN lower(easygo.direc_despacho) ~ '^(pasaje|calle|avenida)\s+\d+\s+' THEN
+                regexp_replace(REPLACE(regexp_replace(regexp_replace(initcap(split_part(easygo.direc_despacho,',',1)), ',.$', ''), '\s+(\d+\D+\d+).$', ' \1'), '\', ''), '', '') 
+                else coalesce(substring(initcap(easygo.direc_despacho) from '^[^0-9]*[0-9]+'),initcap(easygo.direc_despacho))
+            end) as "Calle y Número",
+            coalesce(tbm.comuna,
+            case
+                when unaccent(lower(easygo.comuna_despacho)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                    (select oc.comuna_name from public.op_comunas oc 
+                    where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+                    where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(easygo.comuna_despacho))
+                                        )
+                    )
+                else (select initcap(oc2.comuna_name) from public.op_comunas oc2 
+                    where unaccent(lower(easygo.comuna_despacho)) = unaccent(lower(oc2.comuna_name))
+                    )
+            end) as "Ciudad",
+            case
+                when unaccent(lower(easygo.comuna_despacho)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                (select opr.region_name  from public.op_regiones opr 
+                where opr.id_region = (select oc.id_region from public.op_comunas oc 
+                    where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+                    where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(easygo.comuna_despacho))
+                    )	
+                ))
+                else(select opr.region_name  from public.op_regiones opr 
+                where opr.id_region =(select oc2.id_region from public.op_comunas oc2 
+                where unaccent(lower(easygo.comuna_despacho)) = unaccent(lower(oc2.comuna_name))
+                ))
+            end as "Provincia/Estado",
+            '' AS "Latitud",
+            '' AS "Longitud",
+            coalesce(easygo.fono_cliente ,'0') AS "Teléfono con código de país",
+            lower(easygo.correo_cliente) AS "Email",
+            CAST (easygo.suborden AS varchar) AS "Código de Pedido",
+            coalesce(tbm.fecha,easygo.fec_compromiso) AS "Fecha de Pedido",
+            'E' AS "Operación E/R",
+            --easygo.id_entrega AS "Código de Producto",
+            (select string_agg(CAST(aux.codigo_sku AS varchar) , ' @ ') from areati.ti_carga_easy_go_opl aux
+            where aux.suborden = easygo.suborden) AS "Código de Producto",
+            '(Easy OPL) ' || (select string_agg(aux.descripcion , ' @ ') from areati.ti_carga_easy_go_opl aux
+            where aux.suborden = easygo.suborden) AS "Descripción del Producto",
+            (select count(*) from areati.ti_carga_easy_go_opl easy_a where easy_a.suborden = easygo.suborden) AS "Cantidad de Producto",
+            1 AS "Peso",
+            1 AS "Volumen",
+            1 AS "Dinero",
+            '8' AS "Duración min",
+            '09:00 - 21:00' AS "Ventana horaria 1",
+            '' AS "Ventana horaria 2",
+            coalesce((select 'Easy OPL - ' || se.name from areati.subestado_entregas se where easygo.subestado=se.code),'Easy OPL') AS "Notas",
+            CASE
+            WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(easygo.comuna_despacho)))='Region Metropolitana' 
+            THEN 'RM' || ' - ' || coalesce (tts.tamano,'?') 
+            WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(easygo.comuna_despacho)))='Valparaíso' THEN 'V - ' ||  initcap(easygo.comuna_despacho)
+            else 'S/A'
+    END "Agrupador",
+            '' AS "Email de Remitentes",
+            '' AS "Eliminar Pedido Si - No - Vacío",
+            '' AS "Vehículo",
+            '' AS "Habilidades"
+    from areati.ti_carga_easy_go_opl easygo
+    left join ti_comuna_region tcr on
+        translate(lower(easygo.comuna_despacho),'áéíóúÁÉÍÓÚäëïöüÄËÏÖÜ','aeiouAEIOUaeiouAEIOU') = lower(tcr.comuna)
+    left join public.ti_tamano_sku tts on tts.sku = cast(easygo.codigo_sku as text)
+    LEFT JOIN (
+        SELECT DISTINCT ON (guia) guia as guia, 
+        direccion_correcta as direccion, 
+        comuna_correcta as comuna,
+        fec_reprogramada as fecha,
+        observacion,
+        alerta
+        FROM rutas.toc_bitacora_mae
+        WHERE alerta = true
+        ORDER BY guia, created_at desc
+    ) AS tbm ON easygo.suborden=tbm.guia
+    where (easygo.estado=0 or (easygo.estado=2 and easygo.subestado not in (7,10,12,13,19,43,44,50,51,70,80))) and easygo.estado not in (1,3)
+    and easygo.suborden not in (select drm.cod_pedido from quadminds.datos_ruta_manual drm where drm.estado=true)
+    and easygo.suborden not in (select trb.guia from quadminds.ti_respuesta_beetrack trb)
+    -- and (easygo.verified = true or easygo.recepcion=true)
+    group by easygo.suborden,2,3,4,5,6,7,8,9,11,12,16,17,18,19,20,21,22,23,24,25,26,27,1
+                        """)
+            return cur.fetchall()
+        
+    def get_cargas_quadmind_electrolux(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select 	eltx.identificador_contacto AS "Código de Cliente",
+            initcap(eltx.nombre_contacto) AS "Nombre",
+            coalesce(tbm.direccion,
+            CASE 
+                WHEN substring(initcap(split_part(eltx.direccion,',',1)) from '^\d') ~ '\d' then substring(initcap(split_part(eltx.direccion,',',1)) from '\d+[\w\s]+\d+')
+                WHEN lower(split_part(eltx.direccion,',',1)) ~ '^(pasaje|calle|avenida)\s+\d+\s+' THEN 
+                -- cast(regexp_replace(regexp_replace(initcap(split_part(eltx.direccion,',',1)), ',.*$', ''), '\s+(\d+\D+\d+).*$', ' \1') AS varchar)
+                -- REPLACE(regexp_replace(regexp_replace(initcap(split_part(eltx.direccion,',',1)), ',.$', ''), '\s+(\d+\D+\d+).$', ' \1'), '\', '')
+                regexp_replace(REPLACE(regexp_replace(regexp_replace(initcap(split_part(eltx.direccion,',',1)), ',.$', ''), '\s+(\d+\D+\d+).$', ' \1'), '\', ''), '', '')
+                else coalesce(substring(initcap(split_part(eltx.direccion,',',1)) from '^[^0-9]*[0-9]+'),eltx.direccion)
+            end) as "Calle y Número",
+            coalesce(tbm.comuna,
+            case
+                when unaccent(lower(eltx.comuna)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                    (select oc.comuna_name from public.op_comunas oc 
+                    where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+                    where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(eltx.comuna))
+                                        )
+                    )
+            else (select initcap(oc2.comuna_name) from public.op_comunas oc2 
+                where unaccent(lower(eltx.comuna)) = unaccent(lower(oc2.comuna_name))
+                )
+            end) as "Ciudad",
+            case
+                when unaccent(lower(eltx.comuna)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                (select opr.region_name  from public.op_regiones opr 
+                where opr.id_region = (select oc.id_region from public.op_comunas oc 
+                    where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+                    where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(eltx.comuna))
+                    )	
+                ))
+                else(select opr.region_name  from public.op_regiones opr 
+                where opr.id_region =(select oc2.id_region from public.op_comunas oc2 
+                where unaccent(lower(eltx.comuna)) = unaccent(lower(oc2.comuna_name))
+                ))
+            end as "Provincia/Estado",
+            eltx.latitud AS "Latitud",
+            eltx.longitud AS "Longitud",
+            coalesce(eltx.telefono,'0') AS "Teléfono con código de país",
+            lower(eltx.email_contacto) AS "Email",
+            CAST (eltx.numero_guia AS varchar) AS "Código de Pedido",
+            coalesce(tbm.fecha,
+            case
+                when calculo.fecha_siguiente <> eltx.fecha_min_entrega
+                then calculo.fecha_siguiente
+                else eltx.fecha_min_entrega
+            end) AS "Fecha de Pedido",
+            'E' AS "Operación E/R",
+            (select string_agg(CAST(aux.codigo_item AS varchar) , ' @ ') from areati.ti_wms_carga_electrolux aux
+            where aux.numero_guia = eltx.numero_guia) AS "Código de Producto",
+            '(Electrolux) ' || (select string_agg(aux.nombre_item , ' @ ') from areati.ti_wms_carga_electrolux aux
+    
+            where aux.numero_guia = eltx.numero_guia) AS "Descripción del Producto",
+            (select count(*) from areati.ti_wms_carga_electrolux eltx_a where eltx_a.numero_guia = eltx.numero_guia) as "Cantidad de Producto",
+            1 AS "Peso",
+            1 AS "Volumen",
+            1 AS "Dinero",
+            '8' AS "Duración min",
+            '09:00 - 21:00' AS "Ventana horaria 1",
+            '' AS "Ventana horaria 2",
+            coalesce((select 'Electrolux - ' || se.name from areati.subestado_entregas se where eltx.subestado=se.code),'Electrolux') AS "Notas",
+            --'RM - ' ||  initcap(eltx.comuna)  AS agrupador,
+            CASE
+                WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(eltx.comuna)))='Region Metropolitana' 
+                THEN 'RM' || ' - ' || coalesce (tts.tamano,'?')
+                WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(eltx.comuna)))='Valparaíso' 
+                THEN 'V - ' ||  initcap(eltx.comuna)
+                else 'S/A'
+            END "Agrupador",
+            '' AS "Email de Remitentes",
+            '' AS "Eliminar Pedido Si - No - Vacío",
+            '' AS "Vehículo",
+            '' AS "Habilidades"
+    from areati.ti_wms_carga_electrolux eltx
+    left join public.ti_tamano_sku tts on tts.sku = cast(eltx.codigo_item as text)
+    LEFT JOIN (
+        SELECT DISTINCT ON (guia) guia as guia, 
+        direccion_correcta as direccion, 
+        comuna_correcta as comuna,
+        fec_reprogramada as fecha,
+        observacion,
+        alerta
+        FROM rutas.toc_bitacora_mae
+        WHERE alerta = true
+        ORDER BY guia, created_at desc
+    ) AS tbm ON eltx.numero_guia=tbm.guia
+    left join (
+        select distinct on (numero_guia)
+        numero_guia, 
+        to_date(to_char(created_at,'yyyy-mm-dd'),'yyyy-mm-dd') as ingreso,
+        fecha_min_entrega,
+        CASE
+        WHEN EXTRACT(ISODOW FROM created_at + INTERVAL '1 day') = 7 THEN to_date(to_char(created_at + INTERVAL '3 days','yyyy-mm-dd'),'yyyy-mm-dd')
+        ELSE to_date(to_char(created_at + INTERVAL '2 days','yyyy-mm-dd'),'yyyy-mm-dd')
+        END AS fecha_siguiente
+        from areati.ti_wms_carga_electrolux   
+    ) as calculo on calculo.numero_guia = eltx.numero_guia
+    where (eltx.estado=0 or (eltx.estado=2 and eltx.subestado not in (7,10,12,13,19,43,44,50,51,70,80))) and eltx.estado not in (1,3)
+    and eltx.numero_guia not in (select drm.cod_pedido from quadminds.datos_ruta_manual drm where drm.estado=true)
+    and eltx.numero_guia not in (select trb.guia from quadminds.ti_respuesta_beetrack trb)
+    -- and (eltx.verified = true or eltx.recepcion=true)
+    group by eltx.numero_guia,2,3,4,5,6,7,8,9,11,12,16,17,18,19,20,21,22,23,24,25,26,27,1
+                        """)
+            return cur.fetchall()
+
+    def get_cargas_quadmind_sportex(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select	twcs.id_sportex AS "Código de Cliente",
+            initcap(twcs.cliente) AS "Nombre",
+            coalesce(tbm.direccion,
+            CASE 
+                WHEN substring(initcap(replace(twcs.direccion,',','')) from '^\d') ~ '\d' then substring(initcap(replace(twcs.direccion,',','')) from '\d+[\w\s]+\d+')
+                WHEN lower(twcs.direccion) ~ '^(pasaje|calle|avenida)\s+\d+\s+' THEN 
+                regexp_replace(regexp_replace(initcap(twcs.direccion), ',.*$', ''), '\s+(\d+\D+\d+).*$', ' \1')
+                else substring(initcap(replace(twcs.direccion,',','')) from '^[^0-9]*[0-9]+')
+            end) as "Calle y Número",
+            coalesce(tbm.direccion,
+            case
+                when unaccent(lower(twcs.comuna)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                    (select oc.comuna_name from public.op_comunas oc 
+                    where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+                    where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(twcs.comuna))
+                                        )
+                    )
+            else (select initcap(oc2.comuna_name) from public.op_comunas oc2 
+                where unaccent(lower(twcs.comuna)) = unaccent(lower(oc2.comuna_name))
+                )
+            end) as "Ciudad",
+            case
+                when unaccent(lower(twcs.comuna)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                (select opr.region_name  from public.op_regiones opr 
+                where opr.id_region = (select oc.id_region from public.op_comunas oc 
+                    where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+                    where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(twcs.comuna))
+                    )	
+                ))
+                else(select opr.region_name  from public.op_regiones opr 
+                where opr.id_region =(select oc2.id_region from public.op_comunas oc2 
+                where unaccent(lower(twcs.comuna)) = unaccent(lower(oc2.comuna_name))
+                ))
+            end as "Provincia/Estado",
+            '' AS "Latitud",
+            '' AS "Longitud",
+            coalesce(twcs.fono,'0') AS "Teléfono con código de país",
+            lower(twcs.correo) AS "Email",
+            CAST (twcs.id_sportex AS varchar) AS "Código de Pedido",
+            --coalesce(tbm.fecha,cast(twcs.created_at as date) + 2) AS "Fecha de Pedido",
+            coalesce(tbm.fecha,twcs.fecha_entrega) AS "Fecha de Pedido",
+            'E' AS "Operación E/R",
+            twcs.id_sportex AS "Código de Producto",
+            '(Sportex) ' || coalesce(twcs.marca,'Sin Marca') AS "Descripción del Producto", 
+            1 AS "Cantidad de Producto",
+            1 AS "Peso",
+            1 AS "Volumen",
+            1 AS "Dinero",
+            '8' AS "Duración min",
+            '09:00 - 21:00' AS "Ventana horaria 1",
+            '' AS "Ventana horaria 2",
+            coalesce((select 'Sportex - ' || se.name from areati.subestado_entregas se where twcs.subestado=se.code),'Sportex') AS "Notas",
+            CASE
+            WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(twcs.comuna)))='Region Metropolitana' THEN 'RM - P' 
+            WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(twcs.comuna)))='Valparaíso' THEN 'V - ' ||  initcap(twcs.comuna)
+            else 'S/A'
+    END "Agrupador",
+            '' AS "Email de Remitentes",
+            '' AS "Eliminar Pedido Si - No - Vacío",
+            '' AS "Vehículo",
+            '' AS "Habilidades"
+    from areati.ti_wms_carga_sportex twcs
+    left join ti_comuna_region tcr on
+        translate(lower(twcs.comuna),'áéíóúÁÉÍÓÚäëïöüÄËÏÖÜ','aeiouAEIOUaeiouAEIOU') = lower(tcr.comuna)
+    LEFT JOIN (
+        SELECT DISTINCT ON (guia) guia as guia, 
+        direccion_correcta as direccion, 
+        comuna_correcta as comuna,
+        fec_reprogramada as fecha,
+        observacion,
+        alerta
+        FROM rutas.toc_bitacora_mae
+        WHERE alerta = true
+        ORDER BY guia, created_at desc
+    ) AS tbm ON twcs.id_sportex=tbm.guia
+    where (twcs.estado=0 or (twcs.estado=2 and twcs.subestado not in (7,10,12,13,19,43,44,50,51,70,80))) and twcs.estado not in (1,3)
+    and twcs.id_sportex not in (select drm.cod_pedido from quadminds.datos_ruta_manual drm where drm.estado=true)
+    and twcs.id_sportex not in (select trb.guia from quadminds.ti_respuesta_beetrack trb)
+                        """)
+            return cur.fetchall()
+
+    def get_cargas_quadmind_retiro_cliente(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select  trc.envio_asociado AS "Código de Cliente",
+            initcap(trc.nombre_cliente) AS "Nombre",
+            CASE 
+                WHEN substring(trc.direccion from '^\d') ~ '\d' then substring(initcap(trc.direccion) from '\d+[\w\s]+\d+')
+                WHEN lower(trc.direccion) ~ '^(pasaje|calle|avenida)\s+\d+\s+' THEN
+                regexp_replace(REPLACE(regexp_replace(regexp_replace(initcap(split_part(trc.direccion,',',1)), ',.$', ''), '\s+(\d+\D+\d+).$', ' \1'), '\', ''), '', '') 
+                else coalesce(substring(initcap(trc.direccion) from '^[^0-9]*[0-9]+'),initcap(trc.direccion)) 
+            END "Calle y Número",
+            coalesce(tbm.comuna,
+            case
+                when unaccent(lower(trc.comuna)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                (select oc.comuna_name from public.op_comunas oc 
+                where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+                where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(trc.comuna))
+                )
+                )
+                else (select initcap(oc2.comuna_name) from public.op_comunas oc2 
+                where unaccent(lower(trc.comuna)) = unaccent(lower(oc2.comuna_name))
+                )
+            end) as "Ciudad",
+            case
+                when unaccent(lower(trc.comuna)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                (select opr.region_name  from public.op_regiones opr 
+                where opr.id_region = (select oc.id_region from public.op_comunas oc 
+                    where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+                    where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(trc.comuna))
+                    )    
+                ))
+                else(select opr.region_name  from public.op_regiones opr 
+                where opr.id_region =(select oc2.id_region from public.op_comunas oc2 
+                where unaccent(lower(trc.comuna)) = unaccent(lower(oc2.comuna_name))
+                ))
+            end as "Provincia/Estado",
+            '' AS "Latitud",
+            '' AS "Longitud",
+            coalesce(trc.telefono ,'0') AS "Teléfono con código de país",
+            lower(trc.email) AS "Email",
+            CAST (trc.cod_pedido AS varchar) AS "Código de Pedido",
+            coalesce(tbm.fecha,trc.fecha_pedido) AS "Fecha de Pedido",
+            'E' AS "Operación E/R",
+            (select string_agg(CAST(aux.sku AS varchar) , ' @ ') from areati.ti_retiro_cliente aux
+            where aux.cod_pedido = trc.cod_pedido) AS "Código de Producto",
+            '(' || trc.cliente ||') ' || (select string_agg(aux.descripcion , ' @ ') from areati.ti_retiro_cliente aux
+    
+            where aux.cod_pedido = trc.cod_pedido) AS "Descripción del Producto",
+    
+            (select count(*) from areati.ti_retiro_cliente trc_a where trc_a.cod_pedido = trc.cod_pedido) AS "Cantidad de Producto",
+            1 AS "Peso",
+            1 AS "Volumen",
+            1 AS "Dinero",
+            '8' AS "Duración min",
+            '09:00 - 21:00' AS "Ventana horaria 1",
+            '' AS "Ventana horaria 2",
+            coalesce((select trc.cliente || ' - ' || se.name from areati.subestado_entregas se where trc.subestado=se.code),trc.cliente) AS "Notas",
+            CASE
+                WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(trc.comuna)))='Region Metropolitana' 
+                THEN 'RM' || ' - ' || coalesce (tts.tamano,'?') 
+                WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(trc.comuna)))='Valparaíso' THEN 'V - ' ||  initcap(trc.comuna)
+                else 'S/A'
+            END "Agrupador",
+            '' AS "Email de Remitentes",
+            '' AS "Eliminar Pedido Si - No - Vacío",
+            '' AS "Vehículo",
+            '' AS "Habilidades"
+    from areati.ti_retiro_cliente trc
+    left join ti_comuna_region tcr on
+        translate(lower(trc.comuna),'áéíóúÁÉÍÓÚäëïöüÄËÏÖÜ','aeiouAEIOUaeiouAEIOU') = lower(tcr.comuna)
+    left join public.ti_tamano_sku tts on tts.sku = cast(trc.sku as text)
+    LEFT JOIN (
+        SELECT DISTINCT ON (guia) guia as guia, 
+        direccion_correcta as direccion, 
+        comuna_correcta as comuna,
+        fec_reprogramada as fecha,
+        observacion,
+        alerta
+        FROM rutas.toc_bitacora_mae
+        WHERE alerta = true
+        ORDER BY guia, created_at desc
+    ) AS tbm on trc.cod_pedido=tbm.guia
+    where (trc.estado=0 or (trc.estado=2 and trc.subestado not in (7,10,12,13,19,43,44,50,51,70,80))) and trc.estado not in (1,3)
+    and trc.cod_pedido not in (select drm.cod_pedido from quadminds.datos_ruta_manual drm where drm.estado=true)
+    and trc.cod_pedido not in (select trb.guia from quadminds.ti_respuesta_beetrack trb)
+    -- and (trc.verified = true or trc.recepcion=true)
+    group by trc.cod_pedido,2,3,4,5,6,7,8,9,11,12,16,17,18,19,20,21,22,23,24,25,26,27,1,trc.cliente
+                        """)
+            return cur.fetchall()
+    
+    #### Aqui termina funcion select * from quadminds.recupera_productos_a_quadminds(); por separado
     def get_cargas_quadmind_offset(self,offset):
         with self.conn.cursor() as cur:
             cur.execute(f"""
