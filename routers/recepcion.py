@@ -3,7 +3,7 @@ from fastapi.responses import FileResponse
 from openpyxl import Workbook
 
 ## Modelos y schemas
-from database.models.recepcion.recepcion_tiendas import bodyUpdateVerified, Recepcion_tiendas
+from database.models.recepcion.recepcion_tiendas import bodyUpdateVerified, Recepcion_tiendas, dataBitacora
 from database.schema.recepcion.recepcion_tiendas import recepcion_tiendas_schema, recepcion_easy_cds_schema
 from database.schema.recepcion.recepcion_pendiente import recepcion_pendiente_schema
 
@@ -143,7 +143,29 @@ async def update_verificado_producto(body: bodyUpdateVerified):
     try:
         data = body.dict()
         print(body.cod_producto)
+        print(body)
         rows = conn.update_verified_recepcion(body.cod_pedido,body.cod_producto,body.sku)
+        print(rows)
+        if any(number != 0 for number in rows):
+            connHela.insert_data_bitacora_recepcion(data)
+            conn.insert_data_bitacora_producto(data)
+            return { "message": f"Producto de codigo {body.cod_producto} verificado." }
+        else:
+            return { "message": f"Producto ya fue verificado." }
+        
+    except:
+          print("error")
+          raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
+    
+    #agrgando dato a bitacora
+@router.put("/verificar",status_code=status.HTTP_202_ACCEPTED)
+async def update_verificado_productoBitacora(body: bodyUpdateVerified ):
+    try:
+        data = body.dict()
+   
+        print(body.cod_producto)
+        print(body)
+        rows = conn.update_verified_recepcionBitacora(body.cod_pedido,body.cod_producto,body.sku)
         print(rows)
         if any(number != 0 for number in rows):
             connHela.insert_data_bitacora_recepcion(data)
@@ -154,6 +176,8 @@ async def update_verificado_producto(body: bodyUpdateVerified):
     except:
           print("error")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
+
+    
 
 
 @router.get("/prueba/{codigo}")

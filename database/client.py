@@ -3,6 +3,8 @@ import codecs
 from decouple import config
 import os, sys, codecs
 
+
+
 # import datetime
 # import pytz
 
@@ -1172,6 +1174,17 @@ class reportesConnection():
             """)
 
             return cur.fetchall()
+
+    ##asginar valor de ruta a nivel de servicio
+    def update_valor_rutas(self,Id_ruta, Valor_ruta):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""        
+            update areati.mae_ns_ruta_beetrack
+            set Valor_ruta = '{Valor_ruta}'
+            where areati.mae_ns_ruta_beetrack.Id_ruta  = '{Id_ruta}'
+            """)
+        self.conn.commit()
+    
     
     ## Reportes de productos entregados
     def read_reporte_producto_entregado_mensual(self):
@@ -2613,9 +2626,42 @@ class reportesConnection():
                     --order by created_at desc
                         """)           
             return cur.fetchall()
+        
+      ##Bitacora de recepcion de productos
+
+    def insert_data_bitacora_producto(self, info):
+        with self.conn.cursor() as cur:
+            try:
+                cur.execute("""
+                INSERT INTO areati.bitacora_producto
+                (user_id, origen, cliente, componentes, descripcion, imagen1, imagen2, imagen3, tipo_dano, momento, lat, lng)
+                VALUES (
+                    %(id_usuario)s,
+                    %(origen)s,
+                    %(cliente)s,
+                    %(componente)s,
+                    %(descripcion)s,
+                    %(imagen1)s,
+                    %(imagen2)s,
+                    %(imagen3)s,
+                    %(tipo_dano)s,
+                    %(momento)s,
+                    %(lat)s,
+                    %(lng)s
+                );
+            """, info)
+
+                self.conn.commit()
+                print("Datos insertados correctamente en bitacora_producto.")
+            except Exception as e:
+                print(f"Error al insertar datos en bitacora_producto: {str(e)}")
+            self.conn.rollback()
+
+
+    
 
     def update_verified_recepcion(self,codigo_pedido, codigo_producto,cod_sku):
-        sql_queries = [
+        sql_queries = [ 
             f"UPDATE areati.ti_wms_carga_sportex SET verified = true, recepcion = true  WHERE areati.ti_wms_carga_sportex.id_sportex = '{codigo_producto}'",
             f"UPDATE areati.ti_wms_carga_easy easy SET verified = true WHERE easy.entrega = '{codigo_pedido}' and easy.carton = '{codigo_producto}'",
             f"UPDATE areati.ti_wms_carga_electrolux eltx set verified = true, recepcion = true  where eltx.numero_guia = '{codigo_pedido}' and eltx.codigo_item = '{codigo_producto}'",
@@ -2635,8 +2681,9 @@ class reportesConnection():
         finally:
             # pass
             return updates
+            
     
-
+    ##verificado y rececepcion
     def update_verified_sportex(self,codigo_pedido):
         with self.conn.cursor() as cur:
             cur.execute(f"""        
@@ -2647,7 +2694,7 @@ class reportesConnection():
             row = cur.rowcount
         self.conn.commit()
         return row
-
+    ##verificado y rececepcion
     def update_verified_electrolux(self,codigo_pedido):
         with self.conn.cursor() as cur:
             cur.execute(f"""        
@@ -2699,6 +2746,20 @@ class reportesConnection():
             return cur.rowcount
     
     def update_recepcion_cd(self,codigo_producto):
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute(f"""        
+                UPDATE areati.ti_wms_carga_easy easy 
+                SET recepcion = true
+                WHERE easy.carton = '{codigo_producto}'
+                """)
+            self.conn.commit()
+        except (Exception, psycopg2.DatabaseError) as error:
+            print("Error durante la actualización:", error)
+        finally:
+            return cur.rowcount
+    
+    def update_recepcion_producto(self,codigo_producto):
         try:
             with self.conn.cursor() as cur:
                 cur.execute(f"""        

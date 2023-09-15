@@ -5,3 +5,4 @@ class asignarValor(BaseModel):
     valor_ruta: float
     id_user: int
     ids_user: str
+
