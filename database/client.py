@@ -2980,6 +2980,13 @@ class reportesConnection():
             select * from quadminds.recupera_productos_a_quadminds();
                         """)
             return cur.fetchall()
+        
+    def get_cargas_quadmind_offset(self,offset):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select * from quadminds.recupera_productos_a_quadminds_offset({offset})
+                        """)
+            return cur.fetchall()
 
     def get_pedidos_planificados_quadmind(self):
         with self.conn.cursor() as cur:

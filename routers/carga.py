@@ -33,6 +33,12 @@ async def get_carga_quadminds():
 
     return cargas_quadminds_schema(results)
 
+@router.get("/quadminds" , status_code=status.HTTP_202_ACCEPTED)
+async def get_carga_quadminds(offset : int):
+    results = conn.get_cargas_quadmind_offset(offset)
+
+    return cargas_quadminds_schema(results)
+
 
 @router.get("/quadminds/pedidos_planificados" , status_code=status.HTTP_202_ACCEPTED)
 async def get_carga_quadminds():

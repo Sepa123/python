@@ -7,7 +7,6 @@ from openpyxl.worksheet.page import PageMargins , PrintPageSetup
 
 import time
 import re
-import json
 from typing import List
 
 from geopy.geocoders import Nominatim
