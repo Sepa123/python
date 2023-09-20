@@ -34,7 +34,7 @@ async def obtener_colores_rsv():
 @router.post("/agregar/producto")
 async def agregar_nuevo_catalogo_rsv(body : CatalogoProducto):
     data = body.dict()
-    # conn.insert_nuevo_catalogo_rsv(data)
+    conn.insert_nuevo_catalogo_rsv(data)
     return {
         "message": body
     }

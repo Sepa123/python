@@ -8,9 +8,9 @@ class CatalogoProducto(BaseModel):
     Producto: str
     Unid_x_paquete: int
     Peso: float
-    Ancho: int
-    Alto: int
-    Largo: int
+    Ancho: float
+    Alto: float
+    Largo: float
     Id_user: int
     Ids_user: str
     Color: int
