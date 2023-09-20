@@ -27,4 +27,20 @@ class bodyUpdateVerified(BaseModel):
     ids_usuario : Optional[str]
 
 
+class dataBitacora(BaseModel):
+    id: int
+    created_at: datetime
+    user_id: int
+    origen: str
+    cliente: str
+    componentes: str
+    descripcion: str
+    imagen1: str
+    imagen2: str
+    imagen3: str
+    tipo_dano: int
+    momento: int
+    lat: str
+    lng: str
+
 
