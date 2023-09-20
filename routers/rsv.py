@@ -31,6 +31,17 @@ async def obtener_colores_rsv():
     return colores_rsv_schema(result)
 
 
+@router.get("/buscar/{codigo}")
+async def buscar_producto_existente(codigo : str):
+    result = conn.buscar_producto_existente_rsv(codigo)
+    if result is None:
+        return { "repetido": False}
+    else:
+        return { 
+            "repetido": True,
+            "message": f"El codigo {result[0]} ya existe"}
+
+
 @router.post("/agregar/producto")
 async def agregar_nuevo_catalogo_rsv(body : CatalogoProducto):
     data = body.dict()

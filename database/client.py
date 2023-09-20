@@ -3739,6 +3739,13 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 select * from rsv.catalogo_productos
                         """)
             return cur.fetchall()
+        
+    def buscar_producto_existente_rsv(self,codigo):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                select codigo from rsv.catalogo_productos where codigo = '{codigo}'
+                        """)
+            return cur.fetchone()
 
     def insert_nuevo_catalogo_rsv(self, data):
         with self.conn.cursor() as cur:
