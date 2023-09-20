@@ -3730,6 +3730,16 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                         """,data)
             return cur.fetchall()
             
+
+    ## New challenger  RSV
+
+    def read_catalogo_rsv(self):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+                select * from rsv.catalogo_productos
+                        """)
+            return cur.fetchall()
+
 class transyanezConnection():
     conn = None
     def __init__(self) -> None:
