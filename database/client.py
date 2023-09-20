@@ -2222,8 +2222,18 @@ class reportesConnection():
     def filter_nombres_rutas_by_comuna(self,fecha,comuna):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            select distinct (nombre_ruta),estado
-           from quadminds.datos_ruta_manual where TO_CHAR(fecha_ruta, 'YYYY-MM-DD') = '{fecha}' and lower(ciudad) = lower('{comuna}')                                    """)
+        --    select distinct (nombre_ruta),estado
+          -- from quadminds.datos_ruta_manual where TO_CHAR(fecha_ruta, 'YYYY-MM-DD') = '{fecha}' and lower(ciudad) = lower('{comuna}')   
+
+               SELECT nombre_ruta,
+                CASE WHEN bool_or(estado = FALSE) THEN FALSE ELSE TRUE END AS estado,
+                CASE WHEN bool_or(pickeado = FALSE) THEN FALSE ELSE TRUE END AS pickeado,
+                CASE WHEN bool_or(alerta = TRUE) THEN TRUE ELSE FALSE END AS alerta
+            FROM quadminds.datos_ruta_manual
+            WHERE TO_CHAR(fecha_ruta, 'YYYY-MM-DD') = '{fecha}' and lower(ciudad) = lower('{comuna}')
+            GROUP BY nombre_ruta;
+                              
+           """)
             return cur.fetchall()
         
     def update_estado_rutas(self,nombre_ruta):
