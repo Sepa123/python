@@ -3,6 +3,9 @@ from fastapi import APIRouter, status,HTTPException
 ##Modelos y schemas
 
 from database.schema.rsv.catalogo_producto import catalogos_productos_schema
+from database.models.rsv.catalogo_producto import CatalogoProducto
+
+from database.schema.rsv.colores import colores_rsv_schema
 
 ##Conexiones
 from database.client import reportesConnection
@@ -22,9 +25,19 @@ async def obtener_catalogo_rsv():
     return catalogos_productos_schema(result)
 
 
-@router.post("agregar/catalogo")
-async def agregar_nuevo_catalogo_rsv():
-    return ""
+@router.get("/colores")
+async def obtener_colores_rsv():
+    result = conn.read_colores_rsv()
+    return colores_rsv_schema(result)
+
+
+@router.post("agregar/producto")
+async def agregar_nuevo_catalogo_rsv(body : CatalogoProducto):
+    data = body.dict()
+    conn.insert_nuevo_catalogo_rsv(data)
+    return {
+        "message": "Producto ingresado correctamente"
+    }
 
 
 @router.delete("eliminar/catalogo/{catalogo}")

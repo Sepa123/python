@@ -3740,6 +3740,23 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                         """)
             return cur.fetchall()
 
+    def insert_nuevo_catalogo_rsv(self, data):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            INSERT INTO rsv.catalogo_productos
+            (codigo, producto, unid_x_paquete, peso, ancho, alto, largo, id_user, ids_user, color)
+            VALUES( %(Codigo)s, %(Producto)s, %(Unid_x_paquete)s, %(Peso)s,%(Ancho)s,%(Alto)s,%(Largo)s,%(Id_user)s, %(Ids_user)s,%(Color)s,);
+            """,data)
+        self.conn.commit()
+
+    def read_colores_rsv(self):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+                SELECT * FROM rsv.colores;
+                        """)
+            return cur.fetchall()
+
+
 class transyanezConnection():
     conn = None
     def __init__(self) -> None:
