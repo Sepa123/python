@@ -3751,8 +3751,8 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
         with self.conn.cursor() as cur:
             cur.execute("""
             INSERT INTO rsv.catalogo_productos
-            (codigo, producto, unid_x_paquete, peso, ancho, alto, largo, id_user, ids_user, color)
-            VALUES( %(Codigo)s, %(Producto)s, %(Unid_x_paquete)s, %(Peso)s,%(Ancho)s,%(Alto)s,%(Largo)s,%(Id_user)s, %(Ids_user)s,%(Color)s);
+            (codigo, producto, unid_x_paquete, peso, ancho, alto, largo, id_user, ids_user, color, codigo_original)
+            VALUES( %(Codigo_final)s, %(Producto)s, %(Unid_x_paquete)s, %(Peso)s,%(Ancho)s,%(Alto)s,%(Largo)s,%(Id_user)s, %(Ids_user)s,%(Color)s,%(Codigo)s);
             """,data)
         self.conn.commit()
 
