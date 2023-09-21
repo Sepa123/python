@@ -193,6 +193,8 @@ async def update_recepcion_easy_opl_by_codigo_producto_sko(body: bodyUpdateVerif
         # print(body.cod_pedido)
         codigo_pedido = conn.get_codigo_pedido_opl(body.cod_pedido)[0][0]
         # print(codigo_pedido)
+        body.cod_pedido = codigo_pedido
+        body.cod_producto = codigo_pedido
         data = body.dict()     
         rows = conn.update_recepcion_opl(codigo_pedido, body.sku)
         print(rows)
