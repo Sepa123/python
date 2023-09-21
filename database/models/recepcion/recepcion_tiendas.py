@@ -25,6 +25,8 @@ class bodyUpdateVerified(BaseModel):
     cod_pedido: str
     cod_producto : str
     ids_usuario : Optional[str]
+    latitud:  Optional[str]
+    longitud:  Optional[str]
 
 
 class dataBitacora(BaseModel):
