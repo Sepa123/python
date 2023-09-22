@@ -17,6 +17,7 @@ class CatalogoProducto(BaseModel):
     Color: int
     Habilitado: Optional[bool]
     Precio_unitario : Optional[int]
-    Ubicacion : Optional[str]
+    Ubicacion_p : Optional[str]
     Codigo_Original : Optional[str]
+    Ubicacion_u : Optional[str]
     

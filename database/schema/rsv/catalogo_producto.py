@@ -14,8 +14,9 @@ def catalogo_producto(producto):
 		"Color" : producto[11],
 		"Habilitado" : producto[12],
         "Precio_unitario" : producto[13],
-		"Ubicacion" : producto[14],
-		"Codigo_Original" : producto[15]
+		"Ubicacion_p" : producto[14],
+		"Codigo_Original" : producto[15],
+        "Ubicacion_u" : producto[16],
 	}
 
 
