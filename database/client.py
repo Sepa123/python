@@ -3736,7 +3736,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def read_catalogo_rsv(self):
         with self.conn.cursor() as cur:
             cur.execute("""
-                select * from rsv.catalogo_productos
+                select * from rsv.catalogo_productos order by 1
                         """)
             return cur.fetchall()
         
@@ -3752,7 +3752,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     #         cur.execute(f"""
     #             select * from rsv.catalogo_productos where codigo = '{codigo}'
     #                     """)
-    #         return cur.fetchone()
+    #         return cur.fetchall()
 
     def insert_nuevo_catalogo_rsv(self, data):
         with self.conn.cursor() as cur:
