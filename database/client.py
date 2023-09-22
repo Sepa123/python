@@ -3783,6 +3783,15 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 SELECT * FROM rsv.colores;
                         """)
             return cur.fetchall()
+        
+    def read_cargas_rsv(self):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+                SELECT * FROM rsv.cargas order by 1;
+                        """)
+            return cur.fetchall()
+        
+    
 
 
 class transyanezConnection():

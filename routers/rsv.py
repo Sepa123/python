@@ -6,7 +6,9 @@ from database.schema.rsv.catalogo_producto import catalogos_productos_schema
 from database.models.rsv.catalogo_producto import CatalogoProducto
 
 from database.schema.rsv.colores import colores_rsv_schema
+from database.models.rsv.carga_rsv import CargaRSV
 
+from database.schema.rsv.cargas_rsv import cargas_rsv_schema
 ##Conexiones
 from database.client import reportesConnection
 
@@ -65,3 +67,9 @@ async def editar_nuevo_catalogo_rsv(body : CatalogoProducto):
 @router.delete("eliminar/catalogo/{catalogo}")
 async def agregar_nuevo_catalogo_rsv(catalogo):
     return ""
+
+
+@router.get("/cargas")
+async def obtener_carga_rsv():
+    result = conn.read_cargas_rsv()
+    return cargas_rsv_schema(result)
