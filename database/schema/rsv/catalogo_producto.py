@@ -12,7 +12,10 @@ def catalogo_producto(producto):
 		"Id_user" : producto[9],
 		"Ids_user" : producto[10],
 		"Color" : producto[11],
-		"Habilitado" : producto[12]
+		"Habilitado" : producto[12],
+        "Precio_unitario" : producto[13],
+		"Ubicacion" : producto[14],
+		"Codigo_Original" : producto[15]
 	}
 
 

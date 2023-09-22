@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-
+from typing import Optional
 
 class CatalogoProducto(BaseModel):
     # Id: int
@@ -8,11 +8,15 @@ class CatalogoProducto(BaseModel):
     Codigo: str
     Producto: str
     Unid_x_paquete: int
-    Peso: float
-    Ancho: float
-    Alto: float
-    Largo: float
+    Peso: Optional[float]
+    Ancho: Optional[float]
+    Alto: Optional[float]
+    Largo: Optional[float]
     Id_user: int
     Ids_user: str
     Color: int
-    Habilitado: bool
+    Habilitado: Optional[bool]
+    Precio_unitario : Optional[int]
+    Ubicacion : Optional[str]
+    Codigo_Original : Optional[str]
+    
