@@ -51,6 +51,17 @@ async def agregar_nuevo_catalogo_rsv(body : CatalogoProducto):
     }
 
 
+@router.put("/editar/producto")
+async def editar_nuevo_catalogo_rsv(body : CatalogoProducto):
+    body.Codigo_Original = body.Codigo
+
+    data = body.dict()
+    conn.update_catalogo_rsv(data)
+    print(data)
+    return {
+        "message": "Producto editado correctamente"
+    }
+
 @router.delete("eliminar/catalogo/{catalogo}")
 async def agregar_nuevo_catalogo_rsv(catalogo):
     return ""

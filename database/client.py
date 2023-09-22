@@ -3756,6 +3756,20 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             """,data)
         self.conn.commit()
 
+
+    def update_catalogo_rsv(self, data):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+
+            UPDATE rsv.catalogo_productos
+            SET producto= %(Producto)s , unid_x_paquete = %(Unid_x_paquete)s , peso = %(Peso)s, ancho = %(Ancho)s, 
+                alto = %(Alto)s, largo = %(Largo)s, id_user = %(Id_user)s, ids_user = %(Ids_user)s, codigo_original=%(Codigo)s
+            WHERE codigo = %(Codigo_final)s            
+
+            """,data)
+        self.conn.commit()
+
+
     def read_colores_rsv(self):
         with self.conn.cursor() as cur:
             cur.execute("""
