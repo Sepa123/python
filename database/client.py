@@ -3758,8 +3758,8 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
         with self.conn.cursor() as cur:
             cur.execute("""
             INSERT INTO rsv.catalogo_productos
-            (codigo, producto, unid_x_paquete, peso, ancho, alto, largo, id_user, ids_user, color, codigo_original, precio_unitario)
-            VALUES( %(Codigo_final)s, %(Producto)s, %(Unid_x_paquete)s, %(Peso)s,%(Ancho)s,%(Alto)s,%(Largo)s,%(Id_user)s, %(Ids_user)s,%(Color)s,%(Codigo)s, %(Precio_unitario)s);
+            (codigo, producto, unid_x_paquete, peso, ancho, alto, largo, id_user, ids_user, color, codigo_original, precio_unitario, ubicacion_p, ubicacion_u)
+            VALUES( %(Codigo_final)s, %(Producto)s, %(Unid_x_paquete)s, %(Peso)s,%(Ancho)s,%(Alto)s,%(Largo)s,%(Id_user)s, %(Ids_user)s,%(Color)s,%(Codigo)s, %(Precio_unitario)s, %(Ubicacion_p)s, %(Ubicacion_u)s );
             """,data)
         self.conn.commit()
 
@@ -3770,6 +3770,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             UPDATE rsv.catalogo_productos
             SET producto= %(Producto)s , unid_x_paquete = %(Unid_x_paquete)s , peso = %(Peso)s, ancho = %(Ancho)s, 
                 alto = %(Alto)s, largo = %(Largo)s, id_user = %(Id_user)s, ids_user = %(Ids_user)s, codigo_original=%(Codigo)s, precio_unitario = %(Precio_unitario)s
+                ubicacion_p = %(Ubicacion_p)s, ubicacion_u = %(Ubicacion_u)s
             WHERE codigo = %(Codigo_final)s            
 
             """,data)
