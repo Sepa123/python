@@ -3746,6 +3746,13 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 select codigo from rsv.catalogo_productos where codigo = '{codigo}'
                         """)
             return cur.fetchone()
+        
+    # def buscar_producto_por_codigo_rsv(self,codigo):
+    #     with self.conn.cursor() as cur:
+    #         cur.execute(f"""
+    #             select * from rsv.catalogo_productos where codigo = '{codigo}'
+    #                     """)
+    #         return cur.fetchone()
 
     def insert_nuevo_catalogo_rsv(self, data):
         with self.conn.cursor() as cur:
@@ -3755,7 +3762,6 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             VALUES( %(Codigo_final)s, %(Producto)s, %(Unid_x_paquete)s, %(Peso)s,%(Ancho)s,%(Alto)s,%(Largo)s,%(Id_user)s, %(Ids_user)s,%(Color)s,%(Codigo)s, %(Precio_unitario)s);
             """,data)
         self.conn.commit()
-
 
     def update_catalogo_rsv(self, data):
         with self.conn.cursor() as cur:

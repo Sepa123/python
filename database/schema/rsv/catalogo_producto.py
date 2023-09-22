@@ -9,14 +9,14 @@ def catalogo_producto(producto):
 		"Ancho" : producto[6],
 		"Alto" : producto[7],
 		"Largo" : producto[8],
-		"Id_user" : producto[9],
-		"Ids_user" : producto[10],
-		"Color" : producto[11],
-		"Habilitado" : producto[12],
-        "Precio_unitario" : producto[13],
-		"Ubicacion_p" : producto[14],
-		"Codigo_Original" : producto[15],
-        "Ubicacion_u" : producto[16],
+		"Color" : producto[9],
+        "Precio_unitario" : producto[10],
+		"Ubicacion_p" : producto[11],
+		"Codigo_Original" : producto[12],
+        "Ubicacion_u" : producto[13],
+        "Id_user" : producto[14],
+		"Ids_user" : producto[15],
+		"Habilitado" : producto[16],
 	}
 
 
