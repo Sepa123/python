@@ -3740,6 +3740,13 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                         """)
             return cur.fetchall()
         
+    def read_catalogo_by_color_rsv(self,color):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                select * from rsv.catalogo_productos where color = {color}
+                        """)
+            return cur.fetchall()
+        
     def buscar_producto_existente_rsv(self,codigo):
         with self.conn.cursor() as cur:
             cur.execute(f"""
@@ -3790,6 +3797,8 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 SELECT * FROM rsv.cargas order by 1;
                         """)
             return cur.fetchall()
+        
+    
 
     ## Insert carga
     def insert_carga_rsv(self,data):
@@ -3800,6 +3809,14 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
            VALUES(%(Fecha_ingreso)s, %(Id_user)s, %(Ids_user)s, %(Nombre_carga)s, %(Codigo)s, %(Color)s, %(Paquetes)s, %(Unidades)s, false);        
          """,data)
         self.conn.commit()
+
+    def buscar_cargas_rsv(self, nombre_carga):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+              select nombre_carga from rsv.cargas where nombre_carga = '{nombre_carga}'
+                        """)
+            return cur.fetchone()
+        
 
 class transyanezConnection():
     conn = None

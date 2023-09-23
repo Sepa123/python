@@ -27,6 +27,14 @@ async def obtener_catalogo_rsv():
     return catalogos_productos_schema(result)
 
 
+## buscar catalogo por color
+@router.get("/catalogo/color")
+async def obtener_catalogo_rsv(color : int):
+    result = conn.read_catalogo_by_color_rsv(color)
+    return catalogos_productos_schema(result)
+
+
+
 @router.get("/colores")
 async def obtener_colores_rsv():
     result = conn.read_colores_rsv()
@@ -85,3 +93,17 @@ async def insert_carga_rsv(body : CargaRSV):
         }
     except:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error al ingresar la carga ")
+
+
+## buscar si nombre_carga existe
+@router.get("/carga/buscar")
+async def buscar_carga_por_nombre(nombre_carga : str):
+    result = conn.buscar_cargas_rsv(nombre_carga)
+    print("resultado", result)
+    if result is None:
+        return { "repetido": False}
+    else:
+        return { 
+            "repetido": True,
+            "message": f"La carga {result[0]} ya existe"}
+    
