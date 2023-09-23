@@ -3790,9 +3790,16 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 SELECT * FROM rsv.cargas order by 1;
                         """)
             return cur.fetchall()
-        
-    
 
+    ## Insert carga
+    def insert_carga_rsv(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+           INSERT INTO rsv.cargas
+           (fecha_ingreso, id_usuario, ids_usuario, nombre_carga, codigo, color, paquetes, unidades, verificado)
+           VALUES(%(Fecha_ingreso)s, %(Id_user)s, %(Ids_user)s, %(Nombre_carga)s, %(Codigo)s, %(Color)s, %(Paquetes)s, %(Unidades)s, false);        
+         """,data)
+        self.conn.commit()
 
 class transyanezConnection():
     conn = None

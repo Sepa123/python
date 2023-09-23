@@ -1,15 +1,16 @@
 from pydantic import BaseModel
+from typing import Optional
 
 
 class CargaRSV (BaseModel):
-    id: int
-    created_at: str
-    fecha_ingreso: str
-    id_usuario: int
-    ids_usuario: str
-    nombre_carga: str
-    codigo: str
-    color: int
-    paquetes: int
-    unidades: int
-    verificado: bool
+    # Id: int
+    # Created_at: str
+    Fecha_ingreso: str
+    Id_user: int
+    Ids_user: str
+    Nombre_carga: str
+    Codigo: str
+    Color: int
+    Paquetes: int
+    Unidades: int
+    verificado: Optional[bool]

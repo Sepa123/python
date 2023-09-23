@@ -73,3 +73,15 @@ async def agregar_nuevo_catalogo_rsv(catalogo):
 async def obtener_carga_rsv():
     result = conn.read_cargas_rsv()
     return cargas_rsv_schema(result)
+
+@router.post("/agregar/carga")
+async def insert_carga_rsv(body : CargaRSV):
+    try:
+        data = body.dict()
+        conn.insert_carga_rsv(data)
+        print(data)
+        return {
+            "message": "Carga agregada correctamente"
+        }
+    except:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error al ingresar la carga ")
