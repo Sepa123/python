@@ -2,7 +2,7 @@ from datetime import datetime
 from fastapi import APIRouter, status,HTTPException
 ##Modelos y schemas
 
-from database.schema.rsv.catalogo_producto import catalogos_productos_schema
+from database.schema.rsv.catalogo_producto import catalogos_productos_schema , codigos_por_color_schema
 from database.models.rsv.catalogo_producto import CatalogoProducto
 
 from database.schema.rsv.colores import colores_rsv_schema
@@ -31,7 +31,7 @@ async def obtener_catalogo_rsv():
 @router.get("/catalogo/color")
 async def obtener_catalogo_rsv(color : int):
     result = conn.read_catalogo_by_color_rsv(color)
-    return catalogos_productos_schema(result)
+    return codigos_por_color_schema(result)
 
 
 

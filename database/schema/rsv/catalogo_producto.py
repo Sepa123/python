@@ -22,3 +22,13 @@ def catalogo_producto(producto):
 
 def catalogos_productos_schema(productos):
     return [catalogo_producto(producto) for producto in productos]
+
+
+def codigo_por_color(codigo):
+    return {
+        "Codigo" : codigo[0],
+		"Producto" : codigo[1],
+	}
+
+def codigos_por_color_schema(codigos):
+    return [ codigo_por_color(codigo) for codigo in codigos]
