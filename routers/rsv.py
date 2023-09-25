@@ -1,7 +1,6 @@
-from datetime import datetime
 from fastapi import APIRouter, status,HTTPException
 ##Modelos y schemas
-
+from typing import List
 from database.schema.rsv.catalogo_producto import catalogos_productos_schema , codigos_por_color_schema
 from database.models.rsv.catalogo_producto import CatalogoProducto
 
@@ -83,16 +82,26 @@ async def obtener_carga_rsv():
     return cargas_rsv_schema(result)
 
 @router.post("/agregar/carga")
-async def insert_carga_rsv(body : CargaRSV):
+async def insert_carga_rsv(list_body : List[CargaRSV]):
     try:
-        data = body.dict()
-        conn.insert_carga_rsv(data)
-        print(data)
+        if list_body == []:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No se ha agregado ningun producto a a la carga")
+        print(list_body)
+        for body in list_body:
+            data = body.dict()
+            print(data)
+            conn.insert_carga_rsv(data)
+        # print(data)
         return {
-            "message": "Carga agregada correctamente"
+            "message": "Carga de productos agregadoa correctamente"
         }
     except:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error al ingresar la carga ")
+        print(" No, pase aca")
+        if list_body == []:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No se ha agregado ningun producto a a la carga")
+        else:
+
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error al ingresar la carga")
 
 
 ## buscar si nombre_carga existe

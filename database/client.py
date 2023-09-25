@@ -3813,7 +3813,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def buscar_cargas_rsv(self, nombre_carga):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-              select nombre_carga from rsv.cargas where nombre_carga = '{nombre_carga}'
+              select distinct (nombre_carga) from rsv.cargas where nombre_carga = '{nombre_carga}'
                         """)
             return cur.fetchone()
         
