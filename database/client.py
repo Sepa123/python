@@ -3743,7 +3743,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def read_catalogo_by_color_rsv(self,color):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-                select codigo, producto  from rsv.catalogo_productos where = {color}
+                select codigo, producto  from rsv.catalogo_productos where color = {color}
                         """)
             return cur.fetchall()
         
