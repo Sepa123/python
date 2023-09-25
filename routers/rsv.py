@@ -89,11 +89,12 @@ async def insert_carga_rsv(list_body : List[CargaRSV]):
         print(list_body)
         for body in list_body:
             data = body.dict()
+            nombre_carga = body.Nombre_carga
             print(data)
             conn.insert_carga_rsv(data)
         # print(data)
         return {
-            "message": "Carga de productos agregadoa correctamente"
+            "message": f"{nombre_carga} agregada correctamente"
         }
     except:
         print(" No, pase aca")
