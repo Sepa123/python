@@ -4,10 +4,14 @@ from typing import List
 from database.schema.rsv.catalogo_producto import catalogos_productos_schema , codigos_por_color_schema
 from database.models.rsv.catalogo_producto import CatalogoProducto
 
+from database.schema.rsv.etiquetas import etiquetas_productos_schema , datos_productos_etiquetas_schema
+
 from database.schema.rsv.colores import colores_rsv_schema
 from database.models.rsv.carga_rsv import CargaRSV
 
-from database.schema.rsv.cargas_rsv import cargas_rsv_schema
+from database.schema.rsv.obtener_etiqueta_carga import obtener_etiquetas_carga_schema
+
+from database.schema.rsv.cargas_rsv import cargas_rsv_schema , lista_cargas_schema
 ##Conexiones
 from database.client import reportesConnection
 
@@ -81,6 +85,12 @@ async def obtener_carga_rsv():
     result = conn.read_cargas_rsv()
     return cargas_rsv_schema(result)
 
+@router.get("/listar/cargas")
+async def obtener_carga_rsv():
+    result = conn.read_lista_carga_rsv()
+    return lista_cargas_schema(result)
+
+
 @router.post("/agregar/carga")
 async def insert_carga_rsv(list_body : List[CargaRSV]):
     try:
@@ -104,7 +114,6 @@ async def insert_carga_rsv(list_body : List[CargaRSV]):
 
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error al ingresar la carga")
 
-
 ## buscar si nombre_carga existe
 @router.get("/carga/buscar")
 async def buscar_carga_por_nombre(nombre_carga : str):
@@ -117,3 +126,56 @@ async def buscar_carga_por_nombre(nombre_carga : str):
             "repetido": True,
             "message": f"La carga {result[0]} ya existe"}
     
+@router.get("/etiquetas")
+async def get_etiquetas_rsv():
+    result = conn.read_etiquetas_rsv()
+    return etiquetas_productos_schema(result)
+
+
+@router.get("/etiquetas/carga/descargar")
+async def download_etiquetas_carga(nombre_carga : str, codigo: str):
+
+    results = conn.obtener_etiqueta_carga_rsv(nombre_carga,codigo)
+    wb = Workbook()
+    ws = wb.active
+    results.insert(0, ("bar_code","codigo_imp","descripcion","color"))
+
+    for row in results:
+        ws.append(row)
+    
+    for col in ws.columns:
+        max_length = 0
+        column = col[0].column_letter # get column letter
+        for cell in col:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(str(cell.value))
+            except:
+                pass
+        adjusted_width = (max_length + 2)
+        ws.column_dimensions[column].width = adjusted_width
+    
+    wb.save("excel/etiquetas_carga.xlsx")
+
+    return FileResponse("excel/etiquetas_carga.xlsx")
+
+
+@router.get("/etiquetas/carga")
+async def get_etiquetas_carga(nombre_carga : str, codigo: str):
+    results = conn.obtener_etiqueta_carga_rsv(nombre_carga,codigo)
+    return obtener_etiquetas_carga_schema(results)
+
+
+
+@router.get("/generar/etiquetas")
+async def generar_etiquetas_por_nombre_carga(nombre_carga :str):
+    results = conn.generar_etiquitas_rsv(nombre_carga)
+    return {
+        "alerta": results[0][0],
+        "message": results[0][1]
+    }
+
+@router.get("/datos/etiquetas/productos")
+async def get_datos_productos_etiquetas(nombre_carga : str):
+    results = conn.read_datos_productos_etiquetas_rsv(nombre_carga)
+    return datos_productos_etiquetas_schema(results)

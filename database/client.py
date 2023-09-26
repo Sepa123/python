@@ -3798,6 +3798,24 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                         """)
             return cur.fetchall()
         
+    def read_lista_carga_rsv(self):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+                select distinct (nombre_carga), etiquetas  FROM rsv.cargas 
+                        """)
+            return cur.fetchall()
+        
+    def update_carga_rsv(self, data):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+
+            UPDATE rsv.cargas
+            SET codigo=%(Codigo)s, color=%(Color)s, paquetes=%(Paquetes)s, unidades=%(Unidades)s
+            WHERE nombre_carga=%(Nombre_carga)s;        
+
+            """,data)
+        self.conn.commit()
+        
     def read_cargas_por_color_rsv(self,color):
         with self.conn.cursor() as cur:
             cur.execute(f"""
@@ -3805,6 +3823,33 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                         """)
             return cur.fetchall()
         
+
+    ##generar etiquetas
+
+    def generar_etiquitas_rsv(self,nombre_carga):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                select * from rsv.generar_etiquetas('{nombre_carga}');
+                        """)
+            return cur.fetchall()
+
+    ## mostrar datos de productos guardados en etiquetas
+
+    def read_datos_productos_etiquetas_rsv(self,nombre_carga):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                select distinct (codigo),descripcion, color FROM rsv.etiquetas e where carga = '{nombre_carga}' 
+                        """)
+            return cur.fetchall()
+        
+
+
+    def read_etiquetas_rsv(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                SELECT * FROM rsv.etiquetas order by 1
+                        """)
+            return cur.fetchall()
     
 
     ## Insert carga
@@ -3824,6 +3869,12 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                         """)
             return cur.fetchone()
         
+    def obtener_etiqueta_carga_rsv(self,nombre_carga : str , codigo : str):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+              select * from rsv.obtener_etiqueta_carga('{nombre_carga}','{codigo}');
+                        """)
+            return cur.fetchall()
 
 class transyanezConnection():
     conn = None
