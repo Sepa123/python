@@ -3776,8 +3776,8 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
 
             UPDATE rsv.catalogo_productos
             SET producto= %(Producto)s , unid_x_paquete = %(Unid_x_paquete)s , peso = %(Peso)s, ancho = %(Ancho)s, 
-                alto = %(Alto)s, largo = %(Largo)s, id_user = %(Id_user)s, ids_user = %(Ids_user)s, codigo_original=%(Codigo)s, precio_unitario = %(Precio_unitario)s,
-                ubicacion_p = %(Ubicacion_p)s, ubicacion_u = %(Ubicacion_u)s
+                alto = %(Alto)s, largo = %(Largo)s, id_user = %(Id_user)s, ids_user = %(Ids_user)s, codigo_original=%(Codigo)s, precio_unitario = %(Precio_unitario)s
+                -- ,ubicacion_p = %(Ubicacion_p)s, ubicacion_u = %(Ubicacion_u)s
             WHERE codigo = %(Codigo_final)s            
 
             """,data)
@@ -3808,7 +3808,8 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def read_lista_carga_rsv_por_mes(self,mes):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-                select distinct (nombre_carga), etiquetas  FROM rsv.cargas  
+                select distinct (nombre_carga), etiquetas, fecha_ingreso, su.nombre  FROM rsv.cargas 
+                inner join rsv.sucursal su on sucursal = su.id
                 where to_char(fecha_ingreso ,'yyyymm')= '{mes}' 
                         """)
             return cur.fetchall()
@@ -3865,8 +3866,8 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
         with self.conn.cursor() as cur:
             cur.execute("""
            INSERT INTO rsv.cargas
-           (fecha_ingreso, id_usuario, ids_usuario, nombre_carga, codigo, color, paquetes, unidades, verificado)
-           VALUES(%(Fecha_ingreso)s, %(Id_user)s, %(Ids_user)s, %(Nombre_carga)s, %(Codigo)s, %(Color)s, %(Paquetes)s, %(Unidades)s, false);        
+           (fecha_ingreso, id_usuario, ids_usuario, nombre_carga, codigo, color, paquetes, unidades, verificado, sucursal)
+           VALUES(%(Fecha_ingreso)s, %(Id_user)s, %(Ids_user)s, %(Nombre_carga)s, %(Codigo)s, %(Color)s, %(Paquetes)s, %(Unidades)s, false, %(Sucursal)s);        
          """,data)
         self.conn.commit()
 
@@ -3881,6 +3882,16 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
         with self.conn.cursor() as cur:
             cur.execute(f"""
               select * from rsv.obtener_etiqueta_carga('{nombre_carga}','{codigo}');
+                        """)
+            return cur.fetchall()
+        
+    ## Obtener sucursales rsv
+
+    def read_sucursales_rsv(self):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+              select id, nombre, pais, ciudad, comuna ,direccion, latitud,longitud, id_usuario ,ids_usuario 
+              FROM rsv.sucursal
                         """)
             return cur.fetchall()
 

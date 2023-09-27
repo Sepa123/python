@@ -9,6 +9,8 @@ from database.schema.rsv.etiquetas import etiquetas_productos_schema , datos_pro
 from database.schema.rsv.colores import colores_rsv_schema
 from database.models.rsv.carga_rsv import CargaRSV
 
+from database.schema.rsv.sucursales import sucursales_rsv_schema
+
 from database.schema.rsv.obtener_etiqueta_carga import obtener_etiquetas_carga_schema
 
 from database.schema.rsv.cargas_rsv import cargas_rsv_schema , lista_cargas_schema
@@ -184,3 +186,9 @@ async def generar_etiquetas_por_nombre_carga(nombre_carga :str):
 async def get_datos_productos_etiquetas(nombre_carga : str):
     results = conn.read_datos_productos_etiquetas_rsv(nombre_carga)
     return datos_productos_etiquetas_schema(results)
+
+
+@router.get("/sucursales")
+async def get_sucursales_rsv():
+    results = conn.read_sucursales_rsv()
+    return sucursales_rsv_schema(results)

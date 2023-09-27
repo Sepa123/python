@@ -13,4 +13,6 @@ class CargaRSV (BaseModel):
     Color: int
     Paquetes: int
     Unidades: int
-    verificado: Optional[bool]
+    Verificado: Optional[bool]
+    Etiquetas: Optional[bool]
+    Sucursal : Optional[int]

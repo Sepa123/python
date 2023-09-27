@@ -23,7 +23,10 @@ def cargas_rsv_schema(cargas):
 def lista_carga(carga):
     return {
         "Nombre_carga" : carga[0],
-        "Etiquetas": carga[1]
+        "Etiquetas": carga[1],
+        "Fecha_ingreso": carga[2],
+        "Sucursal" : carga[3]
+		# "Sucursal" : "ninguna"
 	}
 
 
