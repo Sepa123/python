@@ -11,6 +11,8 @@ from database.models.rsv.carga_rsv import CargaRSV
 
 from database.schema.rsv.sucursales import sucursales_rsv_schema
 
+from database.schema.rsv.inventario_sucursal import inventarios_sucursal_schema
+
 from database.schema.rsv.obtener_etiqueta_carga import obtener_etiquetas_carga_schema
 
 from database.schema.rsv.cargas_rsv import cargas_rsv_schema , lista_cargas_schema
@@ -192,3 +194,10 @@ async def get_datos_productos_etiquetas(nombre_carga : str):
 async def get_sucursales_rsv():
     results = conn.read_sucursales_rsv()
     return sucursales_rsv_schema(results)
+
+@router.get("/inventario/sucursales/{sucursal}")
+async def get_inventario_por_sucursal(sucursal : int):
+    results = conn.obtener_inventario_por_sucursal(sucursal)
+    return inventarios_sucursal_schema(results)
+
+

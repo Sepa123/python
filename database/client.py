@@ -3885,6 +3885,14 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                         """)
             return cur.fetchall()
         
+
+    def obtener_inventario_por_sucursal(self, sucursal : int):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+              select * from rsv.inventario_por_sucursal({sucursal});
+                        """)
+            return cur.fetchall()
+        
     ## Obtener sucursales rsv
 
     def read_sucursales_rsv(self):
