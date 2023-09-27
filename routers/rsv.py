@@ -90,6 +90,11 @@ async def obtener_carga_rsv():
     result = conn.read_lista_carga_rsv()
     return lista_cargas_schema(result)
 
+@router.get("/listar/cargas/mes")
+async def obtener_carga_rsv_por_mes(mes : str):
+    result = conn.read_lista_carga_rsv_por_mes(mes)
+    return lista_cargas_schema(result)
+
 
 @router.post("/agregar/carga")
 async def insert_carga_rsv(list_body : List[CargaRSV]):

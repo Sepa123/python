@@ -3804,6 +3804,14 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 select distinct (nombre_carga), etiquetas  FROM rsv.cargas 
                         """)
             return cur.fetchall()
+
+    def read_lista_carga_rsv_por_mes(self,mes):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                select distinct (nombre_carga), etiquetas  FROM rsv.cargas  
+                where to_char(fecha_ingreso ,'yyyymm')= '{mes}' 
+                        """)
+            return cur.fetchall()
         
     def update_carga_rsv(self, data):
         with self.conn.cursor() as cur:
