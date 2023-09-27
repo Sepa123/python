@@ -151,6 +151,7 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]], fecha_pedido : str)
                 data["Nombre_ruta"] = nombre_ruta
                 # data["Pistoleado"]  
                 print('Nombre', producto.Nombre)
+                data["Descripcion_producto"] = re.sub(r'@', ' ', producto.Descripcion_producto)
                 data["Posicion"] = i + 1
                 data["Fecha_ruta"] = fecha_pedido
                 data["Pickeado"] = data["Pistoleado"] 
