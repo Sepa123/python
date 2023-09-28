@@ -3743,7 +3743,17 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def read_catalogo_by_color_rsv(self,color):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-                select codigo, producto  from rsv.catalogo_productos where color = {color}
+                select codigo, producto,color  from rsv.catalogo_productos where color = {color}
+                        """)
+            return cur.fetchall()
+        
+
+    def read_catalogo_by_color_sin_filtro_rsv(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                select distinct (codigo), producto, color  from rsv.catalogo_productos 
+                --where color = 2
+                order by color
                         """)
             return cur.fetchall()
         
@@ -3886,10 +3896,10 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                         """)
             return cur.fetchone()
         
-    def obtener_etiqueta_carga_rsv(self,nombre_carga : str , codigo : str):
+    def obtener_etiqueta_carga_rsv(self,nombre_carga : str , codigo : str, tipo : str):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-              select * from rsv.obtener_etiqueta_carga('{nombre_carga}','{codigo}');
+              select * from rsv.obtener_etiqueta_carga_tipo('{nombre_carga}','{codigo}', '{tipo}');
                         """)
             return cur.fetchall()
         
@@ -3911,6 +3921,15 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                         """)
             return cur.fetchall()
 
+    ## obtener datos carga por nombre carga
+
+    def read_datos_carga_por_nombre_rsv(self,nombre_carga : str):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+              select * from rsv.obtener_datos_carga('{nombre_carga}');
+                        """)
+            return cur.fetchall()
+        
 class transyanezConnection():
     conn = None
     def __init__(self) -> None:

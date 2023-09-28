@@ -16,6 +16,8 @@ from database.schema.rsv.inventario_sucursal import inventarios_sucursal_schema
 from database.schema.rsv.obtener_etiqueta_carga import obtener_etiquetas_carga_schema
 
 from database.schema.rsv.cargas_rsv import cargas_rsv_schema , lista_cargas_schema
+
+from database.schema.rsv.datos_carga_etiqueta import datos_cargas_etiquetas_schema
 ##Conexiones
 from database.client import reportesConnection
 
@@ -40,6 +42,11 @@ async def obtener_catalogo_rsv(color : int):
     result = conn.read_catalogo_by_color_rsv(color)
     return codigos_por_color_schema(result)
 
+
+@router.get("/catalogo/color/sin_filtro")
+async def obtener_catalogo_sin_filtro_rsv():
+    result = conn.read_catalogo_by_color_sin_filtro_rsv()
+    return codigos_por_color_schema(result)
 
 
 @router.get("/colores")
@@ -95,6 +102,11 @@ async def obtener_carga_rsv(nombre_carga : str):
     result = conn.read_cargas_por_nombre_carga_rsv(nombre_carga)
     return cargas_rsv_schema(result)
 
+@router.get("/datos/etiquetas/carga/{nombre_carga}")
+async def obtener_datos_carga_rsv(nombre_carga : str):
+    result = conn.read_datos_carga_por_nombre_rsv(nombre_carga)
+    return datos_cargas_etiquetas_schema(result)
+
 @router.get("/listar/cargas")
 async def obtener_carga_rsv():
     result = conn.read_lista_carga_rsv()
@@ -148,9 +160,9 @@ async def get_etiquetas_rsv():
 
 
 @router.get("/etiquetas/carga/descargar")
-async def download_etiquetas_carga(nombre_carga : str, codigo: str):
+async def download_etiquetas_carga(nombre_carga : str, codigo: str,tipo : str):
 
-    results = conn.obtener_etiqueta_carga_rsv(nombre_carga,codigo)
+    results = conn.obtener_etiqueta_carga_rsv(nombre_carga,codigo,tipo)
     wb = Workbook()
     ws = wb.active
     results.insert(0, ("bar_code","codigo_imp","descripcion","color"))
