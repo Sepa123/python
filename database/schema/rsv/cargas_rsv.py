@@ -11,7 +11,9 @@ def carga_rsv(carga):
 		"Paquetes" : carga[8],
 		"Unidades" : carga[9],
 		"Verificado" : carga[10],
-        "Etiquetas": carga[11]
+        "Etiquetas": carga[11],
+        "Sucursal": carga[12],
+        
 	}
 
 

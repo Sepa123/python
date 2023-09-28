@@ -89,6 +89,12 @@ async def obtener_carga_rsv():
     result = conn.read_cargas_rsv()
     return cargas_rsv_schema(result)
 
+
+@router.get("/cargas/nombre_carga/{nombre_carga}")
+async def obtener_carga_rsv(nombre_carga : str):
+    result = conn.read_cargas_por_nombre_carga_rsv(nombre_carga)
+    return cargas_rsv_schema(result)
+
 @router.get("/listar/cargas")
 async def obtener_carga_rsv():
     result = conn.read_lista_carga_rsv()
