@@ -3822,6 +3822,28 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 select distinct (nombre_carga), etiquetas  FROM rsv.cargas 
                         """)
             return cur.fetchall()
+        
+
+    def delete_cargas(self,array):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                DELETE FROM rsv.cargas
+                WHERE codigo IN ({array});
+                        """)
+            rows_delete = cur.rowcount
+        self.conn.commit() 
+        return rows_delete
+    
+    def check_codigo_existente_carga(self, nombre_carga, codigo):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                select codigo  from rsv.cargas c where nombre_carga = '{nombre_carga}' and codigo = '{codigo}'
+                        """)
+            return cur.fetchall()
+
+
+
+    # def update_producto_carga(self,nombre_carga, codigo):
 
     def read_lista_carga_rsv_por_mes(self,mes):
         with self.conn.cursor() as cur:
@@ -3835,11 +3857,9 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def update_carga_rsv(self, data):
         with self.conn.cursor() as cur:
             cur.execute("""
-
             UPDATE rsv.cargas
-            SET codigo=%(Codigo)s, color=%(Color)s, paquetes=%(Paquetes)s, unidades=%(Unidades)s
-            WHERE nombre_carga=%(Nombre_carga)s;        
-
+            SET id_usuario=%(Id_user)s, ids_usuario=%(Ids_user)s, paquetes=%(Paquetes)s, unidades=%(Unidades)s
+            WHERE nombre_carga  = %(Nombre_carga)s and codigo = %(Codigo)s
             """,data)
         self.conn.commit()
         

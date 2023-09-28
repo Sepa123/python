@@ -9,6 +9,8 @@ from database.schema.rsv.etiquetas import etiquetas_productos_schema , datos_pro
 from database.schema.rsv.colores import colores_rsv_schema
 from database.models.rsv.carga_rsv import CargaRSV
 
+from database.models.rsv.lista_eliminar import ListaEliminar
+
 from database.schema.rsv.sucursales import sucursales_rsv_schema
 
 from database.schema.rsv.inventario_sucursal import inventarios_sucursal_schema
@@ -218,4 +220,46 @@ async def get_inventario_por_sucursal(sucursal : int):
     results = conn.obtener_inventario_por_sucursal(sucursal)
     return inventarios_sucursal_schema(results)
 
+## eliminar cargas
+@router.put("/eliminar/cargas")
+async def update_carga(lista : ListaEliminar):
 
+    if lista.lista == '':
+        return {
+        "message" : "no hay nada que eliminar"
+    }
+
+    results = conn.delete_cargas(lista.lista)
+    return {
+        "message" : f"Cargas eliminadas ,{results}"
+    }
+
+@router.put("/editar/carga")
+async def update_carga(list_body : List[CargaRSV]):
+    try:
+        if list_body == []:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No se ha agregado ningun producto a a la carga")
+        print(list_body)
+        for body in list_body:
+            data = body.dict()
+            nombre_carga = body.Nombre_carga
+            print(data)
+            #verificar si producto existe en esta carga
+            check = conn.check_codigo_existente_carga(nombre_carga, body.Codigo)
+            # update de codigo existente
+            if check is not None:
+                conn.update_carga_rsv(data)
+                print("uno")
+            else:
+                conn.insert_carga_rsv(data)
+            
+        # print(data)
+        return {
+            "message": f"{nombre_carga} agregada correctamente"
+        }
+    except:
+        print(" No, pase aca")
+        if list_body == []:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No se ha agregado ningun producto a a la carga")
+        else:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error al ingresar la carga")
