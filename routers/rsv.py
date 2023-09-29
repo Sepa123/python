@@ -4,6 +4,8 @@ from typing import List
 from database.schema.rsv.catalogo_producto import catalogos_productos_schema , codigos_por_color_schema
 from database.models.rsv.catalogo_producto import CatalogoProducto
 
+from lib.codigo_nota_ventas import generar_codigo_ty_nota_venta_rsv
+
 from database.schema.rsv.etiquetas import etiquetas_productos_schema , datos_productos_etiquetas_schema
 
 from database.schema.rsv.colores import colores_rsv_schema
@@ -23,7 +25,7 @@ from database.schema.rsv.tipo_despacho import tipos_despacho_schema
 
 from database.schema.rsv.datos_carga_etiqueta import datos_cargas_etiquetas_schema
 
-# from database.models.rsv.nota_venta import NotaVenta
+from database.models.rsv.nota_venta import NotaVenta, NotaVentaProducto
 ##Conexiones
 from database.client import reportesConnection
 
@@ -280,4 +282,21 @@ async def update_carga(list_body : List[CargaRSV]):
 async def get_tipo_despacho():
     results = conn.read_tipo_despacho_rsv()
     return tipos_despacho_schema(results)
+
+
+@router.post("/agregar/nota_venta")
+async def get_tipo_despacho(body : NotaVenta):
+    
+    id_venta = conn.get_max_id_nota_venta()
+    codigo_ty = generar_codigo_ty_nota_venta_rsv(id_venta[0])
+    body.Codigo_ty = codigo_ty
+    dataVenta = body.dict()
+
+    print(dataVenta)
+    # conn.insert_nota_venta_rsv(dataVenta)
+
+    print(codigo_ty)
+    for producto in body.arrays:
+        print(producto.Codigo)
+    return "tipos_despacho_schema(results)"
 

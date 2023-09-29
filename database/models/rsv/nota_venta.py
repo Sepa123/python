@@ -1,7 +1,14 @@
 from typing import Optional , List
 from pydantic import BaseModel
 
-class NotaVenta(Optional):
+class NotaVentaProducto(BaseModel):
+    Id_venta: Optional[int]
+    Codigo: Optional[str]
+    Unidades: Optional[int]
+    Id_user: Optional[int]
+    Ids_user: Optional[str]
+
+class NotaVenta(BaseModel):
     Id_user: Optional[int]
     Ids_user: Optional[str]
     Sucursal: Optional[int]
@@ -14,12 +21,6 @@ class NotaVenta(Optional):
     Numero_factura: Optional[str]
     Codigo_ty: Optional[str]
     Entregado: Optional[bool]
-    arrays : List['NotaVentaProducto'] 
+    arrays : List[NotaVentaProducto] 
     # arrays : NotaVentaProducto
 
-class NotaVentaProducto(BaseModel):
-    Id_venta: Optional[int]
-    Codigo: Optional[str]
-    Unidades: Optional[int]
-    Id_user: Optional[int]
-    Ids_user: Optional[str]

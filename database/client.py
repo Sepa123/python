@@ -3962,19 +3962,36 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     ## Ventas
     # ingresar nota_venta
 
-    # def insert_nota_venta_rsv(self,data):
-    #     with self.conn.cursor() as cur:
-    #         cur.execute("""
-    #         INSERT INTO rsv.nota_venta
-    #         (created_at, id_usuario, ids_usuario, sucursal, cliente, direccion, comuna, region, fecha_entrega, tipo_despacho, numero_factura, codigo_ty, entregado)
-    #         VALUES(CURRENT_TIMESTAMP, 0, '', 0, '', '', '', '', '', 0, '', '', false);
+    def insert_nota_venta_rsv(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            INSERT INTO rsv.nota_venta
+            (id_usuario, ids_usuario, sucursal, cliente, direccion, comuna, region, fecha_entrega, 
+             tipo_despacho, numero_factura, codigo_ty, entregado)
+            VALUES(%(Id_user)s, %(Ids_user)s,%(Sucursal)s, %(Cliente)s, %(Direccion)s, %(Comuna)s, 
+                   %(Region)s, %(Fecha_entrega)s,%(Tipo_despacho)s, %(Numero_factura)s , %(Codigo_ty)s,
+                   %(Entregado)s);        
+         """,data)
+        self.conn.commit()
 
-    #        INSERT INTO rsv.cargas
-    #        (fecha_ingreso, id_usuario, ids_usuario, nombre_carga, codigo, color, paquetes, unidades, verificado, sucursal)
-    #        VALUES(%(Fecha_ingreso)s, %(Id_user)s, %(Ids_user)s, %(Nombre_carga)s, %(Codigo)s, %(Color)s, %(Paquetes)s, %(Unidades)s, false, %(Sucursal)s);        
-    #      """,data)
-    #     self.conn.commit()
-        
+    def insert_nota_venta_producto_rsv(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            INSERT INTO rsv.nota_venta_productos
+            (id_venta, codigo, unidades, id_usuario, ids_usuario)
+            VALUES(%(Id_venta)s, %(Codigo)s,%(Unidades)s, %(Id_user)s,%(Ids_user)s);      
+         """,data)
+        self.conn.commit()
+
+
+    def get_max_id_nota_venta(self) :
+        with self.conn.cursor() as cur:
+                cur.execute("""
+                select coalesce (max(id)+1,1) from rsv.nota_venta nv 
+                """)
+
+                return cur.fetchone()
+            
 class transyanezConnection():
     conn = None
     def __init__(self) -> None:
