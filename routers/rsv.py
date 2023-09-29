@@ -22,6 +22,8 @@ from database.schema.rsv.cargas_rsv import cargas_rsv_schema , lista_cargas_sche
 from database.schema.rsv.tipo_despacho import tipos_despacho_schema
 
 from database.schema.rsv.datos_carga_etiqueta import datos_cargas_etiquetas_schema
+
+from database.models.rsv.nota_venta import NotaVenta
 ##Conexiones
 from database.client import reportesConnection
 
@@ -278,3 +280,10 @@ async def update_carga(list_body : List[CargaRSV]):
 async def get_tipo_despacho():
     results = conn.read_tipo_despacho_rsv()
     return tipos_despacho_schema(results)
+
+# NotaVenta
+
+@router.post("/agregar/nota_venta")
+async def insert_nota_venta(body : NotaVenta):
+    print(body)
+    return "tipos_despacho_schema(results)"
