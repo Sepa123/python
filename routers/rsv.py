@@ -19,6 +19,8 @@ from database.schema.rsv.obtener_etiqueta_carga import obtener_etiquetas_carga_s
 
 from database.schema.rsv.cargas_rsv import cargas_rsv_schema , lista_cargas_schema
 
+from database.schema.rsv.tipo_despacho import tipos_despacho_schema
+
 from database.schema.rsv.datos_carga_etiqueta import datos_cargas_etiquetas_schema
 ##Conexiones
 from database.client import reportesConnection
@@ -271,3 +273,8 @@ async def update_carga(list_body : List[CargaRSV]):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No se ha agregado ningun producto a a la carga")
         else:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error al ingresar la carga")
+
+@router.get("/tipo/despacho")
+async def get_tipo_despacho():
+    results = conn.read_tipo_despacho_rsv()
+    return tipos_despacho_schema(results)

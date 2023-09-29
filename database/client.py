@@ -3931,6 +3931,14 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
               select * from rsv.inventario_por_sucursal({sucursal});
                         """)
             return cur.fetchall()
+
+
+    def read_tipo_despacho_rsv(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+              SELECT id, despacho FROM rsv.tipo_despacho;
+                        """)
+            return cur.fetchall()
         
     ## Obtener sucursales rsv
 
@@ -3950,6 +3958,22 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
               select * from rsv.obtener_datos_carga('{nombre_carga}');
                         """)
             return cur.fetchall()
+    
+    ## Ventas
+    # ingresar nota_venta
+
+    # def insert_nota_venta_rsv(self,data):
+    #     with self.conn.cursor() as cur:
+    #         cur.execute("""
+    #         INSERT INTO rsv.nota_venta
+    #         (created_at, id_usuario, ids_usuario, sucursal, cliente, direccion, comuna, region, fecha_entrega, tipo_despacho, numero_factura, codigo_ty, entregado)
+    #         VALUES(CURRENT_TIMESTAMP, 0, '', 0, '', '', '', '', '', 0, '', '', false);
+
+    #        INSERT INTO rsv.cargas
+    #        (fecha_ingreso, id_usuario, ids_usuario, nombre_carga, codigo, color, paquetes, unidades, verificado, sucursal)
+    #        VALUES(%(Fecha_ingreso)s, %(Id_user)s, %(Ids_user)s, %(Nombre_carga)s, %(Codigo)s, %(Color)s, %(Paquetes)s, %(Unidades)s, false, %(Sucursal)s);        
+    #      """,data)
+    #     self.conn.commit()
         
 class transyanezConnection():
     conn = None
