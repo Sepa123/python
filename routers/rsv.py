@@ -263,7 +263,7 @@ async def update_carga(list_body : List[CargaRSV]):
             
         # print(data)
         return {
-            "message": f"{nombre_carga} agregada correctamente"
+            "message": f"{nombre_carga} actualizada correctamente"
         }
     except:
         print(" No, pase aca")
