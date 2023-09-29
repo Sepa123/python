@@ -228,8 +228,14 @@ async def update_carga(lista : ListaEliminar):
         return {
         "message" : "no hay nada que eliminar"
     }
+    codigos = lista.lista.split(',')
 
-    results = conn.delete_cargas(lista.lista)
+    print(codigos)
+
+    print(', '.join(['%s']*len(codigos)))
+    print(lista.nombre_carga)
+
+    results = conn.delete_cargas(lista.lista, lista.nombre_carga)
     return {
         "message" : f"Cargas eliminadas ,{results}"
     }
@@ -246,11 +252,13 @@ async def update_carga(list_body : List[CargaRSV]):
             print(data)
             #verificar si producto existe en esta carga
             check = conn.check_codigo_existente_carga(nombre_carga, body.Codigo)
+            print(check)
             # update de codigo existente
-            if check is not None:
+            if len(check) != 0:
                 conn.update_carga_rsv(data)
-                print("uno")
+                print("editado")
             else:
+                print("insertar")
                 conn.insert_carga_rsv(data)
             
         # print(data)

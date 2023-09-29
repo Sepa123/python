@@ -3824,12 +3824,13 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             return cur.fetchall()
         
 
-    def delete_cargas(self,array):
+    def delete_cargas(self,array : str,nombre_carga : str):
+        codigos = array.split(',')
+        valores = array 
         with self.conn.cursor() as cur:
             cur.execute(f"""
-                DELETE FROM rsv.cargas
-                WHERE codigo IN ({array});
-                        """)
+                DELETE FROM rsv.cargas WHERE codigo IN ({','.join(['%s']*len(codigos))}) AND nombre_carga = '{nombre_carga}'
+                        """, codigos)
             rows_delete = cur.rowcount
         self.conn.commit() 
         return rows_delete
