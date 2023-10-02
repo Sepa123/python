@@ -26,6 +26,8 @@ from database.schema.rsv.tipo_despacho import tipos_despacho_schema
 from database.schema.rsv.datos_carga_etiqueta import datos_cargas_etiquetas_schema
 
 from database.models.rsv.nota_venta import NotaVenta, NotaVentaProducto
+
+from database.models.rsv.datos_existencia_stock import ExistenciaStock
 ##Conexiones
 from database.client import reportesConnection
 
@@ -288,15 +290,46 @@ async def get_tipo_despacho():
 async def get_tipo_despacho(body : NotaVenta):
     
     id_venta = conn.get_max_id_nota_venta()
-    codigo_ty = generar_codigo_ty_nota_venta_rsv(id_venta[0])
+    # codigo_ty = generar_codigo_ty_nota_venta_rsv(id_venta[0])
+    codigo_ty = conn.obtener_codigo_factura_venta()[2]
     body.Codigo_ty = codigo_ty
     dataVenta = body.dict()
 
     print(dataVenta)
-    # conn.insert_nota_venta_rsv(dataVenta)
+    conn.insert_nota_venta_rsv(dataVenta)
 
     print(codigo_ty)
     for producto in body.arrays:
-        print(producto.Codigo)
-    return "tipos_despacho_schema(results)"
+        producto.Id_venta = id_venta[0]
+        print(producto)
+        data = producto.dict()
+        conn.insert_nota_venta_producto_rsv(data)
+
+    return {
+        "message": "Nota de venta agregada correctamente"
+    }
+
+@router.post("/verificar/existencia/producto")
+async def verificar_existencia_producto(body : ExistenciaStock):
+    data = body.dict()
+
+    results = conn.evaluar_pedido_unidad(data)
+    return {
+        "Retorno" : results[0],
+        "Codigo_r" : results[1],
+        "Cantidad" : results[2],
+        "Paquetes" : results[3],
+        "Unidades" : results[4],
+        "Mensaje" : results[5]
+    }
+
+@router.get("/obtener/factura/venta")
+async def codigo_factura_venta():
+    results = conn.obtener_codigo_factura_venta()
+    return {
+        "Retorno" : results[0],
+        "Mensaje" : results[1],
+        "Codigo" : results[2]
+    }
+
 

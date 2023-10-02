@@ -7,6 +7,8 @@ class NotaVentaProducto(BaseModel):
     Unidades: Optional[int]
     Id_user: Optional[int]
     Ids_user: Optional[str]
+    Retorno :Optional[str]
+    Mensaje :Optional[str]
 
 class NotaVenta(BaseModel):
     Id_user: Optional[int]
@@ -22,5 +24,6 @@ class NotaVenta(BaseModel):
     Codigo_ty: Optional[str]
     Entregado: Optional[bool]
     arrays : List[NotaVentaProducto] 
+
     # arrays : NotaVentaProducto
 

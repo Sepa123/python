@@ -3967,7 +3967,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             cur.execute("""
             INSERT INTO rsv.nota_venta
             (id_usuario, ids_usuario, sucursal, cliente, direccion, comuna, region, fecha_entrega, 
-             tipo_despacho, numero_factura, codigo_ty, entregado)
+             tipo_despacho, numero_factura, codigo_ty, despacho)
             VALUES(%(Id_user)s, %(Ids_user)s,%(Sucursal)s, %(Cliente)s, %(Direccion)s, %(Comuna)s, 
                    %(Region)s, %(Fecha_entrega)s,%(Tipo_despacho)s, %(Numero_factura)s , %(Codigo_ty)s,
                    %(Entregado)s);        
@@ -3986,12 +3986,28 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
 
     def get_max_id_nota_venta(self) :
         with self.conn.cursor() as cur:
-                cur.execute("""
-                select coalesce (max(id)+1,1) from rsv.nota_venta nv 
-                """)
+            cur.execute("""
+            select coalesce (max(id)+1,1) from rsv.nota_venta nv 
+            """)
 
-                return cur.fetchone()
+            return cur.fetchone()
+        
+    def evaluar_pedido_unidad(self,data) :
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            select * from rsv.evaluar_pedido_unidad(%(Codigo_producto)s,%(Cantidad)s,%(Sucursal)s)
+            """,data)
+            return cur.fetchone()
             
+
+    def obtener_codigo_factura_venta(self) :
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            select * from rsv.generar_codigo_factura();            
+            """)
+            return cur.fetchone()
+        
+        
 class transyanezConnection():
     conn = None
     def __init__(self) -> None:
