@@ -27,6 +27,8 @@ from database.schema.rutas.factura_electrolux import facturas_electrolux_schema
 from database.schema.rutas_en_activo import rutas_en_activo_schema
 from database.schema.nombres_rutas_activas import nombres_rutas_activas_schema, comunas_ruta_schema
 
+from database.schema.rutas.cantidad_productos_rutas_activas import cant_productos_rutas_schema
+
 from database.schema.rutas.alertas_conductor_ruta_activa import alertas_conductor_ruta_schema
 
 from database.schema.datos_ruta_activa_editar import datos_rutas_activas_editar_schema
@@ -42,6 +44,7 @@ from database.models.geolocalizacion.latlong import Latlong
 from database.schema.rutas.archivo_descarga_beetrack import datos_descarga_beetracks_schema
 
 from database.models.rutas.armar_rutas import ArmarRutaBloque
+
 
 router = APIRouter(tags=["rutas"], prefix="/api/rutas")
 
@@ -189,10 +192,26 @@ async def get_rutas_en_activo(nombre_ruta : str):
      print(nombre_ruta)
      results = conn.read_rutas_en_activo(nombre_ruta)
 
+     cant_productos_rutas_schema
+
      if results is None or results == []:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="la ruta no existe")
      
      return rutas_en_activo_schema(results)
+
+## cantidad de productos (relacionados a read_ruta_en_activo)
+
+@router.get("/listar/activo/cantidad/productos",status_code=status.HTTP_200_OK)
+async def get_rutas_en_activo(nombre_ruta : str):
+     print(nombre_ruta)
+     results = conn.read_cant_productos_ruta_activa(nombre_ruta)
+
+     cant_productos_rutas_schema
+
+     if results is None or results == []:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="la ruta no existe")
+     
+     return cant_productos_rutas_schema(results)
 
 # rutas activas
 

@@ -2138,6 +2138,28 @@ class reportesConnection():
         finally:
             # pass
             return updates
+        
+
+    ## obtener  cantidad de productos de rutas_en_activo
+    def read_cant_productos_ruta_activa(self,nombre_ruta):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            with data_ruta_manual as (
+            SELECT 
+                subquery.cod_pedido as cod_pedido,
+                (areati.busca_ruta_manual(subquery.cod_pedido))."Cod. SKU" as SKU,
+                (areati.busca_ruta_manual(subquery.cod_pedido))."Cantidad de Producto" as bultos
+            FROM (
+            SELECT DISTINCT ON (drm.cod_pedido) drm.cod_pedido cod_pedido
+            FROM quadminds.datos_ruta_manual drm
+            WHERE drm.nombre_ruta = '{nombre_ruta}'
+            ) AS subquery
+        )
+
+        select * from data_ruta_manual
+
+            """)
+            return cur.fetchall()
 
     ## Rutas en activo
 
@@ -2215,7 +2237,8 @@ class reportesConnection():
         with self.conn.cursor() as cur:
             cur.execute(f"""
                 select distinct(initcap(lower(ciudad)))
-                from quadminds.datos_ruta_manual drm where TO_CHAR(fecha_ruta, 'YYYY-MM-DD') = '{fecha}'
+                --from quadminds.datos_ruta_manual drm where TO_CHAR(fecha_ruta, 'YYYY-MM-DD') = '{fecha}'
+                from quadminds.datos_ruta_manual drm
                                     """)
             return cur.fetchall()
         

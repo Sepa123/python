@@ -18,3 +18,9 @@ excel/QuadMinds_Pedidos_Planificados_2023-08-07_Con_error.xls
 *.pyc
 *.xlsx
 excel/etiquetas_carga.xlsx
+*.pyc
+*.pyc
+*.pyc
+*.pyc
+__pycache__/main.cpython-311.pyc
+database/schema/__pycache__/user_schema.cpython-311.pyc
