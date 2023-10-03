@@ -2166,18 +2166,44 @@ class reportesConnection():
     def read_rutas_en_activo(self,nombre_ruta):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
+            with data_ruta_manual as (
+	SELECT 
+		subquery.cod_pedido as cod_pedido,
+		(areati.busca_ruta_manual(subquery.cod_pedido))."Cod. SKU" as sku ,
+		cast((areati.busca_ruta_manual(subquery.cod_pedido))."Cantidad de Producto"  as varchar) as unidades
+	FROM (
+	  SELECT DISTINCT ON (drm.cod_pedido) drm.cod_pedido cod_pedido
+	  FROM quadminds.datos_ruta_manual drm
+	  WHERE drm.nombre_ruta = '{nombre_ruta}'
+	) AS subquery
+	group by 1 
+)
+
+--select * from areati.ti_carga_easy_go_opl tcego where suborden = '1274066301'
+--select * from areati.busca_ruta_manual('1274066301')
+--select * from data_ruta_manual
+
+select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
             (
-            select cod_pedido as "Cod. Pedido",
-            ciudad as "Comuna",
+            select drm.cod_pedido as "Cod. Pedido",
+            drm.ciudad as "Comuna",
             string_agg(distinct(drm.sku) , '@') AS "SKU",
             string_agg(distinct(drm.desc_producto) , '@') AS "Producto",
-            count(distinct(drm.sku)) as "UND",
-            count(drm.sku) as "Bultos",
+            (SELECT 
+			    --cod_pedido, 
+			    STRING_AGG(unidades, '@') AS unidades_concatenados
+			FROM 
+			    data_ruta_manual
+			where cod_pedido = drm.cod_pedido)	as "UND",
+            --count(r.unidades) as "Bultos",
+			--count(distinct(drm.sku)) as "Bultos",
+            (SELECT  count(sku) AS bultos
+			FROM data_ruta_manual
+			where cod_pedido = drm.cod_pedido)	as "Bultos",
             initcap(nombre) as "Nombre Cliente",
             initcap(calle_numero) as "Direccion Cliente",
-            telefono as "Telefono",
-            estado as "Estado",
+            drm.telefono as "Telefono",
+            drm.estado as "Estado",
             '' as "Validado",
             CASE
                 WHEN bool_or(de) THEN 'Embalaje con Daño'
@@ -2187,13 +2213,14 @@ class reportesConnection():
                 WHEN bool_or(dp) THEN 'Producto con Daño'
                 ELSE ''
             END as "DP",
-            provincia_estado,
-            fecha_pedido,
-            id_ruta,
-            posicion
+            drm.provincia_estado,
+            drm.fecha_pedido,
+            drm.id_ruta,
+            drm.posicion
             from quadminds.datos_ruta_manual drm
-            where nombre_ruta = '{nombre_ruta}'
-            group by 1,2,7,8,9,10,11, id_ruta, posicion, provincia_estado, fecha_pedido
+            LEFT join data_ruta_manual r on r.cod_pedido = drm.cod_pedido 
+            where drm.nombre_ruta = '{nombre_ruta}'
+            group by 1,2,7,8,9,10,11, drm.id_ruta, drm.posicion, drm.provincia_estado, drm.fecha_pedido 
             ) datos_base;
             """)
             return cur.fetchall()
