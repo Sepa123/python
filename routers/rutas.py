@@ -346,10 +346,11 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
         arrayProductos = ruta["Producto"].split("@")
         arraySKU = ruta["SKU"].split("@")
         arrayUnidades = ruta["Unidades"].split("@")
+        # print(ruta["arrayBultos"])
         if len(arrayProductos) == 1:
             fila = [
                 ruta["Pos"], ruta["Codigo_pedido"], ruta["Comuna"] ,ruta["Nombre_cliente"],ruta["Direccion_cliente"], ruta["Telefono"], arraySKU[0], arrayProductos[0],
-                arrayUnidades[0], arrayUnidades[0] , ruta["DE"] + " " + ruta["DP"]
+                arrayUnidades[0], ruta["arrayBultos"][0] , ruta["DE"] + " " + ruta["DP"]
             ]
             datos.append(fila)
         elif len(arrayProductos) > 1:
@@ -357,13 +358,13 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
                 if i == 0:
                     fila = [
                         ruta["Pos"], ruta["Codigo_pedido"], ruta["Comuna"] ,ruta["Nombre_cliente"],ruta["Direccion_cliente"], ruta["Telefono"], arraySKU[0], producto,
-                        arrayUnidades[0], arrayUnidades[0], ruta["DE"] + " " + ruta["DP"]
+                        arrayUnidades[0], ruta["arrayBultos"][0], ruta["DE"] + " " + ruta["DP"]
                     ]
                     datos.append(fila)
                 else:
                     fila_producto = [
                         "", "", "", "",
-                        "", "", arraySKU[i], producto , arrayUnidades[i], arrayUnidades[i]
+                        "", "", arraySKU[i], producto , arrayUnidades[i], ruta["arrayBultos"][i]
                     ]
                     datos.append(fila_producto)
   
