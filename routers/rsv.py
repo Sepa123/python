@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status,HTTPException
+from fastapi import APIRouter, status,HTTPException, Path
 ##Modelos y schemas
 from typing import List
 from database.schema.rsv.catalogo_producto import catalogos_productos_schema , codigos_por_color_schema
@@ -22,6 +22,11 @@ from database.schema.rsv.cargas_rsv import cargas_rsv_schema , lista_cargas_sche
 from database.schema.rsv.tipo_despacho import tipos_despacho_schema
 
 from database.schema.rsv.datos_carga_etiqueta import datos_cargas_etiquetas_schema
+
+from database.schema.rsv.producoPickeado import pickeado_rsv_schema
+from database.models.rsv.asignarUbicacion import RsVUbicacion
+from database.schema.rsv.sucursalPorId import sucursales_rsvPorId_schema
+from database.schema.rsv.verificarMatchSucursal import match_sucursales_rsv_schema
 ##Conexiones
 from database.client import reportesConnection
 
@@ -33,6 +38,41 @@ from openpyxl.styles import Font , PatternFill, Border ,Side
 router = APIRouter(tags=["RSV"], prefix="/api/rsv")
 
 conn = reportesConnection()
+
+@router.get("/producto/{barCode}")
+async def obtener_producto_ById(barCode: str):
+    result = conn.read_cargas_rsv_porId(barCode)
+    return pickeado_rsv_schema(result)
+
+@router.put("/producto/editar")
+async def editar_ubicacion_rsv(body: RsVUbicacion):
+    data = body.dict()
+    conn.update_carga_rsv_porId(data)
+    return {
+        "message": "Producto editado correctamente"
+    }
+
+@router.get("/producto")
+async def obtener_sucursal():
+    result = conn.read_sucursal()
+    return sucursales_rsv_schema(result)
+
+@router.get("/sucursal/{id}")
+async def obtener_sucursal_ById(id: int):
+    result = conn.read_sucursal_porId(id)
+    return sucursales_rsvPorId_schema(result)
+
+
+@router.get("/sucursal/valida/{barCode}")
+async def match_sucursal(barCode: str):
+    result = conn.read_sucursal_match(barCode)
+    return match_sucursales_rsv_schema(result)
+
+
+@router.get("/etiqueta")
+async def obtener_producto():
+    result = conn.read_etiquetas_rsv()
+    return etiquetas_productos_schema(result)
 
 @router.get("/catalogo")
 async def obtener_catalogo_rsv():
