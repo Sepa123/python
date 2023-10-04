@@ -3886,6 +3886,42 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                         """)
             return cur.fetchall()
         
+    ## asigna ubicacion por codigo de barra
+    def read_cargas_rsv_porId(self, barCode):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                select codigo, descripcion, ubicacion, verificado from rsv.etiquetas e where bar_code = '{barCode}';
+                        """)
+            return cur.fetchall()
+    def update_carga_rsv_porId(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute(""" UPDATE  rsv.etiquetas
+                        SET ubicacion= %(Ubicacion)s, verificado=%(verificado)s WHERE bar_code = %(bar_code)s;
+            """, data)   
+            self.conn.commit()  
+
+
+    def read_sucursal(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                select * from rsv.sucursal;    
+                        """)
+            return cur.fetchall()
+
+    def read_sucursal_porId(self, id):
+        with self.conn.cursor() as cur:
+            cur.execute("SELECT id, nombre FROM rsv.sucursal WHERE id = %s;", (id,))
+            return cur.fetchall()
+
+    def read_sucursal_match(self, barCode):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" select * from rsv.busca_sucursal_barcode('{barCode}')
+                    """)
+            return cur.fetchall()
+
+
+    ##  fin asigna ubicacion por codigo de barra
+        
 
     ##generar etiquetas
 
@@ -4021,6 +4057,17 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             select * from rsv.generar_codigo_factura();            
             """)
             return cur.fetchone()
+        
+
+    def obtener_estructuras_rsv(self) :
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            select e.nombre , e.sucursal , te.tipo , e.cant_espacios 
+            from rsv.estructuras e
+            left join rsv.tipo_estructura te on te.id = e.tipo 
+            order by e.nombre;         
+            """)
+            return cur.fetchall()
         
         
 class transyanezConnection():
