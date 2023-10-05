@@ -4081,10 +4081,20 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             """)
             return cur.fetchall()
     
-    def obtener_lista_detalle_ventas_rsv(self, id_venta : int) :
+    def obtener_lista_detalle_ventas_barcode_rsv(self, id_venta : int) :
         with self.conn.cursor() as cur:
             cur.execute(f"""
             select * from rsv.detalle_venta_barcode({id_venta})  
+            """)
+            return cur.fetchall()
+        
+    def obtener_lista_detalle_ventas_rsv(self, id_venta : int) :
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            SELECT nvp.id, nvp.id_venta, nvp.codigo, nvp.unidades, cp.producto 
+            FROM rsv.nota_venta_productos nvp
+            inner join rsv.catalogo_productos cp on cp.codigo = nvp.codigo 
+            where id_venta = {id_venta}
             """)
             return cur.fetchall()
         

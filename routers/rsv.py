@@ -31,6 +31,7 @@ from database.models.rsv.nota_venta import NotaVenta, NotaVentaProducto
 
 from database.schema.rsv.nota_venta import notas_ventas_schema
 from database.schema.rsv.detalle_venta import detalle_ventas_schema
+from database.schema.rsv.nota_venta_producto import nota_ventas_productos_schema
 
 from database.models.rsv.datos_existencia_stock import ExistenciaStock
 
@@ -395,9 +396,16 @@ async def get_notas_ventas_by_mes_y_sucursal(mes: str, sucursal : int):
 
 
 
-@router.get("/notas_ventas/detalle/lista")
-async def get_notas_ventas_by_mes_y_sucursal(id_venta : int):
-    results = conn.obtener_lista_detalle_ventas_rsv(id_venta)
+@router.get("/notas_ventas/detalle/lista/barcode")
+async def get_notas_ventas_detalle_barcode(id_venta : int):
+    results = conn.obtener_lista_detalle_ventas_barcode_rsv(id_venta)
 
     return detalle_ventas_schema(results)
+
+
+@router.get("/notas_ventas/detalle/lista")
+async def get_notas_ventas_detalle(id_venta : int):
+    results = conn.obtener_lista_detalle_ventas_rsv(id_venta)
+
+    return nota_ventas_productos_schema(results)
 
