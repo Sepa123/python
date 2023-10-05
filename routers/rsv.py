@@ -29,6 +29,9 @@ from database.schema.rsv.estructura_rsv import estructuras_rsv_schema
 
 from database.models.rsv.nota_venta import NotaVenta, NotaVentaProducto
 
+from database.schema.rsv.nota_venta import notas_ventas_schema
+from database.schema.rsv.nota_venta_producto import nota_ventas_productos_schema
+
 from database.models.rsv.datos_existencia_stock import ExistenciaStock
 
 from database.schema.rsv.productoPickeado import pickeado_rsv_schema
@@ -383,4 +386,18 @@ async def get_estructura_rsv():
     results = conn.obtener_estructuras_rsv()
     return estructuras_rsv_schema(results)
 
+
+@router.get("/notas_ventas/lista")
+async def get_notas_ventas_by_mes_y_sucursal(mes: str, sucursal : int):
+    results = conn.read_lista_ventas_por_mes(mes,sucursal)
+
+    return notas_ventas_schema(results)
+
+
+
+@router.get("/notas_ventas/detalle/lista")
+async def get_notas_ventas_by_mes_y_sucursal(id_venta : int):
+    results = conn.obtener_lista_detalle_ventas_rsv(id_venta)
+
+    return nota_ventas_productos_schema(results)
 

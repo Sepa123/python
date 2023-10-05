@@ -4018,10 +4018,9 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             cur.execute("""
             INSERT INTO rsv.nota_venta
             (id_usuario, ids_usuario, sucursal, cliente, direccion, comuna, region, fecha_entrega, 
-             tipo_despacho, numero_factura, codigo_ty, despacho)
+             tipo_despacho, numero_factura, codigo_ty, preparado, entregado)
             VALUES(%(Id_user)s, %(Ids_user)s,%(Sucursal)s, %(Cliente)s, %(Direccion)s, %(Comuna)s, 
-                   %(Region)s, %(Fecha_entrega)s,%(Tipo_despacho)s, %(Numero_factura)s , %(Codigo_ty)s,
-                   %(Entregado)s);        
+                   %(Region)s, %(Fecha_entrega)s,%(Tipo_despacho)s, %(Numero_factura)s , %(Codigo_ty)s,false, false);        
          """,data)
         self.conn.commit()
 
@@ -4066,6 +4065,29 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             from rsv.estructuras e
             left join rsv.tipo_estructura te on te.id = e.tipo 
             order by e.nombre;         
+            """)
+            return cur.fetchall()
+        
+
+    def read_lista_ventas_por_mes(self,mes : str,sucursal : int) :
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select nv.id, nv.created_at, nv.id_usuario, nv.ids_usuario, nv.sucursal, nv.cliente, nv.direccion, nv.comuna,
+                   nv.region, nv.fecha_entrega, td.despacho, nv.numero_factura, nv.codigo_ty ,nv.preparado , nv.fecha_preparado ,nv.entregado , nv.fecha_despacho
+            from rsv.nota_venta nv
+            inner join rsv.tipo_despacho td  on td.id = nv.tipo_despacho 
+            where to_char(created_at  ,'yyyymm')= '{mes}' and sucursal = {sucursal} 
+            order by nv.fecha_entrega         
+            """)
+            return cur.fetchall()
+    
+    def obtener_lista_detalle_ventas_rsv(self, id_venta : int) :
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            SELECT nvp.id, nvp.created_at, nvp.id_venta, nvp.codigo, nvp.unidades, nvp.id_usuario, nvp.ids_usuario, cp.producto 
+            FROM rsv.nota_venta_productos nvp
+            inner join rsv.catalogo_productos cp on cp.codigo = nvp.codigo 
+            where id_venta = {id_venta}    
             """)
             return cur.fetchall()
         
