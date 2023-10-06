@@ -413,9 +413,6 @@ async def get_notas_ventas_detalle(id_venta : int):
 
 @router.put("/actualizar/estado/nota_venta")
 async def update_estado_entrega_nota_venta(body : BodyEntregaNotaVenta) :
-    data = body.dict()
-    # conn.update_estado_entrega_nota_venta_rsv(data)
-    
     # Obtén la fecha actual
     fecha_actual = datetime.now()
 
@@ -423,6 +420,12 @@ async def update_estado_entrega_nota_venta(body : BodyEntregaNotaVenta) :
     fecha_formateada = fecha_actual.strftime("%Y-%m-%d")
     print(fecha_actual)
     print(fecha_formateada)
+
+    body.Fecha_despacho = fecha_formateada
+
+    data = body.dict()
+    conn.update_estado_entrega_nota_venta_rsv(data)
+
     print(data)
     return {
         "message": "Venta cerrada correctamente",
