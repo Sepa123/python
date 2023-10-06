@@ -2038,6 +2038,14 @@ class reportesConnection():
             select "Código de Producto", "Descripción del Producto"  from areati.busca_ruta_manual('{pedido_id}')
             """)
             return cur.fetchall()
+        
+    def get_comuna_por_ruta_manual(self,pedido_id):
+
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select "Ciudad" from areati.busca_ruta_manual('{pedido_id}') limit 1
+            """)
+            return cur.fetchone()
 
     def get_nombre_ruta_manual(self,created_by):
 
@@ -4110,7 +4118,15 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
         self.conn.commit()
         
         return row
-        
+    
+    ## generar codigo factura de notas de ventas
+
+    def generar_codigo_factura_nota_venta_rsv(self, tipo_retiro : int) :
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+             select * from rsv.generar_codigo_factura ({tipo_retiro}); 
+            """)
+            return cur.fetchone()
         
 class transyanezConnection():
     conn = None

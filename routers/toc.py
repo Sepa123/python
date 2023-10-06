@@ -181,7 +181,15 @@ async def get_actividad_diaria_usuario(ids_usuario : str, fecha : str):
 async def get_backoffice_usuario(ids_usuario : str):
      # id = id_usuario.replace("hela-","")
      results = conn.toc_backoffice_usuario(ids_usuario)
-     return backoffices_usuario_schema(results)
+     # ciudad = conn.get_comuna_por_ruta_manual()
+
+     backoffice = backoffices_usuario_schema(results)
+     # for result in backoffice:
+     #      if result["Comuna"] is None:
+     #       print(result["Comuna"] )
+     #       ciudad = conn.get_comuna_por_ruta_manual()[0]
+     #       result["Comuna"] = ciudad
+     return backoffice
 
 @router.get("/tracking")
 async def toc_tracking(cod_producto : str):

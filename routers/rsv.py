@@ -41,6 +41,8 @@ from database.schema.rsv.productoPickeado import pickeado_rsv_schema
 from database.models.rsv.asignarUbicacion import RsVUbicacion
 from database.schema.rsv.sucursalPorId import sucursales_rsvPorId_schema
 from database.schema.rsv.verificarMatchSucursal import match_sucursales_rsv_schema
+
+from database.schema.rsv.codigo_factura_nota_venta import generar_codigo_factura_nota_venta
 ##Conexiones
 from database.client import reportesConnection
 
@@ -410,6 +412,12 @@ async def get_notas_ventas_detalle(id_venta : int):
     results = conn.obtener_lista_detalle_ventas_rsv(id_venta)
 
     return nota_ventas_productos_schema(results)
+
+
+@router.get("/codigo/factura/venta")
+async def get_notas_ventas_detalle(retiro : int):
+    results = conn.generar_codigo_factura_nota_venta_rsv(retiro)
+    return generar_codigo_factura_nota_venta(results)
 
 @router.put("/actualizar/estado/nota_venta")
 async def update_estado_entrega_nota_venta(body : BodyEntregaNotaVenta) :
