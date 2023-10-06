@@ -4098,6 +4098,19 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             """)
             return cur.fetchall()
         
+    ### update estado entrega de nota venta
+    def update_estado_entrega_nota_venta_rsv(self, data):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            UPDATE rsv.nota_venta
+            SET entregado=true , fecha_despacho = %(Fecha_despacho)s
+            WHERE id= %(Id_venta)s;
+            """,data)
+            row = cur.rowcount
+        self.conn.commit()
+        
+        return row
+        
         
 class transyanezConnection():
     conn = None

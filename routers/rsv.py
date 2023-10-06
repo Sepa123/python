@@ -1,4 +1,5 @@
 from fastapi import APIRouter, status,HTTPException, Path
+from datetime import datetime
 ##Modelos y schemas
 from typing import List
 from database.schema.rsv.catalogo_producto import catalogos_productos_schema , codigos_por_color_schema
@@ -28,6 +29,7 @@ from database.schema.rsv.datos_carga_etiqueta import datos_cargas_etiquetas_sche
 from database.schema.rsv.estructura_rsv import estructuras_rsv_schema
 
 from database.models.rsv.nota_venta import NotaVenta, NotaVentaProducto
+from database.models.rsv.update_entrega_nota_venta import BodyEntregaNotaVenta
 
 from database.schema.rsv.nota_venta import notas_ventas_schema
 from database.schema.rsv.detalle_venta import detalle_ventas_schema
@@ -408,4 +410,24 @@ async def get_notas_ventas_detalle(id_venta : int):
     results = conn.obtener_lista_detalle_ventas_rsv(id_venta)
 
     return nota_ventas_productos_schema(results)
+
+@router.put("/actualizar/estado/nota_venta")
+async def update_estado_entrega_nota_venta(body : BodyEntregaNotaVenta) :
+    data = body.dict()
+    # conn.update_estado_entrega_nota_venta_rsv(data)
+    
+    # Obtén la fecha actual
+    fecha_actual = datetime.now()
+
+    # Formatea la fecha en el formato "yyyy-mm-dd"
+    fecha_formateada = fecha_actual.strftime("%Y-%m-%d")
+    print(fecha_actual)
+    print(fecha_formateada)
+    print(data)
+    return {
+        "message": "Venta cerrada correctamente",
+        "Fecha_p" : fecha_formateada,
+        "Fecha_sin_f:" : fecha_actual
+    }
+
 
