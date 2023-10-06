@@ -27,6 +27,9 @@ from database.schema.rsv.producoPickeado import pickeado_rsv_schema
 from database.models.rsv.asignarUbicacion import RsVUbicacion
 from database.schema.rsv.sucursalPorId import sucursales_rsvPorId_schema
 from database.schema.rsv.verificarMatchSucursal import match_sucursales_rsv_schema
+
+from database.schema.rsv.paquetesAbiertos import paquetes_abiertos_sucursal_schema
+from database.models.rsv.dataAbrirPaquete import bodyPaqueteYBitacora
 ##Conexiones
 from database.client import reportesConnection
 
@@ -67,7 +70,89 @@ async def obtener_sucursal_ById(id: int):
 async def match_sucursal(barCode: str):
     result = conn.read_sucursal_match(barCode)
     return match_sucursales_rsv_schema(result)
+##lista de paquetes abiertos
 
+@router.get("/lista-paquetes/{sucursal}")
+async def get_paquetes_abiertos(sucursal : int):
+    results = conn.read_paquetes_abiertos(sucursal)
+    print(results)
+    return paquetes_abiertos_sucursal_schema(results)
+
+@router.get("/etiquetas/reimprimir/descargar")
+async def download_reimprimir_etiquetas_rsv(codigo: int):
+
+    results = conn.reimprimir_etiqueta_paquete_abierto_rsv(codigo)
+    wb = Workbook()
+    ws = wb.active
+    results.insert(0, ("bar_code","codigo_imp","descripcion","color"))
+    print(results)
+
+    for row in results:
+        ws.append(row)
+    
+    for col in ws.columns:
+        max_length = 0
+        column = col[0].column_letter # get column letter
+        for cell in col:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(str(cell.value))
+            except:
+                pass
+        adjusted_width = (max_length + 2)
+        ws.column_dimensions[column].width = adjusted_width
+    
+    wb.save("excel/etiquetas_carga.xlsx")
+    return FileResponse("excel/etiquetas_carga.xlsx")
+
+@router.get("/unica/etiqueta/descargar")
+async def download_reimprimir_etiqueta_unica_rsv(nombre_carga : str, codigo: str,tipo : str, bar_code: str):
+
+    results = conn.reimprimir_etiqueta_unica_rsv(nombre_carga, codigo, tipo, bar_code)
+    wb = Workbook()
+    ws = wb.active
+    results.insert(0, ("bar_code","codigo_imp","descripcion","color"))
+    print(results)
+
+    for row in results:
+        ws.append(row)
+    
+    for col in ws.columns:
+        max_length = 0
+        column = col[0].column_letter # get column letter
+        for cell in col:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(str(cell.value))
+            except:
+                pass
+        adjusted_width = (max_length + 2)
+        ws.column_dimensions[column].width = adjusted_width
+    
+    wb.save("excel/etiquetas_carga.xlsx")
+    return FileResponse("excel/etiquetas_carga.xlsx")
+
+
+
+@router.get("/abrir/paquete/{bar_code}")
+async def abrir_paquete_etiquetas_nuevas(bar_code: str):
+    result = conn.abrir_paquete_nuevo_rsv( bar_code)
+    return {
+        "alerta": result[0][1],
+        "message": result[0][0]
+    }
+
+
+@router.put("/bitacora/rsv", status_code=status.HTTP_202_ACCEPTED)
+async def actualizar_bitacora_rsv(body: bodyPaqueteYBitacora):
+    print(body)
+    try:
+        data = body.dict()
+        print(data)
+        conn.insert_data_bitacora_rsv(data)
+    except:
+          print("error")
+          raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la verificación")
 
 @router.get("/etiqueta")
 async def obtener_producto():
@@ -184,6 +269,7 @@ async def insert_carga_rsv(list_body : List[CargaRSV]):
         else:
 
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error al ingresar la carga")
+
 
 ## buscar si nombre_carga existe
 @router.get("/carga/buscar")
