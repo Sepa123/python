@@ -3855,7 +3855,9 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             return cur.fetchall()
     def read_paquetes_abiertos(self, sucursal : int):
          with self.conn.cursor() as cur:
-            cur.execute(f"""select * from rsv.paquetes_abiertos_sucursal('{sucursal}');
+            cur.execute(f"""select fecha, paquetes.id, paquetes.carga, paquetes.bar_code,
+                         paquetes.codigo, color, descripcion, tipo from rsv.paquetes_abiertos_sucursal('{sucursal}') AS paquetes
+                         INNER JOIN rsv.etiquetas AS e ON paquetes.id = e.id;
                 """)
 
             return cur.fetchall()
