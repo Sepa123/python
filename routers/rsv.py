@@ -43,6 +43,8 @@ from database.schema.rsv.sucursalPorId import sucursales_rsvPorId_schema
 from database.schema.rsv.verificarMatchSucursal import match_sucursales_rsv_schema
 
 from database.schema.rsv.codigo_factura_nota_venta import generar_codigo_factura_nota_venta
+
+from database.schema.rsv.peso_posicion_suc import peso_posicion_sucursales_schema
 ##Conexiones
 from database.client import reportesConnection
 
@@ -441,4 +443,9 @@ async def update_estado_entrega_nota_venta(body : BodyEntregaNotaVenta) :
         "Fecha_sin_f:" : fecha_actual
     }
 
+# peso_posicion_sucursal
+@router.get("/peso/posicion/sucursal")
+async def get_peso_posicion_sucursal(estructura : str, sucursal : int):
+    results = conn.peso_posicion_sucursal(estructura,sucursal)
 
+    return peso_posicion_sucursales_schema(results)

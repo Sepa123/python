@@ -2043,7 +2043,7 @@ class reportesConnection():
 
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            select "Ciudad" from areati.busca_ruta_manual('{pedido_id}') limit 1
+            select "Ciudad" , "Provincia/Estado"  from areati.busca_ruta_manual('{pedido_id}') limit 1
             """)
             return cur.fetchone()
 
@@ -4127,6 +4127,14 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
              select * from rsv.generar_codigo_factura ({tipo_retiro}); 
             """)
             return cur.fetchone()
+        
+    # Obtener peso_posicion_succursal
+    def peso_posicion_sucursal(self,estructura,sucursal):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+             select * from rsv.peso_posicion_suc('{estructura}',{sucursal}) 
+            """)
+            return cur.fetchall()
         
 class transyanezConnection():
     conn = None
