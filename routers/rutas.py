@@ -24,7 +24,7 @@ from database.models.ruta_manual import RutaManual
 from database.schema.ruta_manual import convert_to_json, rutas_manuales_schema
 from database.models.ruta_en_activo import RutaEnActivo
 from database.schema.rutas.factura_electrolux import facturas_electrolux_schema
-from database.schema.rutas_en_activo import rutas_en_activo_schema
+from database.schema.rutas_en_activo import rutas_en_activo_schema , ruta_en_activo_excel_schema
 from database.schema.nombres_rutas_activas import nombres_rutas_activas_schema, comunas_ruta_schema
 
 from database.schema.rutas.cantidad_productos_rutas_activas import cant_productos_rutas_schema
@@ -190,14 +190,15 @@ async def update_estado_producto(cod_producto:str, body : bodyUpdateVerified ):
 @router.get("/listar/activo",status_code=status.HTTP_200_OK)
 async def get_rutas_en_activo(nombre_ruta : str):
      print(nombre_ruta)
-     results = conn.read_rutas_en_activo(nombre_ruta)
-
+    #  results = conn.read_rutas_en_activo(nombre_ruta)
+     results = conn.read_rutas_en_activo_para_armar_excel(nombre_ruta)
      cant_productos_rutas_schema
 
      if results is None or results == []:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="la ruta no existe")
      
-     return rutas_en_activo_schema(results)
+    #  return rutas_en_activo_schema(results)
+     return ruta_en_activo_excel_schema(results)
 
 ## cantidad de productos (relacionados a read_ruta_en_activo)
 
@@ -316,15 +317,17 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
     ])
   
     # result = conn.read_rutas_en_activo(nombre_ruta) 
-
+    result = conn.read_rutas_en_activo_para_armar_excel(nombre_ruta)
+    
     border = Border(left=Side(border_style='thin', color='000000'),   
                 right=Side(border_style='thin', color='000000'),   
                 top=Side(border_style='thin', color='000000'),     
                 bottom=Side(border_style='thin', color='000000')) 
     
-    # rutas_activas = rutas_en_activo_schema(result)
+    rutas_activas = ruta_en_activo_excel_schema(result)
+    
 
-    rutas_activas = body
+    # rutas_activas = body
 
     # Crear un libro de Excel y seleccionar la hoja activa
     libro_excel = Workbook()
@@ -346,11 +349,12 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
         arrayProductos = ruta["Producto"].split("@")
         arraySKU = ruta["SKU"].split("@")
         arrayUnidades = ruta["Unidades"].split("@")
+        arrayBultos = ruta["Bultos"].split("@")
         # print(ruta["arrayBultos"])
         if len(arrayProductos) == 1:
             fila = [
                 ruta["Pos"], ruta["Codigo_pedido"], ruta["Comuna"] ,ruta["Nombre_cliente"],ruta["Direccion_cliente"], ruta["Telefono"], arraySKU[0], arrayProductos[0],
-                arrayUnidades[0], arrayUnidades[0] , ruta["DE"] + " " + ruta["DP"]
+                arrayUnidades[0], arrayBultos[0] , ruta["DE"] + " " + ruta["DP"]
             ]
             datos.append(fila)
         elif len(arrayProductos) > 1:
@@ -358,13 +362,13 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
                 if i == 0:
                     fila = [
                         ruta["Pos"], ruta["Codigo_pedido"], ruta["Comuna"] ,ruta["Nombre_cliente"],ruta["Direccion_cliente"], ruta["Telefono"], arraySKU[0], producto,
-                        arrayUnidades[0], arrayUnidades[0], ruta["DE"] + " " + ruta["DP"]
+                        arrayUnidades[0], arrayBultos[0], ruta["DE"] + " " + ruta["DP"]
                     ]
                     datos.append(fila)
                 else:
                     fila_producto = [
                         "", "", "", "",
-                        "", "", arraySKU[i], producto , arrayUnidades[i], arrayUnidades[i]
+                        "", "", arraySKU[i], producto , arrayUnidades[i], arrayBultos[i]
                     ]
                     datos.append(fila_producto)
   

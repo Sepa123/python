@@ -20,3 +20,25 @@ def ruta_en_activo_schema(ruta):
 
 def rutas_en_activo_schema(rutas): 
     return [ruta_en_activo_schema(ruta) for ruta in rutas]
+
+
+
+def ruta_en_activo_excel(ruta):
+    return {
+            "Pos" : ruta[0],
+            "Codigo_pedido":ruta[1],
+            "Comuna": ruta[2],
+            "Nombre_cliente": ruta[3],
+            "Direccion_cliente": ruta[4],
+            "Telefono": ruta[5],
+            "SKU": ruta[6],
+            "Producto": ruta[7],
+            "Unidades": ruta[8],
+            "Bultos": ruta[9],
+            "DE" : ruta[10],
+            "DP": ruta[11],
+            "Fecha_pedido": ruta[12]
+        }
+
+def ruta_en_activo_excel_schema(rutas): 
+    return [ruta_en_activo_excel(ruta) for ruta in rutas]

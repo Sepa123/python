@@ -2233,6 +2233,37 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
             """)
             return cur.fetchall()
         
+
+    def read_rutas_en_activo_para_armar_excel(self,nombre_ruta):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select 	drm.posicion as "N°",
+            drm.cod_pedido as "Pedido",
+            drm.ciudad as "Comuna",
+            drm.nombre as "Nombre",
+            drm.calle_numero "Dirección",
+            drm.telefono as "teléfono",
+            rsb.sku as "SKU",
+            rsb.descripcion as "Producto",
+            rsb.cant_producto as "UND",
+            rsb.bultos as "Bult",
+            CASE
+                    WHEN bool_or(drm.de) THEN 'Embalaje con Daño'
+                    ELSE ''
+                END AS "DE",
+                CASE
+                    WHEN bool_or(drm.dp) THEN 'Producto con Daño'
+                    ELSE ''
+                END as "DP",
+            drm.fecha_pedido as "Fecha Pedido"
+            from quadminds.datos_ruta_manual drm 
+            LEFT JOIN LATERAL areati.recupera_sku_bultos(drm.cod_pedido) AS rsb ON true
+            where drm.nombre_ruta = '{nombre_ruta}'
+            group by 1,2,3,4,5,6,7,8,9,10,13
+            order by posicion asc
+            """)
+            return cur.fetchall()
+        
     def verificar_pistoledos_en_ruta(self,cod_pedido):
         with self.conn.cursor() as cur:
             cur.execute(f"""
