@@ -99,6 +99,7 @@ async def buscar_producto_existente(codigo : str):
 
 @router.post("/agregar/producto")
 async def agregar_nuevo_catalogo_rsv(body : CatalogoProducto):
+    body.Codigo = body.Codigo.upper()
     data = body.dict()
     conn.insert_nuevo_catalogo_rsv(data)
     return {
