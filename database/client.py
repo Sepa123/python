@@ -4167,6 +4167,51 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             """)
             return cur.fetchall()
         
+    ##Y
+
+    def read_paquetes_abiertos(self, sucursal : int):
+         with self.conn.cursor() as cur:
+             cur.execute(f"""
+                         select fecha, paquetes.id, paquetes.carga, paquetes.bar_code,
+                         paquetes.codigo, color, descripcion, tipo from rsv.paquetes_abiertos_sucursal('{sucursal}') AS paquetes
+                         INNER JOIN rsv.etiquetas AS e ON paquetes.id = e.id;
+                """)
+
+             return cur.fetchall()
+
+    def reimprimir_etiqueta_paquete_abierto_rsv(self, codigo : int):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+              select * from rsv.etiqueta_paquete_abierto('{codigo}');
+                        """)
+            return cur.fetchall()
+
+    def reimprimir_etiqueta_unica_rsv(self,nombre_carga : str , codigo : str, tipo : str, bar_code:str):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+              select * from rsv.obtener_etiqueta_carga_tipo('{nombre_carga}','{codigo}', '{tipo}') where bar_code = '{bar_code}';
+                        """)
+            return cur.fetchall()
+
+    def abrir_paquete_nuevo_rsv(self, bar_code: str):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""  select * from rsv.abrir_paquete('{bar_code}');
+                 """)
+            return cur.fetchall()
+
+    ##bitacora rsv 
+    def insert_data_bitacora_rsv(self, data):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO rsv.bitacora_producto (id_usuario, ids_usuario, sucursal, id_etiqueta, 
+                        bar_code, momento, lat, lng) VALUES(%(id_usuario)s, %(ids_usuario)s, %(sucursal)s,
+                         %(id_etiqueta)s, %(bar_code)s, %(momento)s, %(lat)s, %(lng)s); 
+                        """,data)
+
+        self.conn.commit()
+
+    ###/Y
+        
 class transyanezConnection():
     conn = None
     def __init__(self) -> None:
