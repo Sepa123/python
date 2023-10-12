@@ -3790,7 +3790,9 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def read_catalogo_rsv(self):
         with self.conn.cursor() as cur:
             cur.execute("""
-                select * from rsv.catalogo_productos order by 1
+                SELECT id, created_at, codigo, producto, unid_x_paquete, peso, ancho, alto, largo, color, coalesce(precio_unitario,0), ubicacion_p, ubicacion_u, codigo_original, id_user, ids_user, habilitado
+                FROM rsv.catalogo_productos
+                order by 1;
                         """)
             return cur.fetchall()
         
@@ -4046,6 +4048,16 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
         with self.conn.cursor() as cur:
             cur.execute(f"""
               select * from rsv.obtener_datos_carga('{nombre_carga}');
+                        """)
+            return cur.fetchall()
+        
+    ## obtener datos carga por nombre carga para descargar datos de excel
+
+    def read_datos_carga_por_nombre_rsv_descarga_excel(self,nombre_carga : str):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""          
+            select fecha_ingreso , nombre_color, codigo , producto , paquetes , unidades , total_unidades , cuenta_p , verifica_p , cuenta_u , verifica_u  
+            from rsv.obtener_datos_carga('{nombre_carga}')
                         """)
             return cur.fetchall()
     

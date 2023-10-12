@@ -5,6 +5,9 @@ from typing import List
 from database.schema.rsv.catalogo_producto import catalogos_productos_schema , codigos_por_color_schema
 from database.models.rsv.catalogo_producto import CatalogoProducto
 
+# from lib.excel_generico import generar_excel_generico
+import lib.excel_generico as excel
+
 from lib.codigo_nota_ventas import generar_codigo_ty_nota_venta_rsv
 
 from database.schema.rsv.etiquetas import etiquetas_productos_schema , datos_productos_etiquetas_schema
@@ -134,10 +137,27 @@ async def obtener_carga_rsv(nombre_carga : str):
     result = conn.read_cargas_por_nombre_carga_rsv(nombre_carga)
     return cargas_rsv_schema(result)
 
+## mostrar datos de etiquetas por pantalla
+
 @router.get("/datos/etiquetas/carga/{nombre_carga}")
 async def obtener_datos_carga_rsv(nombre_carga : str):
     result = conn.read_datos_carga_por_nombre_rsv(nombre_carga)
     return datos_cargas_etiquetas_schema(result)
+
+
+## descargar datos de etiquetas en excel
+
+@router.get("/datos/etiquetas/carga/{nombre_carga}/descargar")
+async def obtener_datos_carga_rsv(nombre_carga : str):
+    results = conn.read_datos_carga_por_nombre_rsv_descarga_excel(nombre_carga)
+    nombre_filas = ( "Fecha ingreso" , "Color", "Código" , "Producto" , "Paquetes" , "Unidades" , "Total Unidades" , "Cuenta paquetes" ,
+                     "Paquetes Verificados" , "Cuenta Uinidades" , "Unidades verificadas")
+    nombre_excel = f"{nombre_carga}"
+
+    return excel.generar_excel_con_titulo(results,nombre_filas,nombre_excel,nombre_carga)
+
+
+
 
 @router.get("/listar/cargas")
 async def obtener_carga_rsv():
@@ -249,6 +269,16 @@ async def get_sucursales_rsv():
 async def get_inventario_por_sucursal(sucursal : int):
     results = conn.obtener_inventario_por_sucursal(sucursal)
     return inventarios_sucursal_schema(results)
+
+
+@router.get("/inventario/sucursales/{sucursal}/descargar")
+async def get_inventario_por_sucursal(sucursal : int):
+    results = conn.obtener_inventario_por_sucursal(sucursal)
+    nombre_filas = ( "Color", "Código", "Producto", "Paquetes", "Unidades", "Total",)
+    nombre_excel = f"inventario-sucursal-{sucursal}"
+
+    return excel.generar_excel_generico(results,nombre_filas,nombre_excel)
+   
 
 ## eliminar cargas
 @router.put("/eliminar/cargas")
