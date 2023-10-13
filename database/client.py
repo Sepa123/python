@@ -2302,9 +2302,10 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
     def read_comunas_ruta_by_fecha(self,fecha):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-                select distinct(initcap(lower(ciudad)))
+                select distinct(initcap(lower(ciudad))) as ciudad
                 --from quadminds.datos_ruta_manual drm where TO_CHAR(fecha_ruta, 'YYYY-MM-DD') = '{fecha}'
                 from quadminds.datos_ruta_manual drm
+                order by ciudad 
                                     """)
             return cur.fetchall()
         
@@ -4234,6 +4235,47 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
         self.conn.commit()
 
     ###/Y
+
+
+    ##Suma de peso de las estructuras RSV
+
+    def obtener_suma_estructura_E13_E18(self, estructura: str , sucursal : int):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+                   select sum (peso_total)
+                    from
+                    (select peso_total from rsv.peso_posicion_suc('{estructura}18',{sucursal})
+                    union all
+                    select peso_total from rsv.peso_posicion_suc('{estructura}16',{sucursal})
+                    union all
+                    select peso_total from rsv.peso_posicion_suc('{estructura}15',{sucursal})
+                    union all
+                    select peso_total from rsv.peso_posicion_suc('{estructura}14',{sucursal})
+                    union all
+                    select sum(peso_total) from rsv.peso_posicion_suc('{estructura}13',{sucursal})
+                    ) as peso
+                 """)
+            return cur.fetchone()
+        
+
+    def obtener_suma_estructura_E9_E19(self, estructura: str, sucursal : int):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+                    select sum (peso_total)
+                    from
+                    (select peso_total from rsv.peso_posicion_suc('{estructura}19',{sucursal})
+                    union all
+                    select peso_total from rsv.peso_posicion_suc('{estructura}12',{sucursal})
+                    union all
+                    select peso_total from rsv.peso_posicion_suc('{estructura}11',{sucursal})
+                    union all
+                    select peso_total from rsv.peso_posicion_suc('{estructura}10',{sucursal})
+                    union all
+                    select peso_total from rsv.peso_posicion_suc('{estructura}9',{sucursal})
+                    ) as peso
+                 """)
+            return cur.fetchone()
+
         
 class transyanezConnection():
     conn = None

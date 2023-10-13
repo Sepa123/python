@@ -570,3 +570,18 @@ async def get_peso_posicion_sucursal(estructura : str, sucursal : int):
     return peso_posicion_sucursales_schema(results)
 
 
+#  suma  peso_posicion_sucursal
+@router.get("/peso/posicion/sucursal/suma")
+async def get_peso_posicion_sucursal(estructura : str, sucursal : int):
+
+    suma_E9_E19 = conn.obtener_suma_estructura_E9_E19(estructura,sucursal)[0]
+    suma_E13_E18 = conn.obtener_suma_estructura_E13_E18(estructura,sucursal)[0]
+    
+
+    return {
+        "Suma_izquerda" : suma_E9_E19,
+        "Suma_derecha" : suma_E13_E18
+
+    }
+
+
