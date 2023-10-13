@@ -4187,7 +4187,8 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def peso_posicion_sucursal(self,estructura,sucursal):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-             select * from rsv.peso_posicion_suc('{estructura}',{sucursal}) 
+             --select * from rsv.peso_posicion_suc('{estructura}',{sucursal}) 
+              select codigo,tipo,cantidad , coalesce (peso_total , 0) as peso_total from rsv.peso_posicion_suc('{estructura}',{sucursal}) 
             """)
             return cur.fetchall()
         
