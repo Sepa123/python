@@ -2334,6 +2334,17 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
             """)
         self.conn.commit()
 
+    ## actualizar estado de rutas para que esten abiertas
+
+    def update_estado_rutas_a_true_abierta(self,nombre_ruta):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""        
+            update quadminds.datos_ruta_manual
+            set estado = true
+            where quadminds.datos_ruta_manual.nombre_ruta  = '{nombre_ruta}'
+            """)
+        self.conn.commit()
+
     def read_ruta_activa_by_nombre_ruta(self,nombre_ruta):
         with self.conn.cursor() as cur:
             cur.execute(f"""

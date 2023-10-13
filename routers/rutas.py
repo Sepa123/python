@@ -605,3 +605,14 @@ async def pedido_en_ruta(pedido_id : str):
         "en_ruta" : check[0],
         "message": f"El pedido {pedido_id} no esta en ruta"
     }
+
+
+@router.put("/actualizar/estado/activo/{nombre_ruta}/abrir",status_code=status.HTTP_202_ACCEPTED)
+async def update_estado_ruta_a_true(nombre_ruta:str):
+     try:
+          print(nombre_ruta)
+          conn.update_estado_rutas_a_true_abierta(nombre_ruta)
+          return { "message": "Estado de Ruta Actualizado Correctamente" }
+     except:
+          print("error")
+          raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")

@@ -568,3 +568,5 @@ async def get_peso_posicion_sucursal(estructura : str, sucursal : int):
     results = conn.peso_posicion_sucursal(estructura,sucursal)
 
     return peso_posicion_sucursales_schema(results)
+
+
