@@ -3,7 +3,8 @@ def estructura_rsv(estructura):
 		"Nombre" : estructura[0],
 		"Sucursal" : estructura[1],
 		"Tipo" : estructura[2],
-		"Cantidad_espacios" : estructura[3]
+		"Cantidad_espacios" : estructura[3],
+        "Balanceo" : estructura[4]
 	}
 
 
