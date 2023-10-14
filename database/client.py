@@ -3810,7 +3810,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def read_cargas_rsv_porId(self, barCode):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-                select codigo, descripcion, ubicacion, verificado from rsv.etiquetas e where bar_code = '{barCode}';
+                select bar_code, descripcion, codigo, ubicacion, verificado from rsv.etiquetas e where bar_code = '{barCode}';
                         """)
             return cur.fetchall()
     def update_carga_rsv_porId(self,data):

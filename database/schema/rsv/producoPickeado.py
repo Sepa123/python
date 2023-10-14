@@ -1,10 +1,10 @@
 def pickeado_rsv(carga):
     return {
-
-        "Codigo" : carga[0],
+        "Bar_code": carga[0],
         "Descripcion" : carga[1],
-        "Ubicacion" : carga[2],
-        "Verificado" : carga[3]
+        "Codigo" : carga[2],
+        "Ubicacion" : carga[3],
+        "Verificado" : carga[4]
 	}
 
 def pickeado_rsv_schema(cargas):
