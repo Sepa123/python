@@ -52,6 +52,8 @@ from database.schema.rsv.peso_posicion_suc import peso_posicion_sucursales_schem
 from database.schema.rsv.paquetesAbiertos import paquetes_abiertos_sucursal_schema
 from database.models.rsv.dataAbrirPaquete import bodyPaqueteYBitacora
 
+from database.schema.rsv.tipo_estructura import tipos_estructuras_schema
+
 ##Conexiones
 from database.client import reportesConnection
 
@@ -584,4 +586,12 @@ async def get_peso_posicion_sucursal(estructura : str, sucursal : int):
 
     }
 
+
+tipos_estructuras_schema
+
+# peso_posicion_sucursal
+@router.get("/tipo/estructura")
+async def get_peso_posicion_sucursal():
+    results = conn.obtener_tipo_estructuras_rsv()
+    return tipos_estructuras_schema(results)
 

@@ -4131,6 +4131,13 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             """)
             return cur.fetchall()
         
+    def obtener_tipo_estructuras_rsv(self) :
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            select * from rsv.tipo_estructura te        
+            """)
+            return cur.fetchall()
+        
 
     def read_lista_ventas_por_mes(self,mes : str,sucursal : int) :
         with self.conn.cursor() as cur:
