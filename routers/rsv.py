@@ -586,9 +586,6 @@ async def get_peso_posicion_sucursal(estructura : str, sucursal : int):
 
     }
 
-
-tipos_estructuras_schema
-
 # peso_posicion_sucursal
 @router.get("/tipo/estructura")
 async def get_peso_posicion_sucursal():
