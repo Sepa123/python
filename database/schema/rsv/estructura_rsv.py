@@ -4,7 +4,8 @@ def estructura_rsv(estructura):
 		"Sucursal" : estructura[1],
 		"Tipo" : estructura[2],
 		"Cantidad_espacios" : estructura[3],
-        "Balanceo" : estructura[4]
+        "Balanceo" : estructura[4],
+        "Frontis" : estructura[5]
 	}
 
 

@@ -4124,7 +4124,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def obtener_estructuras_rsv(self) :
         with self.conn.cursor() as cur:
             cur.execute("""
-            select e.nombre , e.sucursal , te.tipo , e.cant_espacios , e.balanceo 
+            select e.nombre , e.sucursal , te.tipo , e.cant_espacios , e.balanceo, e.frontis
             from rsv.estructuras e
             left join rsv.tipo_estructura te on te.id = e.tipo 
             order by e.nombre;       
