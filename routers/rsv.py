@@ -9,6 +9,7 @@ from database.models.rsv.catalogo_producto import CatalogoProducto
 import lib.excel_generico as excel
 
 from lib.codigo_nota_ventas import generar_codigo_ty_nota_venta_rsv
+from database.models.rsv.datos_suma_estructura import BodySumaEstructura
 
 from database.schema.rsv.etiquetas import etiquetas_productos_schema , datos_productos_etiquetas_schema
 
@@ -16,6 +17,7 @@ from database.schema.rsv.colores import colores_rsv_schema
 from database.models.rsv.carga_rsv import CargaRSV
 
 from database.models.rsv.lista_eliminar import ListaEliminar
+from database.models.rsv.estructura import Estructura
 
 from database.schema.rsv.sucursales import sucursales_rsv_schema
 
@@ -573,16 +575,15 @@ async def get_peso_posicion_sucursal(estructura : str, sucursal : int):
 
 
 #  suma  peso_posicion_sucursal
-@router.get("/peso/posicion/sucursal/suma")
-async def get_peso_posicion_sucursal(estructura : str, sucursal : int):
+@router.post("/peso/posicion/sucursal/suma")
+async def get_peso_posicion_sucursal(body: BodySumaEstructura ):
 
-    suma_E9_E19 = conn.obtener_suma_estructura_E9_E19(estructura,sucursal)[0]
-    suma_E13_E18 = conn.obtener_suma_estructura_E13_E18(estructura,sucursal)[0]
-    
+    Suma_izquerda = conn.obtener_suma_estructuras(body.Izquierda, body.Estructura, body.Sucursal)
+    Suma_derecha = conn.obtener_suma_estructuras(body.Derecha, body.Estructura, body.Sucursal)
 
     return {
-        "Suma_izquerda" : suma_E9_E19,
-        "Suma_derecha" : suma_E13_E18
+        "Suma_izquerda" : Suma_izquerda,
+        "Suma_derecha" : Suma_derecha
 
     }
 
@@ -591,4 +592,21 @@ async def get_peso_posicion_sucursal(estructura : str, sucursal : int):
 async def get_peso_posicion_sucursal():
     results = conn.obtener_tipo_estructuras_rsv()
     return tipos_estructuras_schema(results)
+
+
+
+# Actualizar estructura
+@router.put("/actualizar/estructura")
+async def get_peso_posicion_sucursal( body  :Estructura):
+
+    data = body.dict()
+    results = conn.update_estructura_rsv(data)
+    if results != 0:
+        return {
+            "message": "Actualizacion Realizada correctamente"
+        }
+    else :
+        return {
+            "message": "Error al actualizar"
+               }       
 

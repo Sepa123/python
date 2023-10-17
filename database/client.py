@@ -4247,6 +4247,19 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
 
     ##Suma de peso de las estructuras RSV
 
+
+    def obtener_suma_estructuras(self, lados, estructuras, sucursal):
+        with self.conn.cursor() as cur:
+
+            query = "SELECT SUM(peso_total) FROM ("
+            for lado in lados:
+                query+= f"SELECT peso_total FROM rsv.peso_posicion_suc('{estructuras}{lado}', {sucursal}) UNION ALL "
+
+            query = query[:-10] + ") as peso_total"
+
+            cur.execute(query)
+            return cur.fetchone()[0]
+
     def obtener_suma_estructura_E13_E18(self, estructura: str , sucursal : int):
         with self.conn.cursor() as cur:
             cur.execute(f""" 
@@ -4283,6 +4296,25 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                     ) as peso
                  """)
             return cur.fetchone()
+        
+    
+### update estado entrega de nota venta
+    def update_estructura_rsv(self, data):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            UPDATE rsv.estructuras
+            SET  sucursal=%(Sucursal)s, tipo=%(Tipo)s, cant_espacios=%(Cant_espacios)s, balanceo=%(Balanceo)s, frontis=%(Frontis)s
+            WHERE nombre = %(Nombre)s
+            """,data)
+            row = cur.rowcount
+        self.conn.commit()
+        
+        return row
+
+            # UPDATE rsv.estructuras
+            # SET created_at=CURRENT_TIMESTAMP, nombre='', sucursal=0, tipo=0, cant_espacios=0, balanceo='', frontis=''
+            # WHERE id=nextval('rsv.estructuras_id_seq'::regclass);
+
 
         
 class transyanezConnection():
