@@ -578,8 +578,8 @@ async def get_peso_posicion_sucursal(estructura : str, sucursal : int):
 @router.post("/peso/posicion/sucursal/suma")
 async def get_peso_posicion_sucursal(body: BodySumaEstructura ):
 
-    Suma_izquerda = conn.obtener_suma_estructuras(body.Izquierda, body.Estructura, body.Sucursal)
-    Suma_derecha = conn.obtener_suma_estructuras(body.Derecha, body.Estructura, body.Sucursal)
+    Suma_derecha = conn.obtener_suma_estructuras(body.Izquierda, body.Estructura, body.Sucursal)
+    Suma_izquerda = conn.obtener_suma_estructuras(body.Derecha, body.Estructura, body.Sucursal)
 
     return {
         "Suma_izquerda" : Suma_izquerda,
