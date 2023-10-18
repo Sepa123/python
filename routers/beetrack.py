@@ -27,6 +27,7 @@ def validar_encabezados(content_type: str = Header(None), x_auth_token: str = He
     if content_type != "application/json":
         raise HTTPException(status_code=400, detail="Content-Type debe ser application/json")
     if x_auth_token != config("SECRET_KEY"):
+        print("error con token")
         raise HTTPException(status_code=401, detail="X-AUTH-TOKEN inválido")
     return content_type, x_auth_token
 
@@ -35,6 +36,7 @@ def validar_encabezados(content_type: str = Header(None), x_auth_token: str = He
 @router.post("/dispatch_guide")
 async def post_dispatch_guide(body: DistpatchGuide, headers: tuple = Depends(validar_encabezados)):
     content_type, x_auth_token = headers
+    print("/beetrack/dispatch_guide")
     print(body)
     return {
             "body" : body
