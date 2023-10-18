@@ -2,6 +2,20 @@ from typing import Optional , List, Any
 from datetime import datetime
 from pydantic import BaseModel
 
+class Extras(BaseModel):
+    name:str
+    value : str
+
+class tags(BaseModel):
+    name:str
+    value : str
+
+class Items(BaseModel):
+    name:str
+    quantity : int
+    delivered_quantity : int
+    code : str
+    extras : List[Extras]
 
 class DistpatchGuideD(BaseModel):
     guide : str
@@ -20,6 +34,6 @@ class DistpatchGuide(BaseModel):
     event : str
     account_name: str
     dispatch_guide : DistpatchGuideD
-    items : List[str]
-    tags : List[str]
+    items : List[Items]
+    tags : List[tags]
     group : List[str]
