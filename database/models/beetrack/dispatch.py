@@ -14,14 +14,30 @@ class EvaluationAnswers(BaseModel):
     name: Optional[str]
     value : Optional[str]
 
+## este es el original
+# class Items(BaseModel):
+#     name: Optional[str]
+#     quantity : Optional[int]
+#     delivered_quantity : Optional[int]
+#     code : Optional[str]
+#     extras : Optional[List[Extras]]
 
+#este es el de dispatch_guide
 class Items(BaseModel):
+    id :  Optional[int]
     name: Optional[str]
+    description :  Optional[str]
     quantity : Optional[int]
-    delivered_quantity : Optional[int]
-    code : Optional[str]
-    extras : Optional[List[Extras]]
-
+    original_quantity:  Optional[int]
+    delivered_quantity :  Optional[int]
+    code :  Optional[str]
+    extras : Optional [List[Extras]]
+#este es el de dispatch_guide
+class Groups(BaseModel):
+    name : Optional[str]
+    group_category : Optional[str]
+    group_category_id : Optional[str]
+    associated_at :  Optional[int]
 
 class Place(BaseModel):
     name: Optional[str]
@@ -30,6 +46,22 @@ class Place(BaseModel):
 class Waypoint(BaseModel):
     latitude: Optional[float]
     longitude : Optional[float] 
+
+
+### esta cosa es de dispatch_guide
+class DistpatchGuideD(BaseModel):
+    guide : Optional[str]
+    beecode : Optional[str]
+    identifier : Optional[str]
+    account_id :  Optional[int]
+    contact_name : Optional[str]
+    contact_phone : Optional[str]
+    contact_identifier: Optional[str]
+    contact_email : Optional[str]
+    contact_address : Optional[str]
+    promised_date : Optional[str]
+    min_delivery_time : Optional[str]
+    max_delivery_time : Optional[str]
 
 class Dispatch(BaseModel):
     resource : Optional[str]
@@ -51,6 +83,8 @@ class Dispatch(BaseModel):
     arrived_at : Optional[str]
     place : Optional[Place]
     waypoint : Optional[Waypoint]
+    dispatch_guide : Optional[DistpatchGuideD]
+    group : Optional[List[Groups]]
 
 
 class DispatchInsert(BaseModel):

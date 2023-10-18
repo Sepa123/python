@@ -33,13 +33,20 @@ class DistpatchGuideD(BaseModel):
     promised_date : Optional[str]
     min_delivery_time : Optional[str]
     max_delivery_time : Optional[str]
-    
+
+
+class Groups(BaseModel):
+    name : Optional[str]
+    group_category : Optional[str]
+    group_category_id : Optional[str]
+    associated_at :  Optional[int]
+
 
 class DistpatchGuide(BaseModel):
     resource : Optional[str]
     event : Optional[str]
     account_name: Optional[str]
     dispatch_guide :  Optional[DistpatchGuideD]
-    items : List[Items]
-    tags : List[tags]
-    group : List[str]
+    items :  Optional[List[Items]]
+    tags : Optional[List[tags]]
+    group : Optional[List[Groups]]
