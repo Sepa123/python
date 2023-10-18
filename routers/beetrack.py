@@ -52,7 +52,7 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
     
     print("datos tags", datos_tags)
     
-    if data["dispatch"] != 'dispatch':
+    if data["resource"] != 'dispatch':
         print("total datos de create",data)
     else:
         print("total datos de update",data)
