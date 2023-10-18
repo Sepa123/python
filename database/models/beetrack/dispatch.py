@@ -76,8 +76,8 @@ class Dispatch(BaseModel):
     estimated_at : Optional[str]
     contact_identifier : Optional[str]
     tags : Optional[List[tags]]
-    is_pickup : bool
-    is_trunk : bool
+    is_pickup :  Optional[bool]
+    is_trunk :  Optional[bool]
     evaluation_answers : Optional[List[EvaluationAnswers]]
     items : Optional[List[Items]]
     arrived_at : Optional[str]
