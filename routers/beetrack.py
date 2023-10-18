@@ -49,7 +49,8 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
     # Lista de nombres que deseas buscar
     data = body.dict()
     datos_tags = data_beetrack.obtener_datos_tags(data["tags"])
-    print(datos_tags)
+    print("total datos",data)
+    print("datos tags", datos_tags)
 
     for item in data["items"]:
         waypoint = data["waypoint"]
@@ -58,7 +59,7 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
            waypoint["latitude"] = ""
            waypoint["longitude"] = ""
         
-        print(item)
+        print("datos items",item)
         print(waypoint)
 
         # dato_insert = data_beetrack.generar_data_insert(data,item,datos_tags,waypoint)
