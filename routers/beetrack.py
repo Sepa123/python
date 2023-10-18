@@ -37,7 +37,6 @@ async def post_dispatch_guide(body: DistpatchGuide, headers: tuple = Depends(val
     content_type, x_auth_token = headers
 
     return {
-            "header" :  {"Content-Type": content_type, "X-AUTH-TOKEN": x_auth_token},
             "body" : body
             }
 
@@ -45,7 +44,6 @@ async def post_dispatch_guide(body: DistpatchGuide, headers: tuple = Depends(val
 async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabezados)):
     content_type, x_auth_token = headers
     return {
-            "header" :  {"Content-Type": content_type, "X-AUTH-TOKEN": x_auth_token},
             "body" : body
             }
 
@@ -53,6 +51,5 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
 async def post_route(body : Route , headers: tuple = Depends(validar_encabezados)):
     content_type, x_auth_token = headers
     return {
-            "header" :  {"Content-Type": content_type, "X-AUTH-TOKEN": x_auth_token},
             "body" : body
             }
