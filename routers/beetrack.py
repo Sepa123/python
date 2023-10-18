@@ -49,21 +49,25 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
     # Lista de nombres que deseas buscar
     data = body.dict()
     datos_tags = data_beetrack.obtener_datos_tags(data["tags"])
-    print("total datos",data)
+    
     print("datos tags", datos_tags)
-
-    for item in data["items"]:
-        waypoint = data["waypoint"]
-        if waypoint is None:
-           waypoint = {}
-           waypoint["latitude"] = ""
-           waypoint["longitude"] = ""
-        
-        print("datos items",item)
-        print(waypoint)
-        dato_insert = data_beetrack.generar_data_insert(data,item,datos_tags,waypoint)
-        print("dato_insertar a dispatch",dato_insert)
-        conn.insert_beetrack_dispatch_guide_update(dato_insert)
+    
+    if data["event"] == 'create':
+        print("total datos de create",data)
+    else:
+        print("total datos de update",data)
+        for item in data["items"]:
+            waypoint = data["waypoint"]
+            if waypoint is None:
+                waypoint = {}
+                waypoint["latitude"] = ""
+                waypoint["longitude"] = ""
+                
+                print("datos items",item)
+                print(waypoint)
+                dato_insert = data_beetrack.generar_data_insert(data,item,datos_tags,waypoint)
+                print("dato_insertar a dispatch",dato_insert)
+                conn.insert_beetrack_dispatch_guide_update(dato_insert)
         
 
     print("/beetrack/dispatch")
