@@ -3,37 +3,43 @@ from datetime import datetime
 from pydantic import BaseModel
 
 class Extras(BaseModel):
-    name:str
-    value : str
+    name: Optional[str]
+    value : Optional[str]
 
 class tags(BaseModel):
-    name:str
-    value : str
+    name: Optional[str]
+    value : Optional[str]
 
 class Items(BaseModel):
-    name:str
-    quantity : int
-    delivered_quantity : int
-    code : str
-    extras : List[Extras]
+    id :  Optional[int]
+    name: Optional[str]
+    description :  Optional[str]
+    quantity : Optional[int]
+    original_quantity:  Optional[int]
+    delivered_quantity :  Optional[int]
+    code :  Optional[str]
+    extras : Optional [List[Extras]]
 
 class DistpatchGuideD(BaseModel):
-    guide : str
-    beecode : str
-    identifier : str
-    account_id : int
-    contact_name : str
-    contact_phone : str
-    contact_identifier: str
-    contact_email : str
-    contact_address : str
-    promised_date : str
+    guide : Optional[str]
+    beecode : Optional[str]
+    identifier : Optional[str]
+    account_id :  Optional[int]
+    contact_name : Optional[str]
+    contact_phone : Optional[str]
+    contact_identifier: Optional[str]
+    contact_email : Optional[str]
+    contact_address : Optional[str]
+    promised_date : Optional[str]
+    min_delivery_time : Optional[str]
+    max_delivery_time : Optional[str]
+    
 
 class DistpatchGuide(BaseModel):
-    resource : str
-    event : str
-    account_name: str
-    dispatch_guide : DistpatchGuideD
+    resource : Optional[str]
+    event : Optional[str]
+    account_name: Optional[str]
+    dispatch_guide :  Optional[DistpatchGuideD]
     items : List[Items]
     tags : List[tags]
     group : List[str]

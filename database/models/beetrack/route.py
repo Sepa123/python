@@ -3,14 +3,14 @@ from datetime import datetime
 from pydantic import BaseModel
 
 class Route(BaseModel):
-    resource : str
-    event : str
-    route : int
-    account_id : int
-    date : str
-    truck : str
-    truck_driver : str
+    resource : Optional[str]
+    event : Optional[str]
+    route : Optional[int]
+    account_id : Optional[int]
+    date : Optional[str]
+    truck : Optional[str]
+    truck_driver : Optional[str]
     started : bool
-    started_at : str
+    started_at : Optional[str]
     ended : bool
-    ended_at : str
+    ended_at : Optional[str]
