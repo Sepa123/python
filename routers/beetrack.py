@@ -49,6 +49,7 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
     # Lista de nombres que deseas buscar
     data = body.dict()
     datos_tags = data_beetrack.obtener_datos_tags(data["tags"])
+    print(datos_tags)
 
     for item in data["items"]:
         waypoint = data["waypoint"]
