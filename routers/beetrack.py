@@ -58,7 +58,7 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
            waypoint["longitude"] = ""
 
         dato_insert = data_beetrack.generar_data_insert(data,item,datos_tags,waypoint)
-        print(dato_insert)
+        print("dato_insertar a dispatch",dato_insert)
         conn.insert_beetrack_dispatch_guide_update(dato_insert)
         
 
