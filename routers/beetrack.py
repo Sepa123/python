@@ -35,7 +35,7 @@ def validar_encabezados(content_type: str = Header(None), x_auth_token: str = He
 @router.post("/dispatch_guide")
 async def post_dispatch_guide(body: DistpatchGuide, headers: tuple = Depends(validar_encabezados)):
     content_type, x_auth_token = headers
-
+    print(body)
     return {
             "body" : body
             }
