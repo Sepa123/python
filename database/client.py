@@ -4310,12 +4310,17 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
         self.conn.commit()
         
         return row
-
-            # UPDATE rsv.estructuras
-            # SET created_at=CURRENT_TIMESTAMP, nombre='', sucursal=0, tipo=0, cant_espacios=0, balanceo='', frontis=''
-            # WHERE id=nextval('rsv.estructuras_id_seq'::regclass);
-
-
+    
+    #### beetrack 
+    def insert_beetrack_dispatch_guide_update(self, data):
+            with self.conn.cursor() as cur:
+                cur.execute("""
+                INSERT INTO beetrack.dispatch_guide_update
+                (resource, evento, identifier, truck_identifier, status, substatus, substatus_code, contact_identifier, arrived_at, latitud, longitud, bultos, comuna, driver, item_name, item_quantity, item_delivered_quantity, item_code)
+                VALUES( %(resource)s, %(event)s, %(identifier)s, %(truck_identifier)s, %(status)s, %(substatus)s, %(substatus_code)s, %(contact_identifier)s, %(arrived_at)s, %(latitude)s, %(longitude)s, %(bultos)s, %(comuna)s, %(driver)s,
+                        %(item_name)s, %(item_quantity)s, %(item_delivered_quantity)s, %(item_code)s);
+                """,data)
+            self.conn.commit()
         
 class transyanezConnection():
     conn = None

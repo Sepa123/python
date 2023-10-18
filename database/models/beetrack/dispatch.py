@@ -52,3 +52,23 @@ class Dispatch(BaseModel):
     place : Optional[Place]
     waypoint : Optional[Waypoint]
 
+
+class DispatchInsert(BaseModel):
+    resource : Optional[str]
+    event : Optional[str]
+    identifier : Optional[str]
+    truck_identifier : Optional[str]
+    status : Optional[int]
+    substatus : Optional[str]
+    substatus_code : Optional[str]
+    contact_identifier : Optional[str]
+    bultos : Optional[str]
+    comuna : Optional[str]
+    driver : Optional[str]
+    item_name : Optional[str]
+    item_quantity : Optional[int]
+    item_delivered_quantity : Optional[int]
+    item_code : Optional[str]
+    arrived_at: Optional[str]
+    latitud : Optional[str]
+    longitud : Optional[str]
