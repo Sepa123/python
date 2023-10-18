@@ -1,5 +1,5 @@
 def obtener_datos_tags(tags):
-    nombres_a_buscar = ["conductor", "CMN", "Bultos"]
+    nombres_a_buscar = ["conductor", "CMN", "Bultos","Bultos " ]
 
     data = {}
     # Buscar los objetos JSON con los nombres especificados
@@ -10,7 +10,7 @@ def obtener_datos_tags(tags):
 
     # Imprimir los valores encontrados
     for nombre, valor in valores.items():
-        data[nombre] = valor
+        data[nombre.strip()] = valor
         # print(f"El valor asociado con '{nombre}' es: {valor}")
 
     return data
