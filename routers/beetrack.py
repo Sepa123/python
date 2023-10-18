@@ -50,13 +50,14 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
     data = body.dict()
     
     
-    print("datos tags", datos_tags)
+    
     
     if data["resource"] != 'dispatch':
         print("total datos de create",data)
     else:
         print("total datos de update",data)
         datos_tags = data_beetrack.obtener_datos_tags(data["tags"])
+        print("datos tags", datos_tags)
         for item in data["items"]:
             waypoint = data["waypoint"]
             if waypoint is None:
