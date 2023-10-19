@@ -84,7 +84,7 @@ class Dispatch(BaseModel):
     place : Optional[Place]
     waypoint : Optional[Waypoint]
     dispatch_guide : Optional[DistpatchGuideD]
-    group : Optional[List[Groups]]
+    groups : Optional[List[Groups]]
 
 
 class DispatchInsert(BaseModel):
