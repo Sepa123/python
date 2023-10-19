@@ -4330,8 +4330,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 cur.execute("""
                 INSERT INTO beetrack.route
                 (resource, evento, account_name, route, account_id, fecha, truck, truck_driver, started, started_at, ended, ended_at)   
-                VALUES( %(resource)s, %(arrived_at)s, %(account_name)s, %(date)s, %(truck)s, %(truck_driver)s, %(started)s,
-                        %(started_at)s, %(ended)s, %(ended_at)s);
+                VALUES( %(resource)s, %(event)s, %(account_name)s, %(route)s, %(account_id)s, %(date)s, %(truck)s, %(truck_driver)s, %(started)s,%(started_at)s, %(ended)s, %(ended_at)s);
                 """,data)
             self.conn.commit()
         
