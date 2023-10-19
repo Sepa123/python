@@ -63,13 +63,35 @@ class DistpatchGuideD(BaseModel):
     min_delivery_time : Optional[str]
     max_delivery_time : Optional[str]
 
+
+
+# resource : Optional[str] v
+#     event : Optional[str] v
+#     route : Optional[int]
+#     account_id : Optional[int]
+#     date : Optional[str]
+#     truck : Optional[str]
+#     truck_driver : Optional[str]
+#     started : bool
+#     started_at : Optional[str]
+#     ended : bool
+#     ended_at : Optional[str]
+
 class Dispatch(BaseModel):
     resource : Optional[str]
     event : Optional[str]
+    route : Optional[int]
     account_name: Optional[str]
     account_id : Optional[int]
+    date : Optional[str]
     identifier : Optional[str]
+    truck : Optional[str]
+    truck_driver : Optional[str]
     truck_identifier : Optional[str]
+    started : Optional[bool]
+    started_at : Optional[str]
+    ended : Optional[bool]
+    ended_at : Optional[str]
     status : Optional[int]
     substatus : Optional[str]
     substatus_code : Optional[str]
