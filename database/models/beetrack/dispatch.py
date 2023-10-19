@@ -36,8 +36,8 @@ class Items(BaseModel):
 class Groups(BaseModel):
     name : Optional[str]
     group_category : Optional[str]
-    group_category_id : Optional[str]
-    associated_at :  Optional[int]
+    group_category_id : Optional[int]
+    associated_at :  Optional[str]
 
 class Place(BaseModel):
     name: Optional[str]

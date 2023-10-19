@@ -49,9 +49,6 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
     # Lista de nombres que deseas buscar
     data = body.dict()
     
-    
-    
-    
     if data["resource"] != 'dispatch':
         print("total datos de create",data)
     else:
