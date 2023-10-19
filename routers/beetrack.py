@@ -49,8 +49,19 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
     # Lista de nombres que deseas buscar
     data = body.dict()
     
-    if data["resource"] != 'dispatch':
+    if data["resource"] == 'route' and data["event"] == 'create':
         print("total datos de create",data)
+        datos_insert_ruta = data_beetrack.generar_data_insert_creacion_ruta(data)
+        conn.insert_beetrack_creacion_ruta(datos_insert_ruta)
+
+    if data["event"] == 'on_route_from_mobile':
+        print("lleeegoo")
+        print("lleeegoo")
+        print("lleeegoo")
+        print(data)
+        
+    if data["resource"] != 'dispatch':
+        print("es otra cosa",data)
     else:
         print("total datos de update",data)
         datos_tags = data_beetrack.obtener_datos_tags(data["tags"])

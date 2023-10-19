@@ -4312,6 +4312,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
         return row
     
     #### beetrack 
+    ## Distpatch guide
     def insert_beetrack_dispatch_guide_update(self, data):
             with self.conn.cursor() as cur:
                 cur.execute("""
@@ -4319,6 +4320,18 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 (resource, evento, identifier, truck_identifier, status, substatus, substatus_code, contact_identifier, arrived_at, latitud, longitud, bultos, comuna, driver, item_name, item_quantity, item_delivered_quantity, item_code)
                 VALUES( %(resource)s, %(event)s, %(identifier)s, %(truck_identifier)s, %(status)s, %(substatus)s, %(substatus_code)s, %(contact_identifier)s, %(arrived_at)s, %(latitude)s, %(longitude)s, %(bultos)s, %(comuna)s, %(driver)s,
                         %(item_name)s, %(item_quantity)s, %(item_delivered_quantity)s, %(item_code)s);
+                """,data)
+            self.conn.commit()
+
+    #### beetrack 
+    ## Route 
+    def insert_beetrack_creacion_ruta(self, data):
+            with self.conn.cursor() as cur:
+                cur.execute("""
+                INSERT INTO beetrack.route
+                (resource, evento, account_name, route, account_id, fecha, truck, truck_driver, started, started_at, ended, ended_at)   
+                VALUES( %(resource)s, %(arrived_at)s, %(account_name)s, %(date)s, %(truck)s, %(truck_driver)s, %(started)s,
+                        %(started_at)s, %(ended)s, %(ended_at)s);
                 """,data)
             self.conn.commit()
         

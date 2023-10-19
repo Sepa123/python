@@ -38,3 +38,18 @@ def generar_data_insert(data,item,datos_tags,waypoint):
         "longitude": str(waypoint["longitude"])
         }
     
+def generar_data_insert_creacion_ruta(data):
+    return {
+            "resource": data["resource"],
+            "event":  data["event"],
+            "account_name":  data["account_name"],
+            "route": data["route"],
+            "account_id": data["account_id"],
+            "date": data["date"],
+            "truck": data["truck"],
+            "truck_driver": data["truck_driver"],
+            "started": data["started"],
+            "started_at": data["started_at"],
+            "ended": data["ended"],
+            "ended_at": data["ended_at"]
+            }
