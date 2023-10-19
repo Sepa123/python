@@ -350,6 +350,11 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
         arraySKU = ruta["SKU"].split("@")
         arrayUnidades = ruta["Unidades"].split("@")
         arrayBultos = ruta["Bultos"].split("@")
+        if len(arraySKU) != len(arrayProductos):
+            for i in range(len(arrayProductos)):
+                arraySKU.append("")
+                print(len(arraySKU))
+                print(len(arrayProductos))
         # print(ruta["arrayBultos"])
         if len(arrayProductos) == 1:
             fila = [
