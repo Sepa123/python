@@ -48,6 +48,8 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
     content_type, x_auth_token = headers
     # Lista de nombres que deseas buscar
     data = body.dict()
+
+    print("Evento : ", data["event"])
     
     if data["resource"] == 'route' and data["event"] == 'create':
         print("total datos de create",data)
