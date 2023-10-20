@@ -1,3 +1,8 @@
+
+
+
+
+
 def obtener_datos_tags(tags):
     nombres_a_buscar = ["conductor", "CMN", "Bultos","Bultos ","EMAIL","Fechaentrega","fechahr",
                         "Volumen","factura","oc","ruta","tienda","codigo","observacion"]
@@ -52,7 +57,7 @@ def obtener_datos_groups(groups):
 
     return data
 
-def generar_data_insert_ruta_transyanez(data,datos_tags,groups):
+def generar_data_update_ruta_transyanez(data,datos_tags,groups):
 
     return {
             "route_id": data["route_id"],
@@ -83,7 +88,35 @@ def generar_data_insert_ruta_transyanez(data,datos_tags,groups):
             "arrived_at": data["arrived_at"]
             }
 
-
+def generar_data_insert_ruta_transyanez(data,datos_tags,groups, dguide):
+    return {
+            "route_id": data["route_id"],
+            "identifier": data["truck_identifier"],
+            "guide": dguide["guide"],
+            "Cliente": groups["Cliente"],
+            "Servicio":groups["Servicio"],
+            "Región de despacho": groups["Región de despacho"],
+            "estimated_at": data["estimated_at"],
+            "substatus": data["substatus"],
+            "driver":  datos_tags["conductor"],
+            "contact_identifier": dguide["contact_identifier"],
+            "contact_name": dguide["contact_name"],
+            "contact_address": dguide["contact_address"],
+            "contact_phone": dguide["contact_phone"],
+            "contact_email": dguide["contact_email"],
+            "fechahr": datos_tags["fechahr"],
+            "fechaentrega": datos_tags["Fechaentrega"],
+            "comuna" : datos_tags["CMN"],
+            "volumen": datos_tags["Volumen"],
+            "bultos" : datos_tags["Bultos"],
+            "factura": datos_tags["factura"],
+            "oc": datos_tags["oc"],
+            "ruta": datos_tags["ruta"],
+            "tienda": datos_tags["tienda"],
+            "codigo":datos_tags["codigo"],
+            "observacion": datos_tags["observacion"],
+            "arrived_at": data["arrived_at"]
+            }
 
 
 def generar_data_insert(data,item,datos_tags,waypoint):

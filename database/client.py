@@ -4352,11 +4352,46 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             with self.conn.cursor() as cur:
                 cur.execute("""
                 INSERT INTO beetrack.ruta_transyanez
-                (identificador_ruta, identificador, guia, cliente, servicio, region_de_despacho, fecha_estimada, fecha_llegada, estado, usuario_movil, id_cliente, nombre_cliente, direccion_cliente, telefono_cliente, correo_electronico_cliente, fechahr,email, conductor, fechaentrega, cmn, volumen, bultos, entrega, factura, oc, ruta, tienda, codigo, observacion)
-                VALUES( %(route_id)s, %(identifier)s, %(guide)s, %(Cliente)s,  %(Servicio)s, %(Región de despacho)s,  %(estimated_at)s, %(arrived_at)s, %(substatus)s, %(driver)s,  %(contact_identifier)s, %(contact_name)s,  %(contact_address)s, %(contact_phone)s, %(contact_email)s, %(fechahr)s, %(contact_email)s, %(driver)s, %(driver)s, %(fechaentrega)s,  %(comuna)s,  %(volumen)s, %(bultos)s, %(factura)s, %(oc)s, %(ruta)s, %(tienda)s,  %(codigo)s, %(observacion)s);
+                (identificador_ruta, identificador, guia, cliente, servicio, region_de_despacho , fecha_estimada, fecha_llegada, estado , usuario_movil, id_cliente, nombre_cliente  , direccion_cliente   , telefono_cliente , correo_electronico_cliente, fechahr    ,email, conductor, fechaentrega, cmn, volumen, bultos, factura, oc, ruta, tienda)
+                VALUES( %(route_id)s, %(identifier)s, %(guide)s, %(Cliente)s,  %(Servicio)s, %(Región de despacho)s,  %(estimated_at)s, %(arrived_at)s, %(substatus)s, %(driver)s   ,  %(contact_identifier)s, %(contact_name)s,  %(contact_address)s, %(contact_phone)s, %(contact_email)s         , %(fechahr)s,%(contact_email)s, %(driver)s, %(fechaentrega)s, %(comuna)s, %(volumen)s, %(bultos)s, %(factura)s, %(oc)s, %(ruta)s, %(tienda)s);
 
                 """,data)
             self.conn.commit()
+
+    def update_ruta_ty_event(self ,data):
+        with self.conn.cursor() as cur:
+            cur.execute("""        
+            UPDATE beetrack.ruta_transyanez
+            SET identificador_ruta = %(route_id)s,
+                identificador = %(identifier)s,
+                cliente = %(Cliente)s,
+                servicio = %(Servicio)s,
+                region_de_despacho = %(Región de despacho)s,
+                fecha_estimada = %(estimated_at)s,
+                fecha_llegada = %(arrived_at)s,
+                estado = %(substatus)s,
+                usuario_movil = %(driver)s,
+                id_cliente = %(contact_identifier)s,
+                nombre_cliente = %(contact_name)s,
+                direccion_cliente = %(contact_address)s,
+                telefono_cliente = %(contact_phone)s,
+                correo_electronico_cliente = %(contact_email)s,
+                fechahr = %(fechahr)s,
+                email = %(contact_email)s,
+                conductor = %(driver)s,
+                fechaentrega = %(fechaentrega)s,
+                cmn = %(comuna)s,
+                volumen = %(volumen)s,
+                bultos = %(bultos)s,
+                factura = %(factura)s,
+                oc = %(oc)s,
+                ruta = %(ruta)s,
+                tienda = %(tienda)s
+            WHERE guia = %(guide)s;
+            """, data)
+            row = cur.rowcount
+        self.conn.commit()
+        return row
     
         
 class transyanezConnection():
