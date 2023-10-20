@@ -87,7 +87,7 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
         datos_tags = data_beetrack.obtener_datos_tags(data["tags"])
         datos_groups = data_beetrack.obtener_datos_groups(data["groups"])
         ## insertar en ruta transyanez
-        dato_ruta_ty = data_beetrack.generar_data_insert_ruta_transyanez(data,datos_tags,datos_groups)
+        dato_ruta_ty = data_beetrack.generar_data_update_ruta_transyanez(data,datos_tags,datos_groups)
         rows = conn.update_ruta_ty_event(dato_ruta_ty)
 
         print("tablas actualizadas de ruta_ty ",rows)
