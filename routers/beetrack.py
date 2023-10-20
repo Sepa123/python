@@ -68,15 +68,18 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
 
     if data["event"] == 'on_route_from_mobile':
         print("lleeegoo")
-        print("lleeegoo")
-        print("lleeegoo")
         print(data)
         
     if data["resource"] != 'dispatch':
-        print("es otra cosa",data)
+        print("es otra cosa xd")
     else:
         print("total datos de update",data)
         datos_tags = data_beetrack.obtener_datos_tags(data["tags"])
+        datos_groups = data_beetrack.obtener_datos_groups(data["groups"])
+        ## insertar en ruta transyanez
+        dato_ruta_ty = data_beetrack.generar_data_insert_ruta_transyanez(data,datos_tags,datos_groups)
+        conn.insert_beetrack_data_ruta_transyanez(dato_ruta_ty)
+        print("Datos groups",datos_groups)
         print("datos tags", datos_tags)
         for item in data["items"]:
             waypoint = data["waypoint"]
@@ -85,11 +88,13 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
                 waypoint["latitude"] = ""
                 waypoint["longitude"] = ""
                 
-            print("datos items",item)
             print(waypoint)
+            ## insertar en ruta transyanez por item
             dato_insert = data_beetrack.generar_data_insert(data,item,datos_tags,waypoint)
             print("dato_insertar a dispatch",dato_insert)
             conn.insert_beetrack_dispatch_guide_update(dato_insert)
+            
+            
         
 
     print("/beetrack/dispatch")
