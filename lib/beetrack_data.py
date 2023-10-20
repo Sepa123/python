@@ -1,7 +1,11 @@
 def obtener_datos_tags(tags):
     nombres_a_buscar = ["conductor", "CMN", "Bultos","Bultos " ]
 
-    data = {}
+    data = {
+        "conductor" : "",
+        "CMN" : "",
+        "Bultos" : ""
+    }
     # Buscar los objetos JSON con los nombres especificados
     objetos_json = [item for item in tags if item["name"] in nombres_a_buscar]
 
@@ -17,6 +21,7 @@ def obtener_datos_tags(tags):
 
 
 def generar_data_insert(data,item,datos_tags,waypoint):
+
     return {
         "resource": data["resource"],
         "event":  data["event"],
