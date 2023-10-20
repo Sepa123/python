@@ -4333,6 +4333,20 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 VALUES( %(resource)s, %(event)s, %(account_name)s, %(route)s, %(account_id)s, %(date)s, %(truck)s, %(truck_driver)s, %(started)s,%(started_at)s, %(ended)s, %(ended_at)s);
                 """,data)
             self.conn.commit()
+
+
+    def update_route_beetrack_event(self ,data):
+        with self.conn.cursor() as cur:
+            cur.execute("""        
+            UPDATE beetrack.route
+            SET evento = %(event)s, fecha=%(date)s, truck=%(truck)s, truck_driver=%(truck_driver)s, started=%(started)s, started_at=%(started_at)s, ended=%(ended)s, ended_at=%(ended_at)s
+            WHERE route = %(route)s;
+            """, data)
+            row = cur.rowcount
+        self.conn.commit()
+        return row
+
+    
         
 class transyanezConnection():
     conn = None

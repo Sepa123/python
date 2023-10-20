@@ -56,6 +56,16 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
         datos_insert_ruta = data_beetrack.generar_data_insert_creacion_ruta(data)
         conn.insert_beetrack_creacion_ruta(datos_insert_ruta)
 
+    if data["resource"] == 'route' and data["event"] != 'create':
+        datos_insert_ruta = data_beetrack.generar_data_insert_creacion_ruta(data)
+        print("Datos para actualizar ruta",datos_insert_ruta)
+        row = conn.update_route_beetrack_event(datos_insert_ruta)
+        print("Tablas actualizadas ", row)
+        return {
+            "message" : "data recibida correctamente"
+            }
+    
+
     if data["event"] == 'on_route_from_mobile':
         print("lleeegoo")
         print("lleeegoo")
