@@ -79,7 +79,8 @@ def generar_data_insert_ruta_transyanez(data,datos_tags,groups):
             "ruta": datos_tags["ruta"],
             "tienda": datos_tags["tienda"],
             "codigo":datos_tags["codigo"],
-            "observacion": datos_tags["observacion"]
+            "observacion": datos_tags["observacion"],
+            "arrived_at": data["arrived_at"]
             }
 
 
