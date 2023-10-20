@@ -4352,8 +4352,8 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             with self.conn.cursor() as cur:
                 cur.execute("""
                 INSERT INTO beetrack.ruta_transyanez
-                (identificador_ruta, identificador, guia, cliente, lugar_de_trabajo, servicio, region_de_despacho, origen_de_la_entrega, fecha_estimada, fecha_llegada, estado, subestado, usuario_movil, telefono_usuario, id_cliente, nombre_cliente, direccion_cliente, telefono_cliente, correo_electronico_cliente, tiempo_en_destino, n_intentos, distancia_km, fechahr, tipo, email, conductor, fechaentrega, peso, cmn, cuenta, volumen, bultos, entrega, factura, oc, ruta, tienda, nombre_ejecutivo, codigo, observacion)
-                VALUES( %(route_id)s, %(identifier)s, %(guide)s, %(Cliente)s, '', %(Servicio)s, %(Región de despacho)s, null, %(estimated_at)s, null, %(substatus)s, %(driver)s, null, %(contact_identifier)s, %(contact_name)s,  %(contact_address)s, %(contact_phone)s, %(contact_email)s, '', 0, 0, %(fechahr)s, null, %(contact_email)s, %(driver)s, %(driver)s, %(fechaentrega)s, null,  %(comuna)s, null,  %(volumen)s, %(bultos)s, null, %(factura)s, %(oc)s, %(ruta)s, %(tienda)s, null, %(codigo)s, %(observacion)s);
+                (identificador_ruta, identificador, guia, cliente, servicio, region_de_despacho, fecha_estimada, estado, usuario_movil, id_cliente, nombre_cliente, direccion_cliente, telefono_cliente, correo_electronico_cliente, fechahr,email, conductor, fechaentrega, cmn, volumen, bultos, entrega, factura, oc, ruta, tienda, codigo, observacion)
+                VALUES( %(route_id)s, %(identifier)s, %(guide)s, %(Cliente)s,  %(Servicio)s, %(Región de despacho)s,  %(estimated_at)s, %(substatus)s, %(driver)s,  %(contact_identifier)s, %(contact_name)s,  %(contact_address)s, %(contact_phone)s, %(contact_email)s, %(fechahr)s, %(contact_email)s, %(driver)s, %(driver)s, %(fechaentrega)s,  %(comuna)s,  %(volumen)s, %(bultos)s, %(factura)s, %(oc)s, %(ruta)s, %(tienda)s,  %(codigo)s, %(observacion)s);
 
                 """,data)
             self.conn.commit()
