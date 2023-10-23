@@ -56,7 +56,7 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
         datos_insert_ruta = data_beetrack.generar_data_insert_creacion_ruta(data)
         conn.insert_beetrack_creacion_ruta(datos_insert_ruta)
 
-    if data["resource"] == 'route' and data["event"] != 'create':
+    if data["resource"] == 'route' and data["event"] in ['start', 'finish']:
         datos_insert_ruta = data_beetrack.generar_data_insert_creacion_ruta(data)
         print("Datos para actualizar ruta",datos_insert_ruta)
         row = conn.update_route_beetrack_event(datos_insert_ruta)
