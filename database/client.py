@@ -4393,6 +4393,15 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
         self.conn.commit()
         return row
     
+
+    def verificar_si_ruta_existe(self, data):
+        with self.conn.cursor() as cur:
+            cur.execute("""  
+                        select *  from beetrack.ruta_transyanez rt  
+                        where coalesce (identificador_ruta, 1) = coalesce(%(ruta_id)s ,1) and  guia = %(guia)s
+                        order by  created_at  desc
+                 """,data)
+            return cur.fetchall()
         
 class transyanezConnection():
     conn = None
