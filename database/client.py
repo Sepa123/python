@@ -1630,24 +1630,43 @@ class reportesConnection():
     def read_ruta_beetrack_hoy(self):
         with self.conn.cursor() as cur:
             cur.execute("""
-            select 
-            ROW_NUMBER() OVER (ORDER BY id_ruta) as "N°",
-            id_ruta as "Ruta",
-            patente as "Patente",
-            driver as "Driver", 
-            h_inc as "Inicio",
-            region as "Región",
-            t_ped as "Total Pedidos",
-            h1100 || ' (' || p10 ||'%)' as "11:00 (10%)",
-            h1300 || ' (' || p40 ||'%)' as "13:00 (40%)",
-            h1500 || ' (' || p60 ||'%)' as "15:00 (60%)",
-            h1700 || ' (' || p80 ||'%)' as "17:00 (80%)",
-            h1800 || ' (' || p95 ||'%)' as "18:00 (95%)",
-            h2000 || ' (' || p100 ||'%)' as "20:00 (100%)",
-            t_ent as "Entregados",
-            n_ent as "No Entregados",
-            p100 as "Porcentaje"
-            from areati.mae_ns_ruta_beetrack_hoy 
+            --select 
+            --ROW_NUMBER() OVER (ORDER BY id_ruta) as "N°",
+            --id_ruta as "Ruta",
+            --patente as "Patente",
+            --driver as "Driver", 
+            --h_inc as "Inicio",
+            --region as "Región",
+            --t_ped as "Total Pedidos",
+           -- h1100 || ' (' || p10 ||'%)' as "11:00 (10%)",
+            --h1300 || ' (' || p40 ||'%)' as "13:00 (40%)",
+            --h1500 || ' (' || p60 ||'%)' as "15:00 (60%)",
+            --h1700 || ' (' || p80 ||'%)' as "17:00 (80%)",
+            --h1800 || ' (' || p95 ||'%)' as "18:00 (95%)",
+            --h2000 || ' (' || p100 ||'%)' as "20:00 (100%)",
+            --t_ent as "Entregados",
+            --n_ent as "No Entregados",
+           -- p100 as "Porcentaje"
+           -- from areati.mae_ns_ruta_beetrack_hoy 
+                        
+            select ROW_NUMBER() OVER (ORDER BY "ID. RUTA") as "N°", 
+                "ID. RUTA",
+                "PATENTE",
+                "DRIVER",
+                 TO_CHAR( "H_INIC", 'HH24:MI'),
+                "REGION",
+                "T-PED",
+                "C11" || ' (' || "(%) 11" ||'%)' as "11:00 (10%)",
+                "C13" || ' (' || "(%) 13" ||'%)' as "13:00 (40%)",
+                "C15" || ' (' || "(%)15" ||'%)' as "15:00 (60%)",
+                "C17" || ' (' || "(%)17" ||'%)' as "17:00 (80%)",
+                "C18" || ' (' || "(%)18" ||'%)' as "18:00 (95%)",
+                "C20" || ' (' || "(%)20" ||'%)' as "20:00 (100%)",
+                "T-ENT",
+                "N-ENT",
+                "Final_D"
+            from beetrack.recupera_ns_beetrack(to_char(current_date,'yyyymmdd'));
+                        
             """)
 
             return cur.fetchall()
