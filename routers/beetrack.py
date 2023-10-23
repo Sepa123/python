@@ -67,6 +67,7 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
     
     if data["resource"] == 'dispatch_guide' and data["event"] == 'create':
         print("Paso por d guide")
+        print("d guide : ",data)
         datos_tags_i = data_beetrack.obtener_datos_tags(data["tags"])
         datos_groups_i = data_beetrack.obtener_datos_groups(data["groups"])
         datos_insert_ruta_ty = data_beetrack.generar_data_insert_ruta_transyanez(data,datos_tags_i,datos_groups_i,data["dispatch_guide"])
