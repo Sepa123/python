@@ -1664,7 +1664,7 @@ class reportesConnection():
                 "C20" || ' (' || "(%)20" ||'%)' as "20:00 (100%)",
                 "T-ENT",
                 "N-ENT",
-                "Final_D"
+                "EE"
             from beetrack.recupera_ns_beetrack(to_char(current_date,'yyyymmdd'));
                         
             """)
