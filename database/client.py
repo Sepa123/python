@@ -1665,7 +1665,9 @@ class reportesConnection():
                 "T-ENT",
                 "N-ENT",
                 "EE"
-            from beetrack.recupera_ns_beetrack(to_char(current_date,'yyyymmdd'));
+            from beetrack.recupera_ns_beetrack(to_char(current_date,'yyyymmdd'))
+            where "FECHA" = current_date::date;
+
                         
             """)
 
