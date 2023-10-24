@@ -4381,8 +4381,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
         with self.conn.cursor() as cur:
             cur.execute("""        
             UPDATE beetrack.ruta_transyanez
-            SET identificador_ruta = %(route_id)s,
-                identificador = %(identifier)s,
+            SET identificador = %(identifier)s,
                 cliente = %(Cliente)s,
                 servicio = %(Servicio)s,
                 region_de_despacho = %(Región de despacho)s,
@@ -4406,7 +4405,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 oc = %(oc)s,
                 ruta = %(ruta)s,
                 tienda = %(tienda)s
-            WHERE guia = %(guide)s;
+            WHERE guia = %(guide)s AND identificador_ruta = %(route_id)s;
             """, data)
             row = cur.rowcount
         self.conn.commit()
