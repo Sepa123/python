@@ -5,7 +5,7 @@
 
 def obtener_datos_tags(tags):
     nombres_a_buscar = ["conductor", "CMN", "Bultos","Bultos ","EMAIL","Fechaentrega","fechahr",
-                        "Volumen","factura","oc","ruta","tienda","codigo","observacion"]
+                        "Volumen","FACTURA","OC","RUTA","TIENDA","codigo","observacion"]
 
     data = {
         "conductor" : "",
@@ -15,10 +15,10 @@ def obtener_datos_tags(tags):
         "Fechaentrega": "",
         "fechahr": "",
         "Volumen" : "",
-        "factura" : "",
-        "oc": "",
-        "ruta": "",
-        "tienda": "",
+        "FACTURA" : "",
+        "OC": "",
+        "RUTA": "",
+        "TIENDA": "",
         "codigo": "",
         "observacion": "",
 
@@ -79,10 +79,10 @@ def generar_data_update_ruta_transyanez(data,datos_tags,groups):
             "comuna" : datos_tags["CMN"],
             "volumen": datos_tags["Volumen"],
             "bultos" : datos_tags["Bultos"],
-            "factura": datos_tags["factura"],
-            "oc": datos_tags["oc"],
-            "ruta": datos_tags["ruta"],
-            "tienda": datos_tags["tienda"],
+            "factura": datos_tags["FACTURA"],
+            "oc": datos_tags["OC"],
+            "ruta": datos_tags["RUTA"],
+            "tienda": datos_tags["TIENDA"],
             "codigo":datos_tags["codigo"],
             "observacion": datos_tags["observacion"],
             "arrived_at": data["arrived_at"]
@@ -109,10 +109,10 @@ def generar_data_insert_ruta_transyanez(data,datos_tags,groups, dguide):
             "comuna" : datos_tags["CMN"],
             "volumen": datos_tags["Volumen"],
             "bultos" : datos_tags["Bultos"],
-            "factura": datos_tags["factura"],
-            "oc": datos_tags["oc"],
-            "ruta": datos_tags["ruta"],
-            "tienda": datos_tags["tienda"],
+            "factura": datos_tags["FACTURA"],
+            "oc": datos_tags["OC"],
+            "ruta": datos_tags["RUTA"],
+            "tienda": datos_tags["TIENDA"],
             "codigo":datos_tags["codigo"],
             "observacion": datos_tags["observacion"],
             "arrived_at": data["arrived_at"]
