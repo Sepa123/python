@@ -141,7 +141,7 @@ async def datos_confirma_facil(codigo : str):
             header["Authorization"] = token_acceso
 
             async with httpx.AsyncClient() as client:
-                response = await client.post(url=cf_embarque,json=datos_enviar,headers=header,timeout=60)
+                response = await client.post(url=cf_embarque,json=datos_enviar,headers=header,timeout=20)
                 # Verificar si la solicitud fue exitosa
                 if response.status_code == 200:
                     print("Electrolux ",response.json())
