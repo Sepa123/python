@@ -26,6 +26,7 @@ async def datos_confirma_facil():
 
     datos_enviar = []
     for dato in datos_cf:
+        
         body = {
                 "embarque": {
                     "numero": dato["Numero"],
@@ -69,8 +70,6 @@ async def datos_confirma_facil():
             token_acceso = resp["resposta"]["token"]
             header["Authorization"] = token_acceso
 
-            print(header)
-            print("DATOS :",datos_enviar)
             async with httpx.AsyncClient() as client:
                 response = await client.post(url=cf_embarque,json=datos_enviar,headers=header,timeout=60)
                 # Verificar si la solicitud fue exitosa
@@ -89,4 +88,68 @@ async def datos_confirma_facil():
 
     
         # print(body)
-    
+
+@router.get("/confirma_facil/codigo/{codigo}")
+async def datos_confirma_facil(codigo : str):
+    results = conn.recuperar_data_electrolux()
+    datos_cf = datos_confirma_facil_schema(results)
+
+    datos_enviar = []
+    for dato in datos_cf:
+        if dato["Numero"] == codigo:
+            body = {
+                    "embarque": {
+                        "numero": dato["Numero"],
+                        "serie": "02"
+                    },
+                    "embarcador": {
+                        "cnpj": "761634950"
+                    },
+                    "ocorrencia": {
+                        "tipoEntrega": dato["Tipo_entrega"],
+                        "dtOcorrencia": dato["Dt_ocorrencia"],
+                        "hrOcorrencia": dato["hr_ocorrencia"],
+                        "comentario": dato["Comentario"],
+                        "fotos": []
+                    }
+                }
+            datos_enviar.append(body)
+
+    cf_login = "https://utilities.confirmafacil.com.br/login/login"
+    cf_embarque = "https://utilities.confirmafacil.com.br/business/v2/embarque"
+     # Hacer una solicitud a la API externa usando httpx
+
+    body_login = {
+  	 	"email": "admin.area.ti@transyanez.cl",
+   	 	"senha": "TYti2022@"
+    }
+
+
+    header = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": ""
+    }
+
+    async with httpx.AsyncClient() as client:
+        response = await client.post(url=cf_login,json=body_login)
+        # Verificar si la solicitud fue exitosa
+        if response.status_code == 200:
+            # Si la solicitud fue exitosa, devolver los datos obtenidos
+            resp = response.json()
+            token_acceso = resp["resposta"]["token"]
+            header["Authorization"] = token_acceso
+
+            async with httpx.AsyncClient() as client:
+                response = await client.post(url=cf_embarque,json=datos_enviar,headers=header,timeout=60)
+                # Verificar si la solicitud fue exitosa
+                if response.status_code == 200:
+
+                    return response.json()
+                else:
+                    # Si la solicitud no fue exitosa, devolver un error
+                    return response.json()
+        else:
+            # Si la solicitud no fue exitosa, devolver un error
+            return {"error": "No se pudo obtener la información del usuario",
+                    "body" : response.json()}, response.status_code

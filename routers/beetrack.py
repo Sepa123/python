@@ -91,8 +91,10 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
             datos_tags_i = data_beetrack.obtener_datos_tags(data["tags"])
             datos_groups_i = data_beetrack.obtener_datos_groups(data["groups"])
             datos_insert_ruta_ty = data_beetrack.generar_data_update_ruta_transyanez(data,datos_tags_i,datos_groups_i)
-            
             conn.insert_beetrack_data_ruta_transyanez(datos_insert_ruta_ty)
+
+            if datos_groups_i["Cliente"] == "Electrolux":
+                print("Esta cosa si es de electrolux")
             return {
                 "message" : "data recibida correctamente"
                 }
@@ -104,12 +106,11 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
             dato_ruta_ty = data_beetrack.generar_data_update_ruta_transyanez(data,datos_tags,datos_groups)
             rows = conn.update_ruta_ty_event(dato_ruta_ty)
 
+            if datos_groups["Cliente"] == "Electrolux":
+                print("Esta cosa si es de electrolux")
+                
             print("tablas actualizadas de ruta_ty ",rows)
 
-    if data["event"] == 'on_route_from_mobile':
-        print("lleeegoo")
-        print(data)
-        
     if data["resource"] != 'dispatch':
         print("es otra cosa xd")
     else:
