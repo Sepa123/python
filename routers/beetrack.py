@@ -3,6 +3,7 @@ from typing import List , Dict
 import re
 from decouple import config
 import lib.beetrack_data as data_beetrack
+import httpx
 
 ##Conexiones
 from database.client import reportesConnection , UserConnection
@@ -95,6 +96,15 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
 
             if datos_groups_i["Cliente"] == "Electrolux":
                 print("Esta cosa si es de electrolux")
+                patron = r'\D+'
+                factura = re.sub(patron, '', datos_tags_i["FACTURA"])
+                async with httpx.AsyncClient() as client:
+                    response = await client.get(url=f"https://hela.transyanez.cl/api/electrolux/confirma_facil/codigo/{factura}")
+                    # Verificar si la solicitud fue exitosa
+                    if response.status_code == 200:
+                        print("si entro a cf")
+                    else:
+                        print("no entro a cf ",factura)
             return {
                 "message" : "data recibida correctamente"
                 }
@@ -108,6 +118,16 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
 
             if datos_groups["Cliente"] == "Electrolux":
                 print("Esta cosa si es de electrolux")
+                patron = r'\D+'
+                factura = re.sub(patron, '', datos_tags["FACTURA"])
+                
+                async with httpx.AsyncClient() as client:
+                    response = await client.get(url=f"https://hela.transyanez.cl/api/electrolux/confirma_facil/codigo/{factura}")
+                    # Verificar si la solicitud fue exitosa
+                    if response.status_code == 200:
+                        print("si entro a cf")
+                    else:
+                        print("no entro a cf ",factura)
                 
             print("tablas actualizadas de ruta_ty ",rows)
 
