@@ -134,9 +134,13 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
             print("dato_insertar a dispatch",dato_insert)
             conn.insert_beetrack_dispatch_guide_update(dato_insert)
             
-            
-        
+    
 
+    datos_groups = data_beetrack.obtener_datos_groups(data["groups"])
+
+    if datos_groups["Cliente"] == "Electrolux":
+        print("Esto de arriba es de electrolux")
+            
     print("/beetrack/dispatch")
     return {
             "message" : "data recibida correctamente"

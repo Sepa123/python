@@ -4423,6 +4423,28 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                  """,data)
             return cur.fetchall()
         
+    ##API confirmaFacil Electrolux
+
+    def recuperar_data_electrolux(self):
+        with self.conn.cursor() as cur:
+            cur.execute("""  
+                    select 	--trb.guia,
+                            --trb.factura,
+                            --trb.estado,
+                            coalesce((select ee.cod_elux  
+                            from beetrack.estados_electrolux ee
+                            where ee.subestado = (select se.code from areati.subestado_entregas se where se.name=trb.estado)),5) as tipoEntrega,
+                            regexp_replace(trb.factura, '[^0-9]', '', 'g') as numero,
+                            coalesce(to_char(trb.fecha_llegada,' dd/mm/yyyy'),to_char(trb.created_at,' dd/mm/yyyy')) as dtOcorrencia,
+                            coalesce(trb.fecha_llegada::time,created_at::time) as hrOcorrencia,
+                            coalesce(trb.estado,'En Ruta') as comentario
+                    from beetrack.ruta_transyanez trb
+                    where created_at::date = current_date::date
+                    and lower(cliente)='electrolux'
+                    order by 2 desc
+                 """)
+            return cur.fetchall()
+        
 class transyanezConnection():
     conn = None
     def __init__(self) -> None:
