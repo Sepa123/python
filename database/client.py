@@ -4453,10 +4453,11 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             cur.execute("""  
                        -- SELECT  *
                         -- from areati.registro_funciones;
-                        SELECT id, fecha_creacion, esquema, nombre_funcion, tipo_funcion, descripcion,
+                        SELECT rf.id, fecha_creacion, esquema, nombre_funcion, tf.nombre , descripcion,
                         coalesce(parametros, ARRAY['Sin parametros'] ), coalesce(comentarios_parametros, ARRAY['Sin comentario'] ), 
                         coalesce(palabras_clave,  ARRAY['Sin datos'] ), coalesce(tablas_impactadas, ARRAY['Sin datos'] )
-                        FROM areati.registro_funciones;
+                        FROM areati.registro_funciones rf
+                        inner join areati.tipo_funciones tf  on rf.tipo_funcion = tf.id ;
                  """)
             return cur.fetchall()
         
