@@ -11,7 +11,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 from datetime import datetime, timedelta
 from lib.password import verify_password, hash_password
 from database.models.token import TokenPayload
-from routers import carga,panel, electrolux, transyanez, reportes_cargas, pedidos, productos, rutas, recepcion, comunas, clientes, toc , rsv, beetrack
+from routers import areati, carga,panel, electrolux, transyanez, reportes_cargas, pedidos, productos, rutas, recepcion, comunas, clientes, toc , rsv, beetrack
 from database.schema.roles_list import roles_list_schema
 
 ## documentacion api
@@ -33,6 +33,7 @@ oauth2 = OAuth2PasswordBearer(tokenUrl="/login")
 
 app = FastAPI(docs_url="/api/docs", redoc_url="/api/redoc")
 
+app.include_router(areati.router)
 app.include_router(transyanez.router)
 app.include_router(reportes_cargas.router)
 app.include_router(pedidos.router)

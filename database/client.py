@@ -4444,7 +4444,26 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                     order by 2 desc
                  """)
             return cur.fetchall()
+    
+
+    ### AREA TI VIKING
+
+    def read_lista_funciones(self):
+        with self.conn.cursor() as cur:
+            cur.execute("""  
+                        SELECT  *
+                        FROM areati.registro_funciones;
+                 """)
+            return cur.fetchall()
         
+    def read_lista_tipo_funciones(self):
+          with self.conn.cursor() as cur:
+            cur.execute("""  
+                        SELECT id, nombre
+                        FROM areati.tipo_funciones;
+                    """)
+            return cur.fetchall()
+
 class transyanezConnection():
     conn = None
     def __init__(self) -> None:

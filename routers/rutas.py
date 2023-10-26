@@ -305,9 +305,157 @@ async def delete_producto_ruta_activa(cod_producto : str, nombre_ruta : str):
      except:
           print("error")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
+     
+
+@router.post("/descargar/{var_random}")
+async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list, var_random : str):
+
+    print("var_random_hr",var_random)
+    datos = [[]]
+    
+    datos.append([
+        "N°", "Pedido", "Comuna","Nombre","Direccion", "Teléfono", "SKU", "Producto",
+        "UND", "Bult","Obs"
+    ])
+  
+    # result = conn.read_rutas_en_activo(nombre_ruta) 
+    result = conn.read_rutas_en_activo_para_armar_excel(nombre_ruta)
+    
+    border = Border(left=Side(border_style='thin', color='000000'),   
+                right=Side(border_style='thin', color='000000'),   
+                top=Side(border_style='thin', color='000000'),     
+                bottom=Side(border_style='thin', color='000000')) 
+    
+    rutas_activas = ruta_en_activo_excel_schema(result)
+    
+
+    # rutas_activas = body
+
+    # Crear un libro de Excel y seleccionar la hoja activa
+    libro_excel = Workbook()
+    hoja = libro_excel.active
+    hoja.title = 'Hoja1'    
+
+    margins = PageMargins(top=0.3, bottom=0.6, left=0.4, right=0.5, header=0.3, footer=0.3)
+    hoja.page_margins = margins
+
+    # Estilo para el texto en negrita
+    negrita = Font(bold=True, size=20,  color='000000')
+    # hoja.merge_cells('A1:D1')
+    hoja.append(("Ruta : "+nombre_ruta,))
+    hoja.append(("Patente : "+patente,))
+
+    # "Patente : "+patente, "driver : "+driver
+
+    for ruta in rutas_activas:
+        arrayProductos = ruta["Producto"].split("@")
+        arraySKU = ruta["SKU"].split("@")
+        arrayUnidades = ruta["Unidades"].split("@")
+        arrayBultos = ruta["Bultos"].split("@")
+        if len(arraySKU) != len(arrayProductos):
+            for i in range(len(arrayProductos)):
+                arraySKU.append("")
+
+        # print(ruta["arrayBultos"])
+        if len(arrayProductos) == 1:
+            fila = [
+                ruta["Pos"], ruta["Codigo_pedido"], ruta["Comuna"] ,ruta["Nombre_cliente"],ruta["Direccion_cliente"], ruta["Telefono"], arraySKU[0], arrayProductos[0],
+                arrayUnidades[0], arrayBultos[0] , ruta["DE"] + " " + ruta["DP"]
+            ]
+            datos.append(fila)
+        elif len(arrayProductos) > 1:
+            for i, producto in enumerate(arrayProductos):
+                if i == 0:
+                    fila = [
+                        ruta["Pos"], ruta["Codigo_pedido"], ruta["Comuna"] ,ruta["Nombre_cliente"],ruta["Direccion_cliente"], ruta["Telefono"], arraySKU[0], producto,
+                        arrayUnidades[0], arrayBultos[0], ruta["DE"] + " " + ruta["DP"]
+                    ]
+                    datos.append(fila)
+                else:
+                    fila_producto = [
+                        "", "", "", "",
+                        "", "", arraySKU[i], producto , arrayUnidades[i], arrayBultos[i]
+                    ]
+                    datos.append(fila_producto)
+  
+    # Escribir los datos en la hoja
+    for i,fila in enumerate(datos):
+        hoja.append(fila)
+        nHoja = i
+    
+    # Aplicar estilo en negrita a la primera fila
+    for celda in hoja[1]:
+        celda.font = negrita
+
+    for celda in hoja[2]:
+        celda.font = negrita
+
+    for celda in hoja[4]:
+        celda.font = Font(bold=True, color="FFFFFF")
+        celda.fill = PatternFill(start_color="000000FF", end_color="000000FF", fill_type="solid")
+        celda.border = border
+    
+    # aplicar largo a celdas
+
+    for col_letter in ['A']:
+      hoja.column_dimensions[col_letter].width = 3
+
+    for col_letter in ['I','J']:
+      hoja.column_dimensions[col_letter].width = 4
+
+    for col_letter in ['B','G']:
+      hoja.column_dimensions[col_letter].width = 12
+
+    for col_letter in ['C','F']:
+      hoja.column_dimensions[col_letter].width = 14
+    
+    for col_letter in ['K']:
+      hoja.column_dimensions[col_letter].width = 15
+
+    for col_letter in ['D']:
+      hoja.column_dimensions[col_letter].width = 20
+
+    for col_letter in ['E']:
+      hoja.column_dimensions[col_letter].width = 25
+    
+    for col_letter in ['H']:
+      hoja.column_dimensions[col_letter].width = 30
+
+    # print(nHoja)
+    for n in range(nHoja):
+         for celda in hoja[n+5]:
+             celda.font = Font(color="070707")
+             celda.fill = PatternFill(start_color="FFFFFF", end_color="FFFFFF", fill_type="solid")
+             celda.border = border
+  
+    hoja.append(("",)) 
+    hoja.append(("","Driver : "+driver,))  
+    hoja.append(("",))  
+    hoja.append(("","Firma : ______________________"))    
+
+    hoja.merge_cells('A1:M1')
+    hoja.merge_cells('A2:M2')
+
+    for row in hoja.iter_rows(min_row=5, max_row=nHoja+5, min_col=0, max_col=13):
+        for celda in row:
+            celda.alignment = Alignment(wrap_text=True, horizontal = 'center' , vertical='center')
+
+  # Fusionar celdas para las últimas cuatro filas
+    # Guardar el archivo
+
+    hoja.page_setup.orientation = 'landscape'
+
+    # hoja.print_options.horizontalCentered = True  # Centrar horizontalmente
+    # hoja.print_options.verticalCentered = True  # Centrar verticalmente
+
+    nombre_archivo = "nombre_ruta.xlsx"
+    libro_excel.save(nombre_archivo)
+
+    return FileResponse("nombre_ruta.xlsx")
+
        
 @router.post("/descargar")
-async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list):
+async def download_excel_antigua(nombre_ruta : str,patente: str,driver:str , body : list):
 
     datos = [[]]
     
@@ -353,8 +501,7 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
         if len(arraySKU) != len(arrayProductos):
             for i in range(len(arrayProductos)):
                 arraySKU.append("")
-                print(len(arraySKU))
-                print(len(arrayProductos))
+
         # print(ruta["arrayBultos"])
         if len(arrayProductos) == 1:
             fila = [
@@ -456,7 +603,7 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
 async def asignar_ruta_activa(asignar : RutasAsignadas):
     try:
         asignar.id_ruta = conn.get_id_ruta_activa_by_nombre(asignar.nombre_ruta)[0]
-        print(asignar)
+        # print(asignar)
         data = asignar.dict()
         connHela.insert_ruta_asignada(data)
 
@@ -470,7 +617,7 @@ async def get_ruta_activa_by_nombre(nombre_ruta: str):
 
     try:
         results = connHela.read_id_ruta_activa_by_nombre(nombre_ruta)
-        print(results)
+        # print(results)
         if results is None:
             return { "OK": False}
 
@@ -490,8 +637,8 @@ async def update_ruta_asignada(body :RutasAsignadas):
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
 
 
-@router.get("/beetrack/{id_ruta}/descargar")
-async def descargar_archivo_beetrack(id_ruta : str):
+@router.get("/beetrack/{id_ruta}/descargar/")
+async def descargar_archivo_beetrack_antigua(id_ruta : str):
     results = conn.read_datos_descarga_beetrack(id_ruta)
 
     wb = Workbook()
@@ -521,6 +668,42 @@ async def descargar_archivo_beetrack(id_ruta : str):
     wb.save("excel/prueba_beetrack.xlsx")
 
     return FileResponse("excel/prueba_beetrack.xlsx")
+
+
+@router.get("/beetrack/{id_ruta}/descargar/{var_random}")
+async def descargar_archivo_beetrack(id_ruta : str, var_random : str):
+    print("Esta es random ",var_random)
+    results = conn.read_datos_descarga_beetrack(id_ruta)
+
+    wb = Workbook()
+    ws = wb.active
+    print("/rutas/beetrack/descargar")
+    # results.insert(0, ("",))
+    results.insert(0, ("NÚMERO GUÍA *","VEHÍCULO *","NOMBRE ITEM *","CANTIDAD","CODIGO ITEM","IDENTIFICADOR CONTACTO *","NOMBRE CONTACTO", "TELÉFONO","EMAIL CONTACTO","DIRECCIÓN *",
+    "LATITUD","LONGITUD","FECHA MIN ENTREGA","FECHA MAX ENTREGA","CT DESTINO","DIRECCION","DEPARTAMENTO","COMUNA","CIUDAD","PAIS","EMAIL","Fechaentrega","fechahr",
+    "conductor","Cliente","Servicio","Origen","Región de despacho","CMN","Peso","Volumen", "Bultos","ENTREGA","FACTURA","OC","RUTA", "TIENDA"))
+
+    for row in results:
+        # print(row)
+        ws.append(row)
+
+    for col in ws.columns:
+        max_length = 0
+        column = col[0].column_letter# get column letter
+        for cell in col:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(str(cell.value))
+            except:
+                pass
+        adjusted_width = (max_length + 2)
+        ws.column_dimensions[column].width = adjusted_width
+    results.insert(0, ("",))
+    wb.save("excel/prueba_beetrack.xlsx")
+
+    return FileResponse("excel/prueba_beetrack.xlsx")
+
+
 
 @router.get("/recuperar/tracking")
 async def recuperar_tracking_beetrack(codigo : str):
