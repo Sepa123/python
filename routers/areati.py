@@ -12,19 +12,20 @@ from datetime import datetime
 
 from database.schema.areati.registro_funciones import registro_funciones_schema
 from database.schema.areati.tipo_funcion import tipo_funciones_schema
-
+from database.models.areati.lista_funciones import ListaFuncion
 
 router = APIRouter(tags=["Area_TI"], prefix="/api/areati")
 
 conn = reportesConnection()
 
 
-# @router.post("/agregar/funcion")
-# async def post_dispatch_guide():
-
-#     print("/beetrack/dispatch_guide")
-    
-#     return 
+@router.post("/agregar/funcion")
+async def post_dispatch_guide(body : ListaFuncion):  
+    data = body.dict()
+    conn.insert_lista_funcion(data)
+    return {
+        "message": "funcion agregado correctamente"
+    }
 
 @router.get("/listar/funcion")
 async def get_lista_funcion():

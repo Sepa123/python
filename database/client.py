@@ -4451,7 +4451,11 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def read_lista_funciones(self):
         with self.conn.cursor() as cur:
             cur.execute("""  
-                        SELECT  *
+                       -- SELECT  *
+                        -- from areati.registro_funciones;
+                        SELECT id, fecha_creacion, esquema, nombre_funcion, tipo_funcion, descripcion,
+                        coalesce(parametros, ARRAY['Sin parametros'] ), coalesce(comentarios_parametros, ARRAY['Sin comentario'] ), 
+                        coalesce(palabras_clave,  ARRAY['Sin datos'] ), coalesce(tablas_impactadas, ARRAY['Sin datos'] )
                         FROM areati.registro_funciones;
                  """)
             return cur.fetchall()
@@ -4463,6 +4467,31 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                         FROM areati.tipo_funciones;
                     """)
             return cur.fetchall()
+          
+    def insert_lista_funcion(self, data):
+            with self.conn.cursor() as cur:
+
+                parametros_array_str = 'ARRAY[%s]' % (','.join([f"'{res}'" for res in data["arrParametros"]])) if data["arrParametros"] else 'NULL'
+                comentario_array_str = 'ARRAY[%s]' % (','.join([f"'{res}'" for res in data["arrComentario"]])) if data["arrComentario"] else 'NULL'
+                palabras_clave_array_str = 'ARRAY[%s]' % (','.join([f"'{res}'" for res in data["arrPalabras_clave"]])) if data["arrPalabras_clave"] else 'NULL'
+                tablas_impactadas_array_str = 'ARRAY[%s]' % (','.join([f"'{res}'" for res in  data["arrTablas_impactadas"]])) if  data["arrTablas_impactadas"] else 'NULL'
+
+                cur.execute(f"""
+                INSERT INTO areati.registro_funciones (esquema, nombre_funcion, tipo_funcion, descripcion, parametros, 
+                        comentarios_parametros, palabras_clave, tablas_impactadas) 
+                VALUES (
+                       '{data["Esquema"]}',
+                       '{data["Nombre_funcion"]}',
+                        {data["Tipo_funcion"]},
+                       '{data["Descripcion"]}',
+                        {parametros_array_str},
+                        {comentario_array_str},
+                        {palabras_clave_array_str},
+                        {tablas_impactadas_array_str}
+                    );
+                """)
+                
+            self.conn.commit()
 
 class transyanezConnection():
     conn = None
