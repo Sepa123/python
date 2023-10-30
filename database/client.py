@@ -4464,7 +4464,8 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                         coalesce(parametros, ARRAY['Sin parametros'] ), coalesce(comentarios_parametros, ARRAY['Sin comentario'] ), 
                         coalesce(palabras_clave,  ARRAY['Sin datos'] ), coalesce(tablas_impactadas, ARRAY['Sin datos'] )
                         FROM areati.registro_funciones rf
-                        inner join areati.tipo_funciones tf  on rf.tipo_funcion = tf.id ;
+                        inner join areati.tipo_funciones tf  on rf.tipo_funcion = tf.id 
+                        order by esquema,tf.nombre ;
                  """)
             return cur.fetchall()
         
