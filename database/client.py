@@ -4445,6 +4445,13 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                  """)
             return cur.fetchall()
     
+    ### Dashboard pendientes
+    def read_lista_pendientes_bodega_hasta_hoy(self):
+            with self.conn.cursor() as cur:
+                cur.execute("""  
+                        select * from areati.pendientes_bodega();
+                    """)
+                return cur.fetchall()
 
     ### AREA TI VIKING
 

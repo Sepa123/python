@@ -46,6 +46,8 @@ from database.schema.operaciones.nro_cargas_hora import nro_cargas_hora_schema
 
 from database.schema.cargas.beetrack_rango import beetrack_rango_schema
 
+from database.schema.pendientes_bodega import pendientes_bodega_schema
+
 from database.models.ns_valor_ruta import asignarValor
 
 from typing import List
@@ -480,3 +482,12 @@ async def cargas_por_hora():
     results = conn.get_carga_hora()
 
     return nro_cargas_hora_schema(results)
+
+
+
+#Pendientes en bodega
+@router.get("/pendientes/bodega",status_code=status.HTTP_202_ACCEPTED)
+async def cargas_por_hora():
+    results = conn.read_lista_pendientes_bodega_hasta_hoy()
+
+    return pendientes_bodega_schema(results)
