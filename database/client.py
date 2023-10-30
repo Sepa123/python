@@ -4053,20 +4053,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def obtener_inventario_por_sucursal(self, sucursal : int):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-              --select * from rsv.inventario_por_sucursal({sucursal});
-              select 	cp.codigo,
-                        c.nombre_color ,
-                        cp.producto,
-                        inv.e_paquetes as "Paquetes",
-                        inv.e_unidades as "Unidades",
-                        inv.total as "Total Producto",
-                        e.ubicacion 
-                from rsv.catalogo_productos cp 
-                JOIN LATERAL rsv.existencia(cp.codigo,{sucursal}) AS inv ON true
-                left join rsv.colores c on cp.color = c.id
-                left join rsv.etiquetas e  on cp.codigo = e.codigo 
-                where habilitado=true
-                order by cp.color, cp.codigo asc;
+              select * from rsv.inventario_por_sucursal({sucursal});
                         """)
             return cur.fetchall()
 
