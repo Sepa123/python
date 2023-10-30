@@ -1,5 +1,5 @@
 from fastapi import APIRouter, status,HTTPException,Header,Depends 
-from typing import List , Dict
+from typing import List , Dict ,Union
 import re
 from decouple import config
 import lib.beetrack_data as data_beetrack
@@ -172,7 +172,7 @@ async def post_route(body : Route , headers: tuple = Depends(validar_encabezados
 
 
 @router.post("/Enviar/loquesea")
-async def post_route(body : Dict ):
+async def post_route(body : Union[Dict, List[Dict]] ):
     print("/beetrack/route")
     print(body)
     return {
