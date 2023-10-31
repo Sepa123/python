@@ -277,10 +277,9 @@ async def get_inventario_por_sucursal(sucursal : int):
 
 @router.get("/inventario/sucursales/{sucursal}/descargar")
 async def get_inventario_por_sucursal(sucursal : int):
-    results = conn.obtener_inventario_por_sucursal(sucursal)
+    results = conn.obtener_inventario_por_sucursal_excel(sucursal)
     nombre_filas = ( "Color", "Código", "Producto", "Paquetes", "Unidades", "Total",)
     nombre_excel = f"inventario-sucursal-{sucursal}"
-    results.pop()
 
     return excel.generar_excel_generico(results,nombre_filas,nombre_excel)
    
