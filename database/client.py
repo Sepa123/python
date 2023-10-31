@@ -4060,7 +4060,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                         inv.e_paquetes as "Paquetes",
                         inv.e_unidades as "Unidades",
                         inv.total as "Total Producto",
-                        (select array_agg(distinct(ubicacion))
+                        (select array_agg(distinct(substring(ubicacion from '([^@]+)@' )))
                         from rsv.etiquetas 
                         where codigo = cp.codigo AND substring(ubicacion from '@(\d+)' ) = '{sucursal}') as ubicacion
                 from rsv.catalogo_productos cp 
