@@ -174,7 +174,7 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]], fecha_pedido : str)
         return { "message": f"La Ruta {nombre_ruta} fue guardada exitosamente" }
     except Exception as e:
         
-        print("error al crear ruta:",e)
+        print(f"error al crear ruta: {e}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
 
 @router.put("/actualizar/estado/{cod_producto}",status_code=status.HTTP_202_ACCEPTED)
