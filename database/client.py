@@ -3806,7 +3806,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def prueba_ty(self, offset):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-                select * from rutas.pendientes_prueba(null, null,{offset})
+                select * from rutas.pendientes_seg(null, null,{offset})
                         """)
             return cur.fetchall()
         
