@@ -5,8 +5,7 @@ def inventario_sucursal(inventario):
 		"Producto" : inventario[2],
 		"Paquetes" : inventario[3],
 		"Unidades" : inventario[4],
-		"Total" : inventario[5],
-        "Ubicacion" : inventario[6]
+		"Total" : inventario[5]
 	}
 
 
