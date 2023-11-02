@@ -20,8 +20,6 @@ from database.models.beetrack.route import Route
 router = APIRouter(tags=["Beetrack"], prefix="/api/beetrack")
 
 conn = reportesConnection()
-# connHela = HelaConnection()
-# connUser = UserConnection()
 
 # Función de dependencia para validar los encabezados
 def validar_encabezados(content_type: str = Header(None), x_auth_token: str = Header(None)):
