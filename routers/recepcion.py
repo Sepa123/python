@@ -64,6 +64,9 @@ async def get_recepcion_easy_opl_by_codigo_pedido(cod_pedido : str):
     codigo_pedido = conn.get_codigo_pedido_opl(cod_pedido)
     results = conn.read_recepcion_easy_opl_by_codigo_producto(codigo_pedido[0][0])
 
+    if len(results) == 0:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"El  código {codigo_pedido[0][0]} no se pudo encontrar")
+
     return recepcion_tiendas_schema(results)
 
 ## cambiar verificado a productos 
