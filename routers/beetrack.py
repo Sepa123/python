@@ -130,7 +130,7 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
             print("tablas actualizadas de ruta_ty ",rows)
 
     if data["resource"] != 'dispatch':
-        print("es otra cosa xd")
+        varnada = ""
     else:
         print("total datos de update",data)
         datos_tags = data_beetrack.obtener_datos_tags(data["tags"])
