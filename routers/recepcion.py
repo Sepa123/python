@@ -99,7 +99,9 @@ async def get_recepcion_sportex_by_codigo_producto(body: bodyUpdateVerified):
         if rows != 0:
             connHela.insert_data_bitacora_recepcion(data)
         else:
-            print(" no se verifico ningun producto")
+            print(" no se verifico producto en sportex")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"El  producto {body.cod_producto} no se pudo verificar")
+
         return { "message": f"Producto {rows} verificado." }
     except:
           print("error con verificar sportex")
