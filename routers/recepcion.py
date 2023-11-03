@@ -73,14 +73,16 @@ async def get_recepcion_electrolux(body: bodyUpdateVerified):
     try:
         data = body.dict()
         rows = conn.update_verified_electrolux(body.cod_producto)
-        print(rows)
         if rows != 0:
             connHela.insert_data_bitacora_recepcion(data)
         else:
             print(" no se verifico ningun producto")
         return { "message": f"Producto {rows} verificado." }
     except:
-          print("error")
+          print("error con verificar electrolux")
+          if rows == 0:
+               raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"El  producto {body.cod_producto} no se pudo verificar")
+          
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la verificación")
 
 @router.put("/sportex", status_code=status.HTTP_202_ACCEPTED)
@@ -94,7 +96,10 @@ async def get_recepcion_sportex_by_codigo_producto(body: bodyUpdateVerified):
             print(" no se verifico ningun producto")
         return { "message": f"Producto {rows} verificado." }
     except:
-          print("error")
+          print("error con verificar sportex")
+          if rows == 0:
+               raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"El  producto {body.cod_producto} no se pudo verificar")
+          
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la verificación") 
 
 @router.put("/easy_opl", status_code=status.HTTP_202_ACCEPTED)
@@ -113,7 +118,10 @@ async def get_recepcion_easy_opl_by_codigo_producto(body: bodyUpdateVerified):
         return { "message": f"Producto {rows} verificado {body.sku}." }
 
     except:
-          print("error")
+          print("error con verificar easy OPL")
+          if rows == 0:
+               raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"El  producto {body.cod_producto} no se pudo verificar")
+          
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la verificación")
 
 @router.put("/easy_cd", status_code=status.HTTP_202_ACCEPTED)
@@ -131,7 +139,10 @@ async def get_recepcion_easy_cd_by_codigo_producto(body: bodyUpdateVerified):
             print(" no se verifico ningun producto")
         return { "message": f"Producto {rows} verificado." }
     except:
-          print("error")
+          print("error con verificar EASY CD")
+          if rows == 0:
+               raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"El  producto {body.cod_producto} no se pudo verificar")
+          
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la verificación")
 
 
@@ -181,13 +192,14 @@ async def update_recepcion_easy_cd_by_codigo_producto(body: bodyUpdateVerified):
             connHela.insert_data_bitacora_recepcion(data)
         else:
             print(" no se verifico ningun producto")
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"El  producto {body.cod_producto} no existe")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"El  producto {body.cod_producto} no se pudo verificar")
 
         return { "message": f"Producto {rows} verificado." }
     except:
           print("error")
           if rows == 0:
-               raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"El  producto {body.cod_producto} no existe")
+               raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"El  producto {body.cod_producto} no se pudo verificar")
+          
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la verificación")
 
 @router.put("/easy_opl/actualizar")
@@ -205,7 +217,9 @@ async def update_recepcion_easy_opl_by_codigo_producto_sko(body: bodyUpdateVerif
         if rows != 0:
             connHela.insert_data_bitacora_recepcion(data)
         else:
-            print(" no se recepciono ningun producto")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"El  producto {body.cod_producto} no se pudo verificar")
+          
+            
         return { "message": f"Producto recepcionados : {rows}." }
     # except:
     #       print("error")
