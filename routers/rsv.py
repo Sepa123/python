@@ -593,7 +593,11 @@ async def get_peso_posicion_sucursal():
     results = conn.obtener_tipo_estructuras_rsv()
     return tipos_estructuras_schema(results)
 
-
+# /notas_ventas/lista/completa
+@router.get("/notas_ventas/lista/completa")
+async def get_lista_venta_rsv(sucursal : int):
+    results = conn.read_lista_ventas_rsv(sucursal)
+    return notas_ventas_schema(results)
 
 # Actualizar estructura
 @router.put("/actualizar/estructura")

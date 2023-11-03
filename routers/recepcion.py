@@ -181,6 +181,8 @@ async def update_recepcion_easy_cd_by_codigo_producto(body: bodyUpdateVerified):
             connHela.insert_data_bitacora_recepcion(data)
         else:
             print(" no se verifico ningun producto")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"El  producto {body.cod_producto} no existe")
+
         return { "message": f"Producto {rows} verificado." }
     except:
           print("error")

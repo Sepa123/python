@@ -4194,6 +4194,18 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             order by nv.fecha_entrega         
             """)
             return cur.fetchall()
+        
+    def read_lista_ventas_rsv(self, sucursal : int) :
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select nv.id, nv.created_at, nv.id_usuario, nv.ids_usuario, nv.sucursal, nv.cliente, nv.direccion, nv.comuna,
+                   nv.region, nv.fecha_entrega, td.despacho, nv.numero_factura, nv.codigo_ty ,nv.preparado , nv.fecha_preparado ,nv.entregado , nv.fecha_despacho
+            from rsv.nota_venta nv
+            inner join rsv.tipo_despacho td  on td.id = nv.tipo_despacho 
+            where sucursal = {sucursal} 
+            order by nv.fecha_entrega         
+            """)
+            return cur.fetchall()
     
     def obtener_lista_detalle_ventas_barcode_rsv(self, id_venta : int) :
         with self.conn.cursor() as cur:
