@@ -204,7 +204,7 @@ async def update_recepcion_easy_cd_by_codigo_producto(body: bodyUpdateVerified):
 
         return { "message": f"Producto {rows} verificado." }
     except:
-          print("error")
+          print("error al actualizar cd")
           if rows == 0:
                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"El  producto {body.cod_producto} no se pudo verificar")
           
