@@ -57,6 +57,9 @@ async def get_recepcion_easy_cd():
 async def get_recepcion_electrolux(cod_pedido : str):
     results = conn.read_recepcion_electrolux_by_codigo_producto(cod_pedido)
 
+    if len(results) == 0:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"El  código {cod_pedido} no se pudo encontrar")
+
     return recepcion_tiendas_schema(results)
 
 @router.get("/easy_opl/{cod_pedido}", status_code=status.HTTP_202_ACCEPTED)
