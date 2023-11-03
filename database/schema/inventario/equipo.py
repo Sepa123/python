@@ -2,7 +2,7 @@ def lista_tipo_equipo(data):
     return{
             "id": data[0],
             "nombre": data[1],
-            "descripcion": data[2],
+
             
             }
 
@@ -26,7 +26,9 @@ def lista_descripcion_equipo(data):
             "almacenamiento":data[10],
             "ram":data[11],
             "estado":data[12],
-            "tipo":data[13]
+            "tipo":data[13],
+            "cantidad" :data[14],
+            "nr_equipo": data[15]
             }
 
 def descripcion_equipo_schema(datos):

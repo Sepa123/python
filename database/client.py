@@ -231,8 +231,8 @@ class reportesConnection():
 
     def ingresar_tipo_equipo(self, data):
         with self.conn.cursor() as cur:
-            cur.execute(""" INSERT INTO inventario.tipo (nombre, descripcion)
-                        VALUES(%(nombre)s, %(descripcion)s)
+            cur.execute(""" INSERT INTO inventario.tipo (nombre)
+                        VALUES(%(nombre)s)
             """, data)
         self.conn.commit()
     def ingresar_equipo_asignado(self, data):
@@ -247,7 +247,7 @@ class reportesConnection():
     def agregar_descripcion_equipo(self,data):
         with self.conn.cursor() as cur:
             cur.execute(""" INSERT INTO inventario.equipo (id_user, ids_user, lat, long, marca, modelo, serial, mac_wifi, serie, resolucion,
-                         dimensiones, descripcion, ubicacion, almacenamiento, ram, estado, tipo)
+                         dimensiones, descripcion, ubicacion, almacenamiento, ram, estado, tipo, cantidad, nr_equipo)
                         VALUES(%(id_user)s,%(ids_user)s,%(lat)s,%(long)s,%(marca)s,%(modelo)s,%(serial)s,%(mac_wifi)s,%(serie)s,%(resolucion)s,
                         %(dimensiones)s,%(descripcion)s,%(ubicacion)s,%(almacenamiento)s,%(ram)s,%(estado)s,%(tipo)s)
                         """,data)
@@ -305,13 +305,16 @@ class reportesConnection():
         
     def read_tipo_equipo(self):
         with self.conn.cursor() as cur:
-            cur.execute(""" SELECT id, nombre, descripcion FROM inventario.tipo; """)
+            cur.execute(""" SELECT id, nombre FROM inventario.tipo; """)
             return cur.fetchall()
 
     def read_descripcion_equipo(self):
         with self.conn.cursor() as cur:
-            cur.execute(""" SELECT id, marca, modelo, serial, mac_wifi, serie, resolucion, dimensiones, descripcion, ubicacion, almacenamiento, ram, estado, tipo
-                    FROM inventario.equipo;""")
+            cur.execute(""" SELECT e.id, e.marca, e.modelo, e.serial, e.mac_wifi, e.serie, e.resolucion, e.dimensiones, e.descripcion, e.ubicacion,
+                        e.almacenamiento, e.ram, es.nombre AS estado, t.nombre AS tipo e.cantidad, e.nr_equipo 
+                        FROM inventario.equipo e
+                        INNER JOIN inventario.tipo t ON e.tipo = t.id
+                        INNER JOIN inventario.estado es ON e.estado = es.id;""")
             return cur.fetchall()
     
     def read_asignaciones_personal(self):
@@ -342,8 +345,78 @@ class reportesConnection():
             cur.execute(""" SELECT id, nombre
                         FROM inventario.estado;""")
             return cur.fetchall()
+    def encontrar_por_folio(self, folio):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""SELECT p.nombres || ' ' || p.apellidos  as persona, d.nombre as departamento, a.nombre_equipo , e.marca|| ' ' || e.modelo as equipo ,  a.folio , a.fecha_entrega,  a.fecha_devolucion , a.estado, a.observacion
+                        FROM inventario.asignacion a
+                        INNER JOIN inventario.persona p ON a.persona = p.id
+                        INNER JOIN inventario.equipo e ON a.equipo = e.id
+                        INNER JOIN inventario.departamento d ON a.departamento = d.id
+                        inner join inventario.tipo t on e.tipo = t.id where a.folio= %s""", (folio,))
+            return cur.fetchall()
         
+     ## devolucion de equipo    
+    
+    def asignar_devolucion_equipo(self, data):
+        with self.conn.cursor() as cur:
+            cur.execute(""" UPDATE inventario.asignacion  
+                        SET estado=%(estado)s, fecha_devolucion=%(fecha_devolucion)s, observacion=%(observacion)s
+                        WHERE folio=%(folio)s""", data)
 
+
+        self.conn.commit()
+
+    ##EDITAR TABLAS  DE INVENTARIO
+
+    def editar_tipo_equipo(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute(""" UPDATE inventario.tipo
+                        SET nombre=%(nombre)s where id=%(id)s""", data)
+        self.conn.commit()
+
+    def editar_departamento(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute(""" UPDATE inventario.departamento
+                        SET nombre=%(nombre)s where id=%(id)s""",data )
+        self.conn.commit()
+
+    def editar_licencia(self,data):
+        with self.conn.cursor() as cur: 
+            cur.execute(""" UPDATE inventario.licencias
+                        SET codigo=%(codigo)s where id=%(id)s """, data)
+        self.conn.commit()
+
+    def editar_sucursal(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute("""UPDATE inventario.sucursales 
+                        SET nombre=%(nombre)s, pais=%(pais)s, ciudad=%(ciudad)s, comuna=%(comuna)s,direccion=%(direccion)s
+                        where id=%(id)s """,data)
+        self.conn.commit()
+
+    def editar_estado(self, data):
+        with self.conn.cursor() as cur:
+            cur.execute(""" UPDATE inventario.estado  SET nombre=%(nombre)s where id=%(id)s """,data)
+        self.conn.commit()
+
+    def editar_descripcion_equipo(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute(""" UPDATE inventario.equipo SET marca=%(marca)s,modelo=%(modelo)s,serial=%(serial)s,mac_wifi=%(mac_wifi)s,
+	        serie=%(serie)s,resolucion=%(resolucion)s,dimensiones=%(dimensiones)s,descripcion=%(descripcion)s,ubicacion=%(ubicacion)s,
+	        almacenamiento=%(almacenamiento)s,ram=%(ram)s,estado=%(estado)s,tipo=%(tipo)s where id=%(id)s """,data)
+        self.conn.commit()
+
+    def editar_persona(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute(""" UPDATE inventario.persona SET nombres=%(nombres)s,apellidos=%(apellidos)s,rut=%(rut)s,
+	        nacionalidad=%(nacionalidad)s,fecha_nacimiento=%(fecha_nacimiento)s,estado_civil=%(estado_civil)s,
+	        telefono=%(telefono)s,fecha_ingreso=%(fecha_ingreso)s,cargo=%(cargo)s,domicilio=%(domicilio)s,
+	        comuna=%(comuna)s,banco=%(banco)s,tipo_cuenta=%(tipo_cuenta)s,numero_cuenta=%(numero_cuenta)s,
+	        correo=%(correo)s,afp=%(afp)s,salud=%(salud)s,telefono_adicional=%(telefono_adicional)s,
+	        nombre_contacto=%(nombre_contacto)s,seguro_covid=%(seguro_covid)s,horario=%(horario)s,
+	        ceco=%(ceco)s,sueldo_base=%(sueldo_base)s,tipo_contrato=%(tipo_contrato)s,direccion_laboral=%(direccion_laboral)s,
+	        enfermedad=%(enfermedad)s,polera=%(polera)s,pantalon=%(pantalon)s,poleron=%(poleron)s,
+	        zapato=%(zapato)s""" , data)
+        self.conn.commit()
     #Productos sin recepcion
     def read_productos_sin_recepcion(self):
         with self.conn.cursor() as cur:
@@ -3915,6 +3988,25 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             """,data)
         self.conn.commit()
 
+
+    ## actualizar estado de unidades sin etiqueta rsv
+    def actualizar_unidad_con_etiqueta(self,data):
+        with self.conn.cursor() as cur :
+            cur.execute(""" UPDATE rsv.catalogo_productos SET unid_con_etiqueta= %(unid_con_etiqueta)s
+                        where  codigo =%(codigo)s """,data)
+        self.conn.commit()
+
+##lista de unidades sin etiquetas
+    def read_unidades_sin_etiqueta_rsv(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+                    select p.id, p.created_at , p.codigo, p.producto, p.unid_x_paquete, p.peso, p.ancho, p.alto, p.largo, 
+                        c.nombre_color as color, p.precio_unitario,p.ubicacion_p, p.ubicacion_u ,p.codigo_original, 
+                        p.id_user , p.ids_user, p.habilitado , p.unid_con_etiqueta  from rsv.catalogo_productos p 
+                        inner join rsv.colores c on p.color = c.id 
+                        where unid_con_etiqueta  =false""")
+            return cur.fetchall()
+    
     def update_catalogo_rsv(self, data):
         with self.conn.cursor() as cur:
             cur.execute("""

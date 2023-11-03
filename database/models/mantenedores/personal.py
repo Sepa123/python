@@ -3,6 +3,7 @@ from datetime import date
 from typing import Optional
 
 class PersonalEquipo(BaseModel):
+    id: int
     id_user: Optional [int]
     ids_user: Optional [str]
     lat: Optional [str]

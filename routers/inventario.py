@@ -1,9 +1,10 @@
-from fastapi import APIRouter, status,HTTPException, Path
+from fastapi import APIRouter, status,HTTPException, Path, UploadFile, File
 
 from database.models.mantenedores.personal import PersonalEquipo
 from database.models.mantenedores.tipo import TipoDeEquipo
 from database.models.mantenedores.equipo import DescripcionEquipo
 from database.models.mantenedores.asignacion import AsignarEquipo
+from database.models.mantenedores.devolucion import DevolucionEquipo
 from database.models.mantenedores.departamento import DepartamentoInventario
 from database.models.mantenedores.sucursal import SucursalInventario
 from database.models.mantenedores.estado import EstadoInventario
@@ -25,6 +26,7 @@ router = APIRouter(tags=["RSV"], prefix="/api/inventario-ti")
 
 conn = reportesConnection()
 
+##CREAR INFORMACION A TRAVES DE FORM
 @router.post("/asignacion")
 async def asignar_equipo(body: AsignarEquipo):
     try:
@@ -133,7 +135,7 @@ async def asignar_equipo_personal(body: AsignarEquipo):
     except Exception as e:
         raise HTTPException(status_code=422,detail=str(e))
     
-
+## MOSTRANDO LISTA DE LA INFORMACION ASIGNADA
 @router.get("/lista-licencia")
 async def lista_licencias():
     result = conn.read_licencia_windows()
@@ -173,3 +175,98 @@ async def lista_departamento_inventario():
 async def lista_estado_inventario():
     result = conn.read_estado_inventario()
     return lista_inventario_estado_schema(result)
+
+@router.get("/folio/{folio}")
+async def equipo_asignado_por_id(folio:str ):
+    result = conn.encontrar_por_folio(folio)
+    return persona_equipo_schema(result)
+
+#AGREGANDO DEVOLUCION DE EQUIPO ASIGNADO
+
+@router.put("/actualizar/devolucion")
+async def agregar_devolucion_equipo(  body: AsignarEquipo):
+    try: 
+        data = body.dict()
+        conn.asignar_devolucion_equipo( data)
+        return{
+            "message": "Equipo devuelto"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=422,detail=str(e))
+
+@router.put("/actualizar/tipo")
+async def editar_tipo(body: TipoDeEquipo):
+    try: 
+        data = body.dict()
+        conn.editar_tipo_equipo( data)
+        return{
+            "message": "Tipo editado"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=422,detail=str(e))
+
+@router.put("/actualizar/departamento")
+async def editar_departamento(body: DepartamentoInventario):
+    try: 
+        data = body.dict()
+        conn.editar_departamento( data)
+        return{
+            "message": "Departamento editado"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=422,detail=str(e))  
+
+@router.put("/actualizar/licencia")
+async def editar_licencia(body: CrearLicencia):
+    try:
+        data = body.dict()
+        conn.editar_licencia(data)
+        return{
+            "message": "Licencia editada"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=422,detail=str(e))
+    
+@router.put("/actualizar/sucursal")
+async def editar_sucursal(body: SucursalInventario):
+    try:
+        data = body.dict()
+        conn.editar_sucursal(data)
+        return{
+            "message": "Sucursal editada"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=422, detail=str(e))
+    
+@router.put("/actualizar/estado")
+async def editar_estado(body: EstadoInventario):
+    try:
+        data = body.dict()
+        conn.editar_estado(data)
+        return{
+            "message": "Estado editado"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=422, detail=str(e))
+    
+@router.put("/actualizar/descripcion-equipo")
+async def editar_descripcion_equipo(body: DescripcionEquipo):
+    try: 
+        data = body.dict()
+        conn.editar_descripcion_equipo(data)
+        return{
+            "message":"Descripcion de equipo editada"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=422, detail=str(e))
+    
+@router.put("/actualizar/persona")
+async def editar_persona(body: PersonalEquipo):
+    try: 
+        data = body.dict()
+        conn.editar_persona(data)
+        return{
+            "message": "Persona editada"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=422, detail=str(e))

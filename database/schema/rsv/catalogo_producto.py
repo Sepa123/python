@@ -17,6 +17,7 @@ def catalogo_producto(producto):
         "Id_user" : producto[14],
 		"Ids_user" : producto[15],
 		"Habilitado" : producto[16],
+        "unid_con_etiqueta": producto[17]
 	}
 
 

@@ -3,6 +3,7 @@ from typing import Optional
 
 
 class DescripcionEquipo(BaseModel):
+    id: int
     id_user: Optional [int]
     ids_user: Optional [str]
     lat: Optional [str]
@@ -20,3 +21,5 @@ class DescripcionEquipo(BaseModel):
     ram: Optional [int]
     estado: Optional [int]
     tipo: Optional [int]
+    cantidad: Optional[int]
+    nr_equipo: Optional[int]

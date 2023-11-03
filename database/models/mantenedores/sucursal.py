@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from typing import Optional
 
 class SucursalInventario(BaseModel):
+    id: int
     nombre: Optional [str]
     pais: Optional [str]
     ciudad: Optional [str]

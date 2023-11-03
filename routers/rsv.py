@@ -4,6 +4,7 @@ from typing import List
 from database.schema.rsv.catalogo_producto import catalogos_productos_schema , codigos_por_color_schema
 from database.models.rsv.catalogo_producto import CatalogoProducto
 
+from database.models.rsv.unidadEtiqueta import UnidadEtiqueta
 from database.schema.rsv.etiquetas import etiquetas_productos_schema , datos_productos_etiquetas_schema
 
 from database.schema.rsv.colores import colores_rsv_schema
@@ -404,3 +405,25 @@ async def update_carga(list_body : List[CargaRSV]):
 async def get_tipo_despacho():
     results = conn.read_tipo_despacho_rsv()
     return tipos_despacho_schema(results)
+
+
+##cambiar estado de unidades con etiquetas 
+
+@router.put("/actualizar_unid_con_etiquetas")
+async def actualizar_estado( body: UnidadEtiqueta):
+    try:
+        data = body.dict()
+        conn.actualizar_unidad_con_etiqueta(data)
+        return{
+            "message": "Estado cambiado"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=422,detail=str(e))
+
+##lista de unidades sin etiquetas
+
+@router.get("/catalogo-unidades-sin-etiqueta")
+async def obtener_unidades_sin_etiquetas_rsv():
+    result = conn.read_unidades_sin_etiqueta_rsv()
+    return catalogos_productos_schema(result)
+    

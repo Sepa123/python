@@ -20,4 +20,5 @@ class CatalogoProducto(BaseModel):
     Ubicacion_p : Optional[str]
     Codigo_Original : Optional[str]
     Ubicacion_u : Optional[str]
+
     
