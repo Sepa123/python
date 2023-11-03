@@ -142,6 +142,8 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]], fecha_pedido : str)
 
         if(check[0] == "1"):
             print("codigo pedido repetido")
+            print(f'El Producto "{rutas[0][0].Codigo_pedido}" se encuentra en la ruta {check[1]}')
+
             raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, 
                                 detail=f'El Producto "{rutas[0][0].Codigo_pedido}" se encuentra en la ruta {check[1]}')
         for i, ruta in enumerate(rutas):
