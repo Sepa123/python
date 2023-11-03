@@ -379,6 +379,20 @@ async def verificar_existencia_producto(body : ExistenciaStock):
         "Mensaje" : results[5]
     }
 
+@router.post("/verificar/stock/producto")
+async def obtener_stock_de_producto_de_sucursal(body : ExistenciaStock):
+    data = body.dict()
+
+    results = conn.obtener_stock_de_producto_de_sucursal(body.Sucursal, body.Codigo_producto)
+    return {
+        "Retorno" : results[0],
+        "Glosa" : results[1],
+        "E_paquetes" : results[2],
+        "E_unidades" : results[3],
+        "Total" : results[4]
+    }
+
+
 @router.get("/obtener/factura/venta")
 async def codigo_factura_venta():
     results = conn.obtener_codigo_factura_venta()

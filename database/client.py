@@ -4071,8 +4071,14 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
               
                         """)
             return cur.fetchall()
-        
 
+    def obtener_stock_de_producto_de_sucursal(self, sucursal : int, producto : str):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                select * from rsv.existencia('{producto}',{sucursal})
+                        """)
+            return cur.fetchone()   
+    
     def obtener_inventario_por_sucursal_excel(self, sucursal : int):
         with self.conn.cursor() as cur:
             cur.execute(f"""
