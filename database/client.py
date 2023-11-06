@@ -2629,9 +2629,9 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
                     easy.nro_carga as "Carga",
                     easy.recepcion as "Recepcion"                 
             from areati.ti_wms_carga_easy easy
-            --where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd') 
-            WHERE to_char(created_at,'yyyy-mm-dd hh24:mi')  >= to_char((obtener_dia_anterior() + INTERVAL '17 hours 30 minutes'),'yyyy-mm-dd hh24:mi')
-            AND to_char(created_at,'yyyy-mm-dd') <= to_char(CURRENT_DATE,'yyyy-mm-dd')
+            where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd') 
+            --WHERE to_char(created_at,'yyyy-mm-dd hh24:mi')  >= to_char((obtener_dia_anterior() + INTERVAL '17 hours 30 minutes'),'yyyy-mm-dd hh24:mi')
+            --AND to_char(created_at,'yyyy-mm-dd') <= to_char(CURRENT_DATE,'yyyy-mm-dd')
             --order by created_at desc
             order by easy.carton
                         """)           
