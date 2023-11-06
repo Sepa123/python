@@ -648,3 +648,14 @@ async def actualizar_estado( body: UnidadEtiqueta):
 async def obtener_unidades_sin_etiquetas_rsv():
     result = conn.read_unidades_sin_etiqueta_rsv()
     return catalogos_productos_schema(result)
+
+
+
+
+@router.post("/tomar/unidades/paquete")
+async def obtener_unidades_sin_etiquetas_rsv(body : dict):
+
+    if body["Unidades"] >= 25:
+        return True
+    else : 
+        return False
