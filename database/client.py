@@ -3823,7 +3823,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def read_catalogo_rsv(self):
         with self.conn.cursor() as cur:
             cur.execute("""
-                SELECT id, created_at, codigo, producto, unid_x_paquete, peso, ancho, alto, largo, color, coalesce(precio_unitario,0), ubicacion_p, ubicacion_u, codigo_original, id_user, ids_user, habilitado
+                SELECT id, created_at, codigo, producto, unid_x_paquete, peso, ancho, alto, largo, color, coalesce(precio_unitario,0), ubicacion_p, ubicacion_u, codigo_original, id_user, ids_user, habilitado, unid_con_etiqueta
                 FROM rsv.catalogo_productos
                 order by 1;
                         """)
