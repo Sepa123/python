@@ -4373,6 +4373,28 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
         
         return row
     
+    ## update stock etiqueta
+    def update_stock_etiqueta_rsv(self, bar_cod):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+           UPDATE rsv.etiquetas 
+            SET en_stock=false 
+            WHERE bar_code = '{bar_cod}'
+            """)
+            row = cur.rowcount
+        self.conn.commit()
+        
+        return row
+    
+    ## obtener unidades por paquete
+
+    def obtener_unidades_por_paquete(self, codigo : str):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+                    select unid_x_paquete  from rsv.catalogo_productos cp where codigo = '{codigo}'
+                 """)
+            return cur.fetchone()
+    
     #### beetrack 
     ## Distpatch guide
     def insert_beetrack_dispatch_guide_update(self, data):
@@ -4454,6 +4476,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
         self.conn.commit()
         return row
     
+
 
     def verificar_si_ruta_existe(self, data):
         with self.conn.cursor() as cur:

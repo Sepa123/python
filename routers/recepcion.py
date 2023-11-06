@@ -221,6 +221,7 @@ async def update_recepcion_easy_opl_by_codigo_producto_sko(body: bodyUpdateVerif
         body.cod_producto = codigo_pedido
         data = body.dict()     
         rows = conn.update_recepcion_opl(codigo_pedido, body.sku)
+        print(f"easy_cd codigo {codigo_pedido} y sku {body.sku}")
         print(rows)
         if rows != 0:
             connHela.insert_data_bitacora_recepcion(data)
