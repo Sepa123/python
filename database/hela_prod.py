@@ -38,7 +38,7 @@ class HelaConnection():
         with self.conn.cursor() as cur:
             print (data)
             cur.execute(f"""
-           SELECT id, nombre ,mail,"password" ,activate ,rol_id  FROM hela.usuarios WHERE mail='{data}'
+           SELECT id, nombre ,mail,"password" ,activate ,rol_id  FROM hela.usuarios WHERE lower(mail)= lower('{data}')
             """)
             return cur.fetchone()
 
