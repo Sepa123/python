@@ -2,6 +2,8 @@ from fastapi import APIRouter, status,HTTPException
 from fastapi.responses import FileResponse
 from openpyxl import Workbook
 
+from lib.obtener_dia_anterior import obtener_dia_anterior
+
 ## Modelos y schemas
 from database.models.recepcion.recepcion_tiendas import bodyUpdateVerified, Recepcion_tiendas
 from database.schema.recepcion.recepcion_tiendas import recepcion_tiendas_schema, recepcion_easy_cds_schema
@@ -47,7 +49,8 @@ async def get_recepcion_easy_opl():
 
 @router.get("/easy_cd", status_code=status.HTTP_202_ACCEPTED)
 async def get_recepcion_easy_cd():
-    results = conn.read_recepcion_easy_cd()
+    dia_anterior = obtener_dia_anterior()
+    results = conn.read_recepcion_easy_cd(dia_anterior)
     return recepcion_easy_cds_schema(results)
 
 
