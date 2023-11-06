@@ -11,6 +11,7 @@ import lib.excel_generico as excel
 from lib.codigo_nota_ventas import generar_codigo_ty_nota_venta_rsv
 from database.models.rsv.datos_suma_estructura import BodySumaEstructura
 
+from database.models.rsv.unidadEtiqueta import UnidadEtiqueta
 from database.schema.rsv.etiquetas import etiquetas_productos_schema , datos_productos_etiquetas_schema
 
 from database.schema.rsv.colores import colores_rsv_schema
@@ -628,3 +629,22 @@ async def get_peso_posicion_sucursal( body  :Estructura):
             "message": "Error al actualizar"
                }       
 
+##cambiar estado de unidades con etiquetas 
+
+@router.put("/actualizar_unid_con_etiquetas")
+async def actualizar_estado( body: UnidadEtiqueta):
+    try:
+        data = body.dict()
+        conn.actualizar_unidad_con_etiqueta(data)
+        return{
+            "message": "Estado cambiado"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=422,detail=str(e))
+
+##lista de unidades sin etiquetas
+
+@router.get("/catalogo-unidades-sin-etiqueta")
+async def obtener_unidades_sin_etiquetas_rsv():
+    result = conn.read_unidades_sin_etiqueta_rsv()
+    return catalogos_productos_schema(result)
