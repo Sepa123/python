@@ -195,6 +195,7 @@ async def update_recepcion_easy_cd_by_codigo_producto(body: bodyUpdateVerified):
     try:
         data = body.dict()        
         rows = conn.update_recepcion_cd(body.cod_producto)
+        print(f"easy_cd codigo {body.cod_producto}")
         print(rows)
         if rows != 0:
             connHela.insert_data_bitacora_recepcion(data)
@@ -221,7 +222,7 @@ async def update_recepcion_easy_opl_by_codigo_producto_sko(body: bodyUpdateVerif
         body.cod_producto = codigo_pedido
         data = body.dict()     
         rows = conn.update_recepcion_opl(codigo_pedido, body.sku)
-        print(f"easy_cd codigo {codigo_pedido} y sku {body.sku}")
+        print(f"easy_opl codigo {codigo_pedido} y sku {body.sku}")
         print(rows)
         if rows != 0:
             connHela.insert_data_bitacora_recepcion(data)
