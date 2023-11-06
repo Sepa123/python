@@ -175,6 +175,10 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]], fecha_pedido : str)
 
         return { "message": f"La Ruta {nombre_ruta} fue guardada exitosamente" }
     except Exception as e:
+        if(check[0] == "1"):
+
+            raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, 
+                                detail=f'El Producto "{rutas[0][0].Codigo_pedido}" se encuentra en la ruta {check[1]}')
         
         print(f"error al crear ruta: {e}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
