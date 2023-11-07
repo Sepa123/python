@@ -37,7 +37,7 @@ from database.schema.rsv.estructura_rsv import estructuras_rsv_schema
 from database.models.rsv.nota_venta import NotaVenta, NotaVentaProducto
 from database.models.rsv.update_entrega_nota_venta import BodyEntregaNotaVenta
 
-from database.schema.rsv.nota_venta import notas_ventas_schema
+from database.schema.rsv.nota_venta import notas_ventas_schema, nota_venta
 from database.schema.rsv.detalle_venta import detalle_ventas_schema
 from database.schema.rsv.nota_venta_producto import nota_ventas_productos_schema
 
@@ -363,7 +363,8 @@ async def get_tipo_despacho(body : NotaVenta):
         conn.insert_nota_venta_producto_rsv(data)
 
     return {
-        "message": "Nota de venta agregada correctamente"
+        "message": "Nota de venta agregada correctamente",
+        "id_venta" : id_venta[0]
     }
 
 @router.post("/verificar/existencia/producto")
@@ -613,6 +614,13 @@ async def get_peso_posicion_sucursal():
 async def get_lista_venta_rsv(sucursal : int):
     results = conn.read_lista_ventas_rsv(sucursal)
     return notas_ventas_schema(results)
+
+## obtener nota de venta por id
+
+@router.get("/notas_ventas")
+async def get_lista_venta_rsv(id : int):
+    results = conn.obtener_nota_ventas_rsv(id)
+    return nota_venta(results)
 
 # Actualizar estructura
 @router.put("/actualizar/estructura")

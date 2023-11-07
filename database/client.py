@@ -4216,6 +4216,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def obtener_lista_detalle_ventas_barcode_rsv(self, id_venta : int) :
         with self.conn.cursor() as cur:
             cur.execute(f"""
+            
             select * from rsv.detalle_venta_barcode({id_venta})  
             """)
             return cur.fetchall()
@@ -4229,6 +4230,18 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             where id_venta = {id_venta}
             """)
             return cur.fetchall()
+    
+    def obtener_nota_ventas_rsv(self, id_venta : int) :
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select nv.id, nv.created_at, nv.id_usuario, nv.ids_usuario, nv.sucursal, nv.cliente, nv.direccion, nv.comuna,
+                   nv.region, nv.fecha_entrega, td.despacho, nv.numero_factura, nv.codigo_ty ,nv.preparado , nv.fecha_preparado ,nv.entregado , nv.fecha_despacho
+            from rsv.nota_venta nv
+            inner join rsv.tipo_despacho td  on td.id = nv.tipo_despacho 
+            where  nv.id = {id_venta}
+            order by nv.fecha_entrega 
+            """)
+            return cur.fetchone()
         
     ### update estado entrega de nota venta
     def update_estado_entrega_nota_venta_rsv(self, data):
@@ -4260,6 +4273,15 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
               select codigo,tipo,cantidad , coalesce (peso_total , 0) as peso_total from rsv.peso_posicion_suc('{estructura}',{sucursal}) 
             """)
             return cur.fetchall()
+
+    def insert_data_despacho_rsv(self, data):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO rsv.despacho (id_usuario,ids_usuario, id_nota_venta, id_etiqueta, bar_code, latitud, longitud, cantidad) 
+                VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Id_nota_venta)s, %(Id_etiqueta)s, %(Bar_code)s, %(Lat)s , %(Lng)s, %(Cantidad)s); 
+                        """,data)
+
+        self.conn.commit()
         
     ##Y
 
