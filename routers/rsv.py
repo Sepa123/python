@@ -14,6 +14,8 @@ from database.models.rsv.datos_suma_estructura import BodySumaEstructura
 from database.models.rsv.unidadEtiqueta import UnidadEtiqueta
 from database.schema.rsv.etiquetas import etiquetas_productos_schema , datos_productos_etiquetas_schema
 
+
+from database.models.rsv.despacho import Despacho
 from database.schema.rsv.colores import colores_rsv_schema
 from database.models.rsv.carga_rsv import CargaRSV
 
@@ -657,25 +659,31 @@ async def obtener_unidades_sin_etiquetas_rsv():
     result = conn.read_unidades_sin_etiqueta_rsv()
     return catalogos_productos_schema(result)
 
-
+@router.post("/ingresar/despacho")
+async def ingresar_despacho_rsv(body : Despacho):
+    return ""
 
 
 @router.post("/tomar/unidades/paquete")
-async def obtener_unidades_sin_etiquetas_rsv(body : dict):
-    unid_x_paq = conn.obtener_unidades_por_paquete(body["Codigo_producto"])[0]
-    check_stock = conn.verificar_stock_paquete(body["Bar_cod"])[0]
+async def obtener_unidades_sin_etiquetas_rsv(body : Despacho):
+    unid_x_paq = conn.obtener_unidades_por_paquete(body.Codigo_producto)[0]
+    check = conn.verificar_stock_paquete(body.Bar_code)
+    check_id = check[0]
+    check_stock = check[1]
 
+    print("Id BAR_CODE ",check_id)
+    print("Stock BAR_CODE ",check_stock)
     print(unid_x_paq)
-    print(body["Unidades"])
-    if body["Unidades"] >= unid_x_paq and check_stock == True:
-        row = conn.update_stock_etiqueta_rsv(body["Bar_cod"])
+    print(body.Unidades)
+    if body.Unidades >= unid_x_paq and check_stock == True:
+        row = conn.update_stock_etiqueta_rsv(body.Bar_code)
         return {
             "message" : "Unidades liberadas"
         }
 
     if check_stock == False:
         return {
-            "message" : f"El código {body['Bar_cod']} esta sin stock"
+            "message" : f"El código {body.Bar_code} esta sin stock"
         }
 
     return {

@@ -4278,7 +4278,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
         with self.conn.cursor() as cur:
             cur.execute("""
                 INSERT INTO rsv.despacho (id_usuario,ids_usuario, id_nota_venta, id_etiqueta, bar_code, latitud, longitud, cantidad) 
-                VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Id_nota_venta)s, %(Id_etiqueta)s, %(Bar_code)s, %(Lat)s , %(Lng)s, %(Cantidad)s); 
+                VALUES(%(Id_user)s, %(Ids_user)s, %(Id_nota_venta)s, %(Id_etiqueta)s, %(Bar_code)s, %(Lat)s , %(Lng)s, %(Cantidad)s); 
                         """,data)
 
         self.conn.commit()
@@ -4422,7 +4422,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def verificar_stock_paquete(self, bar_cod : str):
         with self.conn.cursor() as cur:
             cur.execute(f""" 
-                    select en_stock  from rsv.etiquetas e where bar_code = '{bar_cod}'
+                    select id,en_stock  from rsv.etiquetas e where bar_code = '{bar_cod}'
                  """)
             return cur.fetchone()
 
