@@ -655,13 +655,21 @@ async def obtener_unidades_sin_etiquetas_rsv():
 @router.post("/tomar/unidades/paquete")
 async def obtener_unidades_sin_etiquetas_rsv(body : dict):
     unid_x_paq = conn.obtener_unidades_por_paquete(body["Codigo_producto"])[0]
+    check_stock = conn.verificar_stock_paquete(body["Bar_cod"])[0]
 
     print(unid_x_paq)
     print(body["Unidades"])
-    if body["Unidades"] >= unid_x_paq:
+    if body["Unidades"] >= unid_x_paq and check_stock == True:
         row = conn.update_stock_etiqueta_rsv(body["Bar_cod"])
         return {
             "message" : "Unidades liberadas"
         }
 
-    return False
+    if check_stock == False:
+        return {
+            "message" : f"El código {body['Bar_cod']} esta sin stock"
+        }
+
+    return {
+        "message" : "f"
+    }

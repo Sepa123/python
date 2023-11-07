@@ -4395,6 +4395,15 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                  """)
             return cur.fetchone()
     
+    ## obtener unidades por paquete
+
+    def verificar_stock_paquete(self, bar_cod : str):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+                    select en_stock  from rsv.etiquetas e where bar_code = '{bar_cod}'
+                 """)
+            return cur.fetchone()
+
     #### beetrack 
     ## Distpatch guide
     def insert_beetrack_dispatch_guide_update(self, data):
@@ -4497,7 +4506,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                             --trb.estado,
                             coalesce((select ee.cod_elux  
                             from beetrack.estados_electrolux ee
-                            where ee.subestado = (select se.code from areati.subestado_entregas se where se.name=trb.estado)),5) as tipoEntrega,
+                            where ee.subestado = (select se.code from areati.subestado_entregas se where se.name=trb.estado) limit 1),5) as tipoEntrega,
                             regexp_replace(trb.factura, '[^0-9]', '', 'g') as numero,
                             coalesce(to_char(trb.fecha_llegada,' dd/mm/yyyy'),to_char(trb.created_at,' dd/mm/yyyy')) as dtOcorrencia,
                             coalesce(trb.fecha_llegada::time,created_at::time) as hrOcorrencia,
