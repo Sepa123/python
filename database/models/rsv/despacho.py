@@ -13,3 +13,4 @@ class Despacho (BaseModel):
     Cantidad: Optional[int]
     Codigo_producto : Optional[str]
     Unidades: Optional[int]
+    Uni_agregadas: Optional[int]

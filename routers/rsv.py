@@ -673,18 +673,33 @@ async def obtener_unidades_sin_etiquetas_rsv(body : Despacho):
 
     print("Id BAR_CODE ",check_id)
     print("Stock BAR_CODE ",check_stock)
+    print(body.Uni_agregadas)
     print(unid_x_paq)
     print(body.Unidades)
-    if body.Unidades >= unid_x_paq and check_stock == True:
-        row = conn.update_stock_etiqueta_rsv(body.Bar_code)
-        return {
-            "message" : "Unidades liberadas"
-        }
 
     if check_stock == False:
         return {
-            "message" : f"El código {body.Bar_code} esta sin stock"
+            "message" : f"El código {body.Bar_code} esta sin stock",
+            "unid_x_paq" : 0
         }
+    
+    if (body.Uni_agregadas + unid_x_paq) > body.Unidades:
+        return {
+            "message" : f"Ya se agregaron las unidades necesarias al código {body.Codigo_producto}",
+            "unid_x_paq" : 0
+        }
+
+    if body.Unidades >= unid_x_paq and check_stock == True:
+        row = conn.update_stock_etiqueta_rsv(body.Bar_code)
+
+        return {
+            "message" : "Unidades liberadas",
+            "unid_x_paq" : unid_x_paq
+        }
+    
+    
+
+    
 
     return {
         "message" : "f"
