@@ -666,16 +666,20 @@ async def ingresar_despacho_rsv(body : Despacho):
 
 @router.post("/tomar/unidades/paquete")
 async def obtener_unidades_sin_etiquetas_rsv(body : Despacho):
+    print(body)
     unid_x_paq = conn.obtener_unidades_por_paquete(body.Codigo_producto)[0]
     check = conn.verificar_stock_paquete(body.Bar_code)
     check_id = check[0]
     check_stock = check[1]
+
+    body.Id_etiqueta = check_id
 
     print("Id BAR_CODE ",check_id)
     print("Stock BAR_CODE ",check_stock)
     print(body.Uni_agregadas)
     print(unid_x_paq)
     print(body.Unidades)
+    
 
     if check_stock == False:
         return {
@@ -691,7 +695,7 @@ async def obtener_unidades_sin_etiquetas_rsv(body : Despacho):
 
     if body.Unidades >= unid_x_paq and check_stock == True:
         row = conn.update_stock_etiqueta_rsv(body.Bar_code)
-
+        data = body.dict()
         return {
             "message" : "Unidades liberadas",
             "unid_x_paq" : unid_x_paq
