@@ -29,8 +29,6 @@ def generar_excel_generico(results, nombre_filas, nombre_excel ):
 
     return FileResponse(f"excel/{nombre_excel}.xlsx")
 
-
-
 def generar_excel_con_titulo(results, nombre_filas, nombre_excel,titulo ):
 
     # results = conn.obtener_etiqueta_carga_rsv(nombre_carga,codigo,tipo)
