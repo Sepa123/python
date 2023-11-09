@@ -698,7 +698,7 @@ async def obtener_unidades_sin_etiquetas_rsv(body : Despacho):
         data = body.dict()
         conn.insert_data_despacho_rsv(data)
         return {
-            "message" : "Unidades liberadas",
+            "message" : "Unidades agregadas correctamente",
             "unid_x_paq" : unid_x_paq
         }
     
