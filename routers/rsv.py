@@ -696,15 +696,12 @@ async def obtener_unidades_sin_etiquetas_rsv(body : Despacho):
     if body.Unidades >= unid_x_paq and check_stock == True:
         row = conn.update_stock_etiqueta_rsv(body.Bar_code)
         data = body.dict()
+        conn.insert_data_despacho_rsv(data)
         return {
             "message" : "Unidades liberadas",
             "unid_x_paq" : unid_x_paq
         }
     
-    
-
-    
-
     return {
         "message" : "f"
     }

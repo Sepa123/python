@@ -146,3 +146,59 @@ async def get_rutas_de_pendientes_limitada(offset : int):
      except:
         print("error pedidos/pendientes")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No se pudieron cargar los pendientes,por favor vuelva a cargar la pagina")
+     
+@router.get("/pendientes/fechas")
+async def get_rutas_de_pendientes_limitada():
+     try:
+        result = conn.fechas_pendientes()
+        return {
+            "Fecha_inicio" : result[0],
+            "Fecha_fin" : result[1]
+        }
+     except Exception as e:
+        print(e)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No se pudieron cargar los pendientes,por favor vuelva a cargar la pagina")
+
+@router.get("/pendientes/sportex-electrolux")
+async def get_rutas_de_pendientes_limitada(fecha_inicio, fecha_fin):
+     try:
+        result = conn.pendientes_sportex_elux(fecha_inicio, fecha_fin)
+        return rutas_de_pendientes_schema(result)
+     except:
+        print("error pedidos/pendientes")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No se pudieron cargar los pendientes,por favor vuelva a cargar la pagina")
+     
+
+
+@router.get("/pendientes/easy_opl")
+async def get_rutas_de_pendientes_limitada(fecha_inicio, fecha_fin , offset):
+     try:
+        result = conn.pendientes_easy_opl(fecha_inicio, fecha_fin, offset)
+        print(len(result))
+        return rutas_de_pendientes_schema(result)
+     except:
+        print("error pedidos/pendientes")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No se pudieron cargar los pendientes,por favor vuelva a cargar la pagina")
+     
+
+@router.get("/pendientes/retiro_tienda")
+async def get_rutas_de_pendientes_limitada(fecha_inicio, fecha_fin , offset):
+     try:
+        result = conn.pendientes_retiro_tienda(fecha_inicio, fecha_fin, offset)
+        print(len(result))
+        return rutas_de_pendientes_schema(result)
+     except:
+        print("error pedidos/pendientes")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No se pudieron cargar los pendientes,por favor vuelva a cargar la pagina")
+     
+
+
+@router.get("/pendientes/easy_cd")
+async def get_rutas_de_pendientes_limitada(fecha_inicio, fecha_fin , offset):
+     try:
+        result = conn.pendientes_retiro_tienda(fecha_inicio, fecha_fin, offset)
+        print(len(result))
+        return rutas_de_pendientes_schema(result)
+     except:
+        print("error pedidos/pendientes")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No se pudieron cargar los pendientes,por favor vuelva a cargar la pagina")
