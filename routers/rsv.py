@@ -666,8 +666,14 @@ async def ingresar_despacho_rsv(body : Despacho):
 
 @router.post("/tomar/unidades/paquete")
 async def obtener_unidades_sin_etiquetas_rsv(body : Despacho):
-    print(body)
-    unid_x_paq = conn.obtener_unidades_por_paquete(body.Codigo_producto)[0]
+
+    tipo_code = body.Bar_code.split('@')[1].split('-')[1][0]
+    print(tipo_code)
+    # print(body)
+    if tipo_code == 'U':
+        unid_x_paq = 1
+    else :
+        unid_x_paq = conn.obtener_unidades_por_paquete(body.Codigo_producto)[0]
     check = conn.verificar_stock_paquete(body.Bar_code)
     check_id = check[0]
     check_stock = check[1]
@@ -680,6 +686,7 @@ async def obtener_unidades_sin_etiquetas_rsv(body : Despacho):
     print(unid_x_paq)
     print(body.Unidades)
     
+    
 
     if check_stock == False:
         return {
@@ -689,19 +696,25 @@ async def obtener_unidades_sin_etiquetas_rsv(body : Despacho):
     
     if (body.Uni_agregadas + unid_x_paq) > body.Unidades:
         return {
-            "message" : f"Ya se agregaron las unidades necesarias al código {body.Codigo_producto}",
+            "message" : f"Ya se agregaron las unidades necesarias al código {body.Codigo_producto} o no se pueden agregar mas paquetes",
             "unid_x_paq" : 0
         }
 
     # if body.Unidades >= unid_x_paq and check_stock == True:
     if body.Unidades >= unid_x_paq :
-        # row = conn.update_stock_etiqueta_rsv(body.Bar_code)
-        # data = body.dict()
-        # conn.insert_data_despacho_rsv(data)
-        return {
-            "message" : "Unidades agregadas correctamente",
-            "unid_x_paq" : unid_x_paq
-        }
+        row = conn.update_stock_etiqueta_rsv(body.Bar_code)
+        data = body.dict()
+        conn.insert_data_despacho_rsv(data)
+        if tipo_code == 'U':
+            return {
+            "message" : "Unidad agregada correctamente",
+            "unid_x_paq" : 1
+            }
+        else:
+            return {
+                "message" : "Unidades agregadas correctamente",
+                "unid_x_paq" : unid_x_paq
+            }
     
     return {
         "message" : "f"
