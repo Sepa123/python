@@ -4943,8 +4943,67 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def pendientes_easy_cd(self, fecha_inicio,fecha_fin, offset ):
          with self.conn.cursor() as cur:
             cur.execute(f"""
-               
+               -- EASY CD (LIMIT 100 OFFSET)
+SELECT
+    subquery.origen,
+	subquery.guia,
+	to_date(to_char(subquery.fec_ingreso,'yyyy-mm-dd'),'yyyy-mm-dd') as "Fecha Ingreso",
+	funcion_resultado."Fecha de Pedido",
+	funcion_resultado."Provincia/Estado",
+	funcion_resultado."Ciudad",
+	--funcion_resultado."Descripción del Producto",
+	SUBSTRING(funcion_resultado."Descripción del Producto" FROM POSITION(') ' IN funcion_resultado."Descripción del Producto") + 2) as "Descripción del Producto",
+	funcion_resultado."Cantidad de Producto"::int4,
+	ee.descripcion as "Estado",
+	se."name" as "Subestado",
+	subquery.verified,
+	subquery.recepcion
+FROM (
+
+SELECT DISTINCT ON (easy.entrega)
+        easy.entrega as guia,
+        'Easy' as origen,
+        easy.created_at as fec_ingreso,
+        --easy.fecha_entrega as fec_entrega,
+        coalesce(tbm.fecha,
+		        CASE
+		        	WHEN twcep.fecha_entrega <> easy.fecha_entrega THEN twcep.fecha_entrega
+		        	ELSE easy.fecha_entrega
+		        END
+		        ) as fec_entrega,
+        easy.comuna,
+        easy.estado,
+        easy.subestado,
+        easy.verified,
+        easy.recepcion 
+    FROM areati.ti_wms_carga_easy easy
+    left join public.ti_wms_carga_easy_paso twcep on twcep.entrega = easy.entrega
+    LEFT JOIN (
+			    SELECT DISTINCT ON (toc.guia) toc.guia as guia, 
+			    toc.direccion_correcta as direccion, 
+			    toc.comuna_correcta as comuna,
+			    toc.fec_reprogramada as fecha,
+			    toc.observacion,
+			    toc.alerta
+			    FROM rutas.toc_bitacora_mae toc
+			    WHERE toc.alerta = true
+			    ORDER BY toc.guia, toc.created_at desc
+			) AS tbm ON easy.entrega=tbm.guia
+    WHERE (easy.estado = 0 OR (easy.estado = 2 AND easy.subestado NOT IN (7, 10, 12, 13, 19, 43, 44, 50, 51, 70, 80)))
+    AND easy.estado NOT IN (1, 3)
+    --and easy.entrega not in (select trb.guia from quadminds.ti_respuesta_beetrack trb)
+    and easy.entrega not in(select rt.guia from beetrack.ruta_transyanez rt where rt.created_at::date = current_date)
+    and easy.entrega not in (select drm.cod_pedido from quadminds.datos_ruta_manual drm where drm.estado=true) 
+    and easy.fecha_entrega >= '{fecha_inicio}' and easy.fecha_entrega <= '{fecha_fin}'
+	limit 100 offset {offset}
+) subquery
+JOIN LATERAL areati.busca_ruta_manual(subquery.guia) AS funcion_resultado ON true
+left join areati.estado_entregas ee on subquery.estado = ee.estado 
+left join areati.subestado_entregas se on subquery.subestado = se.code 
+where to_char(funcion_resultado."Fecha de Pedido",'yyyy-mm-dd')>= '{fecha_inicio}'
+and to_char(funcion_resultado."Fecha de Pedido",'yyyy-mm-dd')<= '{fecha_fin}'
                         """)
+            
             return cur.fetchall()
 
 class transyanezConnection():

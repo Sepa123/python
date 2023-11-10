@@ -196,7 +196,7 @@ async def get_rutas_de_pendientes_limitada(fecha_inicio, fecha_fin , offset):
 @router.get("/pendientes/easy_cd")
 async def get_rutas_de_pendientes_limitada(fecha_inicio, fecha_fin , offset):
      try:
-        result = conn.pendientes_retiro_tienda(fecha_inicio, fecha_fin, offset)
+        result = conn.pendientes_easy_cd(fecha_inicio, fecha_fin, offset)
         print(len(result))
         return rutas_de_pendientes_schema(result)
      except:
