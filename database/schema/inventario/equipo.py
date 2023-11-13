@@ -52,3 +52,14 @@ def lista_licencia(data):
 
 def licencia_equipo_schema(datos):
     return[lista_licencia(data) for data in datos]
+
+
+def folio_entrega_schema(result):
+    return result
+
+def folio_devolucion_schema(result):
+    return result
+
+
+def lista_nr_equipo_schema(result):
+     return result

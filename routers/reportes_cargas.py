@@ -227,6 +227,7 @@ async def update_beetrack_valor_ruta(body: List[asignarValor]):
          raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Error, no se enviaron datos")
     output = conn.update_valor_rutas(body)
     print(output)
+    
     return { "message":f"Valor agregado correctamente "}
 
 

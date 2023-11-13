@@ -1,17 +1,15 @@
 def lista_persona_equipo_asignado(data):
     return{
-            "persona": data[0],
-            "departamento":data[1],
-            "nombre_equipo":data[2],
-            "equipo": data[3],
-            "folio":data[4],
-            "fecha_entrega":data[5],
-            "fecha_devolucion": data[6],
-            "estado":data[7],
-            "observacion":data[8],
-            
-            
-            
+            "id": data[0],
+            "persona": data[1],
+            "departamento":data[2],
+            "nombre_equipo":data[3],
+            "equipo": data[4],
+            "folio":data[5],
+            "fecha_entrega":data[6],
+            "fecha_devolucion": data[7],
+            "estado":data[8],
+            "observacion":data[9],
             }
 
 def persona_equipo_schema(datos):
@@ -54,4 +52,24 @@ def lista_crear_persona(data):
 
 def crear_persona_schema(datos):
     return[lista_crear_persona(data) for data in datos
+    ]
+
+def lista_equipo_asignado_por_id(data):
+    return{
+            "id": data[0],
+            "nombres": data[1],
+            "apellidos":data[2],
+            "rut":data[3],
+            "cargo": data[4],
+            "departamento":data[5],
+            "marca":data[6],
+            "serial": data[7],
+            "equipo":data[8],
+            "folio_entrega": data[9],
+            "fecha_entrega":data[10],
+            "estado":data[11],
+            }
+
+def equipo_asignado_por_id_schema(datos):
+    return[lista_equipo_asignado_por_id(data) for data in datos
     ]

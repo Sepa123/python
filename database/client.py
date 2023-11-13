@@ -3,6 +3,7 @@ import codecs
 from decouple import config
 import os, sys, codecs
 
+
 # import datetime
 # import pytz
 
@@ -219,12 +220,12 @@ class reportesConnection():
                          nacionalidad, fecha_nacimiento, estado_civil, telefono, fecha_ingreso, cargo, domicilio, 
                         comuna, banco, tipo_cuenta, numero_cuenta, correo, afp, salud, telefono_adicional,
                          nombre_contacto, seguro_covid, horario, ceco, sueldo_base, tipo_contrato, direccion_laboral,
-                         enfermedad, polera, pantalon, poleron, zapato)
+                         enfermedad, polera, pantalon, poleron, zapato, foto,pdf)
                 VALUES(%(id_user)s, %(ids_user)s, %(lat)s, %(long)s, %(nombres)s, %(apellidos)s, %(rut)s, %(nacionalidad)s,
                         %(fecha_nacimiento)s, %(estado_civil)s, %(telefono)s, %(fecha_ingreso)s, %(cargo)s, %(domicilio)s,
                         %(comuna)s, %(banco)s, %(tipo_cuenta)s, %(numero_cuenta)s, %(correo)s, %(afp)s, %(salud)s, %(telefono_adicional)s,
                         %(nombre_contacto)s, %(seguro_covid)s, %(horario)s, %(ceco)s, %(sueldo_base)s, %(tipo_contrato)s, %(direccion_laboral)s,
-                        %(enfermedad)s, %(polera)s, %(pantalon)s, %(poleron)s, %(zapato)s);
+                        %(enfermedad)s, %(polera)s, %(pantalon)s, %(poleron)s, %(zapato)s, %(foto)s, %(pdf)s);
                        
                         """, data)
             self.conn.commit()
@@ -239,9 +240,11 @@ class reportesConnection():
         with self.conn.cursor() as cur: 
             cur.execute("""INSERT INTO inventario.asignacion
                 (id_user, ids_user, lat, long, equipo, persona, fecha_entrega, estado,
-                         fecha_devolucion, observacion, nombre_equipo, folio, departamento) 
+                         fecha_devolucion, observacion, folio_entrega, folio_devolucion, firma_entrega, firma_devolucion,
+                        pdf_entrega, pdf_devolucion,departamento) 
                 VALUES(%(id_user)s, %(ids_user)s,%(lat)s,%(long)s,%(equipo)s,%(persona)s,%(fecha_entrega)s,
-                %(estado)s,%(fecha_devolucion)s,%(observacion)s,%(nombre_equipo)s, %(folio)s,%(departamento)s)""",data)
+                %(estado)s,%(fecha_devolucion)s,%(observacion)s,%(folio_entrega)s,%(folio_devolucion)s, %(firma_entrega)s
+                        ,%(firma_devolucion)s, %(pdf_entrega)s,%(pdf_devolucion)s, %(departamento)s)""",data)
         self.conn.commit()
 
     def agregar_descripcion_equipo(self,data):
@@ -249,17 +252,17 @@ class reportesConnection():
             cur.execute(""" INSERT INTO inventario.equipo (id_user, ids_user, lat, long, marca, modelo, serial, mac_wifi, serie, resolucion,
                          dimensiones, descripcion, ubicacion, almacenamiento, ram, estado, tipo, cantidad, nr_equipo)
                         VALUES(%(id_user)s,%(ids_user)s,%(lat)s,%(long)s,%(marca)s,%(modelo)s,%(serial)s,%(mac_wifi)s,%(serie)s,%(resolucion)s,
-                        %(dimensiones)s,%(descripcion)s,%(ubicacion)s,%(almacenamiento)s,%(ram)s,%(estado)s,%(tipo)s)
+                        %(dimensiones)s,%(descripcion)s,%(ubicacion)s,%(almacenamiento)s,%(ram)s,%(estado)s,%(tipo)s, %(cantidad)s, %(nr_equipo)s)
                         """,data)
-        self.conn.commit()
+        self.conn.commit()  
 
     def asignar_equipo_personal(self,data):
         with self.conn.cursor() as cur:
             cur.execute(""" INSERT INTO inventario.asignacion
                         (id_user, ids_user, lat, long, equipo, persona, fecha_entrega, estado, fecha_devolucion, observacion,
-                         nombre_equipo, folio, departamento)
+                         folio_entrega, firma_entrega, departamento)
                         VALUES(%(id_user)s,%(ids_user)s,%(lat)s,%(long)s,%(equipo)s,%(persona)s,%(fecha_entrega)s,%(estado)s,%(fecha_devolucion)s,
-                        %(observacion)s,%(nombre_equipo)s,%(folio)s,%(departamento)s)
+                        %(observacion)s,%(folio_entrega)s, %(firma_entrega)s, %(departamento)s)
                         """,data)
         self.conn.commit()
     def ingresar_departamento(self,data):
@@ -291,8 +294,11 @@ class reportesConnection():
         
     def read_personas(self):
         with self.conn.cursor() as cur:
-            cur.execute(""" Select id, nombres, apellidos, rut, nacionalidad, fecha_nacimiento, estado_civil, telefono, fecha_ingreso, cargo, domicilio, comuna, banco, tipo_cuenta, numero_cuenta, correo, afp, salud, telefono_adicional, nombre_contacto, seguro_covid, horario, ceco, sueldo_base, tipo_contrato, direccion_laboral, enfermedad, polera, pantalon, poleron, zapato
-                    FROM inventario.persona;
+            cur.execute(""" Select id, nombres, apellidos, rut, nacionalidad, fecha_nacimiento, estado_civil, telefono,
+                         fecha_ingreso, cargo, domicilio, comuna, banco, tipo_cuenta, numero_cuenta, correo, afp, salud,
+                         telefono_adicional, nombre_contacto, seguro_covid, horario, ceco, sueldo_base, tipo_contrato,
+                         direccion_laboral, enfermedad, polera, pantalon, poleron, zapato
+                    FROM inventario.persona order by nombres asc;
                 """)
             return cur.fetchall()
         
@@ -311,28 +317,78 @@ class reportesConnection():
     def read_descripcion_equipo(self):
         with self.conn.cursor() as cur:
             cur.execute(""" SELECT e.id, e.marca, e.modelo, e.serial, e.mac_wifi, e.serie, e.resolucion, e.dimensiones, e.descripcion, e.ubicacion,
-                        e.almacenamiento, e.ram, es.nombre AS estado, t.nombre AS tipo e.cantidad, e.nr_equipo 
+                        e.almacenamiento, e.ram, es.nombre AS estado, t.nombre AS tipo, e.cantidad, e.nr_equipo 
                         FROM inventario.equipo e
                         INNER JOIN inventario.tipo t ON e.tipo = t.id
                         INNER JOIN inventario.estado es ON e.estado = es.id;""")
             return cur.fetchall()
+    def read_equipos_general(self):
+        with self.conn.cursor() as cur:
+            cur.execute(""" SELECT id, marca, modelo, serial, mac_wifi, serie, resolucion, dimensiones,
+                         descripcion, ubicacion, almacenamiento, ram, estado, tipo, cantidad, nr_equipo
+                        FROM inventario.equipo; """)
+            return cur.fetchall()
     
     def read_asignaciones_personal(self):
         with self.conn.cursor() as cur:
-            cur.execute("""SELECT p.nombres || ' ' || p.apellidos  as persona, d.nombre as departamento, a.nombre_equipo , 
-                        e.marca|| ' ' || e.modelo AS equipo,  a.folio , a.fecha_entrega,  a.fecha_devolucion , a.estado, a.observacion
+            cur.execute("""SELECT a.id, p.nombres || ' ' || p.apellidos  as persona, d.nombre as departamento,
+                        e.marca|| ' ' || e.modelo AS equipo,  a.folio_entrega, a.firma_entrega, a.pdf_entrega , a.fecha_entrega,  a.fecha_devolucion,a.folio_devolucion,
+                        a.pdf_devolucion ,a.firma_devolucion , a.estado, a.observacion
                     FROM inventario.asignacion a  
                         INNER JOIN inventario.persona p ON a.persona = p.id
                         INNER JOIN inventario.equipo e ON a.equipo = e.id
                         INNER JOIN inventario.departamento d ON a.departamento = d.id
-                        inner join inventario.tipo t on e.tipo = t.id; """)
+                        inner join inventario.tipo t on e.tipo = t.id order by nombres asc """)
             return cur.fetchall()
-        
+    def read_asignados_por_id(self,id):
+        with self.conn.cursor() as cur:
+            cur.execute(""" SELECT a.id, p.nombres, p.apellidos, p.rut , p.cargo , d.nombre as departamento,
+                        e.marca, e.serial ,e.marca|| ' ' || e.modelo AS equipo,  a.folio_entrega,  a.fecha_entrega
+                        ,a.estado
+                    FROM inventario.asignacion a  
+                        INNER JOIN inventario.persona p ON a.persona = p.id
+                        INNER JOIN inventario.equipo e ON a.equipo = e.id
+                        INNER JOIN inventario.departamento d ON a.departamento = d.id
+                        inner join inventario.tipo t on e.tipo = t.id where a.id=%(id)s """, {"id" : id})
+            return cur.fetchall()
     def read_sucursales_ti(self):
         with self.conn.cursor() as cur: 
             cur.execute(""" SELECT id, nombre, pais, ciudad, comuna, direccion 
                     FROM inventario.sucursales; """)
             return cur.fetchall()
+        
+    def read_folio_entrega(self):
+        with self.conn.cursor() as cur:
+            cur.execute(""" SELECT folio_entrega from inventario.asignacion order by folio_entrega DESC LIMIT  1 """)
+            resultado = cur.fetchone()
+            if resultado and resultado[0] is not None:
+                ultimo_folio = resultado[0] +1 
+            else:
+                ultimo_folio = 1
+            return ultimo_folio 
+    
+    def read_folio_devolucion(self):
+        with self.conn.cursor() as cur:
+            cur.execute(""" SELECT folio_devolucion from inventario.asignacion order by folio_devolucion DESC LIMIT  1 """)
+            resultado = cur.fetchone()
+            if resultado and resultado[0] is not None:
+                ultimo_folio =  str(int(resultado[0]) + 1)+1  
+            else:
+                ultimo_folio = 1
+            return ultimo_folio 
+
+    def read_nr_equipo(self, tipo):
+        with self.conn.cursor() as cur:
+            cur.execute(""" SELECT MAX(nr_equipo)  from inventario.equipo where tipo=%(tipo)s""",{"tipo": tipo})
+            resultado = cur.fetchone()
+            if resultado and resultado[0] is not None:
+                ultimo_nr = int(resultado[0]) + 1
+            else:
+                ultimo_nr = 1
+        
+        return ultimo_nr
+
+
         
     def read_departamento_inventario(self):
         with self.conn.cursor() as cur:
@@ -345,6 +401,7 @@ class reportesConnection():
             cur.execute(""" SELECT id, nombre
                         FROM inventario.estado;""")
             return cur.fetchall()
+        
     def encontrar_por_folio(self, folio):
         with self.conn.cursor() as cur:
             cur.execute(f"""SELECT p.nombres || ' ' || p.apellidos  as persona, d.nombre as departamento, a.nombre_equipo , e.marca|| ' ' || e.modelo as equipo ,  a.folio , a.fecha_entrega,  a.fecha_devolucion , a.estado, a.observacion
@@ -365,6 +422,9 @@ class reportesConnection():
 
 
         self.conn.commit()
+
+    ##CREAR PDF ACTA
+  
 
     ##EDITAR TABLAS  DE INVENTARIO
 
@@ -415,7 +475,14 @@ class reportesConnection():
 	        nombre_contacto=%(nombre_contacto)s,seguro_covid=%(seguro_covid)s,horario=%(horario)s,
 	        ceco=%(ceco)s,sueldo_base=%(sueldo_base)s,tipo_contrato=%(tipo_contrato)s,direccion_laboral=%(direccion_laboral)s,
 	        enfermedad=%(enfermedad)s,polera=%(polera)s,pantalon=%(pantalon)s,poleron=%(poleron)s,
-	        zapato=%(zapato)s""" , data)
+	        zapato=%(zapato)s  where id=%(id)s """ , data)
+        self.conn.commit()
+
+    def datos_acta_entrega(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute(""" UPDATE inventario.asignacion
+                    SET  fecha_entrega=%(fecha_entrega)s,folio_entrega=%(folio_entrega)s
+                    WHERE id=%(id)s; """,data)
         self.conn.commit()
     #Productos sin recepcion
     def read_productos_sin_recepcion(self):

@@ -17,7 +17,7 @@ class DescripcionEquipo(BaseModel):
     dimensiones: Optional [str]
     descripcion: Optional [str]
     ubicacion: Optional [str]
-    almacenamiento: Optional [int]
+    almacenamiento: Optional [str]
     ram: Optional [int]
     estado: Optional [int]
     tipo: Optional [int]

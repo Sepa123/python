@@ -11,8 +11,8 @@ class PersonalEquipo(BaseModel):
     nombres: str
     apellidos: str
     rut: str
-    nacionalidad: str
-    fecha_nacimiento:date
+    nacionalidad: Optional[str]
+    fecha_nacimiento: Optional[date]
     estado_civil: Optional [str]
     telefono: Optional [str]
     fecha_ingreso: Optional [date]

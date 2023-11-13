@@ -9,10 +9,11 @@ from database.models.mantenedores.departamento import DepartamentoInventario
 from database.models.mantenedores.sucursal import SucursalInventario
 from database.models.mantenedores.estado import EstadoInventario
 from database.models.mantenedores.licencia import CrearLicencia
+from database.models.mantenedores.pdf import GenerarPDF
+from database.models.mantenedores.asignar_entrega_acta import AsignarEntregaActa
 
-
-from database.schema.inventario.persona import crear_persona_schema, persona_equipo_schema
-from database.schema.inventario.equipo import descripcion_equipo_schema, tipo_equipo_schema, lista_inventario_estado_schema, licencia_equipo_schema
+from database.schema.inventario.persona import crear_persona_schema, persona_equipo_schema, equipo_asignado_por_id_schema
+from database.schema.inventario.equipo import lista_nr_equipo_schema,descripcion_equipo_schema, tipo_equipo_schema, lista_inventario_estado_schema, licencia_equipo_schema, folio_devolucion_schema, folio_entrega_schema
 from database.schema.inventario.sucursal import lista_sucursa_schema, lista_departamento_schema
 ##Conexiones
 from database.client import reportesConnection
@@ -21,6 +22,9 @@ from database.client import reportesConnection
 from fastapi.responses import FileResponse
 from openpyxl import Workbook
 from openpyxl.styles import Font , PatternFill, Border ,Side
+from fpdf import FPDF
+import json
+
 
 router = APIRouter(tags=["RSV"], prefix="/api/inventario-ti")
 
@@ -135,6 +139,91 @@ async def asignar_equipo_personal(body: AsignarEquipo):
     except Exception as e:
         raise HTTPException(status_code=422,detail=str(e))
     
+    
+@router.post("/generar_acta_entrega")
+async def crear_acta(body: AsignarEntregaActa):
+    try:
+        data = body.dict()
+        pdf_bytes = crear_pdf(body)
+        return pdf_bytes 
+    except Exception as e:
+        print(data)
+        raise HTTPException(status_code=422,detail=str(e))
+    
+
+
+def crear_pdf(data):
+    # data = json.loads(body)
+    pdf = FPDF('P','mm','Letter')
+    pdf.add_page()
+    # pdf.set_y(-15)
+    pdf.set_font('helvetica', '', 14)
+    pdf.set_top_margin(15)
+    pdf.set_left_margin(16)
+    # pdf.set_right_margin(1,4)
+    pdf.image('logo.jpg',140,20,40)
+    pdf.ln(30)
+    pdf.cell(80,10,'Acta de entrega', align='L')
+    pdf.cell(80,10, 'dsds', align='R', ln=1) 
+    pdf.set_fill_color(192, 192, 192)
+    pdf.set_font('helvetica', 'B', 12)
+    pdf.cell(180,12, 'DATOS DEL USUARIO', ln=1, border=True, align='C', fill=True)
+    pdf.set_font('helvetica', 'B', 12)
+    pdf.cell(35,7, 'Nombre', border=True , align='C', fill=True)
+    pdf.set_font('helvetica', '', 12)
+    pdf.cell(55,7,data['nombres'], border=True , align='C')
+    pdf.set_font('helvetica', 'B', 12)
+    pdf.cell(35,7, 'Apellido', border=True , align='C', fill=True)
+    pdf.set_font('helvetica', '', 12)
+    pdf.cell(55,7,data['apellidos'], ln=1, border=True, align='C')
+    pdf.set_font('helvetica', 'B', 12)
+    pdf.cell(35,7, 'Cargo', border=True, align='C', fill=True)
+    pdf.set_font('helvetica', '', 12)
+    pdf.cell(55,7,data['cargo'], border=True, align='C')
+    pdf.set_font('helvetica', 'B', 12)
+    pdf.cell(35,7, 'RUT', border=True, align='C', fill=True)
+    pdf.set_font('helvetica', '', 12)
+    pdf.cell(55,7,data['rut'], ln=1, border=True, align='C')
+    pdf.ln(10)
+    pdf.set_font('helvetica', 'B', 12)
+    pdf.cell(180,12, 'EQUIPO', border=True, ln=1 ,  align='C', fill=True)
+    pdf.set_font('helvetica', 'B', 12)
+    pdf.cell(40,7,'Modelo', border=True, align='C', fill=True)
+    pdf.cell(100,7,'Descripción', border=True, align='C', fill=True)
+    pdf.cell(40,7,'Serial', border=True, align='C', fill=True, ln=1)
+    pdf.set_font('helvetica', '', 12)
+    pdf.cell(40,7,data['marca'], border=True, align='C')
+    pdf.cell(100,7,'modelo+serial+rom', border=True,  align='C')
+    pdf.cell(40,7,data['serial'], border=True, ln=1, align='C')
+    pdf.ln(10)
+    pdf.cell(180,8,'Observaciones', border=True, ln=1, align='C', fill=True)
+    pdf.cell(180,20, border=True, ln=1)
+    pdf.set_font('helvetica', '', 10)
+    pdf.multi_cell(180,5,""" 
+                Certifico que los elementos detallados en el presente documento, me han sido entregados
+                para mi cuidado y custodia con el propósito de cumplir con las tareas y asignaciones propias
+                de mi cargo, siendo estos de mi única y exclusiva responsabilidad. Me comprometo a usar 
+                correctamente los recursos, y solo para los fines establecidos, a no instalar ni permitir la 
+                instalación de software por personal ajeno al grupo interno de trabajo. De igual forma me
+                comprometo a devolver el equipo en las mismas condiciones y con los mismos accesorios 
+                que me fue entregado, una vez mi vínculo laboral se dé por terminado. Está prohibido llevar 
+                por cuenta propia a revisión técnica el Computador, para protección de la Garantía.
+                ASIGNADO PARA TELETRABAJO""",border=True, ln=1)
+    pdf.ln(10)
+    pdf.set_font('helvetica', 'B', 12)
+    pdf.cell(180,9,'ENTREGA DE EQUIPO', border=True, ln=1, align='C', fill=True)
+    pdf.set_font('helvetica', 'B', 12)
+    pdf.cell(90,7,'RECBIBE', border=True, align='C')
+    pdf.cell(90,7,'ENTREGA', border=True, ln=1, align='C')
+    pdf.set_font('helvetica', '', 12)
+    pdf.cell(90,7, 'Nombre: ', border=True)
+    pdf.cell(90,7, 'Nombre :'+ data['encargado_entrega'], border=True , ln=1)
+    pdf.cell(90,7, 'Fecha :', border=True)
+    pdf.cell(90,7, 'Fecha :' + data['fecha_entrega'], border=True , ln=1)
+    pdf.cell(90,15, 'Firma : ', border=True)
+    pdf.cell(90,15, 'Firma :', border=True , ln=1)
+    pdf.output('pdf_1.pdf')
+ 
 ## MOSTRANDO LISTA DE LA INFORMACION ASIGNADA
 @router.get("/lista-licencia")
 async def lista_licencias():
@@ -181,6 +270,29 @@ async def equipo_asignado_por_id(folio:str ):
     result = conn.encontrar_por_folio(folio)
     return persona_equipo_schema(result)
 
+@router.get("/folio_entrega")
+async def obtener_folio_entrega():
+    result = conn.read_folio_entrega()
+    return folio_entrega_schema(result)
+
+@router.get("/folio_devolucion")
+async def obtener_folio_devolucion():
+    result = conn.read_folio_devolucion()
+    return folio_devolucion_schema(result)
+
+@router.get("/nr_equipo/{tipo}")
+async def obtener_nr_equipo(tipo: int):
+    result = conn.read_nr_equipo(tipo)
+    return lista_nr_equipo_schema(result)
+
+@router.get("/equipos-generales")
+async def obtener_lista_equipos_generales():
+    result = conn.read_equipos_general()
+    return  descripcion_equipo_schema(result)
+@router.get("/asignados/{id}")
+async def obtener_asignados_por_id(id:int):
+    result = conn.read_asignados_por_id(id)
+    return equipo_asignado_por_id_schema(result)
 #AGREGANDO DEVOLUCION DE EQUIPO ASIGNADO
 
 @router.put("/actualizar/devolucion")
@@ -265,6 +377,17 @@ async def editar_persona(body: PersonalEquipo):
     try: 
         data = body.dict()
         conn.editar_persona(data)
+        return{
+            "message": "Persona editada"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=422, detail=str(e))
+    
+@router.put("/crear-acta")
+async def editar_crear_acta(body: AsignarEntregaActa):
+    try:
+        data = body.dict()
+        conn.datos_acta_entrega(data)
         return{
             "message": "Persona editada"
         }
