@@ -4167,6 +4167,18 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             where id_venta = {id_venta}
             """)
             return cur.fetchall()
+        
+    def obtener_cantidad_producto_actual_rsv(self, id_venta : int) :
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            SELECT DISTINCT ( REGEXP_MATCHES(bar_code , '^(.*?)@', 'g'))[1] as "codigo_producto", sum(cantidad) as "total" 
+            from rsv.despacho where id_nota_venta  = {id_venta}
+            group by 1
+            order by 1
+            """)
+            return cur.fetchone()
+
+        
     
     def obtener_nota_ventas_rsv(self, id_venta : int) :
         with self.conn.cursor() as cur:
@@ -4473,7 +4485,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                     from beetrack.ruta_transyanez trb
                     where created_at::date = current_date::date
                     and lower(cliente)='electrolux'
-                    order by 2 desc
+                    order by 4 desc
                  """)
             return cur.fetchall()
     

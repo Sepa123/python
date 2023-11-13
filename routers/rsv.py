@@ -667,6 +667,11 @@ async def obtener_unidades_sin_etiquetas_rsv():
 async def ingresar_despacho_rsv(body : Despacho):
     return ""
 
+@router.get("/obtener/cantidad/producto/{id_venta}")
+async def ingresar_despacho_rsv(id_venta : int):
+    
+    return ""
+
 
 @router.post("/tomar/unidades/paquete")
 async def obtener_unidades_sin_etiquetas_rsv(body : Despacho):
@@ -681,7 +686,7 @@ async def obtener_unidades_sin_etiquetas_rsv(body : Despacho):
     check = conn.verificar_stock_paquete(body.Bar_code)
     check_id = check[0]
     check_stock = check[1]
-
+    body.Cantidad = unid_x_paq
     body.Id_etiqueta = check_id
 
     print("Id BAR_CODE ",check_id)
