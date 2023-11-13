@@ -58,6 +58,7 @@ from database.schema.rsv.paquetesAbiertos import paquetes_abiertos_sucursal_sche
 from database.models.rsv.dataAbrirPaquete import bodyPaqueteYBitacora
 
 from database.schema.rsv.tipo_estructura import tipos_estructuras_schema
+from database.schema.rsv.cantidad_actual import cant_productos_actual_schema
 
 ##Conexiones
 from database.client import reportesConnection
@@ -669,8 +670,9 @@ async def ingresar_despacho_rsv(body : Despacho):
 
 @router.get("/obtener/cantidad/producto/{id_venta}")
 async def ingresar_despacho_rsv(id_venta : int):
-    
-    return ""
+    results = conn.obtener_cantidad_producto_actual_rsv(id_venta)
+
+    return cant_productos_actual_schema(results)
 
 
 @router.post("/tomar/unidades/paquete")

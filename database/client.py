@@ -4176,7 +4176,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             group by 1
             order by 1
             """)
-            return cur.fetchone()
+            return cur.fetchall()
 
         
     

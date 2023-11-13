@@ -80,6 +80,8 @@ async def get_recepcion_easy_opl_by_codigo_pedido(cod_pedido : str):
 @router.put("/electrolux", status_code=status.HTTP_202_ACCEPTED)
 async def get_recepcion_electrolux(body: bodyUpdateVerified):
     try:
+
+        print(f" producto electrolux verificar {body.cod_producto}")
         data = body.dict()
         rows = conn.update_verified_electrolux(body.cod_producto)
         if rows != 0:
@@ -117,6 +119,7 @@ async def get_recepcion_sportex_by_codigo_producto(body: bodyUpdateVerified):
 async def get_recepcion_easy_opl_by_codigo_producto(body: bodyUpdateVerified):
     codigo = conn.get_codigo_pedido_opl(body.cod_producto)
     print(codigo)
+    print(f"producto El  producto {body.cod_producto} OPL, codigo[0][0] = {codigo[0][0]}")
     body.n_guia = codigo[0][0]
     try:
         data = body.dict()
@@ -140,7 +143,7 @@ async def get_recepcion_easy_cd_by_codigo_producto(body: bodyUpdateVerified):
     # results = conn.read_recepcion_easy_cd_by_codigo_producto(body.cod_producto)
     try:
         data = body.dict()
-
+        print(f"El  producto {body.cod_producto} CD")
         
         rows = conn.update_verified_cd(body.cod_producto)
         print(rows)
