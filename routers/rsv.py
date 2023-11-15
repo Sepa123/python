@@ -730,3 +730,30 @@ async def obtener_unidades_sin_etiquetas_rsv(body : Despacho):
     return {
         "message" : "f"
     }
+
+
+
+@router.post("/verificar/stock/productos/no_preparados")
+async def obtener_stock_de_producto_de_sucursal(body : ExistenciaStock):
+    data = body.dict()
+    
+    arr_codigos = body.Codigo_producto.split(",")
+
+    existencia = []
+
+    for codigo in arr_codigos:
+        result = conn.obtener_stock_de_producto_de_sucursal(body.Sucursal, codigo)
+        json = {
+            "Codigo_producto" : codigo,
+            "E_paquetes" : result[2],
+            "E_unidades" : result[3],
+            "Total" : result[4]
+        }
+
+        existencia.append(json)
+
+    return existencia
+
+# KA02180	4	0	Cremona corredera E-15 1800-2000
+# KA0280	
+
