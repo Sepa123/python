@@ -753,7 +753,3 @@ async def obtener_stock_de_producto_de_sucursal(body : ExistenciaStock):
         existencia.append(json)
 
     return existencia
-
-# KA02180	4	0	Cremona corredera E-15 1800-2000
-# KA0280	
-
