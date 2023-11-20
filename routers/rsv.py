@@ -697,8 +697,6 @@ async def obtener_unidades_sin_etiquetas_rsv(body : Despacho):
     print(unid_x_paq)
     print(body.Unidades)
     
-    
-
     if check_stock == False:
         return {
             "message" : f"El código {body.Bar_code} esta sin stock",
@@ -706,16 +704,34 @@ async def obtener_unidades_sin_etiquetas_rsv(body : Despacho):
         }
     
     if (body.Uni_agregadas + unid_x_paq) > body.Unidades:
-        return {
-            "message" : f"Ya se agregaron las unidades necesarias al código {body.Codigo_producto} o no se pueden agregar mas paquetes",
+
+        if body.Uni_agregadas >= body.Unidades :
+            return {
+            "message" : f"Ya se agregaron las unidades necesarias al código {body.Codigo_producto}",
             "unid_x_paq" : 0
-        }
+            }
+        
+        else:
+            resta = unid_x_paq - (body.Unidades- body.Uni_agregadas)
+
+            unid_total = unid_x_paq - resta
+            body.Cantidad = unid_total
+
+            row = conn.update_stock_etiqueta_rsv(body.Bar_code)
+            data = body.dict()
+            conn.insert_data_despacho_rsv(data)
+
+            return {
+                "message" : f"Se agrego la diferencia al código {body.Codigo_producto} , que es de {unid_total} unidades",
+                "unid_x_paq" : unid_total
+            }
 
     # if body.Unidades >= unid_x_paq and check_stock == True:
     if body.Unidades >= unid_x_paq :
         row = conn.update_stock_etiqueta_rsv(body.Bar_code)
         data = body.dict()
         conn.insert_data_despacho_rsv(data)
+        
         if tipo_code == 'U':
             return {
             "message" : "Unidad agregada correctamente",
