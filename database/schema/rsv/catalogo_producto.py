@@ -29,7 +29,8 @@ def codigo_por_color(codigo):
     return {
         "Codigo" : codigo[0],
 		"Producto" : codigo[1],
-        "Color": codigo[2]
+        "Color": codigo[2],
+        "unid_con_etiqueta" : codigo[3]
 	}
 
 def codigos_por_color_schema(codigos):

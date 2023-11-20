@@ -3755,7 +3755,8 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def read_catalogo_by_color_rsv(self,color):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-                select codigo, producto,color  from rsv.catalogo_productos where color = {color}
+                select codigo, producto,color,unid_con_etiqueta  from rsv.catalogo_productos 
+                where color = {color}
                         """)
             return cur.fetchall()
         
@@ -3763,7 +3764,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def read_catalogo_by_color_sin_filtro_rsv(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-                select distinct (codigo), producto, color  from rsv.catalogo_productos 
+                select distinct (codigo), producto, color, unid_con_etiqueta  from rsv.catalogo_productos 
                 --where color = 2
                 order by color
                         """)
