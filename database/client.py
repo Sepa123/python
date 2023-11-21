@@ -3834,7 +3834,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def read_cargas_por_nombre_carga_rsv(self,nombre_carga):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-                select *  from rsv.cargas c where nombre_carga = '{nombre_carga}'
+                select *  from rsv.cargas c where trim(nombre_carga) = trim('{nombre_carga}')
                         """)
             return cur.fetchall()
         

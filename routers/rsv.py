@@ -256,7 +256,7 @@ async def get_etiquetas_carga(nombre_carga : str, codigo: str):
 
 @router.get("/generar/etiquetas")
 async def generar_etiquetas_por_nombre_carga(nombre_carga :str):
-    results = conn.generar_etiquitas_rsv(nombre_carga)
+    results = conn.generar_etiquitas_rsv(nombre_carga.strip())
     return {
         "alerta": results[0][0],
         "message": results[0][1]
