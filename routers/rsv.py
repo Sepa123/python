@@ -186,6 +186,7 @@ async def insert_carga_rsv(list_body : List[CargaRSV]):
         print(list_body)
         for body in list_body:
             data = body.dict()
+            body.Nombre_carga = body.Nombre_carga.strip()
             nombre_carga = body.Nombre_carga
             print(data)
             conn.insert_carga_rsv(data)
@@ -256,7 +257,7 @@ async def get_etiquetas_carga(nombre_carga : str, codigo: str):
 
 @router.get("/generar/etiquetas")
 async def generar_etiquetas_por_nombre_carga(nombre_carga :str):
-    results = conn.generar_etiquitas_rsv(nombre_carga.strip())
+    results = conn.generar_etiquitas_rsv(nombre_carga)
     return {
         "alerta": results[0][0],
         "message": results[0][1]
