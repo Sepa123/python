@@ -3752,6 +3752,19 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
 
     ## New challenger  RSV
 
+
+    def update_preparado_nota_venta_rsv(self, id_nota_venta,fecha_preparado):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            update rsv.nota_venta
+            set preparado = true, fecha_preparado = '{fecha_preparado}'
+            where id = {id_nota_venta}
+            """)
+            row = cur.rowcount
+        self.conn.commit()
+        
+        return row
+
     def read_catalogo_rsv(self):
         with self.conn.cursor() as cur:
             cur.execute("""
@@ -4246,6 +4259,9 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                         """,data)
 
         self.conn.commit()
+
+
+
         
     ##Y
 
