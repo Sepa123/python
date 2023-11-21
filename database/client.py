@@ -2101,6 +2101,15 @@ class reportesConnection():
              select areati.check_producto('{codigo_pedido}');
             """)
             return cur.fetchone()
+    
+    def check_fecha_ruta_producto_existe(self,codigo_pedido):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+             select fecha_pedido from quadminds.datos_ruta_manual drm 
+            where drm.estado is true and (cod_pedido = '{codigo_pedido}' or cod_producto = '{codigo_pedido}')
+            limit 1
+            """)
+            return cur.fetchone()
         
     def check_producto_codigo_repetido(self,nombre_ruta : str, cod_pedido : str, cod_producto : str, sku : str) :
         with self.conn.cursor() as cur:
