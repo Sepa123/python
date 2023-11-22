@@ -56,6 +56,8 @@ connHela = HelaConnection()
 async def get_ruta_manual(pedido_id : str):
     results = conn.get_ruta_manual(pedido_id)
 
+    print("codigo_pedido ",pedido_id)
+
     check = conn.check_producto_existe(pedido_id)
     check = re.sub(r'\(|\)', '',check[0])
     check = check.split(",")

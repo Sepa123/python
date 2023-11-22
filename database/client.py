@@ -2105,8 +2105,8 @@ class reportesConnection():
     def check_fecha_ruta_producto_existe(self,codigo_pedido):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-             select fecha_pedido from quadminds.datos_ruta_manual drm 
-            where drm.estado is true and (cod_pedido = '{codigo_pedido}' or cod_producto = '{codigo_pedido}')
+            select fecha_pedido from quadminds.datos_ruta_manual drm 
+            where cod_pedido = '{codigo_pedido}' or cod_producto = '{codigo_pedido}'
             limit 1
             """)
             return cur.fetchone()
@@ -4257,7 +4257,6 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 INSERT INTO rsv.despacho (id_usuario,ids_usuario, id_nota_venta, id_etiqueta, bar_code, latitud, longitud, cantidad) 
                 VALUES(%(Id_user)s, %(Ids_user)s, %(Id_nota_venta)s, %(Id_etiqueta)s, %(Bar_code)s, %(Lat)s , %(Lng)s, %(Cantidad)s); 
                         """,data)
-
         self.conn.commit()
 
 
@@ -4393,10 +4392,20 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def obtener_unidades_por_paquete(self, codigo : str):
         with self.conn.cursor() as cur:
             cur.execute(f""" 
-                    select unid_x_paquete  from rsv.catalogo_productos cp where codigo = '{codigo}'
+                    select unid_x_paquete, unid_con_etiqueta from rsv.catalogo_productos cp where codigo = '{codigo}'
                  """)
             return cur.fetchone()
-    
+        
+
+    def obtener_etiquetas_de_paquete(self, id_paquete : str):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+                    select bar_code from rsv.etiquetas where split_part(split_part(bar_code, '@',2), '-',1 ) = '{id_paquete}'
+                    and en_stock = true 
+                    order by posicion 
+                 """)
+            return cur.fetchall()
+        
     ## obtener unidades por paquete
 
     def verificar_stock_paquete(self, bar_cod : str):
