@@ -2105,7 +2105,7 @@ class reportesConnection():
     def check_fecha_ruta_producto_existe(self,codigo_pedido):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            select fecha_pedido from quadminds.datos_ruta_manual drm 
+            select fecha_ruta from quadminds.datos_ruta_manual drm 
             where cod_pedido = '{codigo_pedido}' or cod_producto = '{codigo_pedido}'
             limit 1
             """)
