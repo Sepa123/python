@@ -680,29 +680,41 @@ async def ingresar_despacho_rsv(id_venta : int):
 async def obtener_unidades_sin_etiquetas_rsv(body : Despacho):
 
     tipo_code = body.Bar_code.split('@')[1].split('-')[1][0]
-    print(tipo_code)
 
-    if (body.Uni_agregadas == body.Unidades):
-                fecha_actual = datetime.now()
-                # Formatea la fecha en el formato "yyyy-mm-dd"
-                fecha_formateada = fecha_actual.strftime("%Y-%m-%d")
-                conn.update_preparado_nota_venta_rsv(body.Id_nota_venta, fecha_formateada)
+    # if (body.Uni_agregadas == body.Unidades):
+    #             fecha_actual = datetime.now()
+    #             # Formatea la fecha en el formato "yyyy-mm-dd"
+    #             fecha_formateada = fecha_actual.strftime("%Y-%m-%d")
+    #             conn.update_preparado_nota_venta_rsv(body.Id_nota_venta, fecha_formateada)
     # print(body)
+
     if tipo_code == 'U':
         unid_x_paq = 1
+        unid_con_etiqueta = True
     else :
-        unid_x_paq = conn.obtener_unidades_por_paquete(body.Codigo_producto)[0]
+        catalogo = conn.obtener_unidades_por_paquete(body.Codigo_producto)
+        unid_x_paq = catalogo[0]
+        unid_con_etiqueta = catalogo[1]
+
+    
+
     check = conn.verificar_stock_paquete(body.Bar_code)
     check_id = check[0]
     check_stock = check[1]
     body.Cantidad = unid_x_paq
     body.Id_etiqueta = check_id
 
+    resta = unid_x_paq - (body.Unidades- body.Uni_agregadas)
+    unid_total = unid_x_paq - resta
+
     print("Id BAR_CODE ",check_id)
     print("Stock BAR_CODE ",check_stock)
     print(body.Uni_agregadas)
     print(unid_x_paq)
     print(body.Unidades)
+
+
+    print(unid_con_etiqueta)
     
     if check_stock == False:
         return {
@@ -710,6 +722,7 @@ async def obtener_unidades_sin_etiquetas_rsv(body : Despacho):
             "unid_x_paq" : 0
         }
     
+
     if (body.Uni_agregadas + unid_x_paq) > body.Unidades:
 
         if body.Uni_agregadas >= body.Unidades :
@@ -719,22 +732,38 @@ async def obtener_unidades_sin_etiquetas_rsv(body : Despacho):
             }
         
         else:
-            resta = unid_x_paq - (body.Unidades- body.Uni_agregadas)
-
-            unid_total = unid_x_paq - resta
+            
             body.Cantidad = unid_total
+
+
+            # if (body.Uni_agregadas == body.Unidades):
+            #     fecha_actual = datetime.now()
+            #     # Formatea la fecha en el formato "yyyy-mm-dd"
+            #     fecha_formateada = fecha_actual.strftime("%Y-%m-%d")
+            #     conn.update_preparado_nota_venta_rsv(body.Id_nota_venta, fecha_formateada)
+
+            # si la etiqueta puede tener unidades por etiqueta
+            if unid_con_etiqueta == True:
+                abrir = conn.abrir_paquete_nuevo_rsv(body.Bar_code)
+                etiquetas = conn.obtener_etiquetas_de_paquete(check_id)
+                for num in range(unid_total) :
+
+                    body.Bar_code = etiquetas[num][0]
+                    body.Cantidad = 1
+                    data = body.dict()
+                    conn.insert_data_despacho_rsv(data)
+                    row = conn.update_stock_etiqueta_rsv(body.Bar_code)
+            
+                return {
+                    "message" : f"Se agrego la diferencia al código {body.Codigo_producto} , que es de {unid_total} unidades",
+                    "unid_x_paq" : unid_total
+                } 
 
             row = conn.update_stock_etiqueta_rsv(body.Bar_code)
             data = body.dict()
             conn.insert_data_despacho_rsv(data)
 
-            if (body.Uni_agregadas == body.Unidades):
-                fecha_actual = datetime.now()
-                # Formatea la fecha en el formato "yyyy-mm-dd"
-                fecha_formateada = fecha_actual.strftime("%Y-%m-%d")
-                conn.update_preparado_nota_venta_rsv(body.Id_nota_venta, fecha_formateada)
-
-
+            
             return {
                 "message" : f"Se agrego la diferencia al código {body.Codigo_producto} , que es de {unid_total} unidades",
                 "unid_x_paq" : unid_total
@@ -746,11 +775,11 @@ async def obtener_unidades_sin_etiquetas_rsv(body : Despacho):
         data = body.dict()
         conn.insert_data_despacho_rsv(data)
 
-        if (body.Uni_agregadas == body.Unidades):
-                fecha_actual = datetime.now()
-                # Formatea la fecha en el formato "yyyy-mm-dd"
-                fecha_formateada = fecha_actual.strftime("%Y-%m-%d")
-                conn.update_preparado_nota_venta_rsv(body.Id_nota_venta, fecha_formateada)
+        # if (body.Uni_agregadas == body.Unidades):
+        #         fecha_actual = datetime.now()
+        #         # Formatea la fecha en el formato "yyyy-mm-dd"
+        #         fecha_formateada = fecha_actual.strftime("%Y-%m-%d")
+        #         conn.update_preparado_nota_venta_rsv(body.Id_nota_venta, fecha_formateada)
         
         if tipo_code == 'U':
             return {
@@ -768,6 +797,16 @@ async def obtener_unidades_sin_etiquetas_rsv(body : Despacho):
     }
 
 
+@router.put("/cambiar/estado/venta")
+async def cambiar_estado_por_id(body: BodyEntregaNotaVenta):
+
+    fecha_actual = datetime.now()
+    # Formatea la fecha en el formato "yyyy-mm-dd"
+    fecha_formateada = fecha_actual.strftime("%Y-%m-%d")
+    row = conn.update_preparado_nota_venta_rsv(body.Id_venta, fecha_formateada)
+    # results = conn.obtener_cantidad_producto_actual_rsv(id_venta)
+
+    return row
 
 @router.post("/verificar/stock/productos/no_preparados")
 async def obtener_stock_de_producto_de_sucursal(body : ExistenciaStock):
