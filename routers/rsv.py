@@ -666,13 +666,13 @@ async def obtener_unidades_sin_etiquetas_rsv():
     return catalogos_productos_schema(result)
 
 @router.post("/ingresar/despacho")
-async def ingresar_despacho_rsv(body : Despacho):
+async def ingresar_despacho_rsv_xd(body : Despacho):
     return ""
 
 @router.get("/obtener/cantidad/producto/{id_venta}")
 async def ingresar_despacho_rsv(id_venta : int):
-    results = conn.obtener_cantidad_producto_actual_rsv(id_venta)
 
+    results = conn.armar_venta_rsv(id_venta)
     return cant_productos_actual_schema(results)
 
 

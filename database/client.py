@@ -4415,6 +4415,14 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                  """)
             return cur.fetchone()
         
+
+    def armar_venta_rsv(self, id_nota_venta : int, sucursal : int):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+                    select codigo, cantidad from rsv.armar_venta({id_nota_venta},{sucursal}) 
+                 """)
+            return cur.fetchone()   
+        
     ## obtener el cod por si los prros ponen un - en el codigo
 
     def obtener_codigo_por_bar_code(self, bar_cod : str):
