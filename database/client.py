@@ -4414,6 +4414,15 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                     select id,en_stock  from rsv.etiquetas e where bar_code = '{bar_cod}'
                  """)
             return cur.fetchone()
+        
+    ## obtener el cod por si los prros ponen un - en el codigo
+
+    def obtener_codigo_por_bar_code(self, bar_cod : str):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+                    select codigo from rsv.etiquetas e where bar_code = '{bar_cod}'
+                 """)
+            return cur.fetchone()
 
     #### beetrack 
     ## Distpatch guide

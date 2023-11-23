@@ -676,6 +676,19 @@ async def ingresar_despacho_rsv(id_venta : int):
     return cant_productos_actual_schema(results)
 
 
+@router.get("/obtener/codigo/barcode/{bar_code}")
+async def obtener_codigo_por_bar_code(bar_code : str):
+    results = conn.obtener_codigo_por_bar_code(bar_code)
+    codigo = ''
+    if results is not None:
+        codigo = results[0]
+        
+    return {
+        "Codigo" : codigo
+    } 
+
+
+
 @router.post("/tomar/unidades/paquete")
 async def obtener_unidades_sin_etiquetas_rsv(body : Despacho):
 
