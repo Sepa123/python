@@ -681,13 +681,6 @@ async def obtener_unidades_sin_etiquetas_rsv(body : Despacho):
 
     tipo_code = body.Bar_code.split('@')[1].split('-')[1][0]
 
-    # if (body.Uni_agregadas == body.Unidades):
-    #             fecha_actual = datetime.now()
-    #             # Formatea la fecha en el formato "yyyy-mm-dd"
-    #             fecha_formateada = fecha_actual.strftime("%Y-%m-%d")
-    #             conn.update_preparado_nota_venta_rsv(body.Id_nota_venta, fecha_formateada)
-    # print(body)
-
     if tipo_code == 'U':
         unid_x_paq = 1
         unid_con_etiqueta = True
@@ -735,13 +728,6 @@ async def obtener_unidades_sin_etiquetas_rsv(body : Despacho):
             
             body.Cantidad = unid_total
 
-
-            # if (body.Uni_agregadas == body.Unidades):
-            #     fecha_actual = datetime.now()
-            #     # Formatea la fecha en el formato "yyyy-mm-dd"
-            #     fecha_formateada = fecha_actual.strftime("%Y-%m-%d")
-            #     conn.update_preparado_nota_venta_rsv(body.Id_nota_venta, fecha_formateada)
-
             # si la etiqueta puede tener unidades por etiqueta
             if unid_con_etiqueta == True:
                 abrir = conn.abrir_paquete_nuevo_rsv(body.Bar_code)
@@ -774,12 +760,6 @@ async def obtener_unidades_sin_etiquetas_rsv(body : Despacho):
         row = conn.update_stock_etiqueta_rsv(body.Bar_code)
         data = body.dict()
         conn.insert_data_despacho_rsv(data)
-
-        # if (body.Uni_agregadas == body.Unidades):
-        #         fecha_actual = datetime.now()
-        #         # Formatea la fecha en el formato "yyyy-mm-dd"
-        #         fecha_formateada = fecha_actual.strftime("%Y-%m-%d")
-        #         conn.update_preparado_nota_venta_rsv(body.Id_nota_venta, fecha_formateada)
         
         if tipo_code == 'U':
             return {
