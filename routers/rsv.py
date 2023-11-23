@@ -672,7 +672,7 @@ async def ingresar_despacho_rsv_xd(body : Despacho):
 @router.get("/obtener/cantidad/producto/{id_venta}")
 async def ingresar_despacho_rsv(id_venta : int):
 
-    results = conn.armar_venta_rsv(id_venta)
+    results = conn.obtener_cantidad_producto_actual_rsv(id_venta)
     return cant_productos_actual_schema(results)
 
 
