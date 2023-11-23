@@ -682,7 +682,7 @@ async def obtener_codigo_por_bar_code(bar_code : str):
     codigo = ''
     if results is not None:
         codigo = results[0]
-        
+
     return {
         "Codigo" : codigo
     } 
@@ -758,7 +758,7 @@ async def obtener_unidades_sin_etiquetas_rsv(body : Despacho):
                     "unid_x_paq" : unid_total
                 } 
 
-            row = conn.update_stock_etiqueta_rsv(body.Bar_code)
+            # row = conn.update_stock_etiqueta_rsv(body.Bar_code)
             data = body.dict()
             conn.insert_data_despacho_rsv(data)
 
