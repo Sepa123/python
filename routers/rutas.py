@@ -67,7 +67,13 @@ async def get_ruta_manual(pedido_id : str):
     if(check[0] == "1"):
         print("codigo pedido repetido")
 
-        fecha = conn.check_fecha_ruta_producto_existe(pedido_id)[0]
+        check_fecha = conn.check_fecha_ruta_producto_existe(pedido_id)
+
+        if check_fecha is not None:
+            fecha = check_fecha[0]
+        else:
+            pedido_id = conn.get_codigo_pedido_opl(pedido_id)[0][0]
+            fecha = conn.check_fecha_ruta_producto_existe(pedido_id)[0]
         
         raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, 
                             detail=f'El Producto "{pedido_id}" se encuentra en la ruta: {check[1]}, con fecha de ruta {fecha}' )
