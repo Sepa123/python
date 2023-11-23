@@ -4421,7 +4421,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             cur.execute(f""" 
                     select codigo, cantidad from rsv.armar_venta({id_nota_venta},1) 
                  """)
-            return cur.fetchone()   
+            return cur.fetchall()   
         
     ## obtener el cod por si los prros ponen un - en el codigo
 
