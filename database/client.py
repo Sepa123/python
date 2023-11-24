@@ -4195,7 +4195,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
         with self.conn.cursor() as cur:
             cur.execute(f"""
             select av.codigo, av.cantidad, av.paquetes, av.unidades, cp.unid_x_paquete 
-            from rsv.armar_venta(56,2) as av
+            from rsv.armar_venta({id_venta},1) as av
             inner join rsv.catalogo_productos cp on cp.codigo  = av.codigo
 
            -- select distinct(e.codigo) as codigo_producto , sum(des.cantidad) as "total" 
