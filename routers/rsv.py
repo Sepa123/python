@@ -772,21 +772,25 @@ async def obtener_unidades_sin_etiquetas_rsv(body : Despacho):
     # if body.Unidades >= unid_x_paq and check_stock == True:
     if body.Unidades >= unid_x_paq :
         row = conn.update_stock_etiqueta_rsv(body.Bar_code)
-        data = body.dict()
-        conn.insert_data_despacho_rsv(data)
-        
-        # si la etiqueta es de unidad
         if tipo_code == 'U':
+            data = body.dict()
+            conn.insert_data_despacho_rsv(data)
+            
+            # si la etiqueta es de unidad
+        
             return {
             "message" : "Unidad agregada correctamente",
             "unid_x_paq" : 1
             }
         else:
+            body.Cantidad = 1
+            data = body.dict()
+            conn.insert_data_despacho_rsv(data)
 
         # si la etiqueta es de un paquete completo
             return {
                 "message" : "Unidades agregadas correctamente",
-                "unid_x_paq" : 1
+                "unid_x_paq" : unid_x_paq
             }
     
     return {
