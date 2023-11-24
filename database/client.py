@@ -4194,12 +4194,16 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def obtener_cantidad_producto_actual_rsv(self, id_venta : int) :
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            select distinct(e.codigo) as codigo_producto , sum(des.cantidad) as "total" 
-            from rsv.despacho as des 
-            left join rsv.etiquetas e on des.bar_code  = e.bar_code 
-            where des.id_nota_venta  = {id_venta}
-            group by 1
-            order by 1
+            select av.codigo, av.cantidad, av.paquetes, av.unidades, cp.unid_x_paquete 
+            from rsv.armar_venta(56,2) as av
+            inner join rsv.catalogo_productos cp on cp.codigo  = av.codigo
+
+           -- select distinct(e.codigo) as codigo_producto , sum(des.cantidad) as "total" 
+           -- from rsv.despacho as des 
+           -- left join rsv.etiquetas e on des.bar_code  = e.bar_code 
+           -- where des.id_nota_venta  = {id_venta}
+           -- group by 1
+           -- order by 1
 
            -- SELECT  DISTINCT split_part( (REGEXP_MATCHES(bar_code , '^(.*?)@', 'g'))[1] , '-', 1 )as codigo_producto, sum(cantidad) as "total" 
            -- from rsv.despacho as des where des.id_nota_venta  =  {id_venta}

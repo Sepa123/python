@@ -752,7 +752,8 @@ async def obtener_unidades_sin_etiquetas_rsv(body : Despacho):
                     data = body.dict()
                     conn.insert_data_despacho_rsv(data)
                     row = conn.update_stock_etiqueta_rsv(body.Bar_code)
-            
+
+                # agrega la diferencia si es que el codigo es de un paquete restandole la diferenica
                 return {
                     "message" : f"Se agrego la diferencia al código {body.Codigo_producto} , que es de {unid_total} unidades",
                     "unid_x_paq" : unid_total
@@ -762,7 +763,7 @@ async def obtener_unidades_sin_etiquetas_rsv(body : Despacho):
             data = body.dict()
             conn.insert_data_despacho_rsv(data)
 
-            
+            # agrega la diferencia si es que el codigo es de un paquete de unidades sin etiqueta
             return {
                 "message" : f"Se agrego la diferencia al código {body.Codigo_producto} , que es de {unid_total} unidades",
                 "unid_x_paq" : unid_total
@@ -774,15 +775,18 @@ async def obtener_unidades_sin_etiquetas_rsv(body : Despacho):
         data = body.dict()
         conn.insert_data_despacho_rsv(data)
         
+        # si la etiqueta es de unidad
         if tipo_code == 'U':
             return {
             "message" : "Unidad agregada correctamente",
             "unid_x_paq" : 1
             }
         else:
+
+        # si la etiqueta es de un paquete completo
             return {
                 "message" : "Unidades agregadas correctamente",
-                "unid_x_paq" : unid_x_paq
+                "unid_x_paq" : 1
             }
     
     return {
