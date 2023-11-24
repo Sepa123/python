@@ -3916,7 +3916,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def update_carga_rsv_porId(self,data):
         with self.conn.cursor() as cur:
             cur.execute(""" UPDATE  rsv.etiquetas
-                        SET ubicacion= %(Ubicacion)s, verificado=%(verificado)s WHERE bar_code = %(bar_code)s;
+                        SET ubicacion= %(Ubicacion)s, verificado=%(verificado)s, en_stock = true WHERE bar_code = %(bar_code)s;
             """, data)   
             self.conn.commit()  
 
