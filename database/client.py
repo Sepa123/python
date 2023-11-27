@@ -3887,6 +3887,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 select distinct (nombre_carga), etiquetas, fecha_ingreso, su.nombre  FROM rsv.cargas 
                 inner join rsv.sucursal su on sucursal = su.id
                 where to_char(fecha_ingreso ,'yyyymm')= '{mes}' 
+                order by fecha_ingreso desc
                         """)
             return cur.fetchall()
         
