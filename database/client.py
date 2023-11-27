@@ -4137,6 +4137,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             select e.nombre , e.sucursal , te.tipo , e.cant_espacios , e.balanceo, e.frontis
             from rsv.estructuras e
             left join rsv.tipo_estructura te on te.id = e.tipo 
+            where e.tipo = 1
             order by e.nombre;       
             """)
             return cur.fetchall()
