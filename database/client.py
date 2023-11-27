@@ -4434,10 +4434,10 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             return cur.fetchone()
         
 
-    def armar_venta_rsv(self, id_nota_venta : int):
+    def armar_venta_rsv(self, id_nota_venta : int, sucursal):
         with self.conn.cursor() as cur:
             cur.execute(f""" 
-                    select codigo, cantidad from rsv.armar_venta({id_nota_venta},1) 
+                    select * from rsv.armar_venta({id_nota_venta}, {sucursal}) 
                  """)
             return cur.fetchall()   
         

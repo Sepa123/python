@@ -60,6 +60,9 @@ from database.models.rsv.dataAbrirPaquete import bodyPaqueteYBitacora
 from database.schema.rsv.tipo_estructura import tipos_estructuras_schema
 from database.schema.rsv.cantidad_actual import cant_productos_actual_schema
 
+from database.models.rsv.armar_venta import ArmarVenta
+from database.schema.rsv.armar_venta import armar_venta_schema
+
 ##Conexiones
 from database.client import reportesConnection
 
@@ -674,6 +677,12 @@ async def ingresar_despacho_rsv(id_venta : int):
 
     results = conn.obtener_cantidad_producto_actual_rsv(id_venta)
     return cant_productos_actual_schema(results)
+
+
+@router.post("/armar/venta" )
+async def armar_venta(body : ArmarVenta):
+    result = conn.armar_venta_rsv(body.Nota_venta, body.Sucursal)
+    return armar_venta_schema(result)
 
 
 @router.get("/obtener/codigo/barcode/{bar_code}")
