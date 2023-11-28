@@ -852,7 +852,7 @@ async def obtener_catalogo_rsv(sucursal_id : int):
 
 @router.get("/reporte/etiquetas/{sucursal_id}/descargar/{var_r}")
 async def obtener_catalogo_rsv(sucursal_id : int, var_r : str):
-    results = conn.read_reporte_etiquetas_rsv(sucursal_id)
+    results = conn.read_reporte_etiquetas_rsv_excel(sucursal_id)
 
     nombre_filas = ( "Carga", "Barcode", "Código", "Descripción", "Color", "Tipo etiqueta", "En stock","Ubicación")
     nombre_excel = f"Reporte-Etiquetas-{sucursal_id}"
