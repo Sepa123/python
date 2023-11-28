@@ -180,7 +180,6 @@ async def obtener_carga_rsv_por_mes(mes : str):
     result = conn.read_lista_carga_rsv_por_mes(mes)
     return lista_cargas_schema(result)
 
-
 @router.post("/agregar/carga")
 async def insert_carga_rsv(list_body : List[CargaRSV]):
     try:
@@ -762,7 +761,7 @@ async def obtener_unidades_sin_etiquetas_rsv(body : Despacho):
                     conn.insert_data_despacho_rsv(data)
                     row = conn.update_stock_etiqueta_rsv(body.Bar_code)
 
-                # agrega la diferencia si es que el codigo es de un paquete restandole la diferenica
+                # agrega la diferencia si es que el codigo es de un paquete 
                 return {
                     "message" : f"Se agrego la diferencia al código {body.Codigo_producto} , que es de {unid_total} unidades",
                     "unid_x_paq" : unid_total

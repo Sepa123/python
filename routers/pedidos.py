@@ -29,6 +29,10 @@ router = APIRouter(tags=["pedidos"], prefix="/api/pedidos")
 
 conn = reportesConnection()
 
+##
+
+##
+
 ###  Pedidos Con Fecha de Compromiso sin Despacho
 
 @router.get("/sin_despacho" , status_code=status.HTTP_202_ACCEPTED)
@@ -141,6 +145,7 @@ async def get_rutas_de_pendientes_por_rango(fecha_inicio, fecha_fin):
 @router.get("/pendientes")
 async def get_rutas_de_pendientes_limitada(offset : int):
      try:
+        print("pendientes limit",offset)
         result = conn.prueba_ty(offset)
         return rutas_de_pendientes_schema(result)
      except:
@@ -202,3 +207,9 @@ async def get_rutas_de_pendientes_limitada(fecha_inicio, fecha_fin , offset):
      except:
         print("error pedidos/pendientes")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No se pudieron cargar los pendientes,por favor vuelva a cargar la pagina")
+     
+
+
+
+
+
