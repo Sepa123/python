@@ -147,6 +147,7 @@ async def get_rutas_de_pendientes_limitada(offset : int):
      try:
         print("pendientes limit",offset)
         result = conn.prueba_ty(offset)
+        print("pendientes limit fin",offset)
         return rutas_de_pendientes_schema(result)
      except:
         print("error pedidos/pendientes")
