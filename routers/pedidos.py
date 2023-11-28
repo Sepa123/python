@@ -151,7 +151,7 @@ async def get_rutas_de_pendientes_limitada(offset : int):
      except:
         print("error pedidos/pendientes")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No se pudieron cargar los pendientes,por favor vuelva a cargar la pagina")
-     
+   
 @router.get("/pendientes/fechas")
 async def get_rutas_de_pendientes_limitada():
      try:

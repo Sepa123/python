@@ -14,6 +14,9 @@ from database.models.token import TokenPayload
 from routers import areati, carga,panel, electrolux, transyanez, reportes_cargas, pedidos, productos, rutas, recepcion, comunas, clientes, toc , rsv, beetrack, easy
 from database.schema.roles_list import roles_list_schema
 
+import os
+import multiprocessing
+
 ## documentacion api
 
 # from fastapi.openapi.docs import get_swagger_ui_html
@@ -78,6 +81,20 @@ app.add_middleware(GZipMiddleware, minimum_size=10000)
 async def root():
     conn
     return "hola"
+
+
+@app.get("/api/cpu")
+async def cpu():
+ # Obtener la cantidad de núcleos de la CPU
+    num_nucleos = multiprocessing.cpu_count()
+
+    # Obtener información adicional sobre la CPU
+    info_cpu = os.popen("lscpu").read()
+
+    return {
+        "nucleos": num_nucleos,
+        "info_cpu" : info_cpu
+    }
 
 # @app.get("/api/docs", response_class=HTMLResponse)
 # async def custom_swagger_ui_html():
