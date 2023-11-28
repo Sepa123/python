@@ -3753,6 +3753,33 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     ## New challenger  RSV
 
 
+    def read_reporte_etiquetas_rsv(self,sucursal_id):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                select 	e.carga,
+                        e.bar_code,
+                        e.codigo, 
+                        e.descripcion,
+                        e.color,
+                        e.tipo,
+                        e.en_stock,
+                        e.ubicacion 
+                from rsv.etiquetas e
+                where e.carga in (    select distinct on (nombre_carga)
+                                nombre_carga 
+                                from rsv.cargas
+                                where sucursal in (
+                                    select distinct on (c.sucursal) c.sucursal
+                                    from rsv.cargas c
+                                    left join rsv.sucursal s on c.sucursal = s.id
+                                    where sucursal={sucursal_id}
+                                ))
+                order by color, codigo, bar_code
+                -- limit 100 offset cuenta;
+                        """)
+            return cur.fetchall()
+
+
     def update_preparado_nota_venta_rsv(self, id_nota_venta,fecha_preparado):
         with self.conn.cursor() as cur:
             cur.execute(f"""

@@ -63,6 +63,8 @@ from database.schema.rsv.cantidad_actual import cant_productos_actual_schema
 from database.models.rsv.armar_venta import ArmarVenta
 from database.schema.rsv.armar_venta import armar_venta_schema
 
+
+from database.schema.rsv.reporte_etiquetas import reporte_etiquetas_schema
 ##Conexiones
 from database.client import reportesConnection
 
@@ -837,3 +839,27 @@ async def obtener_stock_de_producto_de_sucursal(body : ExistenciaStock):
         existencia.append(json)
 
     return existencia
+
+
+
+
+
+@router.get("/reporte/etiquetas/{sucursal_id}")
+async def obtener_catalogo_rsv(sucursal_id : int):
+    result = conn.read_reporte_etiquetas_rsv(sucursal_id)
+    return reporte_etiquetas_schema(result)
+
+
+@router.get("/reporte/etiquetas/{sucursal_id}/descargar/{var_r}")
+async def obtener_catalogo_rsv(sucursal_id : int, var_r : str):
+    results = conn.read_reporte_etiquetas_rsv(sucursal_id)
+
+    nombre_filas = ( "Carga", "Barcode", "Código", "Descripción", "Color", "Tipo etiqueta", "En stock","Ubicación")
+    nombre_excel = f"Reporte-Etiquetas-{sucursal_id}"
+
+    # for result in results:
+    #     print(result[6])
+    #     result[6] = ",".join(result[6])
+
+    return excel.generar_excel_generico(results,nombre_filas,nombre_excel)
+    # return reporte_etiquetas_schema(result)
