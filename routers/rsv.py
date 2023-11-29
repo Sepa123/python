@@ -189,9 +189,9 @@ async def insert_carga_rsv(list_body : List[CargaRSV]):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No se ha agregado ningun producto a a la carga")
         print(list_body)
         for body in list_body:
-            data = body.dict()
             body.Nombre_carga = body.Nombre_carga.strip()
             nombre_carga = body.Nombre_carga
+            data = body.dict()
             print(data)
             conn.insert_carga_rsv(data)
         # print(data)

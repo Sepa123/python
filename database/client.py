@@ -3112,6 +3112,7 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
     and easy.entrega not in (select trb.guia from quadminds.ti_respuesta_beetrack trb)
     -- and (easy.verified = true or easy.recepcion=true)
     group by easy.entrega,2,3,4,5,6,7,8,9,11,12,16,17,18,19,20,21,22,23,24,25,26,27
+    --limit 200 offset 200
                         """)
             return cur.fetchall()
         

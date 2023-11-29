@@ -27,9 +27,11 @@ router = APIRouter(tags=["Cargas"], prefix="/api/cargas")
 
 conn = reportesConnection()
 
+
 @router.get("/quadminds/easy_cd" , status_code=status.HTTP_202_ACCEPTED)
 async def get_carga_quadminds_easy_cd():
     results = conn.get_cargas_quadmind_easy_cd()
+
     return cargas_quadminds_schema(results)
 
 @router.get("/quadminds/easy_opl" , status_code=status.HTTP_202_ACCEPTED)
@@ -62,6 +64,7 @@ async def get_carga_quadminds():
 @router.get("/quadminds/limit" , status_code=status.HTTP_202_ACCEPTED)
 async def get_carga_quadminds_offset(offset : int):
     results = conn.get_cargas_quadmind_offset(offset)
+    print(len(results))
     return cargas_quadminds_schema(results)
 
 @router.get("/quadminds/pedidos_planificados" , status_code=status.HTTP_202_ACCEPTED)
