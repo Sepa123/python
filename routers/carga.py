@@ -18309,7 +18309,7 @@ async def get_carga_quadminds_easy_cd():
     # results = conn.get_cargas_quadmind_easy_cd()
     # print(len(results))
     # return cargas_quadminds_schema(results)
-    time.sleep(8)
+    time.sleep(14)
     print(len(quadeasy))
     return quadeasy
 
