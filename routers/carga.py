@@ -23,13 +23,10 @@ from fastapi.responses import FileResponse
 from openpyxl import Workbook
 from openpyxl.styles import Font , PatternFill, Border ,Side
 
+
 router = APIRouter(tags=["Cargas"], prefix="/api/cargas")
 
 conn = reportesConnection()
-
-quadeasy = [
-
-]
 
 # estos son datos estaticos de sx (442)
 
@@ -47,8 +44,8 @@ async def get_carga_quadminds_easy_cd():
 @router.get("/quadminds/easy_cd/query" , status_code=status.HTTP_202_ACCEPTED)
 async def get_carga_quadminds_easy_cd():
     results = conn.get_cargas_quadmind_easy_cd()
-    print(len(results))
-    return cargas_quadminds_schema(results)
+    print(results)
+    return "cargas_quadminds_schema(results)"
 
 @router.get("/quadminds/easy_opl" , status_code=status.HTTP_202_ACCEPTED)
 async def get_carga_quadminds_easy_opl():
