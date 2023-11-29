@@ -27,18 +27,20 @@ router = APIRouter(tags=["Cargas"], prefix="/api/cargas")
 
 conn = reportesConnection()
 
-quadeasy = []
+quadeasy = [
+
+]
 
 # estos son datos estaticos de sx (442)
 
 @router.get("/quadminds/easy_cd" , status_code=status.HTTP_202_ACCEPTED)
 async def get_carga_quadminds_easy_cd():
-    # results = conn.get_cargas_quadmind_easy_cd()
+    results = conn.get_cargas_quadmind_easy_cd()
     # print(len(results))
-    # return cargas_quadminds_schema(results)
-    time.sleep(12)
-    print(len(quadeasy))
-    return quadeasy
+    return cargas_quadminds_schema(results)
+    # time.sleep(12)
+    # print(len(quadeasy))
+    # return quadeasy
 
 ## este es con los datos de la db
 
