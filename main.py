@@ -13,6 +13,7 @@ from lib.password import verify_password, hash_password
 from database.models.token import TokenPayload
 from routers import areati, carga,panel, electrolux, transyanez, reportes_cargas, pedidos, productos, rutas, recepcion, comunas, clientes, toc , rsv, beetrack, easy
 from database.schema.roles_list import roles_list_schema
+import time
 
 # import os
 # import multiprocessing
@@ -199,3 +200,13 @@ async def me (user:TokenPayload = Depends(current_user)):
 async def me ():  
     results = conn.read_roles()
     return roles_list_schema(results)
+
+
+
+@app.get("/api/test/time/{seg}")
+async def test_time (seg : int):  
+    time.sleep(seg)
+    
+    return {
+        "message" : f"Tiempo espera {seg} segundos "
+        }
