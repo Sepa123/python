@@ -3778,6 +3778,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                                     left join rsv.sucursal s on c.sucursal = s.id
                                     where sucursal={sucursal_id}
                                 ))
+                and e.en_stock = true
                 order by color, codigo, bar_code
                 limit 1000
                         """)
@@ -3808,6 +3809,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                                     left join rsv.sucursal s on c.sucursal = s.id
                                     where sucursal={sucursal_id}
                                 ))
+                and e.en_stock = true
                 order by color, codigo, bar_code
                         """)
             return cur.fetchall()
