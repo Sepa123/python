@@ -33,3 +33,17 @@ def comuna_ruta(comuna):
 
 def comunas_ruta_schema(comunas):
     return [comuna_ruta(comuna) for comuna in comunas]
+
+
+
+
+#v3 con cregion incluida
+def comuna_region_ruta(comuna):
+    return {
+        "Comuna" : comuna[0],
+        "Region" : comuna[1],
+    }
+    
+
+def comuna_region_rutas_schema(comunas):
+    return [comuna_region_ruta(comuna) for comuna in comunas]

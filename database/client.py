@@ -2329,6 +2329,17 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
         
     ## solo las comunas de la ruta según fecha
 
+    def read_comunas_regiones_ruta(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                SELECT DISTINCT INITCAP(LOWER(drm.ciudad)) , opr.region_name  AS ciudad
+                FROM quadminds.datos_ruta_manual drm
+                inner JOIN public.op_comunas oc ON INITCAP(LOWER(drm.ciudad)) = INITCAP(LOWER(oc.comuna_name))
+                inner JOIN public.op_regiones opr ON oc.id_region = opr.id_region
+                ORDER BY ciudad;
+                        """)
+            return cur.fetchall()
+
     def read_comunas_ruta_by_fecha(self,fecha):
         with self.conn.cursor() as cur:
             cur.execute(f"""
@@ -2336,7 +2347,7 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
                 --from quadminds.datos_ruta_manual drm where TO_CHAR(fecha_ruta, 'YYYY-MM-DD') = '{fecha}'
                 from quadminds.datos_ruta_manual drm
                 order by ciudad 
-                                    """)
+                        """)
             return cur.fetchall()
         
     def filter_nombres_rutas_by_comuna(self,fecha,comuna):

@@ -25,7 +25,7 @@ from database.schema.ruta_manual import convert_to_json, rutas_manuales_schema
 from database.models.ruta_en_activo import RutaEnActivo
 from database.schema.rutas.factura_electrolux import facturas_electrolux_schema
 from database.schema.rutas_en_activo import rutas_en_activo_schema , ruta_en_activo_excel_schema
-from database.schema.nombres_rutas_activas import nombres_rutas_activas_schema, comunas_ruta_schema
+from database.schema.nombres_rutas_activas import nombres_rutas_activas_schema, comunas_ruta_schema, comuna_region_rutas_schema
 
 from database.schema.rutas.cantidad_productos_rutas_activas import cant_productos_rutas_schema
 
@@ -238,10 +238,16 @@ async def get_rutas_en_activo(nombre_ruta : str):
 async def insert_ruta_existente_activa(fecha_ruta_nueva : str, rutas : List[List[RutaManual]]):
     try:
         print(len(rutas))
-        id_ruta = rutas[0][0].Id_ruta
-        nombre_ruta = rutas[0][0].Nombre_ruta
 
         fecha_ruta = fecha_ruta_nueva
+
+        for ruta in rutas:
+            for producto in ruta:
+                if producto.Id_ruta is not None:
+                    id_ruta = producto.Id_ruta 
+                    nombre_ruta = producto.Nombre_ruta 
+        # id_ruta = rutas[0][0].Id_ruta
+        # nombre_ruta = rutas[0][0].Nombre_ruta
 
         for i,ruta in enumerate(rutas):
             for producto in ruta:
@@ -289,6 +295,8 @@ async def get_nombres_ruta_comuna(fecha : str):
 
     results = conn.read_comunas_ruta_by_fecha(fecha)
     return comunas_ruta_schema(results)
+    # results = conn.read_comunas_regiones_ruta()
+    # return comuna_region_rutas_schema(results)
 
 
 @router.get("/activo/nombre_ruta/filtro")
