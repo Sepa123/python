@@ -65,6 +65,9 @@ from database.schema.rsv.armar_venta import armar_venta_schema
 
 
 from database.schema.rsv.reporte_etiquetas import reporte_etiquetas_schema
+
+from database.schema.rsv.obtener_ubicacion_cantidad import obtener_ubicacion_cantidad_schema
+from database.models.rsv.obtener_ubicacion_cantidad import ObtUbicacionCantidad
 ##Conexiones
 from database.client import reportesConnection
 
@@ -865,3 +868,11 @@ async def obtener_catalogo_rsv(sucursal_id : int, var_r : str):
 
     return excel.generar_excel_generico(results,nombre_filas,nombre_excel)
     # return reporte_etiquetas_schema(result)
+
+
+
+@router.post("/inventario/sucursales/ubicaciones")
+async def obtener_ubicacion_y_cantidad_rsv(body : ObtUbicacionCantidad):
+    result = conn.obtener_ubicacion_cantidad(body.Sucursal, body.Codigo)
+    # print(len(result))
+    return obtener_ubicacion_cantidad_schema(result)
