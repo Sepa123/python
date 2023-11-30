@@ -2585,7 +2585,9 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
              cast(easygo.unidades as numeric) AS "Cantidad de Producto",
              easygo.codigo_sku as "Cod. SKU",                         
              easygo.verified as "Pistoleado",
-             easygo.recepcion as "Recepcion"   
+             easygo.id_ruta as "N carga",
+             easygo.recepcion as "Recepcion"
+             
         
             from areati.ti_carga_easy_go_opl easygo
             where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd') 
@@ -2711,7 +2713,8 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
              cast(easygo.unidades as numeric) AS "Cantidad de Producto",
              easygo.codigo_sku as "Cod. SKU",                         
              easygo.verified as "Pistoleado",
-             easygo.recepcion as "Recepcion"  
+             easygo.recepcion as "Recepcion",
+             easygo.id_ruta as "N carga"
         
             from areati.ti_carga_easy_go_opl easygo
             --where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd') AND easygo.suborden = '{codigo_pedido}'

@@ -44,8 +44,8 @@ async def get_recepcion_sportex():
 @router.get("/easy_opl", status_code=status.HTTP_202_ACCEPTED)
 async def get_recepcion_easy_opl():
     results = conn.read_recepcion_easy_opl()
-
-    return recepcion_tiendas_schema(results)
+    # return recepcion_tiendas_schema(results)
+    return recepcion_easy_cds_schema(results)
 
 @router.get("/easy_cd", status_code=status.HTTP_202_ACCEPTED)
 async def get_recepcion_easy_cd():
