@@ -3779,7 +3779,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                                     where sucursal={sucursal_id}
                                 ))
                 order by color, codigo, bar_code
-                -- limit 100 offset cuenta;
+                limit 1000
                         """)
             return cur.fetchall()
         
@@ -4075,7 +4075,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 left join rsv.colores c on cp.color = c.id
                 where habilitado=true
                 order by cp.color, cp.codigo asc
-                limit 1000
+                -- limit 1000
               
                         """)
             return cur.fetchall()

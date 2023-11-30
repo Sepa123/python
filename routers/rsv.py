@@ -848,6 +848,7 @@ async def obtener_stock_de_producto_de_sucursal(body : ExistenciaStock):
 @router.get("/reporte/etiquetas/{sucursal_id}")
 async def obtener_catalogo_rsv(sucursal_id : int):
     result = conn.read_reporte_etiquetas_rsv(sucursal_id)
+    # print(len(result))
     return reporte_etiquetas_schema(result)
 
 
