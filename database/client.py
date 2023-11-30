@@ -4074,7 +4074,8 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 JOIN LATERAL rsv.existencia(cp.codigo,{sucursal}) AS inv ON true
                 left join rsv.colores c on cp.color = c.id
                 where habilitado=true
-                order by cp.color, cp.codigo asc;
+                order by cp.color, cp.codigo asc
+                limit 1000
               
                         """)
             return cur.fetchall()
@@ -4103,7 +4104,8 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 JOIN LATERAL rsv.existencia(cp.codigo,{sucursal}) AS inv ON true
                 left join rsv.colores c on cp.color = c.id
                 where habilitado=true
-                order by cp.color, cp.codigo asc;       
+                order by cp.color, cp.codigo asc;  
+                    
                         """)
             return cur.fetchall()
 

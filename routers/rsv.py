@@ -281,6 +281,7 @@ async def get_sucursales_rsv():
 @router.get("/inventario/sucursales/{sucursal}")
 async def get_inventario_por_sucursal(sucursal : int):
     results = conn.obtener_inventario_por_sucursal(sucursal)
+    print(len(results))
     return inventarios_sucursal_schema(results)
 
 
