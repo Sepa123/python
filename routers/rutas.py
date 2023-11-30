@@ -246,6 +246,7 @@ async def insert_ruta_existente_activa(fecha_ruta_nueva : str, rutas : List[List
                 if producto.Id_ruta is not None:
                     id_ruta = producto.Id_ruta 
                     nombre_ruta = producto.Nombre_ruta 
+                    break
         # id_ruta = rutas[0][0].Id_ruta
         # nombre_ruta = rutas[0][0].Nombre_ruta
 
