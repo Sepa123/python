@@ -52,7 +52,9 @@ async def get_carga_quadminds_easy_cd():
 
 @router.get("/quadminds/easy_opl" , status_code=status.HTTP_202_ACCEPTED)
 async def get_carga_quadminds_easy_opl():
-    results = conn.get_cargas_quadmind_easy_opl()
+    # results = conn.get_cargas_quadmind_easy_opl()
+    ## es la version con WITH
+    results = conn.get_cargas_quadmind_easy_opl_mio()
     print(len(results))
     return cargas_quadminds_schema(results)
 
