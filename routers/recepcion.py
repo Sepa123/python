@@ -8,6 +8,8 @@ from lib.obtener_dia_anterior import obtener_dia_anterior
 from database.models.recepcion.recepcion_tiendas import bodyUpdateVerified, Recepcion_tiendas
 from database.schema.recepcion.recepcion_tiendas import recepcion_tiendas_schema, recepcion_easy_cds_schema
 from database.schema.recepcion.recepcion_pendiente import recepcion_pendiente_schema
+from database.schema.recepcion.recepcion_opl import recepcion_opl_schema
+from database.models.recepcion.bultos_easy_opl import BodyBultosOpl
 ##Conexiones
 
 from database.client import reportesConnection
@@ -46,6 +48,37 @@ async def get_recepcion_easy_opl():
     results = conn.read_recepcion_easy_opl()
     # return recepcion_tiendas_schema(results)
     return recepcion_easy_cds_schema(results)
+    # results = conn.read_recepcion_easy_opl_detalles()
+    # # return recepcion_tiendas_schema(results)
+    # return recepcion_opl_schema(results)
+
+### bultos de easy OPL
+
+@router.get("/easy_opl/detalle", status_code=status.HTTP_202_ACCEPTED)
+async def get_recepcion_easy_opl():
+    results = conn.read_recepcion_easy_opl_detalles()
+    # return recepcion_tiendas_schema(results)
+    return recepcion_opl_schema(results)
+
+
+@router.post("/easy_opl/bultos", status_code=status.HTTP_202_ACCEPTED)
+async def get_recepcion_easy_opl(body : BodyBultosOpl):
+    data = body.dict()
+    conn.insert_bultos_a_easy_opl(data)
+    return {
+        "message" : "datos insertados correctamente"
+    }
+
+@router.put("/easy_opl/bultos", status_code=status.HTTP_202_ACCEPTED)
+async def get_recepcion_easy_opl(body : BodyBultosOpl):
+    data = body.dict()
+    conn.update_bultos_a_easy_opl(data)
+    return {
+        "message" : "datos actualizados correctamente"
+    }
+
+
+### FIN bultos de easy OPL
 
 @router.get("/easy_cd", status_code=status.HTTP_202_ACCEPTED)
 async def get_recepcion_easy_cd():

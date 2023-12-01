@@ -2600,7 +2600,6 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
              easygo.verified as "Pistoleado",
              easygo.id_ruta as "N carga",
              easygo.recepcion as "Recepcion"
-             
         
             from areati.ti_carga_easy_go_opl easygo
             where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd') 
@@ -2608,6 +2607,53 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
             order by easygo.suborden      
                         """)           
             return cur.fetchall()
+        
+    def read_recepcion_easy_opl_detalles(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                select 	subquery.id_ruta,
+                subquery.id_entrega,
+                subquery.nombre_cliente,
+                subquery.comuna_despacho,
+                subquery.direc_despacho,
+                subquery.total_unidades,
+                subquery.verificado
+                from (
+                select 	distinct on (tcego.id_entrega)
+                        tcego.id_ruta,
+                        tcego.id_entrega,
+                        initcap(tcego.nombre_cliente) as nombre_cliente,
+                        tcego.comuna_despacho,
+                        tcego.direc_despacho,
+                        sum(tcego.unidades) as total_unidades,
+                        CASE WHEN bool_or(tcego.verified = FALSE) THEN FALSE ELSE TRUE END AS verificado
+                from areati.ti_carga_easy_go_opl tcego 
+                where created_at::date = current_date
+                group by 1,2,3,4,5
+                ) subquery
+                                """)           
+            return cur.fetchall()
+
+    ## adicion easy OPL
+
+    def insert_bultos_a_easy_opl(self,data):
+        with self.conn.cursor() as cur: 
+            cur.execute("""          
+            INSERT INTO areati.ti_carga_easy_go_opl_bultos
+            (id_ruta, suborden, bultos, tienda)
+            VALUES(%(Id_ruta)s, %(Suborden)s, %(Bultos)s, %(Tienda)s);
+            """,data)
+        self.conn.commit()
+
+    def update_bultos_a_easy_opl(self,data):
+        with self.conn.cursor() as cur: 
+            cur.execute("""          
+            UPDATE areati.ti_carga_easy_go_opl_bultos
+            SET  bultos=%(Bultos)s
+            WHERE id_ruta=%(Id_ruta)s AND suborden=%(Suborden)s;
+            """,data)
+        self.conn.commit()
+
 
     def read_recepcion_sportex(self):
         with self.conn.cursor() as cur:
@@ -2731,7 +2777,7 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
         
             from areati.ti_carga_easy_go_opl easygo
             --where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd') AND easygo.suborden = '{codigo_pedido}'
-            where easygo.suborden = '{codigo_pedido}'
+            where easygo.suborden = '{codigo_pedido}' or easygo.id_entrega = '{codigo_pedido}'
             order by created_at desc          
                         """)           
             return cur.fetchall()
@@ -2755,6 +2801,10 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
                 order by created_at desc
                         """)           
             return cur.fetchall()
+        
+
+
+    
         
     def read_recepcion_easy_cd_by_codigo_producto(self,codigo_producto):
         with self.conn.cursor() as cur:
