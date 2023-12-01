@@ -301,8 +301,15 @@ async def get_nombres_ruta_comuna(fecha : str):
 
 
 @router.get("/activo/nombre_ruta/filtro")
-async def filter_nombre_ruta_by_comuna(fecha: str, comuna : str):
-    results = conn.filter_nombres_rutas_by_comuna(fecha,comuna)
+async def filter_nombre_ruta_by_comuna(fecha: str, comuna : str, region : str):
+    
+    if comuna == 'Todas' or comuna == 'Comunas' or comuna == '':
+        results = conn.filter_nombres_rutas_by_region(fecha,comuna,region)
+        print("Filtro por region")
+    else : 
+        results = conn.filter_nombres_rutas_by_comuna(fecha,comuna,region)
+        print("Filtro por comuna")
+
     return nombres_rutas_activas_schema(results)
 
 
