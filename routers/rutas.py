@@ -294,10 +294,10 @@ async def get_nombres_ruta(fecha : str):
 @router.get("/activo/comunas")
 async def get_nombres_ruta_comuna(fecha : str):
 
-    results = conn.read_comunas_ruta_by_fecha(fecha)
-    return comunas_ruta_schema(results)
-    # results = conn.read_comunas_regiones_ruta()
-    # return comuna_region_rutas_schema(results)
+    # results = conn.read_comunas_ruta_by_fecha(fecha)
+    # return comunas_ruta_schema(results)
+    results = conn.read_comunas_regiones_ruta()
+    return comuna_region_rutas_schema(results)
 
 
 @router.get("/activo/nombre_ruta/filtro")

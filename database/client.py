@@ -3239,9 +3239,6 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
                         """)
             return cur.fetchall()
         
-
-
-
     
     def get_cargas_quadmind_easy_opl(self):
         with self.conn.cursor() as cur:
@@ -3332,7 +3329,113 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
     group by easygo.suborden,2,3,4,5,6,7,8,9,11,12,16,17,18,19,20,21,22,23,24,25,26,27,1
                         """)
             return cur.fetchall()
+    
+    # hecho por Loki
+
+    def get_cargas_quadmind_easy_opl_mio(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            with auxi_easy_opl as (
+            select string_agg(CAST(easy_opl_a.codigo_sku AS varchar) , ' @ ') as "codigo_pedido" ,
+            string_agg(easy_opl_a.descripcion , ' @ ') as "descripcion",
+            count(*) as "cuenta",
+            easy_opl_a.suborden as "entrega"
+            from areati.ti_carga_easy_go_opl easy_opl_a 
+            group by 4
+        )
         
+        select  easygo.rut_cliente AS "Código de Cliente",
+                initcap(easygo.nombre_cliente) AS "Nombre",
+                coalesce(tbm.direccion,
+                CASE 
+                    WHEN substring(easygo.direc_despacho from '^\d') ~ '\d' then substring(initcap(easygo.direc_despacho) from '\d+[\w\s]+\d+')
+                    WHEN lower(easygo.direc_despacho) ~ '^(pasaje|calle|avenida)\s+\d+\s+' THEN
+                    regexp_replace(REPLACE(regexp_replace(regexp_replace(initcap(split_part(easygo.direc_despacho,',',1)), ',.$', ''), '\s+(\d+\D+\d+).$', ' \1'), '\', ''), '', '') 
+                    else coalesce(substring(initcap(easygo.direc_despacho) from '^[^0-9]*[0-9]+'),initcap(easygo.direc_despacho))
+                end) as "Calle y Número",
+                coalesce(tbm.comuna,
+                case
+                    when unaccent(lower(easygo.comuna_despacho)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                        (select oc.comuna_name from public.op_comunas oc 
+                        where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+                        where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(easygo.comuna_despacho))
+                                            )
+                        )
+                    else (select initcap(oc2.comuna_name) from public.op_comunas oc2 
+                        where unaccent(lower(easygo.comuna_despacho)) = unaccent(lower(oc2.comuna_name))
+                        )
+                end) as "Ciudad",
+                case
+                    when unaccent(lower(easygo.comuna_despacho)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                    (select opr.region_name  from public.op_regiones opr 
+                    where opr.id_region = (select oc.id_region from public.op_comunas oc 
+                        where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+                        where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(easygo.comuna_despacho))
+                        )	
+                    ))
+                    else(select opr.region_name  from public.op_regiones opr 
+                    where opr.id_region =(select oc2.id_region from public.op_comunas oc2 
+                    where unaccent(lower(easygo.comuna_despacho)) = unaccent(lower(oc2.comuna_name))
+                    ))
+                end as "Provincia/Estado",
+                '' AS "Latitud",
+                '' AS "Longitud",
+                coalesce(easygo.fono_cliente ,'0') AS "Teléfono con código de país",
+                lower(easygo.correo_cliente) AS "Email",
+                CAST (easygo.suborden AS varchar) AS "Código de Pedido",
+                coalesce(tbm.fecha,easygo.fec_compromiso) AS "Fecha de Pedido",
+                'E' AS "Operación E/R",
+                --easygo.id_entrega AS "Código de Producto",
+                --(select string_agg(CAST(aux.codigo_sku AS varchar) , ' @ ') from areati.ti_carga_easy_go_opl aux
+                --where aux.suborden = easygo.suborden) AS "Código de Producto",
+                auxi.codigo_pedido as  "Código de Producto",
+                --'(Easy OPL) ' || (select string_agg(aux.descripcion , ' @ ') from areati.ti_carga_easy_go_opl aux
+            -- where aux.suborden = easygo.suborden) AS "Descripción del Producto",
+                '(Easy OPL) ' ||  auxi.descripcion AS "Descripción del Producto",
+                --(select count(*) from areati.ti_carga_easy_go_opl easy_a where easy_a.suborden = easygo.suborden) AS "Cantidad de Producto",
+                auxi.cuenta AS "Cantidad de Producto", --15
+                1 AS "Peso",
+                1 AS "Volumen",
+                1 AS "Dinero",
+                '8' AS "Duración min",
+                '09:00 - 21:00' AS "Ventana horaria 1",
+                '' AS "Ventana horaria 2",
+                coalesce((select 'Easy OPL - ' || se.name from areati.subestado_entregas se where easygo.subestado=se.code),'Easy OPL') AS "Notas",
+                CASE
+                WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(easygo.comuna_despacho)))='Region Metropolitana' 
+                THEN 'RM' || ' - ' || coalesce (tts.tamano,'?') 
+                WHEN (select initcap(tcr.region) from public.ti_comuna_region tcr where unaccent(lower(tcr.comuna))=unaccent(lower(easygo.comuna_despacho)))='Valparaíso' THEN 'V - ' ||  initcap(easygo.comuna_despacho)
+                else 'S/A'
+        END "Agrupador",
+                '' AS "Email de Remitentes",
+                '' AS "Eliminar Pedido Si - No - Vacío",
+                '' AS "Vehículo",
+                '' AS "Habilidades"
+        from areati.ti_carga_easy_go_opl easygo
+        left join ti_comuna_region tcr on
+            translate(lower(easygo.comuna_despacho),'áéíóúÁÉÍÓÚäëïöüÄËÏÖÜ','aeiouAEIOUaeiouAEIOU') = lower(tcr.comuna)
+        left join public.ti_tamano_sku tts on tts.sku = cast(easygo.codigo_sku as text)
+        left join auxi_easy_opl auxi on auxi.entrega = easygo.suborden
+        LEFT JOIN (
+            SELECT DISTINCT ON (guia) guia as guia, 
+            direccion_correcta as direccion, 
+            comuna_correcta as comuna,
+            fec_reprogramada as fecha,
+            observacion,
+            alerta
+            FROM rutas.toc_bitacora_mae
+            WHERE alerta = true
+            ORDER BY guia, created_at desc
+        ) AS tbm ON easygo.suborden=tbm.guia
+        where (easygo.estado=0 or (easygo.estado=2 and easygo.subestado not in (7,10,12,13,19,43,44,50,51,70,80))) and easygo.estado not in (1,3)
+        and easygo.suborden not in (select drm.cod_pedido from quadminds.datos_ruta_manual drm where drm.estado=true)
+        and easygo.suborden not in (select trb.guia from quadminds.ti_respuesta_beetrack trb)
+        -- and (easygo.verified = true or easygo.recepcion=true)
+        group by easygo.suborden,2,3,4,5,6,7,8,9,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,1
+                        """)
+            return cur.fetchall()
+      
+
     def get_cargas_quadmind_electrolux(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""
