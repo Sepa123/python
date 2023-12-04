@@ -2632,7 +2632,7 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
                             tcegob.bultos  as bultos
                     from areati.ti_carga_easy_go_opl tcego  
                     left join areati.ti_carga_easy_go_opl_bultos tcegob on tcego.suborden = tcegob.suborden
-                    where tcego.created_at::date = current_date - 2
+                    where tcego.created_at::date = current_date 
                     group by 1,2,3,4,5,8
                 ) subquery
                                 """)           
