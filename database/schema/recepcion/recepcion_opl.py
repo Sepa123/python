@@ -6,7 +6,8 @@ def recepcion_opl(opl):
 		"Provincia" : opl[3],
 		"Calle" : opl[4],
 		"Cantidad_producto" : opl[5],
-        "Pistoleado" : opl[6]
+        "Pistoleado" : opl[6],
+        "Bultos" : opl[7]
 	}
 
 

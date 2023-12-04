@@ -2617,22 +2617,29 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
                 subquery.comuna_despacho,
                 subquery.direc_despacho,
                 subquery.total_unidades,
-                subquery.verificado
+                subquery.verificado,
+                coalesce(subquery.bultos, 1)
+                
                 from (
-                select 	distinct on (tcego.id_entrega)
-                        tcego.id_ruta,
-                        tcego.id_entrega,
-                        initcap(tcego.nombre_cliente) as nombre_cliente,
-                        tcego.comuna_despacho,
-                        tcego.direc_despacho,
-                        sum(tcego.unidades) as total_unidades,
-                        CASE WHEN bool_or(tcego.verified = FALSE) THEN FALSE ELSE TRUE END AS verificado
-                from areati.ti_carga_easy_go_opl tcego 
-                where created_at::date = current_date
-                group by 1,2,3,4,5
+                    select 	distinct on (tcego.id_entrega)
+                            tcego.id_ruta,
+                            tcego.id_entrega,
+                            initcap(tcego.nombre_cliente) as nombre_cliente,
+                            tcego.comuna_despacho,
+                            tcego.direc_despacho,
+                            sum(tcego.unidades) as total_unidades,
+                            CASE WHEN bool_or(tcego.verified = FALSE) THEN FALSE ELSE TRUE END AS verificado,
+                            tcegob.bultos  as bultos
+                    from areati.ti_carga_easy_go_opl tcego  
+                    left join areati.ti_carga_easy_go_opl_bultos tcegob on tcego.suborden = tcegob.suborden
+                    where tcego.created_at::date = current_date - 2
+                    group by 1,2,3,4,5,8
                 ) subquery
                                 """)           
             return cur.fetchall()
+        
+
+    
 
     ## adicion easy OPL
 
@@ -2650,10 +2657,17 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
             cur.execute("""          
             UPDATE areati.ti_carga_easy_go_opl_bultos
             SET  bultos=%(Bultos)s
-            WHERE id_ruta=%(Id_ruta)s AND suborden=%(Suborden)s;
+            --WHERE id_ruta=%(Id_ruta)s AND suborden=%(Suborden)s;
+            WHERE suborden=%(Suborden)s;
             """,data)
         self.conn.commit()
 
+    def checK_bulto_easy_opl_si_existe(self, suborden):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select * from areati.ti_carga_easy_go_opl_bultos tcegob where suborden = '{suborden}'
+                                """)           
+            return cur.fetchall()
 
     def read_recepcion_sportex(self):
         with self.conn.cursor() as cur:
@@ -2772,9 +2786,9 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
              cast(easygo.unidades as numeric) AS "Cantidad de Producto",
              easygo.codigo_sku as "Cod. SKU",                         
              easygo.verified as "Pistoleado",
-             easygo.recepcion as "Recepcion",
-             easygo.id_ruta as "N carga"
-        
+             easygo.id_ruta as "N carga",
+             easygo.recepcion as "Recepcion"
+             
             from areati.ti_carga_easy_go_opl easygo
             --where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd') AND easygo.suborden = '{codigo_pedido}'
             where easygo.suborden = '{codigo_pedido}' or easygo.id_entrega = '{codigo_pedido}'

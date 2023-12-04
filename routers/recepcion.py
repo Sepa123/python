@@ -55,16 +55,24 @@ async def get_recepcion_easy_opl():
 ### bultos de easy OPL
 
 @router.get("/easy_opl/detalle", status_code=status.HTTP_202_ACCEPTED)
-async def get_recepcion_easy_opl():
+async def get_recepcion_easy_opl_detalle():
     results = conn.read_recepcion_easy_opl_detalles()
     # return recepcion_tiendas_schema(results)
     return recepcion_opl_schema(results)
 
 
 @router.post("/easy_opl/bultos", status_code=status.HTTP_202_ACCEPTED)
-async def get_recepcion_easy_opl(body : BodyBultosOpl):
+async def agregar_butlos_easy_opl(body : BodyBultosOpl):
     data = body.dict()
-    conn.insert_bultos_a_easy_opl(data)
+    checkData = conn.checK_bulto_easy_opl_si_existe(body.Suborden)
+    print(checkData)
+    if (checkData == []):
+        conn.insert_bultos_a_easy_opl(data)
+        print("insert")
+    else :
+        conn.update_bultos_a_easy_opl(data)
+        print("uipdate")
+    print(data)
     return {
         "message" : "datos insertados correctamente"
     }
@@ -106,7 +114,7 @@ async def get_recepcion_easy_opl_by_codigo_pedido(cod_pedido : str):
     if len(results) == 0:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"El  código {codigo_pedido[0][0]} no se pudo encontrar")
 
-    return recepcion_tiendas_schema(results)
+    return recepcion_easy_cds_schema(results)
 
 ## cambiar verificado a productos 
 
