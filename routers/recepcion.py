@@ -74,6 +74,7 @@ async def agregar_butlos_easy_opl(body : BodyBultosOpl):
         print("uipdate")
     print(data)
     return {
+        "mostrar" : True,
         "message" : "datos insertados correctamente"
     }
 
