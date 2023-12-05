@@ -6,5 +6,9 @@ class BodyBultosOpl(BaseModel):
     Suborden: str
     Bultos: int
     Tienda: Optional[str]
-    Lat : Optional [str]
-    Long : Optional[str]
+    latitud : Optional [str]
+    longitud : Optional[str]
+    id_usuario: Optional[int]
+    ids_usuario: Optional[str]
+    cliente : Optional[str]
+    n_guia : Optional[str]
