@@ -58,8 +58,8 @@ async def get_recepcion_easy_opl():
 async def get_recepcion_easy_opl_detalle():
 
     results = conn.read_recepcion_easy_opl_detalles()
-    if results == [] :
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"El  código ingresado no se pudo encontrar")
+    # if results == [] :
+    #     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"El  código ingresado no se pudo encontrar")
 
     # return recepcion_tiendas_schema(results)
     return recepcion_opl_schema(results)
