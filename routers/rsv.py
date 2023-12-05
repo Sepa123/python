@@ -716,6 +716,7 @@ async def obtener_unidades_sin_etiquetas_rsv(body : Despacho):
         unid_x_paq = catalogo[0]
         unid_con_etiqueta = catalogo[1]
 
+    print('barcode es:',body.Bar_code)
     
 
     check = conn.verificar_stock_paquete(body.Bar_code)

@@ -120,7 +120,7 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
                 factura = re.sub(patron, '', datos_tags["FACTURA"])
                 
                 async with httpx.AsyncClient() as client:
-                    response = await client.get(url=f"https://hela.transyanez.cl/api/electrolux/confirma_facil/codigo/{factura}")
+                    response = await client.get(url=f"https://hela.transyanez.cl/api/electrolux/confirma_facil/codigo/{factura}",timeout=30)
                     # Verificar si la solicitud fue exitosa
                     if response.status_code == 200:
                         print("si entro a cf")
