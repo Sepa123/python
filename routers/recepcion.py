@@ -72,9 +72,11 @@ async def agregar_butlos_easy_opl(body : BodyBultosOpl):
     print(checkData)
     if (checkData == []):
         conn.insert_bultos_a_easy_opl(data)
+        connHela.insert_data_bitacora_recepcion(data)
         print("insert")
     else :
         conn.update_bultos_a_easy_opl(data)
+        connHela.insert_data_bitacora_recepcion(data)
         print("uipdate")
     print(data)
     return {
@@ -234,11 +236,22 @@ async def prueba(codigo : str):
 
 
 @router.put("/verificar/opl",status_code=status.HTTP_202_ACCEPTED)
-async def update_verificado_producto(body: bodyUpdateVerified):
+async def update_estado_verificado_producto(body: bodyUpdateVerified):
 
-    codigo_pedido = conn.get_codigo_pedido_opl(body.cod_pedido)
-
-    return ""
+    try:
+        data = body.dict()
+        # print(body.cod_producto)
+        # print(body.check)
+        rows = conn.update_estado_verified_opl(body.cod_pedido,body.sku,body.check)
+        # print(rows)
+        if rows != 0 :
+            connHela.insert_data_bitacora_recepcion(data)
+            return { "message": f"Producto de codigo {body.cod_pedido} verificado." }
+        else:
+            return { "message": f"Producto ya fue verificado." }
+    except:
+          print("error con verificar ticket de opl")
+          raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
 
 
 @router.put("/easy_cd/actualizar")

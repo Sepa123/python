@@ -2618,7 +2618,7 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
                 subquery.direc_despacho,
                 subquery.total_unidades,
                 subquery.verificado,
-                coalesce(subquery.bultos, 1)
+                coalesce(subquery.bultos, 0)
                 
                 from (
                     select 	distinct on (tcego.id_entrega)
@@ -2632,7 +2632,7 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
                             tcegob.bultos  as bultos
                     from areati.ti_carga_easy_go_opl tcego  
                     left join areati.ti_carga_easy_go_opl_bultos tcegob on tcego.suborden = tcegob.suborden
-                    where tcego.created_at::date = current_date 
+                    where tcego.created_at::date = current_date
                     group by 1,2,3,4,5,8
                 ) subquery
                                 """)           
@@ -2878,6 +2878,18 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
         finally:
             # pass
             return updates
+        
+
+    def update_estado_verified_opl(self,codigo_pedido,sku,check):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""        
+            UPDATE areati.ti_carga_easy_go_opl easygo 
+            SET verified = {check}
+            where easygo.suborden = '{codigo_pedido}' AND easygo.codigo_sku = '{sku}'
+            """)
+            row = cur.rowcount
+        self.conn.commit()
+        return row
     
 
     def update_verified_sportex(self,codigo_pedido):

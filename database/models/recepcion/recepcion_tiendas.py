@@ -27,6 +27,7 @@ class bodyUpdateVerified(BaseModel):
     ids_usuario : Optional[str]
     latitud:  Optional[str]
     longitud:  Optional[str]
+    check : Optional[bool]
 
 
 class dataBitacora(BaseModel):
