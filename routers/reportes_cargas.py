@@ -113,7 +113,6 @@ async def get_quadminds_fecha_compromiso():
     # print(results)
     wb = Workbook()
     ws = wb.active
-    print("Descarga /quadminds/fecha_compromiso")
     results.insert(0, ("","","","",""))
     results.insert(1, ("Codigo de Cliente","Nombre","Calle y Número","Ciudad","Provincia/Estado","Latitud",
                        "Longitud","Teléfono con código de país","Email","Código de Pedido","Fecha de Pedido","Operación E/R",
@@ -189,7 +188,6 @@ async def get_beetrack_mensual():
 
     wb = Workbook()
     ws = wb.active
-    print("/NS_beetrack_Mensual")
     results.insert(0, ("",))
     results.insert(1,('FECHA', 'ID. RUTA', 'DRIVER', 'PATENTE', 'REGION', 'Km. Ruta', 'T-PED', 'Easy', 'Electrolux', 'Sportex', 'Imperial', 'PBB', 'Virutex', 'R1', 'R2', 'R3', 'VR', 'C11', '(%) 11', 'C13', '(%) 13', 'C15', '(%)15', 'C17', '(%)17', 'C18', '(%)18', 'C20', '(%)20', 'Final_D', 'OBSERV-RUTA', 'H_INIC', 'H_TERM', 'TT-RUTA', 'Prom. ENT', 'T-ENT', 'N-ENT', 'EE', 'SM', 'CA', 'DA', 'RxD', 'DNE', 'DNCC', 'D.ERR', 'INC.T', 'DFORM', 'PINCOM', 'SPELI', 'PNCORR', 'PFALT', 'PPARC', 'P.DUPL', 'R', 'Pedidos'))
 
@@ -225,7 +223,6 @@ async def update_beetrack_valor_ruta(body: List[asignarValor]):
     if body == []:
          raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Error, no se enviaron datos")
     output = conn.update_valor_rutas(body)
-    print(output)
     return { "message":f"Valor agregado correctamente "}
 
 
@@ -451,7 +448,6 @@ async def productos_picking():
 async def producto_picking_id(producto_id : str):
     results = conn.get_producto_picking_id(producto_id)
     # print(results[""])
-    print("/buscar/producto/")
     if results is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El codigo del producto no existe")
     return producto_picking_schema(results)
