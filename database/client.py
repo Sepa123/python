@@ -2267,7 +2267,9 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
     def read_rutas_en_activo_para_armar_excel(self,nombre_ruta):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            select 	drm.posicion as "N°",
+           select * from
+            (select 	 distinct on (drm.cod_pedido) 
+			drm.posicion as "N°",
             drm.cod_pedido as "Pedido",
             drm.ciudad as "Comuna",
             drm.nombre as "Nombre",
@@ -2288,9 +2290,11 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
             drm.fecha_pedido as "Fecha Pedido"
             from quadminds.datos_ruta_manual drm 
             LEFT JOIN LATERAL areati.recupera_sku_bultos(drm.cod_pedido) AS rsb ON true
-            where drm.nombre_ruta = '{nombre_ruta}'
+            where drm.nombre_ruta =  '{nombre_ruta}'
             group by 1,2,3,4,5,6,7,8,9,10,13
-            order by posicion asc
+            order by drm.cod_pedido ) as tabla 
+            
+            order by  tabla."N°" asc
             """)
             return cur.fetchall()
         
