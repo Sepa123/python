@@ -485,7 +485,13 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
     nombre_archivo = "nombre_ruta.xlsx"
     libro_excel.save(nombre_archivo)
 
-    return FileResponse("nombre_ruta.xlsx")
+    headers = {
+        "Cache-Control": "no-store, max-age=0",
+        "Pragma": "no-cache",
+    }
+
+
+    return FileResponse(path="nombre_ruta.xlsx" ,headers=headers)
 
        
 @router.post("/descargar")
@@ -735,7 +741,12 @@ async def descargar_archivo_beetrack(id_ruta : str, var_random : str):
     results.insert(0, ("",))
     wb.save("excel/prueba_beetrack.xlsx")
 
-    return FileResponse("excel/prueba_beetrack.xlsx")
+    headers = {
+        "Cache-Control": "no-store, max-age=0",
+        "Pragma": "no-cache",
+    }
+
+    return FileResponse(path="excel/prueba_beetrack.xlsx",headers=headers)
 
 
 
