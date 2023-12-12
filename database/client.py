@@ -2156,7 +2156,7 @@ class reportesConnection():
 
     def update_verified(self, codigo_producto):
         sql_queries = [
-            "UPDATE areati.ti_wms_carga_sportex SET verified = true WHERE areati.ti_wms_carga_sportex.id_sportex = %s",
+            "UPDATE areati.ti_wms_carga_sportex SET verified = true WHERE upper(areati.ti_wms_carga_sportex.id_sportex) = %s",
             "UPDATE areati.ti_wms_carga_easy SET verified = true WHERE areati.ti_wms_carga_easy.carton = %s",
             "UPDATE areati.ti_wms_carga_electrolux SET verified = true WHERE areati.ti_wms_carga_electrolux.numero_guia = %s",
             "UPDATE areati.ti_carga_easy_go_opl SET verified = true WHERE areati.ti_carga_easy_go_opl.id_entrega = %s",
@@ -2863,7 +2863,7 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
 
     def update_verified_recepcion(self,codigo_pedido, codigo_producto,cod_sku):
         sql_queries = [
-            f"UPDATE areati.ti_wms_carga_sportex SET verified = true, recepcion = true  WHERE areati.ti_wms_carga_sportex.id_sportex = '{codigo_producto}'",
+            f"UPDATE areati.ti_wms_carga_sportex SET verified = true, recepcion = true  WHERE upper(areati.ti_wms_carga_sportex.id_sportex) = upper('{codigo_producto}')",
             f"UPDATE areati.ti_wms_carga_easy easy SET verified = true WHERE easy.entrega = '{codigo_pedido}' and easy.carton = '{codigo_producto}'",
             f"UPDATE areati.ti_wms_carga_electrolux eltx set verified = true, recepcion = true  where eltx.numero_guia = '{codigo_pedido}' and eltx.codigo_item = '{codigo_producto}'",
             f"UPDATE areati.ti_carga_easy_go_opl easygo SET verified = true where easygo.suborden = '{codigo_pedido}' AND easygo.codigo_sku = '{cod_sku}'"
@@ -2901,7 +2901,7 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
             cur.execute(f"""        
                 UPDATE areati.ti_wms_carga_sportex 
                 SET verified = true, recepcion = true 
-                WHERE areati.ti_wms_carga_sportex.id_sportex = '{codigo_pedido}'
+                WHERE upper(areati.ti_wms_carga_sportex.id_sportex) = upper('{codigo_pedido}')
             """)
             row = cur.rowcount
         self.conn.commit()
