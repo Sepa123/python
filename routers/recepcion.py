@@ -64,7 +64,7 @@ async def get_recepcion_easy_opl_detalle():
     return recepcion_opl_schema(results)
 
 
-@router.get("/easy_opl/bultos")
+@router.get("/easy_opl/bultos" , status_code=status.HTTP_202_ACCEPTED)
 async def get_recepcion_easy_opl_detalle(suborden : str):
     results = conn.get_bultos_easy_opl(suborden)
     if results is None :
