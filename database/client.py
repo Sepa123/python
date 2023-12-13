@@ -2643,7 +2643,13 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
             return cur.fetchall()
         
 
-    
+    def get_bultos_easy_opl(self,suborden):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                select coalesce(bultos,1) as bultos from areati.ti_carga_easy_go_opl_bultos tcegob
+                where suborden = '{suborden}'     
+                        """)           
+            return cur.fetchone()
 
     ## adicion easy OPL
 

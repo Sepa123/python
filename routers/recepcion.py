@@ -56,7 +56,6 @@ async def get_recepcion_easy_opl():
 
 @router.get("/easy_opl/detalle", status_code=status.HTTP_202_ACCEPTED)
 async def get_recepcion_easy_opl_detalle():
-
     results = conn.read_recepcion_easy_opl_detalles()
     # if results == [] :
     #     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"El  código ingresado no se pudo encontrar")
@@ -64,6 +63,17 @@ async def get_recepcion_easy_opl_detalle():
     # return recepcion_tiendas_schema(results)
     return recepcion_opl_schema(results)
 
+
+@router.get("/easy_opl/bultos")
+async def get_recepcion_easy_opl_detalle(suborden : str):
+    results = conn.get_bultos_easy_opl(suborden)
+    if results is None :
+       return  {
+           "Bultos" : 1
+       }
+    return {
+        "Bultos" : results[0]
+    }
 
 @router.post("/easy_opl/bultos", status_code=status.HTTP_202_ACCEPTED)
 async def agregar_butlos_easy_opl(body : BodyBultosOpl):
