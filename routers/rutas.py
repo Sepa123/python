@@ -111,11 +111,11 @@ async def get_ruta_manual(pedido_id : str):
 
 @router.get("/buscar/factura/electrolux/{pedido_id}",status_code=status.HTTP_202_ACCEPTED)
 async def get_factura_electrolux(pedido_id : str):
-    if re.search(r'BLE', pedido_id):
-        factura = conn.get_numero_guia_by_factura(pedido_id)[0]
-        result = conn.get_factura_electrolux(factura)
-    else:
-        result = conn.get_factura_electrolux(pedido_id)
+    # if re.search(r'BLE', pedido_id):
+    #     factura = conn.get_numero_guia_by_factura(pedido_id)[0]
+    #     result = conn.get_factura_electrolux(factura)
+    # else:
+    result = conn.get_factura_electrolux(pedido_id)
 
     return facturas_electrolux_schema(result)
 
