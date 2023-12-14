@@ -2031,7 +2031,9 @@ class reportesConnection():
         with self.conn.cursor() as cur:
             cur.execute(f"""
             select codigo_item , factura from areati.ti_wms_carga_electrolux eltx 
-            where eltx.numero_guia = '{pedido_id}' or trim(eltx.factura) = trim('{pedido_id}')
+            where eltx.numero_guia = '{pedido_id}' or 
+            trim(eltx.factura) = trim('{pedido_id}') or 
+            trim(eltx.folio_factura) = trim('{pedido_id}') 
             """)
             return cur.fetchall()
         
