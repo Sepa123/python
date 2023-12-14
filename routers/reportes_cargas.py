@@ -50,6 +50,8 @@ from database.schema.pendientes_bodega import pendientes_bodega_schema
 
 from database.models.ns_valor_ruta import asignarValor
 
+from database.schema.estado.ns_verificado import ns_verificados_schema
+
 from typing import List
 from fastapi.params import Query
 
@@ -462,6 +464,10 @@ async def cargas_por_hora():
     return nro_cargas_hora_schema(results)
 
 
+@router.get("/ns/verificados",status_code=status.HTTP_202_ACCEPTED)
+async def Nivel_servicio_verificados(fecha : str):
+    results = conn.ns_picking(fecha)
+    return ns_verificados_schema(results)
 
 #Pendientes en bodega
 @router.get("/pendientes/bodega",status_code=status.HTTP_202_ACCEPTED)
