@@ -2547,6 +2547,20 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
             """)
             return cur.fetchone()
         
+
+    def eliminar_ruta(self,nombre_ruta):
+        with self.conn.cursor() as cur: 
+            cur.execute(f"""
+            DELETE FROM quadminds.datos_ruta_manual
+            WHERE nombre_ruta = '{nombre_ruta}'
+                    """)
+            rows_delete = cur.rowcount
+        self.conn.commit() 
+        
+        return rows_delete
+        
+    
+        
     # recepcion tiendas
 
     # CTN000026344881
