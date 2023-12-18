@@ -350,7 +350,6 @@ async def eliminar_ruta(nombre_ruta : str):
           print("error")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
        
-
 @router.post("/descargar/{var_random}")
 async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list, var_random : str):
 
@@ -664,7 +663,6 @@ async def asignar_ruta_activa(asignar : RutasAsignadas):
 
 @router.get("/buscar_patente")
 async def get_ruta_activa_by_nombre(nombre_ruta: str):
-
     try:
         results = connHela.read_id_ruta_activa_by_nombre(nombre_ruta)
         # print(results)
@@ -675,8 +673,6 @@ async def get_ruta_activa_by_nombre(nombre_ruta: str):
     except:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error al ingresar la ruta ")
 
-
-
 @router.put("/actualizar/ruta_asignada")
 async def update_ruta_asignada(body :RutasAsignadas):
     try:
@@ -685,7 +681,6 @@ async def update_ruta_asignada(body :RutasAsignadas):
     except:
           print("error")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
-
 
 @router.get("/beetrack/{id_ruta}/descargar/")
 async def descargar_archivo_beetrack_antigua(id_ruta : str):
@@ -718,7 +713,6 @@ async def descargar_archivo_beetrack_antigua(id_ruta : str):
     wb.save("excel/prueba_beetrack.xlsx")
 
     return FileResponse("excel/prueba_beetrack.xlsx")
-
 
 @router.get("/beetrack/{id_ruta}/descargar/{var_random}")
 async def descargar_archivo_beetrack(id_ruta : str, var_random : str):
@@ -757,8 +751,6 @@ async def descargar_archivo_beetrack(id_ruta : str, var_random : str):
     }
 
     return FileResponse(path="excel/prueba_beetrack.xlsx",headers=headers)
-
-
 
 @router.get("/recuperar/tracking")
 async def recuperar_tracking_beetrack(codigo : str):

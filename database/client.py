@@ -2420,7 +2420,13 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
     def read_ruta_activa_by_nombre_ruta(self,nombre_ruta):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-                select * from rutas.listar_ruta_edicion('{nombre_ruta}');
+               -- select * from rutas.listar_ruta_edicion('{nombre_ruta}');
+
+                select id_ruta,nombre_ruta,cod_cliente,nombre,calle_numero,ciudad,
+                provincia_estado,telefono,email,cod_pedido,fecha_pedido,cod_producto,
+                desc_producto,cant_producto,notas,agrupador,sku,talla,estado,posicion,
+                fecha_ruta,de,dp,"alerta TOC","Obs. TOC",concatenated_data,alerta
+                from rutas.listar_ruta_edicion('{nombre_ruta}');
             """)
             return cur.fetchall()
 
