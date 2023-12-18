@@ -2022,7 +2022,17 @@ class reportesConnection():
 
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            select * from areati.busca_ruta_manual('{pedido_id}')
+            ---select * from areati.busca_ruta_manual('{pedido_id}')
+
+            select "Código de Cliente","Nombre","Calle y Número","Dirección Textual",
+                    "Ciudad","Provincia/Estado","Latitud","Longitud","Teléfono con código de país",
+                    "Email","Código de Pedido","Fecha de Pedido","Fecha Original Pedido","Operación E/R",
+                    "Código de Producto","Descripción del Producto","Cantidad de Producto","Peso",
+                    "Volumen","Dinero","Duración min","Ventana horaria 1","Ventana horaria 2","Notas",
+                    "Agrupador","Email de Remitentes","Eliminar Pedido Si - No - Vacío","Vehículo",
+                    "Habilidades","Cod. SKU","Pistoleado","Talla", "Estado Entrega","En Ruta",
+                    "TOC","Observacion TOC","Sistema","Obs. Sistema"
+            FROM areati.busca_ruta_manual_base2('{pedido_id}');
             """)
             return cur.fetchall()
         
