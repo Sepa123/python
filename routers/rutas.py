@@ -345,7 +345,7 @@ async def eliminar_ruta(nombre_ruta : str):
      try:
           results = conn.eliminar_ruta(nombre_ruta)
           if (results == 0): print("La ruta no existe en ninguna parte")
-          return { "message" : "producto eliminado"}
+          return { "message" : "ruta eliminado"}
      except:
           print("error")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
