@@ -2545,6 +2545,18 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
             rows_delete = cur.rowcount
         self.conn.commit() 
         return rows_delete
+
+    def delete_productos_ruta(self,array : str,nombre_ruta : str):
+        codigos = array.split(',')
+        valores = array 
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                DELETE FROM quadminds.datos_ruta_manual
+                WHERE nombre_ruta = {nombre_ruta} and cod_pedido in ({','.join(['%s']*len(codigos))})
+                """, codigos)
+            rows_delete = cur.rowcount
+        self.conn.commit() 
+        return rows_delete
            
         #### Recepcion Easy OPL
 

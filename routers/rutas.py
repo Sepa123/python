@@ -45,6 +45,8 @@ from database.schema.rutas.archivo_descarga_beetrack import datos_descarga_beetr
 
 from database.models.rutas.armar_rutas import ArmarRutaBloque
 
+from database.models.rutas.lista_eliminar import ListaEliminar
+
 
 router = APIRouter(tags=["rutas"], prefix="/api/rutas")
 
@@ -338,6 +340,25 @@ async def delete_producto_ruta_activa(cod_producto : str, nombre_ruta : str):
      except:
           print("error en /eliminar/producto/cod_producto/nombre_ruta")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
+     
+## eliminar cargas
+@router.put("/eliminar/productos")
+async def delete_cargas_rsv(lista : ListaEliminar):
+
+    if lista.lista == '':
+        return {
+        "message" : "no hay nada que eliminar",
+        "mostrar" : True
+    }
+    codigos = lista.lista.split(',')
+
+    print(codigos)
+
+    results = conn.delete_productos_ruta(lista.lista, lista.nombre_ruta)
+    return {
+        "message" : f"productos eliminados ,{results}",
+        "mostrar" : True
+    }
 
 @router.delete("/eliminar/ruta/{nombre_ruta}") 
 async def eliminar_ruta(nombre_ruta : str):

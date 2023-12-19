@@ -303,7 +303,7 @@ async def get_inventario_por_sucursal(sucursal : int):
 
 ## eliminar cargas
 @router.put("/eliminar/cargas")
-async def update_carga(lista : ListaEliminar):
+async def delete_cargas_rsv(lista : ListaEliminar):
 
     if lista.lista == '':
         return {
