@@ -2422,11 +2422,66 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
             cur.execute(f"""
                -- select * from rutas.listar_ruta_edicion('{nombre_ruta}');
 
-                select id_ruta,nombre_ruta,cod_cliente,nombre,calle_numero,ciudad,
-                provincia_estado,telefono,email,cod_pedido,fecha_pedido,cod_producto,
-                desc_producto,cant_producto,notas,agrupador,sku,talla,estado,posicion,
-                fecha_ruta,de,dp,"alerta TOC","Obs. TOC",concatenated_data,alerta
-                from rutas.listar_ruta_edicion('{nombre_ruta}');
+               -- select id_ruta,nombre_ruta,cod_cliente,nombre,calle_numero,ciudad,
+               -- provincia_estado,telefono,email,cod_pedido,fecha_pedido,cod_producto,
+               -- desc_producto,cant_producto,notas,agrupador,sku,talla,estado,posicion,
+               -- fecha_ruta,de,dp,"alerta TOC","Obs. TOC",concatenated_data,alerta
+               -- from rutas.listar_ruta_edicion('{nombre_ruta}');
+
+               with data_ruta_manual as (
+                SELECT distinct on (subquery.cod_pedido)
+                    subquery.cod_pedido as cod_pedido,
+                    (areati.busca_ruta_manual_base2(subquery.cod_pedido))."Sistema" as sistema,
+                    (areati.busca_ruta_manual_base2(subquery.cod_pedido))."Obs. Sistema" as obs_sistema,
+                    (areati.busca_ruta_manual_base2(subquery.cod_pedido))."Pistoleado" as pistoleado,
+                    (areati.busca_ruta_manual_base2(subquery.cod_pedido))."En Ruta" as en_ruta,
+                    (areati.busca_ruta_manual_base2(subquery.cod_pedido))."Estado Entrega" as estado_entrega,
+                    (areati.busca_ruta_manual_base2(subquery.cod_pedido))."Fecha Original Pedido" as fecha_original
+                FROM (
+                SELECT DISTINCT ON (drm.cod_pedido) drm.cod_pedido cod_pedido
+                FROM quadminds.datos_ruta_manual drm
+                WHERE drm.nombre_ruta = '{nombre_ruta}'
+                ) AS subquery
+            )
+            select 	 drm.id_ruta,
+                    drm.nombre_ruta,
+                    drm.cod_cliente,
+                    drm.nombre,
+                    initcap(drm.calle_numero),
+                    drm.ciudad,
+                    drm.provincia_estado,
+                    drm.telefono,
+                    drm.email,
+                    drm.cod_pedido,
+                    drm.fecha_pedido,
+                    drm.cod_producto,
+                    drm.desc_producto,
+                    drm.cant_producto,
+                    drm.notas,
+                    drm.agrupador,
+                    drm.sku,
+                    drm.talla,
+                    drm.estado,
+                    drm.posicion,
+                    drm.fecha_ruta,
+                    drm.de,
+                    drm.dp,
+                    tbm.alerta as "alerta TOC",
+                    tbm.observacion as "Obs. TOC",
+                    CONCAT(
+                            CASE WHEN r.sistema THEN '1' ELSE '0' END, '@',
+                            COALESCE(r.obs_sistema, 'null'), '@',
+                            CASE WHEN r.pistoleado THEN '1' ELSE '0' END, '@',
+                            CASE WHEN r.en_ruta THEN '1' ELSE '0' END, '@',
+                            r.estado_entrega
+                        ) AS concatenated_data,
+                    drm.alerta,
+                    r.fecha_original
+            FROM quadminds.datos_ruta_manual drm
+            LEFT join rutas.toc_bitacora_mae tbm ON tbm.guia = drm.cod_pedido and tbm.alerta=true
+            LEFT join data_ruta_manual r on r.cod_pedido = drm.cod_pedido
+            WHERE drm.nombre_ruta = '{nombre_ruta}'
+            ORDER BY drm.posicion;
             """)
             return cur.fetchall()
 
