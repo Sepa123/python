@@ -258,16 +258,15 @@ async def insert_ruta_existente_activa(fecha_ruta_nueva : str, rutas : List[List
 
                 # print(data)
                 check = conn.check_producto_codigo_repetido(nombre_ruta,data["Codigo_pedido"],data["Codigo_producto"], data["SKU"])
-                
+                print(data["Codigo_pedido"])
                 if check is not None:
-                    print(data["Codigo_pedido"])
                     data["Pickeado"] = data["Pistoleado"] 
                     if data["Pickeado"] == '1':
                         data["Pickeado"] = True
                     else: 
                         data["Pickeado"] = False
                     count = conn.update_posicion(data["Posicion"], data["Codigo_pedido"], data["Codigo_producto"], fecha_ruta, data["DE"], data["DP"], nombre_ruta, data["Pickeado"])
-                    print(count)
+                    print("Posicion:",data["Posicion"])
                 else :
                     data["Calle"] = conn.direccion_textual(data["Codigo_pedido"])[0][0]
                     data["Id_ruta"] = id_ruta
@@ -276,7 +275,7 @@ async def insert_ruta_existente_activa(fecha_ruta_nueva : str, rutas : List[List
                     data["Pickeado"] = data["Pistoleado"] 
                     data["Fecha_ruta"] = fecha_ruta
                     # conn.update_verified(data["Codigo_producto"])
-                    print(data)
+                    print('posicion :',data["Posicion"])
                     conn.write_rutas_manual(data)
         return { "message": f"La Ruta {nombre_ruta} fue actualizada exitosamente" }
     except Exception as e:
