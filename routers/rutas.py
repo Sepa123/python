@@ -256,7 +256,7 @@ async def insert_ruta_existente_activa(fecha_ruta_nueva : str, rutas : List[List
 
                 # direccion_textual = conn.direccion_textual(data["Codigo_pedido"])
 
-                # print(data)
+                print(i)
                 check = conn.check_producto_codigo_repetido(nombre_ruta,data["Codigo_pedido"],data["Codigo_producto"], data["SKU"])
                 print(data["Codigo_pedido"])
                 if check is not None:
