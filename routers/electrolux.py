@@ -133,7 +133,7 @@ async def datos_confirma_facil(codigo : str):
 
     async with httpx.AsyncClient() as client:
 
-        timeout = httpx.Timeout(50.0, read=None)
+        timeout = httpx.Timeout(20.0, read=None)
         response = await client.post(url=cf_login,json=body_login)
         # Verificar si la solicitud fue exitosa
         if response.status_code == 200:
