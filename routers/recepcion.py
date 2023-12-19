@@ -234,7 +234,7 @@ async def update_verificado_producto(body: bodyUpdateVerified):
             return { "message": f"Producto ya fue verificado." }
         
     except:
-          print("error")
+          print("error en recepcion/verificar")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
 
 

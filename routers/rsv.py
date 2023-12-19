@@ -531,7 +531,7 @@ async def actualizar_bitacora_rsv(body: bodyPaqueteYBitacora):
         print(data)
         conn.insert_data_bitacora_rsv(data)
     except:
-          print("error")
+          print("error en /bitacora/rsv")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la verificación")
 
 

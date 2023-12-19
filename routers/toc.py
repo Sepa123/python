@@ -43,7 +43,7 @@ async def buscar_producto(cod_producto : str):
         result = conn.buscar_producto_toc(cod_producto)
         return buscar_producto_toc_schema(result)
     except:
-          print("error")
+          print("error en toc//buscar_producto/cod_producto")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error, codigo no encontrado")
 
 @router.get("/subestados", status_code=status.HTTP_202_ACCEPTED)
@@ -239,7 +239,7 @@ async def editar_alerta(body : EditarTOC):
           return { "message": f"alerta actualizada correctamente",
                     "extra": f"alerta : {body.Alerta}"}
      except:
-          print("error")
+          print("error en toc/editar")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la actualizacion")
 
 

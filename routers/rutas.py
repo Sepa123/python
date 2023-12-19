@@ -202,7 +202,7 @@ async def update_estado_producto(cod_producto:str, body : bodyUpdateVerified ):
           connHela.insert_data_bitacora_recepcion(data)
           return { "message": "Producto actualizado correctamente" }
      except:
-          print("error")
+          print("error en /actualizar/estado/")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
      
 @router.get("/listar/activo",status_code=status.HTTP_200_OK)
@@ -320,7 +320,7 @@ async def update_estado_ruta(nombre_ruta:str):
           conn.update_estado_rutas(nombre_ruta)
           return { "message": "Estado de Ruta Actualizado Correctamente" }
      except:
-          print("error")
+          print("error en /actualizar/estado/activo/nombre_ruta")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
 
 @router.get("/datos_ruta/{nombre_ruta}",status_code=status.HTTP_202_ACCEPTED)
@@ -336,7 +336,7 @@ async def delete_producto_ruta_activa(cod_producto : str, nombre_ruta : str):
           if (results == 0): print("El producto no existe en ninguna ruta")
           return { "message" : "producto eliminado"}
      except:
-          print("error")
+          print("error en /eliminar/producto/cod_producto/nombre_ruta")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
 
 @router.delete("/eliminar/ruta/{nombre_ruta}") 
@@ -346,7 +346,7 @@ async def eliminar_ruta(nombre_ruta : str):
           if (results == 0): print("La ruta no existe en ninguna parte")
           return { "message" : "Ruta eliminada correctamente"}
      except:
-          print("error")
+          print("error en /eliminar/producto/")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
        
 @router.post("/descargar/{var_random}")
@@ -678,7 +678,7 @@ async def update_ruta_asignada(body :RutasAsignadas):
           connHela.update_ruta_asignada(body.patente,body.conductor,body.nombre_ruta)
           return { "message": "Ruta Actualizada Correctamente" }
     except:
-          print("error")
+          print("error en /actualizar/ruta_asignada")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
 
 @router.get("/beetrack/{id_ruta}/descargar/")
@@ -848,5 +848,5 @@ async def update_estado_ruta_a_true(nombre_ruta:str):
           conn.update_estado_rutas_a_true_abierta(nombre_ruta)
           return { "message": "Estado de Ruta Actualizado Correctamente" }
      except:
-          print("error")
+          print("error en /actualizar/estado/activo/nombre_ruta/abrir ")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
