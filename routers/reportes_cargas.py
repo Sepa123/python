@@ -303,10 +303,174 @@ async def get_historico_mensual():
 
 ## reporte productos entregados
 
+producto_mensual = [
+  {
+    "Dia": "Viernes",
+    "Fecha": "2023-12-01",
+    "Electrolux": 34,
+    "Sportex": 60,
+    "Easy": 444,
+    "Easy_OPL": 207
+  },
+  {
+    "Dia": "Sabado",
+    "Fecha": "2023-12-02",
+    "Electrolux": 78,
+    "Sportex": 0,
+    "Easy": 201,
+    "Easy_OPL": 179
+  },
+  {
+    "Dia": "Domingo",
+    "Fecha": "2023-12-03",
+    "Electrolux": 0,
+    "Sportex": 0,
+    "Easy": 0,
+    "Easy_OPL": 0
+  },
+  {
+    "Dia": "Lunes",
+    "Fecha": "2023-12-04",
+    "Electrolux": 75,
+    "Sportex": 53,
+    "Easy": 442,
+    "Easy_OPL": 263
+  },
+  {
+    "Dia": "Martes",
+    "Fecha": "2023-12-05",
+    "Electrolux": 67,
+    "Sportex": 47,
+    "Easy": 570,
+    "Easy_OPL": 182
+  },
+  {
+    "Dia": "Miercoles",
+    "Fecha": "2023-12-06",
+    "Electrolux": 75,
+    "Sportex": 15,
+    "Easy": 444,
+    "Easy_OPL": 484
+  },
+  {
+    "Dia": "Jueves",
+    "Fecha": "2023-12-07",
+    "Electrolux": 0,
+    "Sportex": 24,
+    "Easy": 360,
+    "Easy_OPL": 322
+  },
+  {
+    "Dia": "Viernes",
+    "Fecha": "2023-12-08",
+    "Electrolux": 0,
+    "Sportex": 0,
+    "Easy": 0,
+    "Easy_OPL": 0
+  },
+  {
+    "Dia": "Sabado",
+    "Fecha": "2023-12-09",
+    "Electrolux": 0,
+    "Sportex": 0,
+    "Easy": 262,
+    "Easy_OPL": 304
+  },
+  {
+    "Dia": "Domingo",
+    "Fecha": "2023-12-10",
+    "Electrolux": 0,
+    "Sportex": 0,
+    "Easy": 0,
+    "Easy_OPL": 0
+  },
+  {
+    "Dia": "Lunes",
+    "Fecha": "2023-12-11",
+    "Electrolux": 0,
+    "Sportex": 30,
+    "Easy": 210,
+    "Easy_OPL": 283
+  },
+  {
+    "Dia": "Martes",
+    "Fecha": "2023-12-12",
+    "Electrolux": 82,
+    "Sportex": 67,
+    "Easy": 274,
+    "Easy_OPL": 287
+  },
+  {
+    "Dia": "Miercoles",
+    "Fecha": "2023-12-13",
+    "Electrolux": 75,
+    "Sportex": 45,
+    "Easy": 214,
+    "Easy_OPL": 164
+  },
+  {
+    "Dia": "Jueves",
+    "Fecha": "2023-12-14",
+    "Electrolux": 59,
+    "Sportex": 12,
+    "Easy": 278,
+    "Easy_OPL": 164
+  },
+  {
+    "Dia": "Viernes",
+    "Fecha": "2023-12-15",
+    "Electrolux": 32,
+    "Sportex": 41,
+    "Easy": 174,
+    "Easy_OPL": 279
+  },
+  {
+    "Dia": "Sabado",
+    "Fecha": "2023-12-16",
+    "Electrolux": 0,
+    "Sportex": 0,
+    "Easy": 162,
+    "Easy_OPL": 270
+  },
+  {
+    "Dia": "Domingo",
+    "Fecha": "2023-12-17",
+    "Electrolux": 0,
+    "Sportex": 0,
+    "Easy": 0,
+    "Easy_OPL": 0
+  },
+  {
+    "Dia": "Lunes",
+    "Fecha": "2023-12-18",
+    "Electrolux": 63,
+    "Sportex": 0,
+    "Easy": 136,
+    "Easy_OPL": 273
+  },
+  {
+    "Dia": "Martes",
+    "Fecha": "2023-12-19",
+    "Electrolux": 40,
+    "Sportex": 0,
+    "Easy": 189,
+    "Easy_OPL": 237
+  },
+  {
+    "Dia": "Miercoles",
+    "Fecha": "2023-12-20",
+    "Electrolux": 28,
+    "Sportex": 0,
+    "Easy": 0,
+    "Easy_OPL": 0
+  }
+]
+
 @router.get("/productos/mensual",status_code=status.HTTP_202_ACCEPTED)
 async def get_productos_mensual():
-    results = conn.read_reporte_producto_entregado_mensual()
-    return reportes_producto_schema(results)
+    # results = conn.read_reporte_producto_entregado_mensual()
+    # return reportes_producto_schema(results)
+    return producto_mensual
 
 @router.get("/productos/hoy",status_code=status.HTTP_202_ACCEPTED)
 async def get_productos_hoy():
