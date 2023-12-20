@@ -2727,7 +2727,7 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
         with self.conn.cursor() as cur:
             cur.execute(f"""
                 select 	subquery.id_ruta,
-                subquery.id_entrega,
+                subquery.suborden,
                 subquery.nombre_cliente,
                 subquery.comuna_despacho,
                 subquery.direc_despacho,
@@ -2738,7 +2738,7 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
                 from (
                     select 	distinct on (tcego.id_entrega)
                             tcego.id_ruta,
-                            tcego.id_entrega,
+                            tcego.suborden,
                             initcap(tcego.nombre_cliente) as nombre_cliente,
                             tcego.comuna_despacho,
                             tcego.direc_despacho,
