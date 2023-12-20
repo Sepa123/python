@@ -48,7 +48,7 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
     # Lista de nombres que deseas buscar
     data = body.dict()
 
-    print("Evento : ", data["event"])
+    # print("Evento : ", data["event"])
     
     if data["resource"] == 'route' and data["event"] == 'create':
         # print("total datos de create",data)
@@ -142,7 +142,7 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
     #         conn.insert_beetrack_dispatch_guide_update(dato_insert)
             
             
-    print("/beetrack/dispatch")
+    # print("/beetrack/dispatch")
     return {
             "message" : "data recibida correctamente"
             }
