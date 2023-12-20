@@ -372,7 +372,12 @@ async def eliminar_ruta(nombre_ruta : str):
 @router.post("/descargar/{var_random}")
 async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list, var_random : str):
 
-    # print("var_random_hr",var_random)
+    # print("var_random_hr",var_random)}
+    fecha_hoy = datetime.now()
+
+    fecha_asignacion = fecha_hoy.strftime('%Y-%m-%d %H:%M:%S')
+
+    fecha_impresion = fecha_hoy.strftime('%Y-%m-%d')
     datos = [[]]
     
     datos.append([
@@ -406,6 +411,8 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
     # hoja.merge_cells('A1:D1')
     hoja.append(("Ruta : "+nombre_ruta,))
     hoja.append(("Patente : "+patente,))
+    hoja.append(("Fecha Asignación : "+ fecha_asignacion,))
+    hoja.append(("Fecha Impresión : "+ fecha_impresion,))
 
     # "Patente : "+patente, "driver : "+driver
 
@@ -452,7 +459,7 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
     for celda in hoja[2]:
         celda.font = negrita
 
-    for celda in hoja[4]:
+    for celda in hoja[6]:
         celda.font = Font(bold=True, color="FFFFFF")
         celda.fill = PatternFill(start_color="000000FF", end_color="000000FF", fill_type="solid")
         celda.border = border
@@ -485,7 +492,7 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
 
     # print(nHoja)
     for n in range(nHoja):
-         for celda in hoja[n+5]:
+         for celda in hoja[n+7]:
              celda.font = Font(color="070707")
              celda.fill = PatternFill(start_color="FFFFFF", end_color="FFFFFF", fill_type="solid")
              celda.border = border
