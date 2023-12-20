@@ -373,13 +373,14 @@ async def eliminar_ruta(nombre_ruta : str):
 async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list, var_random : str):
 
     # print("var_random_hr",var_random)}
+    fecha_de_asignacion = conn.get_fecha_asignacion_ruta(nombre_ruta)[0]
     fecha_hoy = datetime.now()
 
     fecha_hoy =  fecha_hoy + timedelta(hours=1)
 
     fecha_impresion = fecha_hoy.strftime('%Y-%m-%d %H:%M:%S')
 
-    fecha_asignacion = fecha_hoy.strftime('%Y-%m-%d %H:%M:%S')
+    fecha_asignacion = fecha_de_asignacion
     datos = [[]]
     
     datos.append([
