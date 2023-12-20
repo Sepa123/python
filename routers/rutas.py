@@ -378,7 +378,7 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
 
     fecha_hoy =  fecha_hoy + timedelta(hours=1)
 
-    fecha_impresion = fecha_hoy.strftime('%Y-%m-%d %H:%M:%S')
+    fecha_impresion = fecha_hoy.strftime('%d-%m-%Y %H:%M:%S')
 
     fecha_asignacion = fecha_de_asignacion
     datos = [[]]
