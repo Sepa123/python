@@ -51,15 +51,15 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
     print("Evento : ", data["event"])
     
     if data["resource"] == 'route' and data["event"] == 'create':
-        print("total datos de create",data)
+        # print("total datos de create",data)
         datos_insert_ruta = data_beetrack.generar_data_insert_creacion_ruta(data)
         conn.insert_beetrack_creacion_ruta(datos_insert_ruta)
 
     if data["resource"] == 'route' and data["event"] in ['start', 'finish']:
         datos_insert_ruta = data_beetrack.generar_data_insert_creacion_ruta(data)
-        print("Datos para actualizar ruta",datos_insert_ruta)
+        # print("Datos para actualizar ruta",datos_insert_ruta)
         row = conn.update_route_beetrack_event(datos_insert_ruta)
-        print("Tablas actualizadas ", row)
+        # print("Tablas actualizadas ", row)
         return {
             "message" : "data recibida correctamente"
             }
@@ -71,10 +71,10 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
                         }
 
         resultado = conn.verificar_si_ruta_existe(datos_create)
-        print("resultado :",resultado)
+        # print("resultado :",resultado)
         if len(resultado) == 0:
-            print("Paso por d guide")
-            print("d guide : ",data)
+            # print("Paso por d guide")
+            # print("d guide : ",data)
             datos_tags_i = data_beetrack.obtener_datos_tags(data["tags"])
             datos_groups_i = data_beetrack.obtener_datos_groups(data["groups"])
             datos_insert_ruta_ty = data_beetrack.generar_data_update_ruta_transyanez(data,datos_tags_i,datos_groups_i)
@@ -115,7 +115,7 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
                     else:
                         print("no entro a cf ",factura)
                 
-            print("tablas actualizadas de ruta_ty ",rows)
+            # print("tablas actualizadas de ruta_ty ",rows)
 
     # if data["resource"] != 'dispatch':
     #     varnada = ""

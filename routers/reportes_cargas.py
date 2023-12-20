@@ -261,7 +261,6 @@ async def get_beetrack_rango(fecha_inicio: str, fecha_fin : str):
 
     return FileResponse("excel/NS_beetrack_rango.xlsx")
 
-
 ## Reportes Historicos
 reporte_historico = None
 ultima_ejecucion = None
@@ -292,7 +291,6 @@ def ejecutar_solo_una_vez_al_dia():
         ultima_ejecucion = ahora
 
         print("Ultima Ejecucion Reporte Historico", ultima_ejecucion)
-
 
 
 @router.get("/historico/mensual",status_code=status.HTTP_202_ACCEPTED)
@@ -488,7 +486,6 @@ async def producto_picking_id(producto_id : str):
     if results is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El codigo del producto no existe")
     return producto_picking_schema(results)
-
 
 # cargas por hora
 

@@ -306,10 +306,10 @@ async def filter_nombre_ruta_by_comuna(fecha: str, comuna : str, region : str):
     
     if comuna == 'Todas' or comuna == 'Comunas' or comuna == '':
         results = conn.filter_nombres_rutas_by_region(fecha,comuna,region)
-        print("Filtro por region")
+        # print("Filtro por region")
     else : 
         results = conn.filter_nombres_rutas_by_comuna(fecha,comuna,region)
-        print("Filtro por comuna")
+        # print("Filtro por comuna")
 
     return nombres_rutas_activas_schema(results)
 
@@ -373,7 +373,7 @@ async def eliminar_ruta(nombre_ruta : str):
 @router.post("/descargar/{var_random}")
 async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list, var_random : str):
 
-    print("var_random_hr",var_random)
+    # print("var_random_hr",var_random)
     datos = [[]]
     
     datos.append([
@@ -522,7 +522,6 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
 
     return FileResponse(path="nombre_ruta.xlsx" ,headers=headers)
 
-       
 @router.post("/descargar")
 async def download_excel_antigua(nombre_ruta : str,patente: str,driver:str , body : list):
 
@@ -736,7 +735,7 @@ async def descargar_archivo_beetrack_antigua(id_ruta : str):
 
 @router.get("/beetrack/{id_ruta}/descargar/{var_random}")
 async def descargar_archivo_beetrack(id_ruta : str, var_random : str):
-    print("Esta es random ",var_random)
+    # print("Esta es random ",var_random)
     results = conn.read_datos_descarga_beetrack(id_ruta)
 
     wb = Workbook()

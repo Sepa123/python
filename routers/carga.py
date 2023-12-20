@@ -177,7 +177,6 @@ async def asignar_ruta(id_usuario : int):
          raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Error")
 
 @router.get('/hora_actual')
-
 async def asignar_ruta():
     fecha_hora_actual = datetime.now()
 
