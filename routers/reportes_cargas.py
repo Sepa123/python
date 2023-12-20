@@ -52,6 +52,7 @@ from database.models.ns_valor_ruta import asignarValor
 
 from database.schema.estado.ns_verificado import ns_verificados_schema
 
+import datetime
 from typing import List
 from fastapi.params import Query
 
@@ -262,171 +263,41 @@ async def get_beetrack_rango(fecha_inicio: str, fecha_fin : str):
 
 
 ## Reportes Historicos
-reporte_historico = [
-  {
-    "Dia": "Miercoles",
-    "Fecha": "2023-12-20",
-    "Electrolux": 28,
-    "Sportex": 0,
-    "Easy": 0,
-    "Easy_OPL": 0
-  },
-  {
-    "Dia": "Martes",
-    "Fecha": "2023-12-19",
-    "Electrolux": 40,
-    "Sportex": 0,
-    "Easy": 189,
-    "Easy_OPL": 237
-  },
-  {
-    "Dia": "Lunes",
-    "Fecha": "2023-12-18",
-    "Electrolux": 63,
-    "Sportex": 0,
-    "Easy": 136,
-    "Easy_OPL": 273
-  },
-  {
-    "Dia": "Domingo",
-    "Fecha": "2023-12-17",
-    "Electrolux": 0,
-    "Sportex": 0,
-    "Easy": 0,
-    "Easy_OPL": 0
-  },
-  {
-    "Dia": "Sabado",
-    "Fecha": "2023-12-16",
-    "Electrolux": 0,
-    "Sportex": 0,
-    "Easy": 162,
-    "Easy_OPL": 270
-  },
-  {
-    "Dia": "Viernes",
-    "Fecha": "2023-12-15",
-    "Electrolux": 32,
-    "Sportex": 41,
-    "Easy": 174,
-    "Easy_OPL": 279
-  },
-  {
-    "Dia": "Jueves",
-    "Fecha": "2023-12-14",
-    "Electrolux": 59,
-    "Sportex": 12,
-    "Easy": 278,
-    "Easy_OPL": 164
-  },
-  {
-    "Dia": "Miercoles",
-    "Fecha": "2023-12-13",
-    "Electrolux": 75,
-    "Sportex": 45,
-    "Easy": 214,
-    "Easy_OPL": 164
-  },
-  {
-    "Dia": "Martes",
-    "Fecha": "2023-12-12",
-    "Electrolux": 82,
-    "Sportex": 67,
-    "Easy": 274,
-    "Easy_OPL": 287
-  },
-  {
-    "Dia": "Lunes",
-    "Fecha": "2023-12-11",
-    "Electrolux": 0,
-    "Sportex": 30,
-    "Easy": 210,
-    "Easy_OPL": 283
-  },
-  {
-    "Dia": "Domingo",
-    "Fecha": "2023-12-10",
-    "Electrolux": 0,
-    "Sportex": 0,
-    "Easy": 0,
-    "Easy_OPL": 0
-  },
-  {
-    "Dia": "Sabado",
-    "Fecha": "2023-12-09",
-    "Electrolux": 0,
-    "Sportex": 0,
-    "Easy": 262,
-    "Easy_OPL": 304
-  },
-  {
-    "Dia": "Viernes",
-    "Fecha": "2023-12-08",
-    "Electrolux": 0,
-    "Sportex": 0,
-    "Easy": 0,
-    "Easy_OPL": 0
-  },
-  {
-    "Dia": "Jueves",
-    "Fecha": "2023-12-07",
-    "Electrolux": 0,
-    "Sportex": 24,
-    "Easy": 360,
-    "Easy_OPL": 322
-  },
-  {
-    "Dia": "Miercoles",
-    "Fecha": "2023-12-06",
-    "Electrolux": 75,
-    "Sportex": 15,
-    "Easy": 444,
-    "Easy_OPL": 484
-  },
-  {
-    "Dia": "Martes",
-    "Fecha": "2023-12-05",
-    "Electrolux": 67,
-    "Sportex": 47,
-    "Easy": 570,
-    "Easy_OPL": 182
-  },
-  {
-    "Dia": "Lunes",
-    "Fecha": "2023-12-04",
-    "Electrolux": 75,
-    "Sportex": 53,
-    "Easy": 442,
-    "Easy_OPL": 263
-  },
-  {
-    "Dia": "Domingo",
-    "Fecha": "2023-12-03",
-    "Electrolux": 0,
-    "Sportex": 0,
-    "Easy": 0,
-    "Easy_OPL": 0
-  },
-  {
-    "Dia": "Sabado",
-    "Fecha": "2023-12-02",
-    "Electrolux": 78,
-    "Sportex": 0,
-    "Easy": 201,
-    "Easy_OPL": 179
-  },
-  {
-    "Dia": "Viernes",
-    "Fecha": "2023-12-01",
-    "Electrolux": 34,
-    "Sportex": 60,
-    "Easy": 444,
-    "Easy_OPL": 207
-  }
-]
+reporte_historico = None
+ultima_ejecucion = None
+
+def get_historico_mensual_unico():
+    global reporte_historico
+    results = conn.read_reporte_historico_mensual()
+    reporte_historico = reportes_historico_schema(results)
+
+def ejecutar_solo_una_vez_al_dia():
+    global ultima_ejecucion 
+
+    # Obtener la fecha y hora actual
+    ahora = datetime.datetime.now()
+
+    # Definir la hora a la que quieres que se ejecute la función (por ejemplo, a las 3 AM)
+    hora_programada = datetime.time(3, 0, 0)
+
+    # Combinar la fecha actual con la hora programada
+    momento_programado = datetime.datetime.combine(ahora.date(), hora_programada)
+
+    # Verificar si la función ya se ejecutó hoy
+    if ultima_ejecucion is None or ahora - ultima_ejecucion > datetime.timedelta(days=1):
+        # Ejecutar la función
+        get_historico_mensual_unico()
+
+        # Actualizar el momento de la última ejecución a la hora actual
+        ultima_ejecucion = ahora
+
+        print("Ultima Ejecucion Reporte Historico", ultima_ejecucion)
+
+
 
 @router.get("/historico/mensual",status_code=status.HTTP_202_ACCEPTED)
 async def get_historico_mensual():
+    ejecutar_solo_una_vez_al_dia()
     # results = conn.read_reporte_historico_mensual()
     # return reportes_historico_schema(results)
     return reporte_historico
