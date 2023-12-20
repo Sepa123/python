@@ -2736,7 +2736,7 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
                 coalesce(subquery.bultos, 1)
                 
                 from (
-                    select 	distinct on (tcego.id_entrega)
+                    select 	distinct on (tcego.suborden)
                             tcego.id_ruta,
                             tcego.suborden,
                             initcap(tcego.nombre_cliente) as nombre_cliente,
