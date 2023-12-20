@@ -162,7 +162,7 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]], fecha_pedido : str)
         for i, ruta in enumerate(rutas):
             for producto in ruta:
                 data = producto.dict()
-                print(data["Codigo_pedido"])
+                # print(data["Codigo_pedido"])
                 data["Calle"] = conn.direccion_textual(data["Codigo_pedido"])[0][0]
                 data["Id_ruta"] = id_ruta
                 data["Agrupador"] = nombre_ruta
