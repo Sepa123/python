@@ -1849,7 +1849,8 @@ class reportesConnection():
                 COUNT(CASE WHEN fechaentrega::date = CURRENT_DATE THEN 1 END) AS en_fecha,
                 COUNT(CASE WHEN fechaentrega::date > CURRENT_DATE THEN 1 END) AS adelantadas
             FROM beetrack.ruta_transyanez
-            WHERE created_at::date = CURRENT_DATE;
+            WHERE created_at::date = CURRENT_DATE
+             and fechaentrega <> '';
 
             """)
             return cur.fetchall()
@@ -1865,6 +1866,7 @@ class reportesConnection():
             FROM beetrack.ruta_transyanez
             WHERE created_at::date = CURRENT_DATE
             and lower(estado) not in ('entregado','retirado') and estado notnull
+            and fechaentrega <> '';
 
             """)
             return cur.fetchall()
@@ -1879,7 +1881,7 @@ class reportesConnection():
                 COUNT(CASE WHEN fechaentrega::date > CURRENT_DATE THEN 1 END) AS adelantadas
             FROM beetrack.ruta_transyanez
             WHERE created_at::date = CURRENT_DATE
-            and  estado isnull
+            and  estado isnull and fechaentrega <> '';
 
             """)
             return cur.fetchall()
@@ -1895,7 +1897,7 @@ class reportesConnection():
             FROM beetrack.ruta_transyanez
             WHERE created_at::date = CURRENT_DATE
             and lower(estado) in ('entregado','retirado')
-
+            and fechaentrega <> '';
             """)
             return cur.fetchall()
 
