@@ -2315,7 +2315,7 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
     def get_fecha_asignacion_ruta(self,nombre_ruta):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            select to_char(max(created_at),'dd-mm-yyyy hh24:mi:ss') 
+            select coalesce ('',to_char(max(created_at),'dd-mm-yyyy hh24:mi:ss')) 
             from hela.ruta_asignada ra 
             where ra.nombre_ruta = '{nombre_ruta}'
             limit 1
