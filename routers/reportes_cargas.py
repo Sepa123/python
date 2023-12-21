@@ -283,7 +283,7 @@ def ejecutar_solo_una_vez_al_dia():
     momento_programado = datetime.datetime.combine(ahora.date(), hora_programada)
 
     # Verificar si la función ya se ejecutó hoy
-    if ultima_ejecucion is None or ahora - ultima_ejecucion > datetime.timedelta(days=1):
+    if ultima_ejecucion is None or ahora - ultima_ejecucion > datetime.timedelta(hours=9):
         # Ejecutar la función
         get_historico_mensual_unico()
 
