@@ -1618,16 +1618,18 @@ class reportesConnection():
         with self.conn.cursor() as cur:
             cur.execute("""
             select 
-                (select COUNT(*) AS total_registros FROM beetrack.ruta_transyanez WHERE created_at::date = CURRENT_DATE) as "TOTAL",
+                (select COUNT(*) AS total_registros FROM beetrack.ruta_transyanez WHERE created_at::date = CURRENT_DATE
+                        and fechaentrega <> '') as "TOTAL",
                 (
                 SELECT COUNT(*) AS total_registros FROM beetrack.ruta_transyanez WHERE created_at::date = CURRENT_DATE
-                and lower(estado) in ('entregado','retirado'))as "ENTREGADO",
+                and lower(estado) in ('entregado','retirado') and fechaentrega <> '')as "ENTREGADO",
                 (
                 SELECT COUNT(*) AS total_registros FROM beetrack.ruta_transyanez WHERE created_at::date = CURRENT_DATE
-                and lower(estado) not in ('entregado','retirado') and estado notnull) as "NO ENTREGADOS",
+                and lower(estado) not in ('entregado','retirado') and estado notnull and fechaentrega <> '') as "NO ENTREGADOS",
                 (
                 SELECT COUNT(*) AS total_registros FROM beetrack.ruta_transyanez
                 WHERE created_at::date = CURRENT_DATE and  estado isnull
+                and fechaentrega <> ''
                 ) as "EN RUTA"
 
             """)
