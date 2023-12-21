@@ -1887,15 +1887,14 @@ class reportesConnection():
     def read_pedidos_pendientes_entregados(self):
         with self.conn.cursor() as cur:
             cur.execute("""
-            SELECT
-               -- COUNT(*) AS total_registros,
+           SELECT
+                --COUNT(*) AS total_registros,
                 COUNT(CASE WHEN fechaentrega::date < CURRENT_DATE THEN 1 END) AS atrasadas,
                 COUNT(CASE WHEN fechaentrega::date = CURRENT_DATE THEN 1 END) AS en_fecha,
                 COUNT(CASE WHEN fechaentrega::date > CURRENT_DATE THEN 1 END) AS adelantadas
             FROM beetrack.ruta_transyanez
             WHERE created_at::date = CURRENT_DATE
             and lower(estado) in ('entregado','retirado')
-                            (SELECT COUNT(*) FROM fechas WHERE fecha_compromiso > CURRENT_DATE) AS "Adelantadas"
 
             """)
             return cur.fetchall()
