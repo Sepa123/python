@@ -11,7 +11,6 @@ router = APIRouter(tags=["Clientes"], prefix="/api/clientes")
 
 conn = reportesConnection()
 
-
 @router.post("/retiro/registrar", status_code=status.HTTP_202_ACCEPTED)
 async def registrar_retiro_clientes(retiro_cliente : RetiroCliente):
     try:

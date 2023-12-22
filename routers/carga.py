@@ -28,10 +28,8 @@ router = APIRouter(tags=["Cargas"], prefix="/api/cargas")
 
 conn = reportesConnection()
 
-
 quadeasy = []
 
-# estos son datos estaticos de sx (274)
 
 @router.get("/quadminds/easy_cd" , status_code=status.HTTP_202_ACCEPTED)
 async def get_carga_quadminds_easy_cd():

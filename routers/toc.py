@@ -145,7 +145,6 @@ async def get_alertas_vigentes():
      results = conn.obtener_alertas_vigentes()
      return alertas_vigentes_schema(results)
 
-
 @router.get("/bitacoras/usuarios")
 async def get_bitacoras_usuarios(fecha_inicio : str, fecha_fin : str):
      results = conn.obtener_nombres_usu_toc(fecha_inicio,fecha_fin)
@@ -219,7 +218,6 @@ async def toc_tracking(cod_producto : str):
                usu['Creado_por'] = nombre_usu_hela
 
     return toc_tracking
-
 
 @router.put("/editar")
 async def editar_alerta(body : EditarTOC):

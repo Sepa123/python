@@ -353,8 +353,6 @@ async def filter_nombre_ruta_by_comuna(fecha: str, comuna : str, region : str):
 
     return nombres_rutas_activas_schema(results)
 
-
-
 @router.put("/actualizar/estado/activo/{nombre_ruta}",status_code=status.HTTP_202_ACCEPTED)
 async def update_estado_ruta(nombre_ruta:str):
      try:
@@ -413,7 +411,6 @@ async def eliminar_ruta(nombre_ruta : str):
 @router.post("/descargar/{var_random}")
 async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list, var_random : str):
 
-    # print("var_random_hr",var_random)}
     fecha_de_asignacion = conn.get_fecha_asignacion_ruta(nombre_ruta)[0]
     fecha_hoy = datetime.now()
 
@@ -438,8 +435,6 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
                 bottom=Side(border_style='thin', color='000000')) 
     
     rutas_activas = ruta_en_activo_excel_schema(result)
-    
-
     # rutas_activas = body
 
     # Crear un libro de Excel y seleccionar la hoja activa
@@ -568,7 +563,6 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
         "Cache-Control": "no-store, max-age=0",
         "Pragma": "no-cache",
     }
-
 
     return FileResponse(path="nombre_ruta.xlsx" ,headers=headers)
 
@@ -729,7 +723,6 @@ async def asignar_ruta_activa(asignar : RutasAsignadas):
     except:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error al ingresar la ruta ")
     
-
 @router.get("/buscar_patente")
 async def get_ruta_activa_by_nombre(nombre_ruta: str):
     try:
@@ -898,7 +891,6 @@ async def armar_rutas_predictivas(body : ArmarRutaBloque):
     result = conn.armar_rutas_bloque(data)
     return result[0][1]
 
-
 @router.get("/pedido/en_ruta/{pedido_id}")
 async def pedido_en_ruta(pedido_id : str):
     check = conn.check_producto_existe(pedido_id)
@@ -909,7 +901,6 @@ async def pedido_en_ruta(pedido_id : str):
         "en_ruta" : check[0],
         "message": f"El pedido {pedido_id} no esta en ruta"
     }
-
 
 @router.put("/actualizar/estado/activo/{nombre_ruta}/abrir",status_code=status.HTTP_202_ACCEPTED)
 async def update_estado_ruta_a_true(nombre_ruta:str):

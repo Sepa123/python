@@ -85,25 +85,21 @@ async def obtener_catalogo_rsv():
     result = conn.read_catalogo_rsv()
     return catalogos_productos_schema(result)
 
-
 ## buscar catalogo por color
 @router.get("/catalogo/color")
 async def obtener_catalogo_rsv(color : int):
     result = conn.read_catalogo_by_color_rsv(color)
     return codigos_por_color_schema(result)
 
-
 @router.get("/catalogo/color/sin_filtro")
 async def obtener_catalogo_sin_filtro_rsv():
     result = conn.read_catalogo_by_color_sin_filtro_rsv()
     return codigos_por_color_schema(result)
 
-
 @router.get("/colores")
 async def obtener_colores_rsv():
     result = conn.read_colores_rsv()
     return colores_rsv_schema(result)
-
 
 @router.get("/buscar/{codigo}")
 async def buscar_producto_existente(codigo : str):
@@ -115,7 +111,6 @@ async def buscar_producto_existente(codigo : str):
             "repetido": True,
             "message": f"El codigo {result[0]} ya existe"}
 
-
 @router.post("/agregar/producto")
 async def agregar_nuevo_catalogo_rsv(body : CatalogoProducto):
     body.Codigo = body.Codigo.upper()
@@ -124,7 +119,6 @@ async def agregar_nuevo_catalogo_rsv(body : CatalogoProducto):
     return {
         "message": "Producto agregado correctamente"
     }
-
 
 @router.put("/editar/producto")
 async def editar_nuevo_catalogo_rsv(body : CatalogoProducto):
@@ -141,12 +135,10 @@ async def editar_nuevo_catalogo_rsv(body : CatalogoProducto):
 async def agregar_nuevo_catalogo_rsv(catalogo):
     return ""
 
-
 @router.get("/cargas")
 async def obtener_carga_rsv():
     result = conn.read_cargas_rsv()
     return cargas_rsv_schema(result)
-
 
 @router.get("/cargas/nombre_carga/{nombre_carga}")
 async def obtener_carga_rsv(nombre_carga : str):
@@ -160,7 +152,6 @@ async def obtener_datos_carga_rsv(nombre_carga : str):
     result = conn.read_datos_carga_por_nombre_rsv(nombre_carga)
     return datos_cargas_etiquetas_schema(result)
 
-
 ## descargar datos de etiquetas en excel
 
 @router.get("/datos/etiquetas/carga/{nombre_carga}/descargar")
@@ -171,9 +162,6 @@ async def obtener_datos_carga_rsv(nombre_carga : str):
     nombre_excel = f"{nombre_carga}"
 
     return excel.generar_excel_con_titulo(results,nombre_filas,nombre_excel,nombre_carga)
-
-
-
 
 @router.get("/listar/cargas")
 async def obtener_carga_rsv():
@@ -260,8 +248,6 @@ async def get_etiquetas_carga(nombre_carga : str, codigo: str):
     results = conn.obtener_etiqueta_carga_rsv(nombre_carga,codigo)
     return obtener_etiquetas_carga_schema(results)
 
-
-
 @router.get("/generar/etiquetas")
 async def generar_etiquetas_por_nombre_carga(nombre_carga :str):
     results = conn.generar_etiquitas_rsv(nombre_carga)
@@ -274,7 +260,6 @@ async def generar_etiquetas_por_nombre_carga(nombre_carga :str):
 async def get_datos_productos_etiquetas(nombre_carga : str):
     results = conn.read_datos_productos_etiquetas_rsv(nombre_carga)
     return datos_productos_etiquetas_schema(results)
-
 
 @router.get("/sucursales")
 async def get_sucursales_rsv():

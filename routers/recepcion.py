@@ -40,17 +40,12 @@ async def get_recepcion_electrolux():
 @router.get("/sportex", status_code=status.HTTP_202_ACCEPTED)
 async def get_recepcion_sportex():
     results = conn.read_recepcion_sportex()
-
     return recepcion_tiendas_schema(results)
 
 @router.get("/easy_opl", status_code=status.HTTP_202_ACCEPTED)
 async def get_recepcion_easy_opl():
     results = conn.read_recepcion_easy_opl()
-    # return recepcion_tiendas_schema(results)
     return recepcion_easy_cds_schema(results)
-    # results = conn.read_recepcion_easy_opl_detalles()
-    # # return recepcion_tiendas_schema(results)
-    # return recepcion_opl_schema(results)
 
 ### bultos de easy OPL
 
@@ -102,7 +97,6 @@ async def get_recepcion_easy_opl(body : BodyBultosOpl):
         "message" : "datos actualizados correctamente"
     }
 
-
 ### FIN bultos de easy OPL
 
 @router.get("/easy_cd", status_code=status.HTTP_202_ACCEPTED)
@@ -110,7 +104,6 @@ async def get_recepcion_easy_cd():
     dia_anterior = obtener_dia_anterior()
     results = conn.read_recepcion_easy_cd(dia_anterior)
     return recepcion_easy_cds_schema(results)
-
 
 ## buscar los productos que llegan el dia de hoy por su codigo de producto
 
@@ -247,7 +240,6 @@ async def prueba(codigo : str):
 
 @router.put("/verificar/opl",status_code=status.HTTP_202_ACCEPTED)
 async def update_estado_verificado_producto(body: bodyUpdateVerified):
-
     try:
         data = body.dict()
         # print(body.cod_producto)

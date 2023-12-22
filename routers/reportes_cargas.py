@@ -435,11 +435,6 @@ async def get_pedidos_tiendas_easy_opl():
     results = conn.read_pedidos_tiendas_easy_opl()
     return pedidos_tiendas_easy_opl_schema(results)
 
-# @router.get("/timezone",status_code=status.HTTP_202_ACCEPTED)
-# async def get_pedidos_tiendas_easy_opl():
-#     results = conn.get_timezone()
-#     return results
-
 @router.get("/pedidos/pendientes/total",status_code=status.HTTP_202_ACCEPTED)
 async def pedidos_pendientes_total():
     results = conn.read_pedidos_pendientes_total()
