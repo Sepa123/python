@@ -1,4 +1,7 @@
 # import geopandas as gpd
+from datetime import datetime, timedelta
+fecha_actual = datetime.now() 
+print(fecha_actual)
 # from shapely.geometry import Polygon, Point
 
 # # Crear un DataFrame con los puntos (EASY AV VICUÑA )

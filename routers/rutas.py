@@ -54,6 +54,47 @@ conn = reportesConnection()
 
 connHela = HelaConnection()
 
+@router.post("/buscar",status_code=status.HTTP_202_ACCEPTED)
+async def get_ruta_manual(body : bodyUpdateVerified ):
+    results = conn.get_ruta_manual(body.n_guia)
+
+    check = conn.check_producto_existe(body.n_guia)
+    check = re.sub(r'\(|\)', '',check[0])
+    check = check.split(",")
+    
+    if(check[0] == "1"):
+        print("codigo pedido repetido")
+
+        check_fecha = conn.check_fecha_ruta_producto_existe(body.n_guia)
+
+        pedido_id = body.n_guia
+
+        if check_fecha is not None:
+            fecha = check_fecha[0]
+        else:
+            pedido_id = conn.get_codigo_pedido_opl(body.n_guia)[0][0]
+            fecha = conn.check_fecha_ruta_producto_existe(pedido_id)[0]
+        
+        raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, 
+                            detail=f'El Producto "{pedido_id}" se encuentra en la ruta: {check[1]}, con fecha de ruta {fecha}' )
+    
+    if results is None or results == []:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El codigo del producto no existe")
+    
+    json_data = rutas_manuales_schema(results)
+
+    if json_data[0]['Calle'] is None:
+        print("La direccion es null")
+        json_data[0]['Calle'] = json_data[0]['Direccion_textual']
+
+    body.cliente = json_data[0]['Notas']
+
+    data = body.dict()
+
+    connHela.insert_data_bitacora_recepcion(data)
+
+    return json_data
+
 @router.get("/buscar/{pedido_id}",status_code=status.HTTP_202_ACCEPTED)
 async def get_ruta_manual(pedido_id : str):
     results = conn.get_ruta_manual(pedido_id)
