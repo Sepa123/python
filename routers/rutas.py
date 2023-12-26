@@ -276,6 +276,29 @@ async def get_rutas_en_activo(nombre_ruta : str):
 
 # rutas activas
 
+def separar_por_codigo_pedido(lista_objetos):
+    # Crear un diccionario para almacenar los arrays según el Codigo_pedido
+    arrays_por_pedido = {}
+
+    # Iterar sobre cada objeto en la lista
+    for objeto in lista_objetos:
+        # Obtener el valor del Codigo_pedido
+        codigo_pedido = objeto.Codigo_pedido
+
+        # Verificar si ya hay un array para ese Codigo_pedido, si no, crear uno
+        if codigo_pedido not in arrays_por_pedido:
+            arrays_por_pedido[codigo_pedido] = []
+
+        # Agregar el objeto al array correspondiente
+        arrays_por_pedido[codigo_pedido].append(objeto)
+
+    # Convertir el diccionario a una lista de arrays
+    resultado = list(arrays_por_pedido.values())
+
+    return resultado
+
+
+
 @router.post("/agregar/ruta_activa_existente",status_code=status.HTTP_201_CREATED)
 async def insert_ruta_existente_activa(fecha_ruta_nueva : str, rutas : List[List[RutaManual]]):
     try:
@@ -283,12 +306,25 @@ async def insert_ruta_existente_activa(fecha_ruta_nueva : str, rutas : List[List
 
         fecha_ruta = fecha_ruta_nueva
 
-        for ruta in rutas:
+        for i, ruta in enumerate(rutas):
+
             for producto in ruta:
                 if producto.Id_ruta is not None:
                     id_ruta = producto.Id_ruta 
                     nombre_ruta = producto.Nombre_ruta 
                     break
+
+            valores_unicos = set(objeto.Codigo_pedido for objeto in ruta)
+            lista_val = list(valores_unicos)
+
+            if len(lista_val) > 1:
+                nueva_pos = separar_por_codigo_pedido(ruta)
+                index_eliminar = i
+                rutas.pop(index_eliminar)
+                for c,pos in enumerate(nueva_pos):
+                    rutas.insert(index_eliminar + c, pos )
+
+            
         # id_ruta = rutas[0][0].Id_ruta
         # nombre_ruta = rutas[0][0].Nombre_ruta
 

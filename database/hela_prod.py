@@ -15,7 +15,7 @@ class HelaConnection():
     conn = None
     def __init__(self) -> None:
         try:
-            self.conn = psycopg2.connect(config("POSTGRES_DB_HELA"), options=options)
+            self.conn = psycopg2.connect(config("POSTGRES_DB_CARGA"), options=options)
             # self.conn.encoding("")
             self.conn.autocommit = True
             self.conn.set_client_encoding("UTF-8")
@@ -23,7 +23,7 @@ class HelaConnection():
             print(err)
             print("Se conectara ???")
             self.conn.close()
-            self.conn = psycopg2.connect(config("POSTGRES_DB_HELA"), options=options)
+            self.conn = psycopg2.connect(config("POSTGRES_DB_CARGA"), options=options)
             # self.conn.encoding("")
             self.conn.autocommit = True
             self.conn.set_client_encoding("UTF-8")
