@@ -46,7 +46,8 @@ from database.schema.rutas.archivo_descarga_beetrack import datos_descarga_beetr
 from database.models.rutas.armar_rutas import ArmarRutaBloque
 
 from database.models.rutas.lista_eliminar import ListaEliminar
-
+from database.schema.rutas.buscar_producto_ruta import buscar_productos_ruta_schema
+from database.schema.rutas.nombre_rutas_activa import nombre_rutas_activas_schema
 
 router = APIRouter(tags=["rutas"], prefix="/api/rutas")
 
@@ -64,9 +65,7 @@ async def get_ruta_manual(body : bodyUpdateVerified ):
     
     if(check[0] == "1"):
         print("codigo pedido repetido")
-
         check_fecha = conn.check_fecha_ruta_producto_existe(body.n_guia)
-
         pedido_id = body.n_guia
 
         if check_fecha is not None:
@@ -94,6 +93,26 @@ async def get_ruta_manual(body : bodyUpdateVerified ):
     connHela.insert_data_bitacora_recepcion(data)
 
     return json_data
+
+@router.post("/buscar/producto/ruta",status_code=status.HTTP_202_ACCEPTED)
+async def get_datos_producto_en_ruta(body : bodyUpdateVerified ):
+    results = conn.get_datos_producto_en_ruta(body.n_guia)
+            
+    if results is None or results == []:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El codigo del producto no existe")
+    
+    json_data = buscar_productos_ruta_schema(results)
+
+    data = body.dict()
+
+    # connHela.insert_data_bitacora_recepcion(data)
+
+    return json_data
+
+@router.get("/buscar/rutas/activas",status_code=status.HTTP_202_ACCEPTED)
+async def buscar_rutas_activas():
+    results = conn.get_rutas_activas()
+    return nombre_rutas_activas_schema(results)
 
 @router.get("/buscar/{pedido_id}",status_code=status.HTTP_202_ACCEPTED)
 async def get_ruta_manual(pedido_id : str):
@@ -336,7 +355,7 @@ async def insert_ruta_existente_activa(fecha_ruta_nueva : str, rutas : List[List
                 data["Posicion"] = i + 1
                 # print(i)
                 check = conn.check_producto_codigo_repetido(nombre_ruta,data["Codigo_pedido"],data["Codigo_producto"], data["SKU"])
-                print("Codigo pedido",data["Codigo_pedido"])
+                # print("Codigo pedido",data["Codigo_pedido"])
                 if check is not None:
                     data["Pickeado"] = data["Pistoleado"] 
                     if data["Pickeado"] == '1':
@@ -344,7 +363,7 @@ async def insert_ruta_existente_activa(fecha_ruta_nueva : str, rutas : List[List
                     else: 
                         data["Pickeado"] = False
                     count = conn.update_posicion(data["Posicion"], data["Codigo_pedido"], data["Codigo_producto"], fecha_ruta, data["DE"], data["DP"], nombre_ruta, data["Pickeado"])
-                    print("Posicion:",data["Posicion"])
+                    # print("Posicion:",data["Posicion"])
                 else :
                     data["Calle"] = conn.direccion_textual(data["Codigo_pedido"])[0][0]
                     data["Id_ruta"] = id_ruta
@@ -353,7 +372,7 @@ async def insert_ruta_existente_activa(fecha_ruta_nueva : str, rutas : List[List
                     data["Pickeado"] = data["Pistoleado"] 
                     data["Fecha_ruta"] = fecha_ruta
                     # conn.update_verified(data["Codigo_producto"])
-                    print('posicion :',data["Posicion"])
+                    # print('posicion :',data["Posicion"])
                     conn.write_rutas_manual(data)
         return { "message": f"La Ruta {nombre_ruta} fue actualizada exitosamente" }
     except Exception as e:

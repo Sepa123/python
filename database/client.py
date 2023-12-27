@@ -2067,6 +2067,37 @@ class reportesConnection():
             """)
             return cur.fetchall()
         
+    ## buscar ruta
+
+    def get_datos_producto_en_ruta(self,pedido_id):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select distinct on (ruta."Código de Producto", "Cod. SKU" ) ruta."Código de Pedido", ruta."Código de Producto", ruta."Descripción del Producto", ruta."Ciudad",ruta."Provincia/Estado",ruta."Fecha de Pedido",ruta."Fecha Original Pedido"
+            ,coalesce (drm.nombre_ruta , 'No asigada'), ruta."Notas"
+            from areati.busca_ruta_manual_base2('{pedido_id}') ruta
+            left join quadminds.datos_ruta_manual drm on drm.cod_pedido = ruta."Código de Pedido" and drm.estado = true
+
+                        """)
+            return cur.fetchall()
+
+
+    def get_rutas_activas(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select subquery.nombre_ruta from (
+            SELECT nombre_ruta,
+                CASE WHEN bool_or(estado = FALSE) THEN FALSE ELSE TRUE END AS estado
+            FROM quadminds.datos_ruta_manual
+            GROUP BY nombre_ruta) subquery
+            where subquery.estado = true
+
+
+            """)
+
+            return cur.fetchall()
+
+    
+        
     def get_factura_electrolux(self,pedido_id):
 
         with self.conn.cursor() as cur:
