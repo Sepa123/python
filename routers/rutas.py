@@ -105,7 +105,7 @@ async def get_datos_producto_en_ruta(body : bodyUpdateVerified ):
 
     data = body.dict()
 
-    # connHela.insert_data_bitacora_recepcion(data)
+    connHela.insert_data_bitacora_recepcion(data)
 
     return json_data
 
