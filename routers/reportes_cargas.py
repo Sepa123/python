@@ -492,8 +492,8 @@ async def cargas_por_hora():
 
 
 @router.get("/ns/verificados",status_code=status.HTTP_202_ACCEPTED)
-async def Nivel_servicio_verificados(fecha : str):
-    results = conn.ns_picking(fecha)
+async def Nivel_servicio_verificados(fecha_inicio : str,fecha_fin: str):
+    results = conn.ns_picking(fecha_inicio,fecha_fin)
     return ns_verificados_schema(results)
 
 #Pendientes en bodega

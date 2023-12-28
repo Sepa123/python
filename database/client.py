@@ -2073,7 +2073,7 @@ class reportesConnection():
         with self.conn.cursor() as cur:
             cur.execute(f"""
             select distinct on (ruta."Código de Producto", "Cod. SKU" ) ruta."Código de Pedido", ruta."Código de Producto", ruta."Descripción del Producto", ruta."Ciudad",ruta."Provincia/Estado",ruta."Fecha de Pedido",ruta."Fecha Original Pedido"
-            ,coalesce (drm.nombre_ruta , 'No asigada'), ruta."Notas"
+            ,coalesce (drm.nombre_ruta , 'No asignada'), ruta."Notas"
             from areati.busca_ruta_manual_base2('{pedido_id}') ruta
             left join quadminds.datos_ruta_manual drm on drm.cod_pedido = ruta."Código de Pedido" and drm.estado = true
 
@@ -5442,10 +5442,10 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
 
     #NS Picking
 
-    def ns_picking(self, fecha):
+    def ns_picking(self, fecha_inicio,fecha_fin):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-                select * from areati.calcular_nivel_servicio_verificado('{fecha}')
+                select * from areati.calcular_nivel_servicio_verificado('{fecha_inicio}','{fecha_fin}')
                 union all
                 select 'Total',
                         sum(total_registros),
@@ -5455,7 +5455,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                             ROUND((sum(productos_verificados) / sum(total_registros) * 100), 2)
                     else 0
                     end
-                from areati.calcular_nivel_servicio_verificado('{fecha}');
+                from areati.calcular_nivel_servicio_verificado('{fecha_inicio}','{fecha_fin}');
                         """)
             return cur.fetchall()
 
