@@ -57,6 +57,11 @@ connHela = HelaConnection()
 
 @router.post("/buscar",status_code=status.HTTP_202_ACCEPTED)
 async def get_ruta_manual(body : bodyUpdateVerified ):
+
+    headers = {
+        "Cache-Control": "no-store, max-age=0",
+        "Pragma": "no-cache",
+    }
     results = conn.get_ruta_manual(body.n_guia)
 
     if len(body.n_guia) > 12:
@@ -83,10 +88,10 @@ async def get_ruta_manual(body : bodyUpdateVerified ):
             fecha = conn.check_fecha_ruta_producto_existe(pedido_id)[0]
         
         raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, 
-                            detail=f'El Producto "{pedido_id}" se encuentra en la ruta: {check[1]}, con fecha de ruta {fecha}' )
+                            detail=f'El Producto "{pedido_id}" se encuentra en la ruta: {check[1]}, con fecha de ruta {fecha}',headers=headers )
     
     if results is None or results == []:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El codigo del producto no existe")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El codigo del producto no existe",headers=headers)
     
     json_data = rutas_manuales_schema(results)
 
