@@ -59,6 +59,8 @@ connHela = HelaConnection()
 async def get_ruta_manual(body : bodyUpdateVerified ):
     results = conn.get_ruta_manual(body.n_guia)
 
+    # print(body)
+
     if len(body.n_guia) > 20:
         cod_opl = conn.get_codigo_pedido_opl(body.n_guia)[0][0]
         body.n_guia = cod_opl
