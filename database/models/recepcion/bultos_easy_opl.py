@@ -12,3 +12,4 @@ class BodyBultosOpl(BaseModel):
     ids_usuario: Optional[str]
     cliente : Optional[str]
     n_guia : Optional[str]
+    observacion : Optional[str]
