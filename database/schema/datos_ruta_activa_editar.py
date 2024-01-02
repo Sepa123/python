@@ -32,7 +32,9 @@ def datos_ruta_activa_editar(ruta):
         "En_ruta": int(datos_extra[3]),
         "Estado_entrega" : datos_extra[4],
         "Alerta_conductor": ruta[26],
-        "Fecha_original_pedido": ruta[27]
+        "Fecha_original_pedido": ruta[27],
+        "Operacion" : ruta[28],
+        "Created_by" : ruta[29]
 }
 
 def datos_rutas_activas_editar_schema(rutas):

@@ -48,6 +48,7 @@ from database.models.rutas.armar_rutas import ArmarRutaBloque
 from database.models.rutas.lista_eliminar import ListaEliminar
 from database.schema.rutas.buscar_producto_ruta import buscar_productos_ruta_schema
 from database.schema.rutas.nombre_rutas_activa import nombre_rutas_activas_schema
+from database.schema.rutas.reporte_ruta_mes import reportes_rutas_mes_schema, reporte_ruta_dia_schema
 
 router = APIRouter(tags=["rutas"], prefix="/api/rutas")
 
@@ -359,6 +360,17 @@ async def insert_ruta_existente_activa(fecha_ruta_nueva : str, rutas : List[List
 
         for i,ruta in enumerate(rutas):
             for producto in ruta:
+                producto.Peso=1
+                producto.Volumen=1,
+                producto.Dinero=1,
+                producto.Duracion_min=8,
+                producto.Ventana_horaria_1='09:00 - 21:00',
+                producto.Ventana_horaria_2='',
+                producto.Email_remitentes='',
+                producto.Eliminar_pedido='',
+                producto.Vehiculo='',
+                producto.Habilidades=''
+
                 data = producto.dict()
 
                 # direccion_textual = conn.direccion_textual(data["Codigo_pedido"])
@@ -976,3 +988,16 @@ async def update_estado_ruta_a_true(nombre_ruta:str):
      except:
           print("error en /actualizar/estado/activo/nombre_ruta/abrir ")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
+     
+
+@router.get("/reporte/mensual")
+async def datos_rutas_mes(mes : str):
+    result = conn.get_reportes_rutas_mes(mes)
+    return reportes_rutas_mes_schema(result)
+
+
+
+@router.get("/reporte/diario")
+async def datos_rutas_mes(dia : str):
+    result = conn.get_reportes_rutas_diario(dia)
+    return reporte_ruta_dia_schema(result)

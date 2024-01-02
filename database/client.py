@@ -2053,7 +2053,7 @@ class reportesConnection():
 
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            ---select * from areati.busca_ruta_manual('{pedido_id}')
+            ---select * from areati.busca_ruta_manual_base2('{pedido_id}')
 
             select "Código de Cliente","Nombre","Calle y Número","Dirección Textual",
                     "Ciudad","Provincia/Estado","Latitud","Longitud","Teléfono con código de país",
@@ -2550,7 +2550,9 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
                             r.estado_entrega
                         ) AS concatenated_data,
                     drm.alerta,
-                    r.fecha_original
+                    r.fecha_original,
+                    drm.operacion,
+                    drm.created_by
             FROM quadminds.datos_ruta_manual drm
             LEFT join rutas.toc_bitacora_mae tbm ON tbm.guia = drm.cod_pedido and tbm.alerta=true
             LEFT join data_ruta_manual r on r.cod_pedido = drm.cod_pedido
@@ -6245,6 +6247,22 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 and to_char(funcion_resultado."Fecha de Pedido",'yyyymmdd')<='{fecha_fin}'
 
             """)
+            return cur.fetchall()
+
+    ###Reportes de rutas mensual
+    def get_reportes_rutas_mes(self,mes):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select * from quadminds.listar_rutas_mensual('{mes}')
+                        """)
+            return cur.fetchall()
+        
+
+    def get_reportes_rutas_diario(self,dia):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select * from quadminds.reporte_rutas_diario('{dia}');
+                        """)
             return cur.fetchall()
 
 
