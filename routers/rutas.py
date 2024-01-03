@@ -4,7 +4,7 @@ from openpyxl import Workbook
 from openpyxl.styles import Font , PatternFill, Border ,Side, Alignment
 from datetime import datetime, timedelta
 from openpyxl.worksheet.page import PageMargins , PrintPageSetup
-
+import lib.excel_generico as excel
 import time
 import re
 from typing import List
@@ -1001,3 +1001,16 @@ async def datos_rutas_mes(mes : str):
 async def datos_rutas_mes(dia : str):
     result = conn.get_reportes_rutas_diario(dia)
     return reporte_ruta_dia_schema(result)
+
+
+@router.get("/reporte/diario/excel/descargar")
+async def datos_rutas_mes(dia : str):
+    result = conn.get_reportes_rutas_diario(dia)
+    nombre_filas = ( "Fecha Ruta", "Ruta", "Ruta Beetrack", "Posición", "Código Cliente", "Nombre",
+                    "Dirección", "Comuna","Región","Telefono","Email","Código Pedido","Fecha pedido",
+                    "Descripción","Cantidad","Creado por", "Daño embalaje", "Daño producto",
+                    "Pickeado")
+    nombre_excel = f"inventario-rutas-{dia}"
+
+    return excel.generar_excel_generico(result,nombre_filas,nombre_excel)
+    # return reporte_ruta_dia_schema(result)
