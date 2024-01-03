@@ -67,7 +67,7 @@ origins = [
     "https://hela.transyanez.cl",
     "http://34.225.63.221",
     "https://testhl1.azurewebsites.net",
-    "http://18.228.119.98/"
+    "http://18.228.119.98"
 ]
 
 app.add_middleware(
