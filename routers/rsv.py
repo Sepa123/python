@@ -859,6 +859,9 @@ async def obtener_catalogo_rsv(sucursal_id : int, var_r : str):
 
 @router.post("/inventario/sucursales/ubicaciones")
 async def obtener_ubicacion_y_cantidad_rsv(body : ObtUbicacionCantidad):
+
+    print("Cuerpo del deloto")
+    print(body)
     result = conn.obtener_ubicacion_cantidad(body.Sucursal, body.Codigo)
     # print(len(result))
     return obtener_ubicacion_cantidad_schema(result)
