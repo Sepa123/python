@@ -211,8 +211,9 @@ def validar_fecha(fecha):
 async def insert_ruta_manual(rutas : List[List[RutaManual]], fecha_pedido : str):
     try:
         # print(len(rutas))
+
         if validar_fecha(fecha_pedido) == False: raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, 
-                            detail=f"No se puede crear ruta con la fecha {fecha_pedido}")
+            detail=f"No se puede crear ruta con la fecha {fecha_pedido}")
 
         print(fecha_pedido)
         id_ruta = conn.read_id_ruta()[0]
@@ -258,6 +259,9 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]], fecha_pedido : str)
 
         return { "message": f"La Ruta {nombre_ruta} fue guardada exitosamente" }
     except Exception as e:
+        if validar_fecha(fecha_pedido) == False: 
+            raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, detail=f"No se puede crear ruta con la fecha {fecha_pedido}")
+       
         if(check[0] == "1"):
 
             raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, 
