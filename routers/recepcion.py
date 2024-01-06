@@ -74,7 +74,7 @@ async def get_recepcion_easy_opl_detalle(suborden : str):
 async def agregar_butlos_easy_opl(body : BodyBultosOpl):
     data = body.dict()
     checkData = conn.checK_bulto_easy_opl_si_existe(body.Suborden)
-    print(checkData)
+
     if (checkData == []):
         conn.insert_bultos_a_easy_opl(data)
         connHela.insert_data_bitacora_recepcion(data)

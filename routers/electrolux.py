@@ -99,7 +99,7 @@ async def datos_confirma_facil(codigo : str):
         if dato["Numero"] == codigo:
             body = {
                     "embarque": {
-                        "numero": dato["Numero"],
+                        "numero": dato["Factura"],
                         "serie": "02"
                     },
                     "embarcador": {

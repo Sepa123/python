@@ -5183,13 +5183,15 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                             from beetrack.estados_electrolux ee
                             where ee.subestado = (select se.code from areati.subestado_entregas se where se.name=trb.estado) limit 1),5) as tipoEntrega,
                             regexp_replace(trb.factura, '[^0-9]', '', 'g') as numero,
+                            twce.factura, 
                             coalesce(to_char(trb.fecha_llegada,' dd/mm/yyyy'),to_char(trb.created_at,' dd/mm/yyyy')) as dtOcorrencia,
-                            coalesce(trb.fecha_llegada::time,created_at::time) as hrOcorrencia,
+                            coalesce(trb.fecha_llegada::time,trb.created_at::time) as hrOcorrencia,
                             coalesce(trb.estado,'En Ruta') as comentario
                     from beetrack.ruta_transyanez trb
-                    where created_at::date = current_date::date
+                    left join areati.ti_wms_carga_electrolux twce on trb.guia = twce.numero_guia
+                    where trb.created_at::date = current_date::date
                     and lower(cliente)='electrolux'
-                    order by 4 desc
+                    order by 5 desc
                  """)
             return cur.fetchall()
     

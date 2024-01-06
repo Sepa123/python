@@ -5,9 +5,10 @@ def dato_confirma_facil(dato):
     return {
 		"Tipo_entrega" : dato[0],
 		"Numero" : dato[1],
-		"Dt_ocorrencia" : dato[2],
-		"hr_ocorrencia" : str(dato[3]),
-		"Comentario" : dato[4]
+        "Factura" : dato[2],
+		"Dt_ocorrencia" : dato[3],
+		"hr_ocorrencia" : str(dato[4]),
+		"Comentario" : dato[5]
 	}
 
 def datos_confirma_facil_schema(datos):
