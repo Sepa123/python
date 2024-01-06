@@ -2365,7 +2365,8 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
                 END as "DP",
             drm.fecha_pedido as "Fecha Pedido"
             from quadminds.datos_ruta_manual drm 
-            LEFT JOIN LATERAL areati.recupera_sku_bultos(drm.cod_pedido,'{nombre_ruta}') AS rsb ON true
+           -- LEFT JOIN LATERAL areati.recupera_sku_bultos(drm.cod_pedido,'{nombre_ruta}') AS rsb ON true
+           LEFT JOIN LATERAL areati.recupera_sku_bultos(drm.cod_pedido) AS rsb ON true
             where drm.nombre_ruta =  '{nombre_ruta}'
             group by 1,2,3,4,5,6,7,8,9,10,13
             order by drm.cod_pedido ) as tabla 
