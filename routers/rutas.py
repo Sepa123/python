@@ -8,7 +8,7 @@ import lib.excel_generico as excel
 import time
 import re
 from typing import List
-
+from database.schema.rutas.datos_rutas_tracking import datos_rutas_tracking_schema
 from geopy.geocoders import Nominatim
 
 ## conexion
@@ -181,6 +181,25 @@ async def get_ruta_manual(pedido_id : str):
     print("/buscar/ruta")
 
     return json_data
+
+@router.get("/buscar/tracking/{pedido_id}",status_code=status.HTTP_202_ACCEPTED)
+async def get_ruta_manual(pedido_id : str):
+    
+    results = conn.get_ruta_tracking_producto(pedido_id)
+
+    if results is None or results == []:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El codigo del producto no existe")
+    
+    json_data = datos_rutas_tracking_schema(results)
+
+    if json_data[0]['Calle'] is None:
+        print("La direccion es null")
+        json_data[0]['Calle'] = json_data[0]['Direccion_textual']
+    # print(results)
+    print("/buscar/ruta")
+
+    return json_data
+
 
 @router.get("/buscar/factura/electrolux/{pedido_id}",status_code=status.HTTP_202_ACCEPTED)
 async def get_factura_electrolux(pedido_id : str):

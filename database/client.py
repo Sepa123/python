@@ -2048,6 +2048,43 @@ class reportesConnection():
     
     ### Insertar datos en tabla quadmind.ruta_manual
 
+    def get_ruta_tracking_producto(self,pedido_id):
+
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            --SELECT * FROM quadminds.recupera_datos_pedido('{pedido_id}');
+
+            SELECT
+                "Código de Pedido",
+                "Fecha de Pedido",
+                "Fecha Original Pedido",
+                "Código de Producto",
+                "Descripción del Producto",
+                "Cantidad de Producto",
+                "Notas",
+                "Cod. SKU",
+                "Pistoleado",
+                "Código de Cliente",
+                "Nombre",
+                "Calle y Número",
+                "Dirección Textual",
+                "Ciudad",
+                "Teléfono con código de país",
+                "Email",
+                COALESCE(string_agg(DISTINCT drm.nombre_ruta::varchar, '@'), 'Sin Ruta Asignada') AS "Ruta Hela"
+            FROM
+                areati.busca_ruta_manual_base2('{pedido_id}')
+            LEFT JOIN
+                quadminds.datos_ruta_manual drm ON drm.cod_pedido = '{pedido_id}' AND drm.cod_producto = "Código de Producto"
+            GROUP BY
+                "Código de Pedido", "Fecha de Pedido", "Fecha Original Pedido",
+                "Código de Producto", "Descripción del Producto",
+                "Cantidad de Producto", "Notas", "Cod. SKU", "Pistoleado",
+                "Código de Cliente","Nombre","Calle y Número","Dirección Textual",
+                "Ciudad","Teléfono con código de país","Email";
+
+            """)
+            return cur.fetchall()
 
 
     def get_ruta_manual(self,pedido_id):
