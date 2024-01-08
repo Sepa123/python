@@ -2,6 +2,7 @@ import psycopg2
 import codecs
 from decouple import config
 import os, sys, codecs
+# import subprocess
 
 # import datetime
 # import pytz
@@ -2280,62 +2281,41 @@ class reportesConnection():
     def read_rutas_en_activo(self,nombre_ruta):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            with data_ruta_manual as (
-	SELECT 
-		subquery.cod_pedido as cod_pedido,
-		(areati.busca_ruta_manual(subquery.cod_pedido))."Cod. SKU" as sku ,
-		cast((areati.busca_ruta_manual(subquery.cod_pedido))."Cantidad de Producto"  as varchar) as unidades
-	FROM (
-	  SELECT DISTINCT ON (drm.cod_pedido) drm.cod_pedido cod_pedido
-	  FROM quadminds.datos_ruta_manual drm
-	  WHERE drm.nombre_ruta = '{nombre_ruta}'
-	) AS subquery
-	group by 1 
-)
-
---select * from areati.ti_carga_easy_go_opl tcego where suborden = '1274066301'
---select * from areati.busca_ruta_manual('1274066301')
---select * from data_ruta_manual
-
-select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
-            (
-            select drm.cod_pedido as "Cod. Pedido",
-            drm.ciudad as "Comuna",
-            string_agg(distinct(drm.sku) , '@') AS "SKU",
-            string_agg(distinct(drm.desc_producto) , '@') AS "Producto",
-            (SELECT 
-			    --cod_pedido, 
-			    STRING_AGG(unidades, '@') AS unidades_concatenados
-			FROM 
-			    data_ruta_manual
-			where cod_pedido = drm.cod_pedido)	as "UND",
-            --count(r.unidades) as "Bultos",
-			--count(distinct(drm.sku)) as "Bultos",
-            (SELECT  count(sku) AS bultos
-			FROM data_ruta_manual
-			where cod_pedido = drm.cod_pedido)	as "Bultos",
-            initcap(nombre) as "Nombre Cliente",
-            initcap(calle_numero) as "Direccion Cliente",
-            drm.telefono as "Telefono",
-            drm.estado as "Estado",
-            '' as "Validado",
-            CASE
-                WHEN bool_or(de) THEN 'Embalaje con Daño'
-                ELSE ''
-            END AS "DE",
-            CASE
-                WHEN bool_or(dp) THEN 'Producto con Daño'
-                ELSE ''
-            END as "DP",
-            drm.provincia_estado,
-            drm.fecha_pedido,
-            drm.id_ruta,
-            drm.posicion
-            from quadminds.datos_ruta_manual drm
-            LEFT join data_ruta_manual r on r.cod_pedido = drm.cod_pedido 
-            where drm.nombre_ruta = '{nombre_ruta}'
-            group by 1,2,7,8,9,10,11, drm.id_ruta, drm.posicion, drm.provincia_estado, drm.fecha_pedido 
-            ) datos_base;
+            select      drm."N°",
+                        drm."Pedido",
+                        drm."Comuna",
+                        drm."Nombre",
+                        drm."Dirección",
+                        drm."teléfono",
+                        rsb.sku as "SKU",
+                        rsb.descripcion as "Producto",
+                        rsb.cant_producto as "UND",
+                        rsb.bultos as "Bult",
+                        drm."DE",
+                        drm."DP",
+                        drm."Fecha Pedido"
+            from (select 	 distinct on (drm.cod_pedido) 
+                        drm.posicion as "N°",
+                        drm.cod_pedido as "Pedido",
+                        drm.ciudad as "Comuna",
+                        drm.nombre as "Nombre",
+                        drm.calle_numero "Dirección",
+                        drm.telefono as "teléfono",
+                        CASE
+                                WHEN bool_or(drm.de) THEN 'Embalaje con Daño'
+                                ELSE ''
+                            END AS "DE",
+                            CASE
+                                WHEN bool_or(drm.dp) THEN 'Producto con Daño'
+                                ELSE ''
+                            END as "DP",
+                        drm.fecha_pedido as "Fecha Pedido"
+                        from quadminds.datos_ruta_manual drm 
+                        where drm.nombre_ruta =  '{nombre_ruta}'
+                        group by 1,2,3,4,5,6,9
+                        order by drm.cod_pedido ) as drm  
+                        LEFT JOIN LATERAL areati.recupera_sku_bultos(drm."Pedido",'{nombre_ruta}') AS rsb ON true
+                        order by  drm."N°" asc
             """)
             return cur.fetchall()
         
@@ -2343,35 +2323,7 @@ select ROW_NUMBER() over (ORDER BY id_ruta desc, posicion asc ) as "Pos.",* from
     def read_rutas_en_activo_para_armar_excel(self,nombre_ruta):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-           select * from
-            (select 	 distinct on (drm.cod_pedido) 
-			drm.posicion as "N°",
-            drm.cod_pedido as "Pedido",
-            drm.ciudad as "Comuna",
-            drm.nombre as "Nombre",
-            drm.calle_numero "Dirección",
-            drm.telefono as "teléfono",
-            rsb.sku as "SKU",
-            rsb.descripcion as "Producto",
-            rsb.cant_producto as "UND",
-            rsb.bultos as "Bult",
-            CASE
-                    WHEN bool_or(drm.de) THEN 'Embalaje con Daño'
-                    ELSE ''
-                END AS "DE",
-                CASE
-                    WHEN bool_or(drm.dp) THEN 'Producto con Daño'
-                    ELSE ''
-                END as "DP",
-            drm.fecha_pedido as "Fecha Pedido"
-            from quadminds.datos_ruta_manual drm 
-           -- LEFT JOIN LATERAL areati.recupera_sku_bultos(drm.cod_pedido,'{nombre_ruta}') AS rsb ON true
-           LEFT JOIN LATERAL areati.recupera_sku_bultos(drm.cod_pedido,'{nombre_ruta}') AS rsb ON true
-            where drm.nombre_ruta =  '{nombre_ruta}'
-            group by 1,2,3,4,5,6,7,8,9,10,13
-            order by drm.cod_pedido ) as tabla 
-            
-            order by  tabla."N°" asc
+            select * from rutas.recupera_datos_ruta('{nombre_ruta}');
             """)
             return cur.fetchall()
         
@@ -6191,6 +6143,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
         with self.conn.cursor() as cur:
             cur.execute(f"""
             select * from quadminds.listar_rutas_mensual('{mes}')
+            where total_rutas <> 0
                         """)
             return cur.fetchall()
         

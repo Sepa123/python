@@ -7,10 +7,9 @@ def reporte_ruta_mes(ruta):
     }
 
 def reportes_rutas_mes_schema(rutas):
-	return [reporte_ruta_mes(ruta) for ruta in rutas if ruta[1] != 0]
+	# return [reporte_ruta_mes(ruta) for ruta in rutas if ruta[1] != 0]
+    return [reporte_ruta_mes(ruta) for ruta in rutas]
     
-	# return [item for item in meses if item["title"] != 0]
- 
 
 def reporte_ruta_dia(ruta): 
     return {
