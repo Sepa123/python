@@ -1,15 +1,11 @@
 def registro_funcion(registro):
     return  {
-            "Id" : registro[0],
-            "Fecha_creacion" : registro[1],
-            "Esquema": registro[2],
-            "Nombre_funcion": registro[3],
-            "Tipo_funcion": registro[4],
-            "Descripcion": registro[5],
-            "Parametros": registro[6],
-            "Comentarios_parametros": registro[7],
-            "Palabras_clave": registro[8],
-            "Tablas_impactadas": registro[9]
+            "Esquema" : registro[0],
+            "Nombre_funcion" : registro[1],
+            "Tipo_retorno": registro[2],
+            "Argumentos": registro[3],
+            # "Tipo_funcion": registro[4],
+            "Codigo_fuente": registro[4],
             }
 
 

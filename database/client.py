@@ -5161,14 +5161,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def read_lista_funciones(self):
         with self.conn.cursor() as cur:
             cur.execute("""  
-                       -- SELECT  *
-                        -- from areati.registro_funciones;
-                        SELECT rf.id, fecha_creacion, esquema, nombre_funcion, tf.nombre , descripcion,
-                        coalesce(parametros, ARRAY['Sin parametros'] ), coalesce(comentarios_parametros, ARRAY['Sin comentario'] ), 
-                        coalesce(palabras_clave,  ARRAY['Sin datos'] ), coalesce(tablas_impactadas, ARRAY['Sin datos'] )
-                        FROM areati.registro_funciones rf
-                        inner join areati.tipo_funciones tf  on rf.tipo_funcion = tf.id 
-                        order by esquema, tf.nombre ;
+                select * from hades.obtener_info_funciones();
                  """)
             return cur.fetchall()
         
