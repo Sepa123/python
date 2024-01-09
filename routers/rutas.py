@@ -59,34 +59,34 @@ connHela = HelaConnection()
 @router.post("/buscar",status_code=status.HTTP_202_ACCEPTED)
 async def get_ruta_manual(body : bodyUpdateVerified ):
     results = conn.get_ruta_manual(body.n_guia)
+    print(results[0][10])
 
+    check_producto  = results[0][10]
     # print(body)
 
-    if len(body.n_guia) > 20:
-        cod_opl = conn.get_codigo_pedido_opl(body.n_guia)[0][0]
-        body.n_guia = cod_opl
+    # if len(body.n_guia) > 20:
+    #     cod_opl = conn.get_codigo_pedido_opl(body.n_guia)[0][0]
+    #     body.n_guia = cod_opl
 
     # print(body)
 
     # print(results)
 
-    check = conn.check_producto_existe(body.n_guia)
+    check = conn.check_producto_existe(check_producto)
     check = re.sub(r'\(|\)', '',check[0])
     check = check.split(",")
     
     if(check[0] == "1"):
         print("codigo pedido repetido")
-        check_fecha = conn.check_fecha_ruta_producto_existe(body.n_guia)
-        pedido_id = body.n_guia
+        check_fecha = conn.check_fecha_ruta_producto_existe(check_producto)
 
         if check_fecha is not None:
             fecha = check_fecha[0]
         else:
-            pedido_id = conn.get_codigo_pedido_opl(body.n_guia)[0][0]
-            fecha = conn.check_fecha_ruta_producto_existe(pedido_id)[0]
+            fecha = ''
         
         raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, 
-                            detail=f'El Producto "{pedido_id}" se encuentra en la ruta: {check[1]}, con fecha de ruta {fecha}' )
+                            detail=f'El Producto "{check_producto}" se encuentra en la ruta: {check[1]}, con fecha de ruta {fecha}' )
     
     if results is None or results == []:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El codigo del producto no existe")
