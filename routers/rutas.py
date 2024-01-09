@@ -68,9 +68,9 @@ async def get_ruta_manual(body : bodyUpdateVerified ):
     check_producto  = results[0][10]
     # print(body)
 
-    # if len(body.n_guia) > 20:
-    #     cod_opl = conn.get_codigo_pedido_opl(body.n_guia)[0][0]
-    #     body.n_guia = cod_opl
+    if len(body.n_guia) > 20:
+        cod_opl = conn.get_codigo_pedido_opl(body.n_guia)[0][0]
+        body.n_guia = cod_opl
 
     # print(body)
 
