@@ -123,10 +123,10 @@ async def agregar_nuevo_catalogo_rsv(body : CatalogoProducto):
 @router.put("/editar/producto")
 async def editar_nuevo_catalogo_rsv(body : CatalogoProducto):
     body.Codigo_Original = body.Codigo
-    print(body)
+    # print(body)
     data = body.dict()
     conn.update_catalogo_rsv(data)
-    print(data)
+    # print(data)
     return {
         "message": "Producto editado correctamente"
     }
@@ -178,7 +178,7 @@ async def insert_carga_rsv(list_body : List[CargaRSV]):
     try:
         if list_body == []:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No se ha agregado ningun producto a a la carga")
-        print(list_body)
+        # print(list_body)
         for body in list_body:
             body.Nombre_carga = body.Nombre_carga.strip()
             nombre_carga = body.Nombre_carga
@@ -269,7 +269,7 @@ async def get_sucursales_rsv():
 @router.get("/inventario/sucursales/{sucursal}")
 async def get_inventario_por_sucursal(sucursal : int):
     results = conn.obtener_inventario_por_sucursal(sucursal)
-    print(len(results))
+    # print(len(results))
     return inventarios_sucursal_schema(results)
 
 
@@ -311,7 +311,7 @@ async def update_carga(list_body : List[CargaRSV]):
     try:
         if list_body == []:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No se ha agregado ningun producto a a la carga")
-        print(list_body)
+        # print(list_body)
         for body in list_body:
             data = body.dict()
             nombre_carga = body.Nombre_carga
@@ -353,13 +353,13 @@ async def get_tipo_despacho(body : NotaVenta):
     body.Codigo_ty = codigo_ty
     dataVenta = body.dict()
 
-    print(dataVenta)
+    # print(dataVenta)
     conn.insert_nota_venta_rsv(dataVenta)
 
     print(codigo_ty)
     for producto in body.arrays:
         producto.Id_venta = id_venta[0]
-        print(producto)
+        # print(producto)
         data = producto.dict()
         conn.insert_nota_venta_producto_rsv(data)
 
@@ -440,7 +440,7 @@ async def match_sucursal(barCode: str):
 @router.get("/lista-paquetes/{sucursal}")
 async def get_paquetes_abiertos(sucursal : int):
     results = conn.read_paquetes_abiertos(sucursal)
-    print(results)
+    # print(results)
     return paquetes_abiertos_sucursal_schema(results)
 
 @router.get("/etiquetas/reimprimir/descargar")
@@ -450,7 +450,7 @@ async def download_reimprimir_etiquetas_rsv(codigo: int):
     wb = Workbook()
     ws = wb.active
     results.insert(0, ("bar_code","codigo_imp","descripcion","color"))
-    print(results)
+    # print(results)
 
     for row in results:
         ws.append(row)
@@ -477,7 +477,7 @@ async def download_reimprimir_etiqueta_unica_rsv(nombre_carga : str, codigo: str
     wb = Workbook()
     ws = wb.active
     results.insert(0, ("bar_code","codigo_imp","descripcion","color"))
-    print(results)
+    # print(results)
 
     for row in results:
         ws.append(row)
