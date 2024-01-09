@@ -59,7 +59,11 @@ connHela = HelaConnection()
 @router.post("/buscar",status_code=status.HTTP_202_ACCEPTED)
 async def get_ruta_manual(body : bodyUpdateVerified ):
     results = conn.get_ruta_manual(body.n_guia)
-    print(results[0][10])
+    # print(results[0][10])
+
+    if results is None or results == []:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El codigo del producto no existe")
+    
 
     check_producto  = results[0][10]
     # print(body)
