@@ -6163,8 +6163,8 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             -- JOIN LATERAL areati.busca_ruta_manual(subquery.guia) AS funcion_resultado ON true
                 left join areati.estado_entregas ee on subquery.estado = ee.estado 
                 left join areati.subestado_entregas se on subquery.subestado = se.code 
-                where to_char(funcion_resultado."Fecha de Pedido",'yyyymmdd')>='{fecha_inicio}'
-                and to_char(funcion_resultado."Fecha de Pedido",'yyyymmdd')<='{fecha_fin}'
+                where to_char(funcion_resultado."Fecha de Pedido",'yyyy-mm-dd')>='{fecha_inicio}'
+                and to_char(funcion_resultado."Fecha de Pedido",'yyyy-mm-dd')<='{fecha_fin}'
 
             """)
             return cur.fetchall()
