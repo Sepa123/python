@@ -5392,6 +5392,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             return cur.fetchall()
         
 
+
     ## pendientes y rutas predictivas
 
     def fechas_pendientes(self):
@@ -6184,6 +6185,70 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             select * from quadminds.reporte_rutas_diario('{dia}');
                         """)
             return cur.fetchall()
+        
+
+
+    def obtener_subestados_entrega(self):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+                SELECT parent_code, "name", code
+                FROM areati.subestado_entregas
+                where code not in(90, 91, 100, 101, 102, 103, 104);              
+                          """)
+            
+            return cur.fetchall()
+        
+    
+    def obtener_estados_entrega(self):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+                SELECT estado, descripcion
+                FROM areati.estado_entregas;             
+                         """)
+            
+            return cur.fetchall()
+        
+
+    def inser_bitacora_log_inversa(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO log_inversa.bitacora_general
+                (id_usuario, ids_usuario, estado_inicial, subestado_inicial, estado_final, subestado_final, link, observacion, latitud, longitud, origen)
+                VALUES(%(Id_user)s, %(Ids_user)s, %(Estado_inicial)s, %(Subestado_inicial)s, %(Estado_final)s,%(Subestado_final)s, %(Link)s, %(Observacion)s, %(Latitud)s, %(Longitud)s, %(Origen)s);     
+               
+                 """,data)
+            self.conn.commit()
+        
+
+    def update_estados_pendientes(self,estado, subestado,cod_pedido):
+
+        if estado is None :
+            estado = "null"
+
+        if subestado is None :
+            subestado = "null"
+
+        sql_queries = [
+            f"UPDATE areati.ti_carga_easy_go_opl SET estado = {estado} ,subestado = {subestado} WHERE suborden= '{cod_pedido}'",
+            f"UPDATE areati.ti_wms_carga_easy SET estado = {estado} ,subestado = {subestado} WHERE entrega= '{cod_pedido}'",
+            f"UPDATE areati.ti_wms_carga_electrolux SET estado = {estado} ,subestado = {subestado} WHERE numero_guia = '{cod_pedido}'",
+            f"UPDATE areati.ti_wms_carga_sportex SET estado = {estado} ,subestado = {subestado} WHERE id_sportex = '{cod_pedido}'",
+            f"UPDATE areati.ti_retiro_cliente SET estado = {estado} ,subestado = {subestado} WHERE cod_pedido = '{cod_pedido}'",
+        ]
+
+        updates = []
+        try:
+            for query in sql_queries:
+                with self.conn.cursor() as cur:
+                    cur.execute(query)
+                    # print(cur.rowcount)
+                    updates.append(cur.rowcount)
+                self.conn.commit()
+        except (Exception, psycopg2.DatabaseError) as error:
+            print("Error durante la actualización:", error)
+        finally:
+            # pass
+            return updates
 
 
 class transyanezConnection():
