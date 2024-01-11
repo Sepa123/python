@@ -5,6 +5,12 @@ from fastapi import APIRouter, status,HTTPException
 from database.models.retiro_cliente import RetiroCliente
 from database.schema.log_inversa.estados import estados_schema,subestados_schema
 from database.models.log_inversa.bitacora_lg import BitacoraLg
+from openpyxl.worksheet.page import PageMargins , PrintPageSetup
+import lib.excel_generico as excel
+
+## Modelos
+
+from database.models.log_inversa.pendientes import PedidosPendientes
 
 ##Conexiones
 from database.client import reportesConnection
@@ -57,3 +63,24 @@ async def estados_entregas():
     }
 
     return json
+
+
+def cambiar_bool(valor):
+     if valor is True:
+          return "x"
+     else:
+          return ""
+
+@router.post("/pendientes/descargar", status_code=status.HTTP_202_ACCEPTED)
+async def obtener_catalogo_rsv(pendientes : list[PedidosPendientes]):
+
+    tupla = [( datos_envio.Origen, datos_envio.Cod_entrega, datos_envio.Fecha_ingreso, datos_envio.Fecha_compromiso, 
+               datos_envio.Region, datos_envio.Comuna, datos_envio.Descripcion, datos_envio.Bultos, datos_envio.Estado, datos_envio.Subestado,
+               cambiar_bool(datos_envio.Verificado), cambiar_bool(datos_envio.Recibido)) for datos_envio in pendientes]
+
+    nombre_filas = ( 'Origen', 'Cod. Entrega', "Fecha Ingreso", "Fecha Compromiso", 
+                     "Region", "Comuna","Descripcion","Bultos","Estado","Subestado",
+                     "Verificado", "Recibido" )
+    nombre_excel = f"Resumen_pendientes"
+
+    return excel.generar_excel_generico(tupla,nombre_filas,nombre_excel)
