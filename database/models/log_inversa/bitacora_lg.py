@@ -15,3 +15,5 @@ class BitacoraLg(BaseModel):
     Longitud: Optional[str]
     Origen: Optional[str]
     Codigo_pedido: Optional[str]
+    Codigo_producto: Optional[str]
+    Origen_registro: Optional[str]

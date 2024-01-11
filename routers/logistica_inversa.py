@@ -16,11 +16,16 @@ conn = reportesConnection()
 @router.post("/registrar", status_code=status.HTTP_202_ACCEPTED)
 async def registrar_retiro_clientes(bitacora : BitacoraLg):
     # try:
-        
+        bitacora.Origen_registro = "Edición Pendientes"
+
+
+
         if bitacora.Estado_final == 0:
             bitacora.Subestado_final = None
 
-        print(bitacora)
+        datos_orden = conn.get_ruta_manual(bitacora.Codigo_pedido)
+
+        bitacora.Codigo_producto = datos_orden[0][14]
 
         data = bitacora.dict()
 

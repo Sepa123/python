@@ -6213,8 +6213,8 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
         with self.conn.cursor() as cur:
             cur.execute("""
                 INSERT INTO log_inversa.bitacora_general
-                (id_usuario, ids_usuario, estado_inicial, subestado_inicial, estado_final, subestado_final, link, observacion, latitud, longitud, origen)
-                VALUES(%(Id_user)s, %(Ids_user)s, %(Estado_inicial)s, %(Subestado_inicial)s, %(Estado_final)s,%(Subestado_final)s, %(Link)s, %(Observacion)s, %(Latitud)s, %(Longitud)s, %(Origen)s);     
+                (id_usuario, ids_usuario, estado_inicial, subestado_inicial, estado_final, subestado_final, link, observacion, latitud, longitud, origen, cliente, cod_pedido, cod_producto)
+                VALUES(%(Id_user)s, %(Ids_user)s, %(Estado_inicial)s, %(Subestado_inicial)s, %(Estado_final)s,%(Subestado_final)s, %(Link)s, %(Observacion)s, %(Latitud)s, %(Longitud)s, %(Origen_registro)s, %(Origen)s, %(Codigo_pedido)s, %(Codigo_producto)s);     
                
                  """,data)
             self.conn.commit()
