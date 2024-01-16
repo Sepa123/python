@@ -6198,12 +6198,88 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             
             return cur.fetchall()
         
-    
+    ### Logistica Inversa
+        
     def obtener_estados_entrega(self):
         with self.conn.cursor() as cur:
             cur.execute("""
                 SELECT estado, descripcion
                 FROM areati.estado_entregas;             
+                         """)
+            
+            return cur.fetchall()
+        
+
+    def obtener_rutas_productos(self,cod_producto):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+               select * from rutas.obtiene_ruta_producto('{cod_producto}');      
+                         """)
+            
+            return cur.fetchall()
+        
+
+    def obtener_rutas_productos_por_ruta(self,cod_producto):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+               -- select * from rutas.obtiene_ruta_producto('{cod_producto}');      
+               select	    rt.identificador_ruta as ruta_beetrack,
+                            r.nombre_ruta_ty as ruta_transyanez,
+                            rt.identificador as patente,
+                            initcap(rt.usuario_movil) as driver
+                from beetrack.ruta_transyanez rt 
+                left join beetrack.route r on r.route = rt.identificador_ruta 
+                where rt.guia = '{cod_producto}' 
+                or rt.guia = (select aux.entrega from areati.ti_wms_carga_easy aux where aux.carton = '{cod_producto}')
+                or r.nombre_ruta_ty = '{cod_producto}'
+                order by rt.created_at desc 
+                limit 1;       
+                         """)
+            
+            return cur.fetchall()
+        
+
+    
+        
+    def get_lista_productos_ruta(self,nombre_ruta,separador):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                select 	lr.fecha_ruta,
+                lr.cod_cliente,
+                lr.nombre,
+                lr.ciudad,
+                lr.cod_pedido,
+                lr.cod_producto,
+                lr.sku,
+                lr.fecha_pedido,
+                lr.desc_producto,
+                lr.cant_producto,
+                lr.notas,
+                substring(lr.concatenated_data from length(lr.concatenated_data) - position('@' in reverse(lr.concatenated_data)) + 2) as estado
+                from rutas.listar_ruta_edicion('{nombre_ruta}') lr          
+                         """)
+            
+            return cur.fetchall()
+        
+
+    def get_estados_productos_ruta(self,cod_pedido):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                select estado,subestado from areati.ti_carga_easy_go_opl 
+                WHERE suborden= '{cod_pedido}'
+                union all
+                select estado,subestado from areati.ti_wms_carga_easy
+                where entrega= '{cod_pedido}'
+                union all
+                select estado,subestado from areati.ti_wms_carga_electrolux
+                where numero_guia = '{cod_pedido}'
+                union all
+                select estado,subestado from areati.ti_wms_carga_sportex
+                WHERE id_sportex = '{cod_pedido}'
+                union all
+                select estado,subestado from areati.ti_retiro_cliente
+                WHERE cod_pedido = '{cod_pedido}'
+                limit 1;
                          """)
             
             return cur.fetchall()

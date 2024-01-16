@@ -19,3 +19,15 @@ def subestado(sub):
 
 def subestados_schema(subestados):
     return [ subestado(sub) for sub in subestados]
+
+
+
+def estado_producto(estado):
+    return {
+        "Estado": estado[0],
+        "Subestado": estado[1],
+    }
+
+
+def estado_productos_schema(estados):
+    return [estado_producto(est) for est in estados]
