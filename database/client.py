@@ -6327,6 +6327,33 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             return updates
 
 
+    def get_bitacora_log_inversa_tracking(self,cod_producto):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+               select 	to_char(created_at,'dd-mm-yyyy hh24:mi') as diahora,
+                        cliente,
+                        cod_producto,
+                        ids_usuario,
+                        origen,
+                        observacion
+                from log_inversa.bitacora_general bg 
+                where cod_pedido = '{cod_producto}' or cod_producto = '{cod_producto}'
+                order by created_at  desc 
+                         """)
+            
+            return cur.fetchall()
+        
+
+
+    
+    def prueba_alv_elux(self,cod_producto):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                
+                         """)
+            
+            return cur.fetchall()
+
 class transyanezConnection():
     conn = None
     def __init__(self) -> None:

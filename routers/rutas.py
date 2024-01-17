@@ -13,7 +13,7 @@ from geopy.geocoders import Nominatim
 
 ## conexion
 
-from database.client import reportesConnection
+from database.client import reportesConnection , UserConnection
 from database.hela_prod import HelaConnection
 
 ## modelos y schemas
@@ -49,11 +49,12 @@ from database.models.rutas.lista_eliminar import ListaEliminar
 from database.schema.rutas.buscar_producto_ruta import buscar_productos_ruta_schema
 from database.schema.rutas.nombre_rutas_activa import nombre_rutas_activas_schema
 from database.schema.rutas.reporte_ruta_mes import reportes_rutas_mes_schema, reporte_ruta_dia_schema
+from database.schema.rutas.bitacora_log_inversa import bitacora_log_inversa_schema
 
 router = APIRouter(tags=["rutas"], prefix="/api/rutas")
 
 conn = reportesConnection()
-
+connUser = UserConnection()
 connHela = HelaConnection()
 
 @router.post("/buscar",status_code=status.HTTP_202_ACCEPTED)
@@ -1043,3 +1044,50 @@ async def datos_rutas_mes(dia : str):
 
     return excel.generar_excel_generico(result,nombre_filas,nombre_excel)
     # return reporte_ruta_dia_schema(result)
+
+
+
+
+##TRACKING LI
+
+@router.get("/bitacora/log_inversa")
+async def get_datos_logistica_inversa(cod_pedido : str):
+     results = conn.get_bitacora_log_inversa_tracking(cod_pedido)
+     pattern = r'\bportal-\b'
+
+     bitacora_usuario = bitacora_log_inversa_schema(results)
+
+     for usu in bitacora_usuario:
+          if re.search(pattern,usu['Ids_usuario']) :
+               id = usu['Ids_usuario'].replace("portal-","")
+               nombre_usu = connUser.get_nombre_usuario(id)[0]
+               usu['Nombre'] = nombre_usu
+          else:
+               id_hela = usu['Ids_usuario'].replace("hela-","")
+               nombre_usu_hela = connHela.get_nombre_usuario_hela(id_hela)[0]
+               usu['Nombre'] = nombre_usu_hela
+
+          if usu['Observacion'] is None or usu['Observacion'] == '':
+               usu['Observacion'] = "Sin observación"
+
+     return bitacora_usuario
+
+     results = conn.prueba_alv_elux(cod_pedido)
+     pattern = r'\bportal-\b'
+
+     bitacora_usuario = bitacora_log_inversa_schema(results)
+
+     for usu in bitacora_usuario:
+          if re.search(pattern,usu['Ids_usuario']) :
+               id = usu['Ids_usuario'].replace("portal-","")
+               nombre_usu = connUser.get_nombre_usuario(id)[0]
+               usu['Nombre'] = nombre_usu
+          else:
+               id_hela = usu['Ids_usuario'].replace("hela-","")
+               nombre_usu_hela = connHela.get_nombre_usuario_hela(id_hela)[0]
+               usu['Nombre'] = nombre_usu_hela
+
+          if usu['Observacion'] is None or usu['Observacion'] == '':
+               usu['Observacion'] = "Sin observación"
+
+     return bitacora_usuario
