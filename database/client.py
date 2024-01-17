@@ -2161,7 +2161,7 @@ class reportesConnection():
 
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            select "Dirección Textual" from areati.busca_ruta_manual('{pedido_id}')
+            select "Dirección Textual" from areati.busca_ruta_manual_base2('{pedido_id}')
             """)
             return cur.fetchall()
         
@@ -2169,7 +2169,7 @@ class reportesConnection():
 
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            select "Código de Producto", "Descripción del Producto"  from areati.busca_ruta_manual('{pedido_id}')
+            select "Código de Producto", "Descripción del Producto"  from areati.busca_ruta_manual_base2('{pedido_id}')
             """)
             return cur.fetchall()
         
@@ -2177,7 +2177,7 @@ class reportesConnection():
 
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            select "Ciudad" , "Provincia/Estado"  from areati.busca_ruta_manual('{pedido_id}') limit 1
+            select "Ciudad" , "Provincia/Estado"  from areati.busca_ruta_manual_base2('{pedido_id}') limit 1
             """)
             return cur.fetchone()
 
@@ -2299,8 +2299,8 @@ class reportesConnection():
             with data_ruta_manual as (
             SELECT 
                 subquery.cod_pedido as cod_pedido,
-                (areati.busca_ruta_manual(subquery.cod_pedido))."Cod. SKU" as SKU,
-                (areati.busca_ruta_manual(subquery.cod_pedido))."Cantidad de Producto" as bultos
+                (areati.busca_ruta_manual_base2(subquery.cod_pedido))."Cod. SKU" as SKU,
+                (areati.busca_ruta_manual_base2(subquery.cod_pedido))."Cantidad de Producto" as bultos
             FROM (
             SELECT DISTINCT ON (drm.cod_pedido) drm.cod_pedido cod_pedido
             FROM quadminds.datos_ruta_manual drm
@@ -4159,7 +4159,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             tbm.guia as "Guía", 
             tbm.cliente as "Cliente", 
             coalesce(tbm.comuna_correcta || '*',tbm.comuna) as "Comuna", 
-            coalesce(tbm.direccion_correcta || '*',  (select "Calle y Número" from areati.busca_ruta_manual(tbm.guia) limit 1)) as "Dirección",
+            coalesce(tbm.direccion_correcta || '*',  (select "Calle y Número" from areati.busca_ruta_manual_base2(tbm.guia) limit 1)) as "Dirección",
             coalesce(to_char(tbm.fec_reprogramada,'yyyy-mm-dd') || '*', to_char(tbm.fec_compromiso,'yyyy-mm-dd')) as "Fec. Comp.", 
             tbm.observacion as "Observación", 
             tbm.ids_transyanez as "Código TY", 
@@ -4280,7 +4280,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             cur.execute(f"""
             select tbm.alerta,  
             coalesce(to_char(tbm.fec_reprogramada,'yyyy-mm-dd'), to_char(tbm.fec_compromiso,'yyyy-mm-dd')) as "Fec. Comp.", 
-            coalesce(tbm.direccion_correcta ,  (select "Calle y Número" from areati.busca_ruta_manual(tbm.guia) limit 1)) as "Dirección",
+            coalesce(tbm.direccion_correcta ,  (select "Calle y Número" from areati.busca_ruta_manual_base2(tbm.guia) limit 1)) as "Dirección",
             coalesce(tbm.comuna_correcta ,tbm.comuna) as "Comuna", 
             tbm.subestado, tbm.subestado_esperado, tbm.observacion, tbm.codigo1 ,tbm.guia
             from  rutas.toc_bitacora_mae as tbm
@@ -5535,7 +5535,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                     and eltx.fecha_min_entrega >= '{fecha_inicio}' and eltx.fecha_min_entrega <= '{fecha_fin}'
                     
                 ) subquery
-                JOIN LATERAL areati.busca_ruta_manual(subquery.guia) AS funcion_resultado ON true
+                JOIN LATERAL areati.busca_ruta_manual_base2(subquery.guia) AS funcion_resultado ON true
                 left join areati.estado_entregas ee on subquery.estado = ee.estado 
                 left join areati.subestado_entregas se on subquery.subestado = se.code 
                 where to_char(funcion_resultado."Fecha de Pedido",'yyyy-mm-dd')>= '{fecha_inicio}'
@@ -5659,7 +5659,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                     and opl.fec_compromiso >= '{fecha_inicio}' and opl.fec_compromiso <= '{fecha_fin}'
                     --limit 100 offset 0
                 ) subquery
-                --JOIN LATERAL areati.busca_ruta_manual(subquery.guia) AS funcion_resultado ON true
+                --JOIN LATERAL areati.busca_ruta_manual_base2(subquery.guia) AS funcion_resultado ON true
                 left join f_opl funcion_resultado  on subquery.guia = funcion_resultado."Código de Pedido"
                 left join areati.estado_entregas ee on subquery.estado = ee.estado 
                 left join areati.subestado_entregas se on subquery.subestado = se.code 
@@ -5718,7 +5718,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                     and opl.fec_compromiso >= '{fecha_inicio}' and opl.fec_compromiso <= '{fecha_fin}'
                     --limit 100 offset 0
                 ) subquery
-                JOIN LATERAL areati.busca_ruta_manual(subquery.guia) AS funcion_resultado ON true
+                JOIN LATERAL areati.busca_ruta_manual_base2(subquery.guia) AS funcion_resultado ON true
                 left join areati.estado_entregas ee on subquery.estado = ee.estado 
                 left join areati.subestado_entregas se on subquery.subestado = se.code 
                 where to_char(funcion_resultado."Fecha de Pedido",'yyyy-mm-dd')>= '{fecha_inicio}'
@@ -5780,7 +5780,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                     and rtcl.fecha_pedido >= '{fecha_inicio}' and rtcl.fecha_pedido <= '{fecha_fin}'
                     --limit 100 offset 0
                 ) subquery
-                JOIN LATERAL areati.busca_ruta_manual(subquery.guia) AS funcion_resultado ON true
+                JOIN LATERAL areati.busca_ruta_manual_base2(subquery.guia) AS funcion_resultado ON true
                 left join areati.estado_entregas ee on subquery.estado = ee.estado 
                 left join areati.subestado_entregas se on subquery.subestado = se.code 
                 where to_char(funcion_resultado."Fecha de Pedido",'yyyy-mm-dd')>= '{fecha_inicio}'
@@ -5953,7 +5953,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                     and rtcl.fecha_pedido >= '{fecha_inicio}' and rtcl.fecha_pedido <= '{fecha_fin}'
                     --limit 100 offset 0
                 ) subquery
-                --JOIN LATERAL areati.busca_ruta_manual(subquery.guia) AS funcion_resultado ON true
+                --JOIN LATERAL areati.busca_ruta_manual_base2(subquery.guia) AS funcion_resultado ON true
                 left join f_aux funcion_resultado on subquery.guia = funcion_resultado."Código de Pedido"
                 left join areati.estado_entregas ee on subquery.estado = ee.estado 
                 left join areati.subestado_entregas se on subquery.subestado = se.code 
@@ -6020,7 +6020,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                     and easy.fecha_entrega >= '{fecha_inicio}' and easy.fecha_entrega <= '{fecha_fin}'
                     limit 100 offset {offset}
                 ) subquery
-                JOIN LATERAL areati.busca_ruta_manual(subquery.guia) AS funcion_resultado ON true
+                JOIN LATERAL areati.busca_ruta_manual_base2(subquery.guia) AS funcion_resultado ON true
                 left join areati.estado_entregas ee on subquery.estado = ee.estado 
                 left join areati.subestado_entregas se on subquery.subestado = se.code 
                 where to_char(funcion_resultado."Fecha de Pedido",'yyyy-mm-dd')>= '{fecha_inicio}'
@@ -6160,7 +6160,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 --limit 100 offset 100
                 ) subquery
                 left join f_aux funcion_resultado on subquery.guia = funcion_resultado.guia
-            -- JOIN LATERAL areati.busca_ruta_manual(subquery.guia) AS funcion_resultado ON true
+            -- JOIN LATERAL areati.busca_ruta_manual_base2(subquery.guia) AS funcion_resultado ON true
                 left join areati.estado_entregas ee on subquery.estado = ee.estado 
                 left join areati.subestado_entregas se on subquery.subestado = se.code 
                 where to_char(funcion_resultado."Fecha de Pedido",'yyyy-mm-dd')>='{fecha_inicio}'
@@ -6238,7 +6238,13 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             
             return cur.fetchall()
         
-
+    def pendientes_log_inversa(self,fecha):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+               select * from log_inversa.pendientes_dia_li('{fecha}');      
+                         """)
+            
+            return cur.fetchall()
     
         
     def get_lista_productos_ruta(self,nombre_ruta,separador):

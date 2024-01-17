@@ -12,6 +12,7 @@ import lib.excel_generico as excel
 ## Schema
 from database.schema.log_inversa.ruta_producto import ruta_productos_schema
 from database.schema.log_inversa.lista_productos import lista_productos_schema
+from database.schema.log_inversa.pendientes_dia import pendientes_schema
 
 ## Modelos
 from database.models.log_inversa.pendientes import PedidosPendientes
@@ -161,6 +162,16 @@ async def get_estados_pedidos(cod_pedido : str):
     no_entregado  = conn.get_estados_productos_ruta(cod_pedido)
 
     return estado_productos_schema(no_entregado)
+
+
+@router.get("/pendientes",status_code=status.HTTP_202_ACCEPTED)
+async def get_pendientes_log_inversa(fecha : str):
+
+    fecha = fecha.replace("-","")
+    print(fecha)
+    no_entregado  = conn.pendientes_log_inversa(fecha)
+
+    return pendientes_schema(no_entregado)
 
 
 
