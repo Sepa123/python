@@ -9,4 +9,5 @@ class RutasAsignadas(BaseModel):
     conductor: str
     cantidad_producto: int
     estado: Optional[str]
+    despachador : Optional[str]
     region: str

@@ -516,8 +516,9 @@ async def eliminar_ruta(nombre_ruta : str):
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
        
 @router.post("/descargar/{var_random}")
-async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list, var_random : str):
-
+async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list, var_random : str,despachador : str):
+    if despachador is None or despachador == 'null': 
+        despachador = ""
     fecha_de_asignacion = conn.get_fecha_asignacion_ruta(nombre_ruta)[0]
     fecha_hoy = datetime.now()
 
@@ -644,7 +645,7 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
              celda.border = border
   
     hoja.append(("",)) 
-    hoja.append(("","Driver : "+driver,))  
+    hoja.append(("","Driver : "+driver,'','','','Despachador: '+despachador,))  
     hoja.append(("",))  
     hoja.append(("","Firma : ______________________"))    
 
@@ -845,7 +846,7 @@ async def get_ruta_activa_by_nombre(nombre_ruta: str):
 @router.put("/actualizar/ruta_asignada")
 async def update_ruta_asignada(body :RutasAsignadas):
     try:
-          connHela.update_ruta_asignada(body.patente,body.conductor,body.nombre_ruta)
+          connHela.update_ruta_asignada(body.patente,body.conductor,body.nombre_ruta , body.despachador)
           return { "message": "Ruta Actualizada Correctamente" }
     except:
           print("error en /actualizar/ruta_asignada")

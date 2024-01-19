@@ -64,8 +64,8 @@ class HelaConnection():
             
             cur.execute("""
             INSERT INTO hela.ruta_asignada
-            (asigned_by, id_ruta, nombre_ruta, patente, driver, cant_producto, estado, region)
-            VALUES(%(asigned_by)s, %(id_ruta)s, %(nombre_ruta)s, %(patente)s, %(conductor)s, %(cantidad_producto)s, true, %(region)s);
+            (asigned_by, id_ruta, nombre_ruta, patente, driver, cant_producto, estado, region, despachador)
+            VALUES(%(asigned_by)s, %(id_ruta)s, %(nombre_ruta)s, %(patente)s, %(conductor)s, %(cantidad_producto)s, true, %(region)s, %(despachador)s);
             """,data)
         self.conn.commit()
     
@@ -75,7 +75,7 @@ class HelaConnection():
     def read_id_ruta_activa_by_nombre(self, nombre_ruta):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            SELECT patente,driver, id_ruta, region
+            SELECT patente,driver, id_ruta, region, despachador
             FROM hela.ruta_asignada where nombre_ruta = '{nombre_ruta}'
             """)
             return cur.fetchone()
@@ -106,11 +106,11 @@ class HelaConnection():
     
     ## Actualizar ruta asignada
 
-    def update_ruta_asignada(self,patente,driver,nombre_ruta):
+    def update_ruta_asignada(self,patente,driver,nombre_ruta, despachador):
         with self.conn.cursor() as cur:
                 cur.execute(f"""        
                 UPDATE hela.ruta_asignada
-                set patente='{patente}', driver='{driver}'
+                set patente='{patente}', driver='{driver}', despachador='{despachador}'
                 WHERE nombre_ruta = '{nombre_ruta}'
                 """)
         self.conn.commit()
