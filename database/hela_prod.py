@@ -2,7 +2,12 @@ import psycopg2
 import codecs
 from decouple import config
 import os, sys, codecs
+import subprocess
 
+# import datetime
+# import pytz
+
+comando = ["pm2", "restart", "0"]
 
 # Especifica el timezone que deseas utilizar
 timezone = 'America/Santiago'
@@ -22,11 +27,13 @@ class HelaConnection():
         except psycopg2.OperationalError as err:
             print(err)
             print("Se conectara ???")
-            self.conn.close()
-            self.conn = psycopg2.connect(config("POSTGRES_DB_CARGA"), options=options)
-            # self.conn.encoding("")
-            self.conn.autocommit = True
-            self.conn.set_client_encoding("UTF-8")
+            # self.conn.close()
+            comando = ["pm2", "restart", "0"]
+            subprocess.run(comando, shell=False)
+            # self.conn = psycopg2.connect(config("POSTGRES_DB_CARGA"), options=options)
+            # # self.conn.encoding("")
+            # self.conn.autocommit = True
+            # self.conn.set_client_encoding("UTF-8")
         
     def __def__(self):
         self.conn.close()

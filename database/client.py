@@ -2,11 +2,12 @@ import psycopg2
 import codecs
 from decouple import config
 import os, sys, codecs
-# import subprocess
+import subprocess
 
 # import datetime
 # import pytz
 
+comando = ["pm2", "restart", "0"]
 
 ### Conexion usuario 
 
@@ -18,8 +19,9 @@ class UserConnection():
         except psycopg2.OperationalError as err:
             print(err)
             print("Se conectara ???")
-            self.conn.close()
-            self.conn = psycopg2.connect(config("POSTGRES_DB_TR"))
+            # self.conn.close()
+            #  self.conn = psycopg2.connect(config("POSTGRES_DB_TR"))
+            subprocess.run(comando, shell=False)
         
     def __def__(self):
         self.conn.close()
@@ -89,11 +91,12 @@ class reportesConnection():
             self.conn.set_client_encoding("UTF-8")
         except psycopg2.OperationalError as err:
             print(err)
-            self.conn.close()
-            self.conn = psycopg2.connect(config("POSTGRES_DB_CARGA"), options=options)
-            # self.conn.encoding("")
-            self.conn.autocommit = True
-            self.conn.set_client_encoding("UTF-8")
+            # self.conn.close()
+            subprocess.run(comando, shell=False)
+            # self.conn = psycopg2.connect(config("POSTGRES_DB_CARGA"), options=options)
+            # # self.conn.encoding("")
+            # self.conn.autocommit = True
+            # self.conn.set_client_encoding("UTF-8")
         
     def __def__(self):
         self.conn.close()
@@ -6368,8 +6371,9 @@ class transyanezConnection():
 
         except psycopg2.OperationalError as err:
             print(err)
-            self.conn.close()
-            self.conn = psycopg2.connect(config("POSTGRES_DB_TR"))
+            subprocess.run(comando, shell=False)
+            # self.conn.close()
+            # self.conn = psycopg2.connect(config("POSTGRES_DB_TR"))
     #Vehiculos Portal
     def get_vehiculos_portal(self):
         with self.conn.cursor() as cur:
