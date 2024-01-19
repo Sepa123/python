@@ -486,6 +486,22 @@ async def delete_producto_ruta_activa(cod_producto : str, nombre_ruta : str):
           print("error en /eliminar/producto/cod_producto/nombre_ruta")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
      
+
+## eliminar producto + bitacora
+@router.put("/eliminar/producto/{cod_producto}") 
+async def delete_producto_ruta_activa_bitacora(lista : ListaEliminar):
+     try:
+          results = conn.delete_producto_ruta_activa(lista.cod_producto, lista.nombre_ruta)
+          if (results == 0): 
+              print("El producto no existe en ninguna ruta")
+          else:
+              data = lista.dict()
+              connHela.insert_data_bitacora_recepcion(data)
+          return { "message" : "producto eliminado"}
+     except:
+          print("error en /eliminar/producto/cod_producto/nombre_ruta")
+          raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")    
+     
 ## eliminar cargas
 @router.put("/eliminar/productos")
 async def delete_cargas_rsv(lista : ListaEliminar):
@@ -500,6 +516,9 @@ async def delete_cargas_rsv(lista : ListaEliminar):
     print(codigos)
 
     results = conn.delete_productos_ruta(lista.lista, lista.nombre_ruta)
+
+    data = lista.dict()
+    connHela.insert_data_bitacora_recepcion(data)
     return {
         "message" : f"productos eliminados ,{results}",
         "mostrar" : True
@@ -1054,26 +1073,6 @@ async def datos_rutas_mes(dia : str):
 @router.get("/bitacora/log_inversa")
 async def get_datos_logistica_inversa(cod_pedido : str):
      results = conn.get_bitacora_log_inversa_tracking(cod_pedido)
-     pattern = r'\bportal-\b'
-
-     bitacora_usuario = bitacora_log_inversa_schema(results)
-
-     for usu in bitacora_usuario:
-          if re.search(pattern,usu['Ids_usuario']) :
-               id = usu['Ids_usuario'].replace("portal-","")
-               nombre_usu = connUser.get_nombre_usuario(id)[0]
-               usu['Nombre'] = nombre_usu
-          else:
-               id_hela = usu['Ids_usuario'].replace("hela-","")
-               nombre_usu_hela = connHela.get_nombre_usuario_hela(id_hela)[0]
-               usu['Nombre'] = nombre_usu_hela
-
-          if usu['Observacion'] is None or usu['Observacion'] == '':
-               usu['Observacion'] = "Sin observación"
-
-     return bitacora_usuario
-
-     results = conn.prueba_alv_elux(cod_pedido)
      pattern = r'\bportal-\b'
 
      bitacora_usuario = bitacora_log_inversa_schema(results)
