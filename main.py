@@ -209,7 +209,7 @@ async def me ():
 
 @app.get("/api/test/comando")
 async def test_comandos():  
-    comando = "ls /home/ubuntu -l"
+    comando = "pm2 restart 0"
 
     # Ejecutar el comando y capturar la salida
     resultado = subprocess.run(comando, shell=True, capture_output=True, text=True)
