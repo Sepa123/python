@@ -209,16 +209,15 @@ async def me ():
 
 @app.get("/api/test/comando")
 async def test_comandos():  
-    comando = "pm2 restart 0"
+    comando = ["pm2", "restart", "0"]
 
     # Ejecutar el comando y capturar la salida
-    resultado = subprocess.run(comando, shell=True, capture_output=True, text=True)
+    resultado = subprocess.run(comando, shell=False)
 
     print("Salida del comando:")
-    print(resultado.stdout) 
 
     return {
-        "message" : f"Resp {resultado.stdout}  "
+        "message" : f"Resp "
         }
 
 
