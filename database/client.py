@@ -6201,6 +6201,17 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             
             return cur.fetchall()
         
+
+    def obtener_subestados_entrega_log_inversa(self):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+                SELECT parent_code, "name", code 
+                FROM areati.subestado_entregas
+                where habilitado_li = true;   
+                          """)
+            
+            return cur.fetchall()
+        
     ### Logistica Inversa
         
     def obtener_estados_entrega(self):

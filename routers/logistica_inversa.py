@@ -56,7 +56,7 @@ async def registrar_retiro_clientes(bitacora : BitacoraLg):
     # except:
     #      raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Error")
     
-
+## Estados y subestados full
 @router.get("/estados", status_code=status.HTTP_202_ACCEPTED)
 async def estados_entregas():
 
@@ -73,6 +73,24 @@ async def estados_entregas():
 
     return json
 
+
+##Estados y subestados Logistica Inversa
+
+@router.get("/estados/li", status_code=status.HTTP_202_ACCEPTED)
+async def estados_entregas_logistica_inversa():
+
+    estado = conn.obtener_estados_entrega()
+    list_estado = estados_schema(estado)
+
+    subestado = conn.obtener_subestados_entrega_log_inversa()
+    list_subestado = subestados_schema(subestado)
+
+    json = {
+        "estado" : list_estado,
+        "subestado" : list_subestado,
+    }
+
+    return json
 
 def cambiar_bool(valor):
      if valor is True:
