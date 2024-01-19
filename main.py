@@ -14,7 +14,7 @@ from database.models.token import TokenPayload
 from routers import areati, carga,panel, electrolux, transyanez, reportes_cargas, pedidos, productos, rutas, recepcion, comunas, clientes, toc , rsv, beetrack, easy,logistica_inversa
 from database.schema.roles_list import roles_list_schema
 import time
-
+import subprocess
 # import os
 # import multiprocessing
 
@@ -207,10 +207,18 @@ async def me ():
 
 
 
-@app.get("/api/test/time/{seg}")
-async def test_time (seg : int):  
-    time.sleep(seg)
-    
+@app.get("/api/test/comando")
+async def test_comandos():  
+    comando = "ls /home/ubuntu -l"
+
+    # Ejecutar el comando y capturar la salida
+    resultado = subprocess.run(comando, shell=True, capture_output=True, text=True)
+
+    print("Salida del comando:")
+    print(resultado.stdout) 
+
     return {
-        "message" : f"Tiempo espera {seg} segundos "
+        "message" : f"Resp {resultado.stdout}  "
         }
+
+
