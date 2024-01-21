@@ -37,11 +37,14 @@ class HelaConnection():
         
     def __def__(self):
         self.conn.close()
-
     
     ##Login User hela
 
     def read_only_one(self, data):
+
+        if self.conn.closed:
+            subprocess.run(comando, shell=False)
+
         with self.conn.cursor() as cur:
             print (data)
             cur.execute(f"""

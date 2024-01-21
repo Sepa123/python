@@ -67,6 +67,9 @@ class UserConnection():
         
     def read_only_one(self, data):
         # self.conn = self.conectar_bd()
+        if self.conn.closed:
+            subprocess.run(comando, shell=False)
+
         with self.conn.cursor() as cur:
             cur.execute("""
             SELECT id, full_name ,mail,"password" ,active ,rol_id  FROM "user".users WHERE lower(mail) = lower(%(mail)s)
