@@ -90,7 +90,6 @@ async def root():
     conn
     return "hola"
 
-
 # @app.get("/api/cpu")
 # async def cpu():
 #  # Obtener la cantidad de núcleos de la CPU
