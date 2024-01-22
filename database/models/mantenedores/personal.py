@@ -3,7 +3,7 @@ from datetime import date
 from typing import Optional
 
 class PersonalEquipo(BaseModel):
-    id: int
+    id: Optional[int]
     id_user: Optional [int]
     ids_user: Optional [str]
     lat: Optional [str]
@@ -38,5 +38,9 @@ class PersonalEquipo(BaseModel):
     pantalon: Optional [str]
     poleron: Optional [str]
     zapato: Optional [int]
-
+    req_comp: Optional [bool]
+    req_cel: Optional [bool]
+    observacion: Optional[str]
+    foto: Optional[str]
+    pdf: Optional[str]
 
