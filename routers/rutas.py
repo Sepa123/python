@@ -518,7 +518,7 @@ async def delete_cargas_rsv(lista : ListaEliminar):
     results = conn.delete_productos_ruta(lista.lista, lista.nombre_ruta)
 
     data = lista.dict()
-    connHela.insert_data_bitacora_recepcion(data)
+    # connHela.insert_data_bitacora_recepcion(data)
     return {
         "message" : f"productos eliminados ,{results}",
         "mostrar" : True
