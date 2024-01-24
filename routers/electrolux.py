@@ -24,7 +24,7 @@ async def datos_confirma_facil():
         
         body = {
                 "embarque": {
-                    "numero": dato["Numero"],
+                    "numero": dato["Factura"],
                     "serie": "02"
                 },
                 "embarcador": {
@@ -182,9 +182,13 @@ async def datos_confirma_facil(codigo : str):
             # print("Electrolux ",response.json())
             print("si paso cf")
             return response.json()
-        else:
+        elif response.status_code == 400:
             # Si la solicitud no fue exitosa, devolver un error
-             print("no paso cf")
+             print(response.json())
              return {
                 "message" : "No paso, hubo un error"
              }
+        else:
+            return {
+                "message": "Hubo Otro errors"
+            }
