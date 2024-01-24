@@ -10,11 +10,6 @@ import datetime
 ## Modelos
 from database.schema.confirma_facil.electrolux import datos_confirma_facil_schema
 
-
-
-
-
-
 router = APIRouter(tags=["electrolux"], prefix="/api/electrolux")
 
 conn = reportesConnection()
@@ -132,7 +127,7 @@ async def ejecutar_solo_una_vez_por_hora():
     ahora = datetime.datetime.now()
 
     # Verificar si la función ya se ejecutó hoy
-    if ultima_ejecucion is None or ahora - ultima_ejecucion > datetime.timedelta(minutes=110):
+    if ultima_ejecucion is None or ahora - ultima_ejecucion > datetime.timedelta(minutes=90):
         # Ejecutar la función
         await get_token_unico()
 
@@ -185,7 +180,9 @@ async def datos_confirma_facil(codigo : str):
         # Verificar si la solicitud fue exitosa
         if response.status_code == 200:
             # print("Electrolux ",response.json())
-            return response.json()
+            print("si paso cf")
+            # return response.json()
         else:
             # Si la solicitud no fue exitosa, devolver un error
-            return response.json()
+             print("no paso cf")
+            # return response.json()
