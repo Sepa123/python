@@ -181,8 +181,10 @@ async def datos_confirma_facil(codigo : str):
         if response.status_code == 200:
             # print("Electrolux ",response.json())
             print("si paso cf")
-            # return response.json()
+            return response.json()
         else:
             # Si la solicitud no fue exitosa, devolver un error
              print("no paso cf")
-            # return response.json()
+             return {
+                "message" : "No paso, hubo un error"
+             }
