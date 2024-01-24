@@ -5,7 +5,7 @@ import httpx
 
 ##Conexiones
 from database.client import reportesConnection 
-from datetime import datetime
+import datetime
 
 ## Modelos
 from database.schema.confirma_facil.electrolux import datos_confirma_facil_schema
@@ -89,6 +89,65 @@ async def datos_confirma_facil():
     
         # print(body)
 
+## Reportes Historicos
+resultado_header_token = None
+ultima_ejecucion = None
+
+async def get_token_unico():
+    global resultado_header_token
+    cf_login = "https://utilities.confirmafacil.com.br/login/login"
+     # Hacer una solicitud a la API externa usando httpx
+    body_login = {
+  	 	"email": "admin.area.ti@transyanez.cl",
+   	 	"senha": "TYti2022@"
+    }
+
+    header = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": ""
+    }
+
+    async with httpx.AsyncClient() as client:
+
+        timeout = httpx.Timeout(20.0, read=None)
+        response = await client.post(url=cf_login,json=body_login)
+        # Verificar si la solicitud fue exitosa
+        if response.status_code == 200:
+            # Si la solicitud fue exitosa, devolver los datos obtenidos
+            resp = response.json()
+            token_acceso = resp["resposta"]["token"]
+            header["Authorization"] = token_acceso
+
+            resultado_header_token = header
+
+        else:
+
+            print("no se puedo recuperar token access")
+
+async def ejecutar_solo_una_vez_por_hora():
+    global ultima_ejecucion 
+
+    # Obtener la fecha y hora actual
+    ahora = datetime.datetime.now()
+
+    # Verificar si la función ya se ejecutó hoy
+    if ultima_ejecucion is None or ahora - ultima_ejecucion > datetime.timedelta(minutes=110):
+        # Ejecutar la función
+        await get_token_unico()
+
+        # Actualizar el momento de la última ejecución a la hora actual
+        ultima_ejecucion = ahora
+
+        print("Ultima Ejecucion Reporte Historico", ultima_ejecucion)
+
+
+@router.get("/confirma_facil/test")
+async def datos_confirma_facil_tesst():
+    await ejecutar_solo_una_vez_por_hora()
+
+    return resultado_header_token
+
 @router.get("/confirma_facil/codigo/{codigo}")
 async def datos_confirma_facil(codigo : str):
     results = conn.recuperar_data_electrolux()
@@ -115,43 +174,18 @@ async def datos_confirma_facil(codigo : str):
                 }
             datos_enviar.append(body)
 
-    cf_login = "https://utilities.confirmafacil.com.br/login/login"
     cf_embarque = "https://utilities.confirmafacil.com.br/business/v2/embarque"
      # Hacer una solicitud a la API externa usando httpx
 
-    body_login = {
-  	 	"email": "admin.area.ti@transyanez.cl",
-   	 	"senha": "TYti2022@"
-    }
-
-
-    header = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        "Authorization": ""
-    }
+    timeout = httpx.Timeout(20.0, read=None)
+    await ejecutar_solo_una_vez_por_hora()
 
     async with httpx.AsyncClient() as client:
-
-        timeout = httpx.Timeout(20.0, read=None)
-        response = await client.post(url=cf_login,json=body_login)
+        response = await client.post(url=cf_embarque,json=datos_enviar,headers=resultado_header_token,timeout=timeout)
         # Verificar si la solicitud fue exitosa
         if response.status_code == 200:
-            # Si la solicitud fue exitosa, devolver los datos obtenidos
-            resp = response.json()
-            token_acceso = resp["resposta"]["token"]
-            header["Authorization"] = token_acceso
-
-            async with httpx.AsyncClient() as client:
-                response = await client.post(url=cf_embarque,json=datos_enviar,headers=header,timeout=timeout)
-                # Verificar si la solicitud fue exitosa
-                if response.status_code == 200:
-                    # print("Electrolux ",response.json())
-                    return response.json()
-                else:
-                    # Si la solicitud no fue exitosa, devolver un error
-                    return response.json()
+            # print("Electrolux ",response.json())
+            return response.json()
         else:
             # Si la solicitud no fue exitosa, devolver un error
-            return {"error": "No se pudo obtener la información del usuario",
-                    "body" : response.json()}, response.status_code
+            return response.json()
