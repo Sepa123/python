@@ -184,9 +184,9 @@ async def datos_confirma_facil(codigo : str):
             return response.json()
         elif response.status_code == 400:
             # Si la solicitud no fue exitosa, devolver un error
-             print(response.json())
+             print("cf : la ocurrencia ya existe")
              return {
-                "message" : "No paso, hubo un error"
+                "message" : "No paso, la ocurrencia ya existe"
              }
         else:
             return {
