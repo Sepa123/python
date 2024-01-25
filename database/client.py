@@ -547,7 +547,7 @@ class reportesConnection():
         with self.conn.cursor() as cur:
             cur.execute("""SELECT a.id, p.nombres || ' ' || p.apellidos  as persona, d.nombre as departamento,
                         e.marca|| ' ' || e.modelo AS equipo,  a.folio_entrega,  a.fecha_entrega,a.firma_entrega, a.pdf_entrega ,a.folio_devolucion,  a.fecha_devolucion,
-                        a.firma_devolucion ,a.pdf_devolucion , a.estado, a.observacion
+                        a.firma_devolucion ,a.pdf_devolucion , a.estado, a.observacion, t.nombre as tipo
                     FROM inventario.asignacion a  
                         INNER JOIN inventario.persona p ON a.persona = p.id
                         INNER JOIN inventario.equipo e ON a.equipo = e.id

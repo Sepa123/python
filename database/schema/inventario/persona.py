@@ -14,6 +14,7 @@ def lista_persona_equipo_asignado(data):
             "pdf_devolucion":data[11],
             "estado":data[12],
             "observacion":data[13],
+            "tipo": data[14]
             }
 
 def persona_equipo_schema(datos):
