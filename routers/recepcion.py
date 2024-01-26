@@ -72,6 +72,9 @@ async def get_recepcion_easy_opl_detalle(suborden : str):
 
 @router.post("/easy_opl/bultos", status_code=status.HTTP_202_ACCEPTED)
 async def agregar_butlos_easy_opl(body : BodyBultosOpl):
+    if body.ids_usuario == 'hela-null' or body.ids_usuario == 'portal-null':
+        body.ids_usuario = body.ids_usuario.replace('null', str(body.id_usuario))
+
     data = body.dict()
     checkData = conn.checK_bulto_easy_opl_si_existe(body.Suborden)
 
@@ -83,7 +86,6 @@ async def agregar_butlos_easy_opl(body : BodyBultosOpl):
         conn.update_bultos_a_easy_opl(data)
         connHela.insert_data_bitacora_recepcion(data)
         print("uipdate")
-    print(data)
     return {
         "mostrar" : False,
         "message" : "datos insertados correctamente"
@@ -173,6 +175,8 @@ async def get_recepcion_easy_opl_by_codigo_producto(body: bodyUpdateVerified):
     print(f"producto El  producto {body.cod_producto} OPL, codigo[0][0] = {codigo[0][0]}")
     body.n_guia = codigo[0][0]
     try:
+        if body.ids_usuario == 'hela-null' or body.ids_usuario == 'portal-null':
+             body.ids_usuario = body.ids_usuario.replace('null', str(body.id_usuario))
         data = body.dict()
         rows = conn.update_verified_opl(codigo[0][0], body.sku)
         if rows != 0:
@@ -241,6 +245,8 @@ async def prueba(codigo : str):
 @router.put("/verificar/opl",status_code=status.HTTP_202_ACCEPTED)
 async def update_estado_verificado_producto(body: bodyUpdateVerified):
     try:
+        if body.ids_usuario == 'hela-null' or body.ids_usuario == 'portal-null':
+             body.ids_usuario = body.ids_usuario.replace('null', str(body.id_usuario))
         data = body.dict()
         # print(body.cod_producto)
         # print(body.check)
@@ -287,6 +293,10 @@ async def update_recepcion_easy_opl_by_codigo_producto_sko(body: bodyUpdateVerif
         # print(codigo_pedido)
         body.n_guia = codigo_pedido
         body.cod_producto = codigo_pedido
+
+        if body.ids_usuario == 'hela-null' or body.ids_usuario == 'portal-null':
+             body.ids_usuario = body.ids_usuario.replace('null', str(body.id_usuario))
+
         data = body.dict()     
         rows = conn.update_recepcion_opl(codigo_pedido, body.sku)
         print(f"easy_opl codigo {codigo_pedido} y sku {body.sku}")
