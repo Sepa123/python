@@ -567,17 +567,28 @@ class reportesConnection():
     
     def read_asignados_sin_join(self):
         with self.conn.cursor() as cur:
-            cur.execute(""" SELECT id,   persona, departamento, equipo, folio_entrega, fecha_entrega,firma_entrega, pdf_entrega, folio_devolucion,
-                        fecha_devolucion, firma_devolucion, pdf_devolucion,  estado, observacion
-                        from inventario.asignacion
+               # SELECT id,   persona, departamento, equipo, folio_entrega, fecha_entrega,firma_entrega, pdf_entrega, folio_devolucion,
+                        # fecha_devolucion, firma_devolucion, pdf_devolucion,  estado, observacion,tipo
+                        # from inventario.asignacion
+            cur.execute(""" 
+                        SELECT a.id,   a.persona, a.departamento, a.equipo, a.folio_entrega, a.fecha_entrega,
+                        a.firma_entrega, a.pdf_entrega, a.folio_devolucion,
+                        a.fecha_devolucion, a.firma_devolucion, a.pdf_devolucion,  a.estado, a.observacion,t.nombre
+                        from inventario.asignacion a
+                        INNER JOIN inventario.equipo e ON a.equipo = e.id
+                        inner join inventario.tipo t on e.tipo = t.id
+                     
                  """)
             return cur.fetchall()
     def read_asignados_sin_join_por_id(self,id):
         with self.conn.cursor() as cur:
-            cur.execute(""" SELECT id,   persona, departamento, equipo, folio_entrega, fecha_entrega,firma_entrega, pdf_entrega, folio_devolucion,
-                        fecha_devolucion, firma_devolucion, pdf_devolucion,  estado, observacion
-                    from inventario.asignacion
-                where id=%(id)s """, {"id" : id})
+            cur.execute("""   SELECT a.id,   a.persona, a.departamento, a.equipo, a.folio_entrega, a.fecha_entrega,
+                        a.firma_entrega, a.pdf_entrega, a.folio_devolucion,
+                        a.fecha_devolucion, a.firma_devolucion, a.pdf_devolucion,  a.estado, a.observacion,t.nombre
+                        from inventario.asignacion a
+                        INNER JOIN inventario.equipo e ON a.equipo = e.id
+                        inner join inventario.tipo t on e.tipo = t.id
+                where a.id=%(id)s """, {"id" : id})
             return cur.fetchall()
 
     def read_asignados_por_id(self,id):
