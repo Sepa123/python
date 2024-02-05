@@ -7011,7 +7011,15 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             
             return cur.fetchall()
         
-
+    ##### TIMELINE PRODUCTOS SEGURIDAD
+        
+    def hoja_vida_producto(self,cod_producto):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                select * from rutas.genera_hojavida_producto('{cod_producto}');
+                         """)
+            
+            return cur.fetchall()
 
     
     def prueba_alv_elux(self,cod_producto):
