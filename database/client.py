@@ -9,6 +9,24 @@ import subprocess
 
 comando = ["pm2", "restart", "0"]
 
+## decorador para en caso de que la base de datos de ty se desconecte
+def reconnect_if_closed(func):
+    
+    def wrapper(self, *args, **kwargs):
+        if self.conn is None or self.conn.closed:
+            # print("la conexion esta cerrada")
+            try:
+                self.conn = psycopg2.connect(config("POSTGRES_DB_TR"))
+            except psycopg2.OperationalError as err:
+                print(err)
+                print("Intentando reconectar...")
+                subprocess.run(comando, shell=False)  # No tengo el valor de "comando", asegúrate de definirlo
+        
+        # else:
+        #     print("base de datos conecatada")
+        return func(self, *args, **kwargs)
+    return wrapper
+
 ### Conexion usuario 
 
 class UserConnection():
@@ -34,6 +52,7 @@ class UserConnection():
             print("Se conectara ???")
             self.conn.close()
 
+    @reconnect_if_closed
     def write(self, data):
         with self.conn.cursor() as cur:
             cur.execute("""
@@ -41,7 +60,8 @@ class UserConnection():
 
             """,data)
         self.conn.commit()
-    
+
+    @reconnect_if_closed
     def read_all(self):
         with self.conn.cursor() as cur:
             cur.execute("""
@@ -49,6 +69,7 @@ class UserConnection():
             """)
             return cur.fetchall()
         
+    @reconnect_if_closed    
     def read_roles(self):
         with self.conn.cursor() as cur:
             cur.execute("""
@@ -56,7 +77,8 @@ class UserConnection():
                 FROM "user".rol;
             """)
             return cur.fetchall()
-    
+        
+    @reconnect_if_closed
     def get_nombre_usuario(self, id_usuario : int):
         with self.conn.cursor() as cur:
             cur.execute(f"""
@@ -65,10 +87,20 @@ class UserConnection():
             """)
             return cur.fetchone()
         
+    @reconnect_if_closed
+    def get_nombre_lista_usuarios(self, lista_usuarios : str):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            SELECT id, full_name from "user".users
+            where id in ({lista_usuarios})
+            """)
+            return cur.fetchall()
+        
+    @reconnect_if_closed    
     def read_only_one(self, data):
         # self.conn = self.conectar_bd()
-        if self.conn.closed:
-            subprocess.run(comando, shell=False)
+        # if self.conn.closed:
+            # subprocess.run(comando, shell=False)
 
         with self.conn.cursor() as cur:
             cur.execute("""

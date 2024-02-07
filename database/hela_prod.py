@@ -133,3 +133,13 @@ class HelaConnection():
             WHERE id = {id_usuario}
             """)
             return cur.fetchone()
+        
+
+    def get_nombres_lista_usuarios_hela(self, lista_id : str):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            SELECT id, nombre
+            FROM hela.usuarios
+            WHERE id in ({lista_id})
+            """)
+            return cur.fetchall()
