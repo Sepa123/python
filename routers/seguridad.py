@@ -34,9 +34,12 @@ async def registrar_usuario(cod_producto : str):
           elif re.search(pattern_hela,usu['Created_by']):
                id = usu['Created_by'].replace("hela-","")
                lista_usu_hela.append(id)
-    
-    usuarios_portal = datos_usuarios_schema(connUser.get_nombre_lista_usuarios(', '.join(lista_usu_portal)))
-    usuarios_hela = datos_usuarios_schema(connhela.get_nombres_lista_usuarios_hela(', '.join(lista_usu_hela)))
+  
+    if lista_usu_portal != []:
+         usuarios_portal = datos_usuarios_schema(connUser.get_nombre_lista_usuarios(', '.join(lista_usu_portal)))
+         
+    if lista_usu_hela != []:
+         usuarios_hela = datos_usuarios_schema(connhela.get_nombres_lista_usuarios_hela(', '.join(lista_usu_hela)))
 
     for usu in hoja_vida:
           if re.search(pattern_portal,usu['Created_by']) :
@@ -49,17 +52,3 @@ async def registrar_usuario(cod_producto : str):
 
     return hoja_vida
     
-
-# @router.post("/password")
-# async def cambiar_password(body : loginSchema):
-    
-#     row = connHela.cambiar_password(hash_password(body.password),body.mail)
-
-#     if row == 1:
-#         return {
-#             "message": "Se ha actualizado la contraseña correctamente"
-#         }
-#     else:
-#         return {
-#             "message": "No se ha actualizado la contraseña"
-#         }
