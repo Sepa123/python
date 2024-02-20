@@ -27,6 +27,24 @@ def reconnect_if_closed(func):
         return func(self, *args, **kwargs)
     return wrapper
 
+
+def reconnect_if_closed_postgres(func):
+    
+    def wrapper(self, *args, **kwargs):
+        if self.conn is None or self.conn.closed:
+            # print("la conexion esta cerrada")
+            try:
+                self.conn = psycopg2.connect(config("POSTGRES_DB_CARGA"))
+            except psycopg2.OperationalError as err:
+                print(err)
+                print("Intentando reconectar...")
+                subprocess.run(comando, shell=False)  # No tengo el valor de "comando", asegúrate de definirlo
+        
+        # else:
+        #     print("base de datos conecatada")
+        return func(self, *args, **kwargs)
+    return wrapper
+
 ### Conexion usuario 
 
 class UserConnection():
@@ -139,6 +157,7 @@ class reportesConnection():
     def closeDB(self):
         self.conn.close()
     # Reporte historico 
+    @reconnect_if_closed_postgres
     def read_reporte_historico_mensual(self):
         with self.conn.cursor() as cur:
             cur.execute("""
@@ -176,6 +195,7 @@ class reportesConnection():
             
             return cur.fetchall()
     
+    @reconnect_if_closed_postgres
     def read_reporte_historico_hoy(self):
         with self.conn.cursor() as cur:
             cur.execute("""
@@ -212,7 +232,8 @@ class reportesConnection():
             """)
             
             return cur.fetchall()
-        
+    
+    @reconnect_if_closed_postgres
     def read_reporte_historico_anual(self):
         with self.conn.cursor() as cur:
 
@@ -251,6 +272,7 @@ class reportesConnection():
             return cur.fetchall()
     
     #Productos sin recepcion
+    @reconnect_if_closed_postgres
     def read_productos_sin_recepcion(self):
         with self.conn.cursor() as cur:
             cur.execute(
@@ -261,6 +283,7 @@ class reportesConnection():
 
     
     #Cargas Verificadas y Total
+    @reconnect_if_closed_postgres
     def read_cargas_easy(self):
         
         with self.conn.cursor() as cur:
@@ -279,6 +302,7 @@ class reportesConnection():
             """)
             return cur.fetchall()
     # Quadminds
+    @reconnect_if_closed_postgres
     def read_clientes(self):
 
         with self.conn.cursor() as cur:
@@ -586,6 +610,7 @@ class reportesConnection():
             """)
             return cur.fetchall()
     
+    @reconnect_if_closed_postgres
     def read_reporte_quadmind_fecha_compromiso(self):
         with self.conn.cursor() as cur:
             cur.execute("""
@@ -892,6 +917,7 @@ class reportesConnection():
             """)
             return cur.fetchall()
     
+    @reconnect_if_closed_postgres
     def read_resumen_quadmind_tamano(self):
         with self.conn.cursor() as cur:
             cur.execute("""
@@ -1167,6 +1193,7 @@ class reportesConnection():
             """)
             return cur.fetchall()
 
+    @reconnect_if_closed_postgres
     def read_NS_beetrack_mensual(self):
         with self.conn.cursor() as cur:
             cur.execute("""
@@ -1195,7 +1222,8 @@ class reportesConnection():
     #             SELECT rutas.asignar_valor_ruta(CAST(%s AS rutas.objeto_exo[]));
     #             """, (data,))
     #         self.conn.commit()
-
+        
+    @reconnect_if_closed_postgres
     def update_valor_rutas(self, valoresActualizados):
         with self.conn.cursor() as cur:
         
@@ -1211,6 +1239,7 @@ class reportesConnection():
 
 
     ## Reportes de productos entregados
+    @reconnect_if_closed_postgres
     def read_reporte_producto_entregado_mensual(self):
         with self.conn.cursor() as cur:
             cur.execute("""
@@ -1254,6 +1283,7 @@ class reportesConnection():
 
             return cur.fetchall()
 
+    @reconnect_if_closed_postgres
     def read_reporte_producto_entregado_hoy(self):
         with self.conn.cursor() as cur:
             cur.execute("""
@@ -1295,6 +1325,7 @@ class reportesConnection():
 
             return cur.fetchall()
         
+    @reconnect_if_closed_postgres
     def read_reporte_producto_entregado_anual(self):
         with self.conn.cursor() as cur:
             cur.execute("""
@@ -1337,6 +1368,7 @@ class reportesConnection():
 
             return cur.fetchall()
     
+    @reconnect_if_closed_postgres
     def read_reporte_producto_entregado_por_rango_fecha(self,inicio,termino):
         with self.conn.cursor() as cur:
             cur.execute(f"""
@@ -1378,7 +1410,9 @@ class reportesConnection():
             """)
 
             return cur.fetchall()
+    
     ## Reportes por hora
+    @reconnect_if_closed_postgres
     def read_reportes_hora(self): 
         with self.conn.cursor() as cur:
             cur.execute("""
@@ -1423,6 +1457,7 @@ class reportesConnection():
             results = cur.fetchall()  
             return results
         
+    @reconnect_if_closed_postgres
     def read_reporte_ultima_hora(self):
         with self.conn.cursor() as cur:
             cur.execute("""
@@ -1457,7 +1492,9 @@ class reportesConnection():
             """)
 
             return cur.fetchall()
+    
     ##Reportes easy Region
+    @reconnect_if_closed_postgres
     def read_productos_easy_region(self):
         with self.conn.cursor() as cur:
             cur.execute("""
@@ -1503,7 +1540,7 @@ class reportesConnection():
             return cur.fetchall()
 
     # Pedidos Con Fecha de Compromiso sin Despacho
-
+    @reconnect_if_closed_postgres
     def read_pedido_compromiso_sin_despacho(self):
         with self.conn.cursor() as cur:
             cur.execute("""
@@ -1652,7 +1689,8 @@ class reportesConnection():
                        """)
 
             return cur.fetchall()
-        
+
+    @reconnect_if_closed_postgres   
     def read_pedidos(self):
         with self.conn.cursor() as cur:
             cur.execute("""
@@ -1674,7 +1712,8 @@ class reportesConnection():
             """)
 
             return cur.fetchall()
-        
+
+    @reconnect_if_closed_postgres   
     def read_ruta_beetrack_hoy(self):
         with self.conn.cursor() as cur:
             cur.execute("""
@@ -1825,6 +1864,7 @@ class reportesConnection():
 
             return cur.fetchall()
     
+    @reconnect_if_closed_postgres
     def read_pedidos_tiendas_easy_opl(self):
         with self.conn.cursor() as cur:
             cur.execute("""
@@ -1845,6 +1885,7 @@ class reportesConnection():
 
             return cur.fetchall()
         
+    @reconnect_if_closed_postgres    
     def read_pedidos_sin_tienda(self):
         with self.conn.cursor() as cur:
             cur.execute("""
@@ -1871,6 +1912,7 @@ class reportesConnection():
 
             return cur.fetchall()
 
+    @reconnect_if_closed_postgres
     def get_timezone(self):
         with self.conn.cursor() as cur:
             cur.execute("""
@@ -1880,7 +1922,7 @@ class reportesConnection():
 
 
     ## Pedidos Pendientes En ruta 
-
+    @reconnect_if_closed_postgres
     def read_pedidos_pendientes_total(self):
         with self.conn.cursor() as cur:
             cur.execute("""
@@ -1896,6 +1938,7 @@ class reportesConnection():
             """)
             return cur.fetchall()
     
+    @reconnect_if_closed_postgres
     def read_pedidos_pendientes_no_entregados(self):
         with self.conn.cursor() as cur:
             cur.execute("""
@@ -1912,6 +1955,7 @@ class reportesConnection():
             """)
             return cur.fetchall()
         
+    @reconnect_if_closed_postgres
     def read_pedidos_pendientes_en_ruta(self):
         with self.conn.cursor() as cur:
             cur.execute("""
@@ -1927,6 +1971,7 @@ class reportesConnection():
             """)
             return cur.fetchall()
 
+    @reconnect_if_closed_postgres
     def read_pedidos_pendientes_entregados(self):
         with self.conn.cursor() as cur:
             cur.execute("""
@@ -1944,7 +1989,7 @@ class reportesConnection():
 
 
     ### Obtener productos
-
+    @reconnect_if_closed_postgres
     def get_producto_picking(self):
 
         with self.conn.cursor() as cur:
@@ -1953,6 +1998,7 @@ class reportesConnection():
             """)
             return cur.fetchone()
         
+    @reconnect_if_closed_postgres    
     def get_producto_picking_id(self, producto_id):
 
         with self.conn.cursor() as cur:
@@ -1962,7 +2008,7 @@ class reportesConnection():
             return cur.fetchone()
         
     ## productos picking SKU
-
+    @reconnect_if_closed_postgres
     def read_producto_sku(self,codigo_sku):
 
         with self.conn.cursor() as cur:
@@ -1972,7 +2018,7 @@ class reportesConnection():
             return cur.fetchall()
 
     ## Comparacion API VS WMS
-
+    @reconnect_if_closed_postgres
     def read_carga_easy_api(self):
         with self.conn.cursor() as cur:
             cur.execute("""
@@ -1985,6 +2031,7 @@ class reportesConnection():
 
             return cur.fetchall()
         
+    @reconnect_if_closed_postgres
     def read_carga_easy_wms(self):
         with self.conn.cursor() as cur:
             cur.execute("""
@@ -1999,7 +2046,7 @@ class reportesConnection():
 
 
     ## productos sin clasificar
-
+    @reconnect_if_closed_postgres
     def read_productos_sin_clasificar(self):
         with self.conn.cursor() as cur:
             cur.execute("""
@@ -2051,7 +2098,7 @@ class reportesConnection():
 
             return cur.fetchall()
         
-
+    @reconnect_if_closed_postgres
     def write_producto_sin_clasificar(self, data):
         with self.conn.cursor() as cur:
             cur.execute("""
@@ -2061,7 +2108,7 @@ class reportesConnection():
         self.conn.commit()
 
     ### insertar datos en quadmind.pedidos_planificados
-
+    @reconnect_if_closed_postgres
     def write_pedidos_planificados(self, data, posicion, direccion):
         # print(data)
         with self.conn.cursor() as cur: 
@@ -2085,7 +2132,7 @@ class reportesConnection():
 
     
     ### Insertar datos en tabla quadmind.ruta_manual
-
+    @reconnect_if_closed_postgres
     def get_ruta_tracking_producto(self,pedido_id):
 
         with self.conn.cursor() as cur:
@@ -2124,7 +2171,7 @@ class reportesConnection():
             """)
             return cur.fetchall()
 
-
+    @reconnect_if_closed_postgres
     def get_ruta_manual(self,pedido_id):
 
         with self.conn.cursor() as cur:
@@ -2144,7 +2191,7 @@ class reportesConnection():
             return cur.fetchall()
         
     ## buscar ruta
-
+    @reconnect_if_closed_postgres
     def get_datos_producto_en_ruta(self,pedido_id):
         with self.conn.cursor() as cur:
             cur.execute(f"""
@@ -2156,7 +2203,7 @@ class reportesConnection():
                         """)
             return cur.fetchall()
 
-
+    @reconnect_if_closed_postgres
     def get_rutas_activas(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""
@@ -2173,7 +2220,7 @@ class reportesConnection():
             return cur.fetchall()
 
     
-        
+    @reconnect_if_closed_postgres        
     def get_factura_electrolux(self,pedido_id):
 
         with self.conn.cursor() as cur:
@@ -2184,7 +2231,8 @@ class reportesConnection():
             trim(eltx.folio_factura) = trim('{pedido_id}') 
             """)
             return cur.fetchall()
-        
+
+    @reconnect_if_closed_postgres
     def get_numero_guia_by_factura(self,factura):
         with self.conn.cursor() as cur:
             cur.execute(f"""
@@ -2194,7 +2242,8 @@ class reportesConnection():
             limit 1
             """)
             return cur.fetchone()
-        
+    
+    @reconnect_if_closed_postgres
     def direccion_textual(self,pedido_id):
 
         with self.conn.cursor() as cur:
@@ -2202,7 +2251,8 @@ class reportesConnection():
             select "Dirección Textual" from areati.busca_ruta_manual_base2('{pedido_id}')
             """)
             return cur.fetchall()
-        
+    
+    @reconnect_if_closed_postgres
     def get_cod_producto_ruta_manual(self,pedido_id):
 
         with self.conn.cursor() as cur:
@@ -2211,6 +2261,7 @@ class reportesConnection():
             """)
             return cur.fetchall()
         
+    @reconnect_if_closed_postgres
     def get_comuna_por_ruta_manual(self,pedido_id):
 
         with self.conn.cursor() as cur:
@@ -2219,6 +2270,7 @@ class reportesConnection():
             """)
             return cur.fetchone()
 
+    @reconnect_if_closed_postgres
     def get_nombre_ruta_manual(self,created_by):
 
         with self.conn.cursor() as cur:
@@ -2234,7 +2286,7 @@ class reportesConnection():
             """)
             return cur.fetchall()
         
-
+    @reconnect_if_closed_postgres
     def update_id_ruta_rutas_manuales(self ,id_ruta ,nombre_ruta ,cod_pedido):
         with self.conn.cursor() as cur:
             cur.execute(f"""        
@@ -7062,6 +7114,45 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             
             return cur.fetchall()
 
+
+    #### DEFONTANA RSV
+        
+    def revisar_datos_folio(self,folios : str):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                SELECT numero_folio
+                from rsv.defontana_venta
+                where numero_folio in ({folios})
+                         """)
+            lista_tuplas = cur.fetchall()
+            lista = [str(elem[0]) for elem in lista_tuplas]
+            return lista
+        
+    def insert_venta_defontana(self,data):
+
+        with self.conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO rsv.defontana_venta
+                (tipo_documento, numero_folio, fecha_emision, fecha_creacion, fecha_expiracion, rut_cliente, direccion, condicion_pago, id_vendedor, id_tienda, giro, ciudad, distrito)
+                VALUES(%(documentType)s, %(firstFolio)s, %(emissionDate)s, %(dateTime)s, %(expirationDate)s,%(clientFile)s, %(contactIndex)s, %(paymentCondition)s, %(sellerFileId)s, %(shopId)s, %(giro)s, %(city)s, %(district)s);     
+               
+                 """,data)
+            self.conn.commit()
+
+    def insert_detalle_venta_defontana(self,data, numero_folio):
+        data['firstFolio'] = numero_folio
+        with self.conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO rsv.defontana_detalle_venta
+                (linea_detalle, tipo_detalle, codigo, cantidad, precio, exenta, comentario, total, numero_folio)
+                VALUES(%(detailLine)s, %(type)s, %(code)s, %(count)s, %(price)s,
+                        %(isExempt)s, %(comment)s, %(total)s, %(firstFolio)s );     
+               
+                 """,data)
+            self.conn.commit()
+        
+        
+    
 class transyanezConnection():
     conn = None
     def __init__(self) -> None:

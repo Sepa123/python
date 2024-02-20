@@ -68,6 +68,8 @@ from database.schema.rsv.reporte_etiquetas import reporte_etiquetas_schema
 
 from database.schema.rsv.obtener_ubicacion_cantidad import obtener_ubicacion_cantidad_schema
 from database.models.rsv.obtener_ubicacion_cantidad import ObtUbicacionCantidad
+
+from database.models.rsv.defontana.venta import listaVenta
 ##Conexiones
 from database.client import reportesConnection
 
@@ -75,10 +77,89 @@ from database.client import reportesConnection
 from fastapi.responses import FileResponse
 from openpyxl import Workbook
 from openpyxl.styles import Font , PatternFill, Border ,Side
+import time, threading , json
+import datetime
+import httpx
+
 
 router = APIRouter(tags=["RSV"], prefix="/api/rsv")
 
 conn = reportesConnection()
+
+access_token = None
+ultima_ejecucion_token = None
+
+
+
+def timer():
+    global access_token
+    global ultima_ejecucion_token
+    # fecha_actual = datetime.datetime.now()
+
+    # Formatear la fecha en el formato deseado (YYYY-MM-DD)
+    
+    count = 0
+    while True:
+        print("inicion")
+
+        # Obtener la fecha y hora actual
+        ahora = datetime.datetime.now()
+        # Verificar si la función ya se ejecutó hoy
+        if access_token is None or (ultima_ejecucion_token is None or ahora - ultima_ejecucion_token > datetime.timedelta(hours=12)):
+            url_login = 'https://replapi.defontana.com/api/Auth?client=20211102202352598001&company=20211102202352598001&user=INTEGRACION&password=TRANSPORTES'
+            # client = httpx.Client()
+            print("necesito un token")
+            login = httpx.get(url_login, timeout=30)
+            body_login = login.json()
+            access_token = body_login['access_token']
+            ultima_ejecucion_token = ahora
+        fecha_formateada = ahora.strftime("%Y-%m-%d")
+        print(fecha_formateada)
+        print("ya existe un token")
+
+        reqUrl = f"https://replapi.defontana.com/api/sale/GetSaleByDate?initialDate={fecha_formateada}&endingDate={fecha_formateada}&itemsPerPage=100&pageNumber=1"
+        authorization = "Bearer "+access_token
+        headersList = {
+        "Accept": "*/*",
+        "Authorization": authorization      
+         }
+
+        data = httpx.get(reqUrl, headers=headersList, timeout=30)
+        body = json.loads(data.text)
+        lista_venta = body["saleList"]
+        total_items = body["totalItems"]
+        # print(lista_venta)
+        print('total',total_items)
+        print("termino")
+        count = count +1
+
+        if total_items is None or total_items == 0:
+            print("no hay registros, chao")
+
+        else:
+            lista_folios = []
+            for folio in lista_venta:
+                lista_folios.append(str(folio['firstFolio']))
+  
+            folios_registrados = conn.revisar_datos_folio(', '.join(lista_folios))
+
+            print(folios_registrados)
+        
+            for venta in lista_venta:
+                if str(venta['firstFolio']) in folios_registrados:
+                    print("ya esta registrado")
+                else:
+                    print("sin registrar")
+                    conn.insert_venta_defontana(venta)
+                    for detalle in venta['details']:
+                        conn.insert_detalle_venta_defontana(detalle,venta['firstFolio'])       
+        
+        # print(count)
+        time.sleep(300)
+
+
+t = threading.Thread(target=timer)
+t.start()
 
 @router.get("/catalogo")
 async def obtener_catalogo_rsv():
