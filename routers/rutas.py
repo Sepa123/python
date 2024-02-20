@@ -1091,3 +1091,21 @@ async def get_datos_logistica_inversa(cod_pedido : str):
                usu['Observacion'] = "Sin observación"
 
      return bitacora_usuario
+
+
+@router.post("/encontrar/producto/ruta",status_code=status.HTTP_202_ACCEPTED)
+async def get_datos_producto_en_ruta(body : bodyUpdateVerified ):
+    results = conn.get_datos_producto_en_ruta(body.n_guia)
+            
+    if results is None or results == []:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El codigo del producto no existe")
+    
+    json_data = buscar_productos_ruta_schema(results)
+
+    data = body.dict()
+
+    connHela.insert_data_bitacora_recepcion(data)
+
+    return {
+        "message" : "datos registrados en bitacora"
+    }
