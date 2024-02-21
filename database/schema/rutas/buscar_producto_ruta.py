@@ -8,7 +8,8 @@ def buscar_producto_ruta(producto):
 		"Fecha_pedido" : producto[5],
 		"Fecha_original_pedido" : producto[6],
 		"Nombre_ruta" : producto[7],
-        "Notas" : producto[8]
+        "Notas" : producto[8],
+        "Cantidad_producto" : producto[9]
 	}
 
 

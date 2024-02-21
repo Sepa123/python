@@ -2196,7 +2196,7 @@ class reportesConnection():
         with self.conn.cursor() as cur:
             cur.execute(f"""
             select distinct on (ruta."Código de Producto", "Cod. SKU" ) ruta."Código de Pedido", ruta."Código de Producto", ruta."Descripción del Producto", ruta."Ciudad",ruta."Provincia/Estado",ruta."Fecha de Pedido",ruta."Fecha Original Pedido"
-            ,coalesce (drm.nombre_ruta , 'No asignada'), ruta."Notas"
+            ,coalesce (drm.nombre_ruta , 'No asignada'), ruta."Notas", ruta."Cantidad de Producto"
             from areati.busca_ruta_manual_base2('{pedido_id}') ruta
             left join quadminds.datos_ruta_manual drm on drm.cod_pedido = ruta."Código de Pedido" and drm.estado = true
 
@@ -7113,6 +7113,16 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                          """)
             
             return cur.fetchall()
+        
+
+    def recalcular_posicion_ruta(self,nombre_ruta : str):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                select * from quadminds.recalcular_posicion_ruta('{nombre_ruta}')
+                         """)
+            return cur.fetchall()
+
+            
 
 
     #### DEFONTANA RSV
