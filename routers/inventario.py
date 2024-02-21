@@ -66,12 +66,14 @@ async def download_imprimir_planilla_devolucion(id:int):
 async def download_imprimir_planilla_entrega(id:int):
     #se realiza la busqueda por el id de asignacion y se ubica la ruta del pdf
     result = conn.read_ubicacion_pdf_entrega(id)
-    if result:
+    print(result)
+    return FileResponse(result[0], media_type="application/octet-stream")
+    # if result:
 
     #la ruta del pdf ubicada se envia al servidor y se realiza la descarga
-        return FileResponse(result[0][0], media_type="application/octet-stream")
-    else:
-        raise HTTPException(status_code=404, detail="File not found")
+    #     return FileResponse(result[0][0], media_type="application/octet-stream")
+    # else:
+    #     raise HTTPException(status_code=404, detail="File not found")
 
 @router.get("/descargar/devolucion")
 async def download_imprimir_planilla_devolucion(id:int):
@@ -285,8 +287,8 @@ async def agregar_descripcion_de_equipo(body: DescripcionEquipo):
         print(body.ubicacionarchivo )
         data = body.dict()
         print(data)
-        # conn.agregar_descripcion_equipo(data)
-        # conn.bitacora_inventario_equipo(data)
+        conn.agregar_descripcion_equipo(data)
+        conn.bitacora_inventario_equipo(data)
        
         return{
             "message": "Se ha añadido la descripcion del equipo"
@@ -384,11 +386,16 @@ def crear_pdf(data):
     pdf.cell(180,7,'Descripción del producto', border=True, align='C', fill=True, ln=1)
     pdf.set_font('helvetica', '', 10)
     # pdf.cell(40,7,data.marca, border=True, align='C')
-    for equipo in data.info:
-        pdf.cell(35,7,equipo.tipo, border=True,  align='C')
-        pdf.cell(35,7,equipo.marca, border=True,  align='C')
-        pdf.cell(40,7,equipo.serial, border=True,  align='C')
-        pdf.cell(70,7,equipo.descripcion, border=True,  align='C', ln=1)
+    if data.info:
+        for equipo in data.info:
+            pdf.cell(35,7,equipo.tipo, border=True,  align='C')
+            pdf.cell(35,7,equipo.marca, border=True,  align='C')
+            pdf.cell(40,7,equipo.serial, border=True,  align='C')
+            pdf.cell(70,7,equipo.descripcion, border=True,  align='C', ln=1)
+    else:
+            pdf.cell(35,7,data.marca, border=True,  align='C')
+            pdf.cell(40,7,data.serial, border=True,  align='C')
+            pdf.cell(105,7,data.descripcion, border=True,  align='C', ln=1)
     pdf.ln(10)
     pdf.cell(180,8,'OBSERVACIONES', border=True, ln=1, align='C', fill=True)
     pdf.cell(180,15, border=True, ln=1)
@@ -401,7 +408,9 @@ def crear_pdf(data):
                 instalación de software por personal ajeno al grupo interno de trabajo. De igual forma me
                 comprometo a devolver el equipo en las mismas condiciones y con los mismos accesorios 
                 que me fue entregado, una vez mi vínculo laboral se dé por terminado. Está prohibido llevar 
-                por cuenta propia a revisión técnica el Computador, para protección de la Garantía.""",border=True)
+                por cuenta propia a revisión técnica, para protección de la Garantía.
+                Se prohibe el uso de número telefónico asignado fuera de Chile, si se genera consumo Roaming será cobrado
+                por planilla del empleado.""",border=True)
     pdf.ln(10)
     pdf.set_font('helvetica', 'B', 10)
     pdf.cell(180,8,'ENTREGA DE EQUIPO', border=True, ln=1, align='C', fill=True)
@@ -462,12 +471,18 @@ def pdf_devolucion(data):
     # pdf.cell(180,7,'Descripción del producto', border=True, align='C', fill=True, ln=1)
     pdf.set_font('helvetica', '', 10)
     # pdf.cell(40,7,data.marca, border=True, align='C')
-    for equipo in data.info:
+    if data.info:
+        for equipo in data.info:
     #     pdf.cell(180,7,equipo, border=True,  align='C', ln=1)
-        pdf.cell(35,7,equipo.tipo, border=True,  align='C')
-        pdf.cell(35,7,equipo.marca, border=True,  align='C')
-        pdf.cell(40,7,equipo.serial, border=True,  align='C')
-        pdf.cell(70,7,equipo.descripcion, border=True,  align='C', ln=1)
+            pdf.cell(35,7,equipo.tipo, border=True,  align='C')
+            pdf.cell(35,7,equipo.marca, border=True,  align='C')
+            pdf.cell(40,7,equipo.serial, border=True,  align='C')
+            pdf.cell(70,7,equipo.descripcion, border=True,  align='C', ln=1)
+    else:
+            pdf.cell(35,7,data.tipo, border=True,  align='C')
+            pdf.cell(35,7,data.marca, border=True,  align='C')
+            pdf.cell(40,7,data.serial, border=True,  align='C')
+            pdf.cell(70,7,data.descripcion, border=True,  align='C', ln=1)
     pdf.ln(10)
     pdf.cell(180,8,'OBSERVACIONES', border=True, ln=1, align='C', fill=True)
     pdf.cell(180,15, border=True, ln=1)
@@ -869,8 +884,12 @@ async def editar_firma_entrega(body: FirmaActa):
 @router.put("/actualizar-firma-devolucion")
 async def editar_firma_devolucion(body: FirmaActa):
     try:
-        filename = os.path.basename(body.ubicacionarchivo)
-        body.ubicacionarchivo = 'pdfs/foto_devolucion/'+filename
+        if body.ubicacionarchivo: 
+            filename = os.path.basename(body.ubicacionarchivo) 
+        ## chequear si es necesario obligatoriamente enviar una foto, sino hay que realizar una validacion
+        
+            body.ubicacionarchivo = 'pdfs/foto_devolucion/'+filename
+        
         data= body.dict()
         ##cambio de estado al equipo como entregado una vez realiza la firma del acta de entrega
         conn.actualizar_firma_devolucion(data)
