@@ -292,6 +292,7 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]], fecha_pedido : str)
                 #     nombre_ruta = conn.get_nombre_ruta_manual(rutas[0][0].Created_by)[0][0]
                 #     conn.update_id_ruta_rutas_manuales(id_ruta,nombre_ruta, data["Codigo_pedido"])
 
+        conn.recalcular_posicion_ruta(nombre_ruta)
         return { "message": f"La Ruta {nombre_ruta} fue guardada exitosamente" }
     except Exception as e:
         if validar_fecha(fecha_pedido) == False: 
@@ -304,8 +305,8 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]], fecha_pedido : str)
         
         print(f"error al crear ruta: {e}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
-    finally:
-        conn.recalcular_posicion_ruta(nombre_ruta)
+    # finally:
+    #     conn.recalcular_posicion_ruta(nombre_ruta)
         
 
 @router.put("/actualizar/estado/{cod_producto}",status_code=status.HTTP_202_ACCEPTED)
@@ -438,12 +439,15 @@ async def insert_ruta_existente_activa(fecha_ruta_nueva : str, rutas : List[List
                     # conn.update_verified(data["Codigo_producto"])
                     # print('posicion :',data["Posicion"])
                     conn.write_rutas_manual(data)
+        
+        
+        conn.recalcular_posicion_ruta(nombre_ruta)
         return { "message": f"La Ruta {nombre_ruta} fue actualizada exitosamente" }
     except Exception as e:
         print("error an actualizar ruta: ",e)
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
-    finally:
-        conn.recalcular_posicion_ruta(nombre_ruta)
+    # finally:
+    #     conn.recalcular_posicion_ruta(nombre_ruta)
 
   
 @router.get("/activo/nombre_ruta")
