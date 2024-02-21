@@ -115,14 +115,18 @@ async def get_ruta_manual(body : bodyUpdateVerified ):
 @router.post("/buscar/producto/ruta",status_code=status.HTTP_202_ACCEPTED)
 async def get_datos_producto_en_ruta(body : bodyUpdateVerified ):
 
+    
     codigo_ruta = conn.get_codigo_pedido_opl(body.n_guia)
 
     body.n_guia = codigo_ruta[0][0]
 
+
     results = conn.get_datos_producto_en_ruta(body.n_guia)
             
     if results is None or results == []:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El codigo del producto no existe")
+        results = conn.get_datos_producto_en_ruta(body.cod_producto)
+        if results is None or results == []:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El codigo del producto no existe")
     
     json_data = buscar_productos_ruta_schema(results)
 
@@ -1108,7 +1112,9 @@ async def get_datos_producto_en_ruta(body : bodyUpdateVerified ):
     results = conn.get_datos_producto_en_ruta(body.n_guia)
             
     if results is None or results == []:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El codigo del producto no existe")
+        results = conn.get_datos_producto_en_ruta(body.cod_producto)
+        if results is None or results == []:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El codigo del producto no existe")
     
     json_data = buscar_productos_ruta_schema(results)
 
