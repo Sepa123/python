@@ -408,7 +408,9 @@ def crear_pdf(data):
                 instalación de software por personal ajeno al grupo interno de trabajo. De igual forma me
                 comprometo a devolver el equipo en las mismas condiciones y con los mismos accesorios 
                 que me fue entregado, una vez mi vínculo laboral se dé por terminado. Está prohibido llevar 
-                por cuenta propia a revisión técnica el Computador, para protección de la Garantía.""",border=True)
+                por cuenta propia a revisión técnica, para protección de la Garantía.
+                Se prohibe el uso de número telefónico asignado fuera de Chile, si se genera consumo Roaming será cobrado
+                por planilla del empleado.""",border=True)
     pdf.ln(10)
     pdf.set_font('helvetica', 'B', 10)
     pdf.cell(180,8,'ENTREGA DE EQUIPO', border=True, ln=1, align='C', fill=True)
@@ -882,8 +884,12 @@ async def editar_firma_entrega(body: FirmaActa):
 @router.put("/actualizar-firma-devolucion")
 async def editar_firma_devolucion(body: FirmaActa):
     try:
-        filename = os.path.basename(body.ubicacionarchivo)
-        body.ubicacionarchivo = 'pdfs/foto_devolucion/'+filename
+        if body.ubicacionarchivo: 
+            filename = os.path.basename(body.ubicacionarchivo) 
+        ## chequear si es necesario obligatoriamente enviar una foto, sino hay que realizar una validacion
+        
+            body.ubicacionarchivo = 'pdfs/foto_devolucion/'+filename
+        
         data= body.dict()
         ##cambio de estado al equipo como entregado una vez realiza la firma del acta de entrega
         conn.actualizar_firma_devolucion(data)
