@@ -114,6 +114,11 @@ async def get_ruta_manual(body : bodyUpdateVerified ):
 
 @router.post("/buscar/producto/ruta",status_code=status.HTTP_202_ACCEPTED)
 async def get_datos_producto_en_ruta(body : bodyUpdateVerified ):
+
+    codigo_ruta = conn.get_codigo_pedido_opl(body.n_guia)
+
+    body.n_guia = codigo_ruta[0][0]
+
     results = conn.get_datos_producto_en_ruta(body.n_guia)
             
     if results is None or results == []:
@@ -1095,6 +1100,11 @@ async def get_datos_logistica_inversa(cod_pedido : str):
 
 @router.post("/encontrar/producto/ruta",status_code=status.HTTP_202_ACCEPTED)
 async def get_datos_producto_en_ruta(body : bodyUpdateVerified ):
+
+    codigo_ruta = conn.get_codigo_pedido_opl(body.n_guia)
+
+    body.n_guia = codigo_ruta[0][0]
+
     results = conn.get_datos_producto_en_ruta(body.n_guia)
             
     if results is None or results == []:
