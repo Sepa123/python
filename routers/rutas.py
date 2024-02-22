@@ -267,7 +267,7 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]], fecha_pedido : str)
             raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, 
                                 detail=f'El Producto "{rutas[0][0].Codigo_pedido}" se encuentra en la ruta {check[1]}')
         for i, ruta in enumerate(rutas):
-            for producto in ruta:
+            for j,producto in enumerate(ruta):
                 data = producto.dict()
                 # print(data["Codigo_pedido"])
                 data["Calle"] = conn.direccion_textual(data["Codigo_pedido"])[0][0]
@@ -286,13 +286,17 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]], fecha_pedido : str)
                     fecha_siguiente = fecha_actual + timedelta(days=1)
                     data["Fecha_ruta"] =fecha_siguiente
                 conn.write_rutas_manual(data)
+                # Ejecutar función en el último elemento
+                if i == len(rutas) - 1 and j == len(ruta) - 1:
+                    conn.recalcular_posicion_ruta(nombre_ruta)
 
                 # if id_ruta == 1 and nombre_ruta == '':
                 #     id_ruta = conn.read_id_ruta()[0]
                 #     nombre_ruta = conn.get_nombre_ruta_manual(rutas[0][0].Created_by)[0][0]
                 #     conn.update_id_ruta_rutas_manuales(id_ruta,nombre_ruta, data["Codigo_pedido"])
 
-        conn.recalcular_posicion_ruta(nombre_ruta)
+
+        
         return { "message": f"La Ruta {nombre_ruta} fue guardada exitosamente" }
     except Exception as e:
         if validar_fecha(fecha_pedido) == False: 
@@ -305,8 +309,8 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]], fecha_pedido : str)
         
         print(f"error al crear ruta: {e}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
-    # finally:
-    #     conn.recalcular_posicion_ruta(nombre_ruta)
+    finally:
+        conn.recalcular_posicion_ruta(nombre_ruta)
         
 
 @router.put("/actualizar/estado/{cod_producto}",status_code=status.HTTP_202_ACCEPTED)
@@ -402,7 +406,7 @@ async def insert_ruta_existente_activa(fecha_ruta_nueva : str, rutas : List[List
         # nombre_ruta = rutas[0][0].Nombre_ruta
 
         for i,ruta in enumerate(rutas):
-            for producto in ruta:
+            for j,producto in enumerate(ruta):
                 producto.Peso=1
                 producto.Volumen=1,
                 producto.Dinero=1,
@@ -439,6 +443,9 @@ async def insert_ruta_existente_activa(fecha_ruta_nueva : str, rutas : List[List
                     # conn.update_verified(data["Codigo_producto"])
                     # print('posicion :',data["Posicion"])
                     conn.write_rutas_manual(data)
+
+                if i == len(rutas) - 1 and j == len(ruta) - 1:
+                    conn.recalcular_posicion_ruta(nombre_ruta)
         
         
         conn.recalcular_posicion_ruta(nombre_ruta)
