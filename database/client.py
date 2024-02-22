@@ -422,7 +422,7 @@ class reportesConnection():
             cur.execute("""  Select id, nombres, apellidos, rut, nacionalidad, fecha_nacimiento, estado_civil, telefono,
                          fecha_ingreso, cargo, domicilio, comuna, banco, tipo_cuenta, numero_cuenta, correo, afp, salud,
                          telefono_adicional, nombre_contacto, seguro_covid, horario, ceco, sueldo_base, tipo_contrato,
-                         direccion_laboral, enfermedad, polera, pantalon, poleron, zapato, foto, pdf,  req_comp, req_cel
+                         direccion_laboral, enfermedad, polera, pantalon, poleron, zapato, foto, pdf,  req_comp, req_cel,habilitado
                     FROM inventario.persona where rut=%(rut)s""", {"rut" : rut} )
             return cur.fetchall()
         
@@ -491,7 +491,7 @@ class reportesConnection():
                         FROM inventario.equipo e
                         INNER JOIN inventario.tipo t ON e.tipo = t.id
                         INNER JOIN inventario.estados es ON e.estado = es.id
-                        inner join inventario.subestados s on s.code = e.subestado and s.parent_code = e.estado ; """)
+                        inner join inventario.subestados s on s.code = e.subestado and s.parent_code = e.estado order by e.id DESC ; """)
             return cur.fetchall()
         
     def read_descripcion_por_id(self,id):
