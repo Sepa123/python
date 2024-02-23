@@ -47,7 +47,7 @@ def ejecutar_api_defontana():
     ahora = datetime.now()
     # Verificar si la función ya se ejecutó hoy
     if access_token is None or (ultima_ejecucion_token is None or ahora - ultima_ejecucion_token > timedelta(minutes=120)):
-        url_login = 'https://replapi.defontana.com/api/Auth?client=20211102202352598001&company=20211102202352598001&user=INTEGRACION&password=TRANSPORTES'
+        url_login = 'https://replapi.defontana.com/api/Auth?client=&company=&user=&password='
         # client = httpx.Client()
         print("necesito un token")
         login = httpx.get(url_login, timeout=30)
