@@ -41,10 +41,13 @@ def ejecutar_api_defontana():
     
     count = 0
     # while True:
-    print("inicion")
+    print("inicio")
 
     # Obtener la fecha y hora actual
     ahora = datetime.now()
+
+
+    print(ahora)
     # Verificar si la función ya se ejecutó hoy
     if access_token is None or (ultima_ejecucion_token is None or ahora - ultima_ejecucion_token > timedelta(minutes=120)):
         url_login = config('ACCESS_DEFONTA')
@@ -57,7 +60,6 @@ def ejecutar_api_defontana():
         
         ultima_ejecucion_token = ahora
 
-        print("Ahora:", ahora)
         print("ultima ejecucion auth:", ultima_ejecucion_token)
     fecha_formateada = ahora.strftime("%Y-%m-%d")
 
