@@ -3211,7 +3211,7 @@ class reportesConnection():
                 cur.execute(f"""        
                 UPDATE areati.ti_wms_carga_easy easy 
                 SET verified = true
-                WHERE easy.carton = '{codigo_producto}'
+                WHERE easy.carton = '{codigo_producto}' or easy.entrega = '{codigo_producto}'
                 """)
             self.conn.commit()
         except (Exception, psycopg2.DatabaseError) as error:
@@ -3225,7 +3225,7 @@ class reportesConnection():
                 cur.execute(f"""        
                 UPDATE areati.ti_wms_carga_easy easy 
                 SET recepcion = true
-                WHERE easy.carton = '{codigo_producto}'
+                WHERE easy.carton = '{codigo_producto}' or easy.entrega = '{codigo_producto}'
                 """)
             self.conn.commit()
         except (Exception, psycopg2.DatabaseError) as error:
@@ -7122,9 +7122,6 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 select * from quadminds.recalcular_posicion_ruta('{nombre_ruta}')
                          """)
             return cur.fetchall()
-
-            
-
 
     #### DEFONTANA RSV
         

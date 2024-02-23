@@ -5,7 +5,7 @@ from database.client import reportesConnection
 import json
 # import datetime
 import httpx
-
+from decouple import config
 conn = reportesConnection()
 
 access_token = None
@@ -47,7 +47,7 @@ def ejecutar_api_defontana():
     ahora = datetime.now()
     # Verificar si la función ya se ejecutó hoy
     if access_token is None or (ultima_ejecucion_token is None or ahora - ultima_ejecucion_token > timedelta(minutes=120)):
-        url_login = 'https://replapi.defontana.com/api/Auth?client=&company=&user=&password='
+        url_login = config('ACCESS_DEFONTA')
         # client = httpx.Client()
         print("necesito un token")
         login = httpx.get(url_login, timeout=30)

@@ -1043,6 +1043,17 @@ async def armar_rutas_predictivas(body : ArmarRutaBloque):
     result = conn.armar_rutas_bloque(data)
     return result[0][1]
 
+@router.get("/recalcular/ruta/{nombre_ruta}")
+async def recalcular_posicion_rutas(nombre_ruta : str):
+    # recalcular_posicion_ruta
+    result = conn.recalcular_posicion_ruta(nombre_ruta)
+
+    return {
+        "message": "ruta recalculada"
+    }
+
+
+
 @router.get("/pedido/en_ruta/{pedido_id}")
 async def pedido_en_ruta(pedido_id : str):
     check = conn.check_producto_existe(pedido_id)
