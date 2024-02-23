@@ -97,6 +97,10 @@ def lista_equipo_asignado_por_id(data):
             "almacenamiento": data[15],
             "ram":data[16],
             "tipo":data[17],
+            "firma_entrega": data[18],
+            "firma_devolucion": data[19],
+            "pdf_entrega":data[20],
+            "pdf_devolucion":data[21]
             # "pdf_entrega":data[18],
             # "pdf_devolucion":data[19]
             # "modelo":data[17]

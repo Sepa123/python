@@ -5707,8 +5707,9 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
         with self.conn.cursor() as cur:
             cur.execute(""" SELECT a.id, p.nombres, p.apellidos, p.rut , p.cargo , d.nombre as departamento,
                         e.marca, e.serial ,e.marca|| ' ' || e.modelo AS equipo,  a.folio_entrega, a.fecha_entrega 
-                        ,a.estado, e.id as equipo_id, a.folio_devolucion, e.descripcion, e.almacenamiento, e.ram, t.nombre AS tipo
-                    FROM inventario.asignacion a  
+                        ,a.estado, e.id as equipo_id, a.folio_devolucion, e.descripcion, e.almacenamiento, e.ram, t.nombre AS tipo,
+                        a.firma_entrega, a.firma_devolucion, a.pdf_entrega, a.pdf_devolucion
+                    FROM inventario.asignacion a   
                         INNER JOIN inventario.persona p ON a.persona = p.id
                         INNER JOIN inventario.equipo e ON a.equipo = e.id
                         INNER JOIN inventario.departamento d ON a.departamento = d.id
@@ -5738,7 +5739,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 INNER JOIN inventario.equipo e ON a.equipo = e.id
                 INNER JOIN inventario.departamento d ON a.departamento = d.id
                 INNER JOIN inventario.tipo t ON e.tipo = t.id
-                WHERE p.rut =%(persona)s and a.estado = false""", {"persona": persona})
+                WHERE p.rut =%(persona)s and a.estado = false and a.firma_devolucion =false""", {"persona": persona})
             return cur.fetchall()
         
     def read_equipos_por_persona_por_devolver(self,persona):

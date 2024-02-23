@@ -18,6 +18,7 @@ class AsignarEntregaActa(BaseModel):
     marca: Optional[str]
     equipo: Optional[str]
     serial: Optional[str]
+    descripcion: Optional[str]
     fecha_entrega: Optional [str]
     folio_entrega: Optional[str]
     encargado_entrega:Optional[str]
