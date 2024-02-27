@@ -1157,5 +1157,10 @@ async def get_datos_producto_en_ruta(body : bodyUpdateVerified ):
 
 @router.get("/no_entregados/total")
 async def get_no_entregados_total(fecha : str,tienda : str, region: str):
+    if tienda == 'undefined':
+        tienda = None
+    if region =='undefined':
+        region = None
+
     result = conn.read_no_entregados_total(fecha,tienda,region)
     return no_entregados_schema(result)
