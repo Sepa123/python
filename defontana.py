@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from database.client import reportesConnection
 import json
 # import datetime
+import os
 import httpx
 from decouple import config
 conn = reportesConnection()
@@ -53,7 +54,7 @@ def ejecutar_api_defontana():
         url_login = config('ACCESS_DEFONTA')
         # client = httpx.Client()
         print("necesito un token")
-        login = httpx.get(url_login, timeout=30)
+        login = httpx.get(url_login, timeout=40)
         body_login = login.json()
         access_token = body_login['access_token']
 
@@ -68,6 +69,16 @@ def ejecutar_api_defontana():
     if access_token is None:
         print("Por algun motivo no recupero token")
         access_token = None
+        archivo_a_eliminar = '/root/estado.json'
+        # Verificar si el archivo existe antes de intentar eliminarlo
+        if os.path.exists(archivo_a_eliminar):
+            # Eliminar el archivo
+            os.remove(archivo_a_eliminar)
+            print(f"El archivo {archivo_a_eliminar} ha sido eliminado.")
+        else:
+            print(f"El archivo {archivo_a_eliminar} no existe.")    
+                
+        # os.remove('/root/estado.json')
     else:
         print("ya existe un token")
         authorization = "Bearer "+access_token
@@ -76,7 +87,7 @@ def ejecutar_api_defontana():
         "Authorization": authorization      
         }
 
-        data = httpx.get(reqUrl, headers=headersList, timeout=30)
+        data = httpx.get(reqUrl, headers=headersList, timeout=40)
         body = json.loads(data.text)
         lista_venta = body["saleList"]
         total_items = body["totalItems"]
