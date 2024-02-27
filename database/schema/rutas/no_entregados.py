@@ -1,7 +1,8 @@
 def no_entregado(entregado):
     return {
 		"Descripcion" : entregado[0],
-		"Total" : entregado[1]
+        "Tag" : entregado[1],
+		"Total" : entregado[2]
 	}
 
 def no_entregados_schema(entregados):
