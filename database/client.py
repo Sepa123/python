@@ -7159,7 +7159,16 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                  """,data)
             self.conn.commit()
         
-        
+    ##### no entregados total RODRIGO
+            
+    def read_no_entregados_total(self,fecha,tienda,region):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                select * from rutas.no_entregados_total('{fecha}','{tienda}','{region}');
+                         """)
+            
+            return cur.fetchall()
+
     
 class transyanezConnection():
     conn = None

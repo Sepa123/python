@@ -50,6 +50,7 @@ from database.schema.rutas.buscar_producto_ruta import buscar_productos_ruta_sch
 from database.schema.rutas.nombre_rutas_activa import nombre_rutas_activas_schema
 from database.schema.rutas.reporte_ruta_mes import reportes_rutas_mes_schema, reporte_ruta_dia_schema
 from database.schema.rutas.bitacora_log_inversa import bitacora_log_inversa_schema
+from database.schema.rutas.no_entregados import no_entregados_schema
 
 router = APIRouter(tags=["rutas"], prefix="/api/rutas")
 
@@ -1152,3 +1153,9 @@ async def get_datos_producto_en_ruta(body : bodyUpdateVerified ):
     return {
         "message" : "datos registrados en bitacora"
     }
+
+
+@router.get("/no_entregados/total")
+async def get_no_entregados_total(fecha : str,tienda : str, region: str):
+    result = conn.read_no_entregados_total(fecha,tienda,region)
+    return no_entregados_schema(result)
