@@ -527,6 +527,11 @@ async def lista_licencias_asignadas_a_equipos():
     result = conn.read_licencias_asignadas_a_equipos()
     return lista_licencia_asignada_equipo_schema(result)
 
+@router.get("/chip-by-estado")
+async def lista_chips_by_estado():
+    result = conn.read_chip_by_estado()
+    return descripcion_equipo_schema(result)
+
 @router.get("/lista-personas")
 async def listar_personas():
     result = conn.read_personas()
@@ -634,6 +639,11 @@ async def lista_estado():
 @router.get("/lista-subestado")
 async def lista_subestado():
     result = conn.read_subestado()
+    return lista_subestado_schema(result)
+
+@router.get("/lista-subestado-chip")
+async def lista_subestado_chip():
+    result = conn.read_subestado_chip()
     return lista_subestado_schema(result)
 
 @router.get("/subestado-por_id/{parent_code}")
@@ -928,3 +938,5 @@ async def asignar_accesorio(body: AsignarEquipo):
     except Exception as e:
         print("error", data)
         raise HTTPException(status_code=422, detail=str(e))
+    
+

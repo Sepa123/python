@@ -5853,6 +5853,22 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             cur.execute(""" SELECT * FROM inventario.subestados """)
             return cur.fetchall()
         
+    def read_chip_by_estado(self):
+        with self.conn.cursor() as cur:
+            cur.execute(""" SELECT e.id, e.marca, e.modelo, e.serial, e.mac_wifi, e.serie, e.resolucion, e.dimensiones, e.descripcion, e.ubicacion,
+                        e.almacenamiento, e.ram, es.descripcion AS estado, s.descripcion as subestado, t.nombre AS tipo, e.cantidad, e.nr_equipo 
+                        FROM inventario.equipo e
+                        INNER JOIN inventario.tipo t ON e.tipo = t.id
+                        INNER JOIN inventario.estados es ON e.estado = es.id
+                        inner join inventario.subestados s on s.code = e.subestado and s.parent_code = e.estado
+                        where e.tipo = 3  order by e.id DESC ; """)
+            return cur.fetchall()
+        
+    def read_subestado_chip(self):
+        with self.conn.cursor() as cur:
+            cur.execute(""" SELECT * FROM inventario.subestados where parent_code = 4""")
+            return cur.fetchall()
+        
     def read_subestado_por_id(self, parent_code):
         with self.conn.cursor() as cur:
             cur.execute(""" SELECT * FROM inventario.subestados where parent_code=%(parent_code)s """ ,  {"parent_code": parent_code})

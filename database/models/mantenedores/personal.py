@@ -43,4 +43,5 @@ class PersonalEquipo(BaseModel):
     observacion: Optional[str]
     foto: Optional[str]
     pdf: Optional[str]
+    habilitado: Optional[bool]
 
