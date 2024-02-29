@@ -52,6 +52,8 @@ from database.schema.rutas.reporte_ruta_mes import reportes_rutas_mes_schema, re
 from database.schema.rutas.bitacora_log_inversa import bitacora_log_inversa_schema
 from database.schema.rutas.no_entregados import no_entregados_schema
 
+from database.schema.rutas.eficiencia_coductor import eficiencia_conductor_schema
+
 router = APIRouter(tags=["rutas"], prefix="/api/rutas")
 
 conn = reportesConnection()
@@ -1165,6 +1167,35 @@ async def get_no_entregados_total(fecha : str,tienda : str, region: str):
 
 
 
+@router.get("/eficiencia/conductor")
+async def get_eficiencia_conductor(fecha : str,tienda : str, region: str):
+    if tienda == 'undefined':
+        tienda = None
+        
+    if region == 'undefined':
+        region = None
+
+    result = conn.read_eficiencia_conductor(fecha,tienda,region)
+    return eficiencia_conductor_schema(result)
+
+@router.get("/media/eficiencia/conductor")
+async def get_media_eficiencia_conductor(fecha : str,tienda : str, region: str):
+    if tienda == 'undefined':
+        tienda = None
+        
+    if region == 'undefined':
+        region = None
+
+    result = conn.read_media_eficiencia_conductor(fecha,tienda,region)
+    return {
+        "Suma": result[0],
+        "T_ent": result[1],
+        "N_ent": result[2],
+        "N_ent": result[3],
+    }
+
+
+
 
 @router.post("/agregar/porDespachoRuta",status_code=status.HTTP_201_CREATED)
 async def insert_ruta_manual_por_despacho_ruta(body : bodyUpdateVerified):
@@ -1298,3 +1329,6 @@ async def get_ruta_manual(pedido_id : str):
     print("/buscar/ruta")
 
     return json_data
+
+
+

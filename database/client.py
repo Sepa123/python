@@ -7208,7 +7208,48 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                          """, data)
             
             return cur.fetchall()
+        
+    def read_eficiencia_conductor(self,fecha,tienda,region):
+        data = {
+            'fecha': fecha,
+            'tienda': tienda,
+            'region': region
+        }
+        with self.conn.cursor() as cur:
+            cur.execute("""        
+                ---EFICIECIA CONDUCTOR
+                select 	driver,
+                        patente,
+                        total,
+                        entregados,
+                        no_entregado,
+                        ee
+                FROM rutas.resumen_ns_toc(%(fecha)s,%(tienda)s,%(region)s)
+                order by 1 asc;	
+                         """, data)
+            
+            return cur.fetchall()
 
+    def read_media_eficiencia_conductor(self,fecha,tienda,region):
+        data = {
+            'fecha': fecha,
+            'tienda': tienda,
+            'region': region
+        }
+        with self.conn.cursor() as cur:
+            cur.execute("""        
+                ---MEDIA EFICENCIA CONDUCTOR
+                SELECT 
+                    SUM(total) AS suma,
+                    SUM(entregados) AS t_ent,
+                    SUM(no_entregado) AS n_ent,
+                    AVG(ee) AS efectividad_entrega
+                FROM rutas.resumen_ns_toc(%(fecha)s,%(tienda)s,%(region)s)
+                         """, data)
+            
+            return cur.fetchone()
+
+    #### Despacho Ruta - NS F_Compromiso
 
     def buscar_productos_por_4_digitos(self,codigo_producto : str):
         with self.conn.cursor() as cur:
