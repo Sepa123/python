@@ -1191,7 +1191,7 @@ async def get_media_eficiencia_conductor(fecha : str,tienda : str, region: str):
         "Suma": result[0],
         "T_ent": result[1],
         "N_ent": result[2],
-        "N_ent": result[3],
+        "Efectividad_entrega": result[3],
     }
 
 
