@@ -115,12 +115,9 @@ async def get_ruta_manual(body : bodyUpdateVerified ):
 
 @router.post("/buscar/producto/ruta",status_code=status.HTTP_202_ACCEPTED)
 async def get_datos_producto_en_ruta(body : bodyUpdateVerified ):
-
-    
+ 
     codigo_ruta = conn.get_codigo_pedido_opl(body.n_guia)
-
     body.n_guia = codigo_ruta[0][0]
-
 
     results = conn.get_datos_producto_en_ruta(body.n_guia)
             
@@ -1165,3 +1162,139 @@ async def get_no_entregados_total(fecha : str,tienda : str, region: str):
 
     result = conn.read_no_entregados_total(fecha,tienda,region)
     return no_entregados_schema(result)
+
+
+
+
+@router.post("/agregar/porDespachoRuta",status_code=status.HTTP_201_CREATED)
+async def insert_ruta_manual_por_despacho_ruta(body : bodyUpdateVerified):
+    results = conn.get_ruta_manual(body.n_guia)
+    # print(results[0][10])
+
+    if results is None or results == []:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El codigo del producto no existe")
+    
+
+    check_producto  = results[0][10]
+    # print(body)
+
+
+    ### para pedidos pickeados de opl p
+    if len(body.n_guia) > 20:
+        cod_opl = conn.get_codigo_pedido_opl(body.n_guia)[0][0]
+        body.n_guia = cod_opl
+
+    # print(body)
+
+    # print(results)
+
+    check = conn.check_producto_existe(check_producto)
+    check = re.sub(r'\(|\)', '',check[0])
+    check = check.split(",")
+    
+    if(check[0] == "1"):
+        print("codigo pedido repetido")
+        check_fecha = conn.check_fecha_ruta_producto_existe(check_producto)
+
+        if check_fecha is not None:
+            fecha = check_fecha[0]
+        else:
+            fecha = ''
+        
+        raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, 
+                            detail=f'El Producto "{check_producto}" se encuentra en la ruta: {check[1]}, con fecha de ruta {fecha}' )
+    
+    if results is None or results == []:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El codigo del producto no existe")
+    
+    json_data = rutas_manuales_schema(results)
+
+    if json_data[0]['Calle'] is None:
+        print("La direccion es null")
+        json_data[0]['Calle'] = json_data[0]['Direccion_textual']
+
+    body.cliente = json_data[0]['Notas']
+
+    data = body.dict()
+
+    print(json_data)
+    # connHela.insert_data_bitacora_recepcion(data)
+
+    try:
+        for j,producto in enumerate(json_data):
+            data = producto
+            # print(data["Codigo_pedido"])
+            data["Calle"] = conn.direccion_textual(data["Codigo_pedido"])[0][0]
+            data["Id_ruta"] = body.id_ruta
+            data["Agrupador"] = body.ruta
+            data["Nombre_ruta"] = body.ruta
+            # data["Pistoleado"]  
+            data["Descripcion_producto"] = re.sub(r'@', ' ', producto['Descripcion_producto'])
+            data["Posicion"] = j + 1
+            data["Fecha_ruta"] = body.fecha_ruta
+            data["Pickeado"] = data["Pistoleado"] 
+            data["Created_by"] = body.id_usuario
+            data["DE"] = False
+            data["DP"] = False
+            conn.write_rutas_manual(data)
+            # Ejecutar función en el último elemento
+            if j == len(json_data) - 1:
+                conn.recalcular_posicion_ruta(body.ruta)
+
+
+        
+        return { "message": f"La Ruta {body.ruta} fue guardada exitosamente" }
+    except Exception as e:
+        # if validar_fecha(fecha_pedido) == False: 
+        #     raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, detail=f"No se puede crear ruta con la fecha {fecha_pedido}")
+       
+        if(check[0] == "1"):
+
+            raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, 
+                                detail=f'El Producto "{body.n_guia}" se encuentra en la ruta {check[1]}')
+        
+        print(f"error al crear ruta: {e}")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
+    # finally:
+    #     conn.recalcular_posicion_ruta(nombre_ruta)
+
+    # return body
+
+
+
+
+@router.get("/buscar/4_digitos/{pedido_id}",status_code=status.HTTP_202_ACCEPTED)
+async def get_ruta_manual(pedido_id : str):
+    results = conn.buscar_productos_por_4_digitos(pedido_id)
+
+    print("codigo_pedido ",pedido_id)
+
+    check = conn.check_producto_existe(pedido_id)
+    check = re.sub(r'\(|\)', '',check[0])
+    check = check.split(",")
+
+    print(check)
+    
+    if(check[0] == "1"):
+        print("codigo pedido repetido")
+
+        check_fecha = conn.check_fecha_ruta_producto_existe(pedido_id)
+
+        if check_fecha is not None:
+            fecha = check_fecha[0]
+        else:
+            pedido_id = conn.get_codigo_pedido_opl(pedido_id)[0][0]
+            fecha = conn.check_fecha_ruta_producto_existe(pedido_id)[0]
+        
+        raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, 
+                            detail=f'El Producto "{pedido_id}" se encuentra en la ruta: {check[1]}, con fecha de ruta {fecha}' )
+    
+    if results is None or results == []:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El codigo del producto no existe")
+    
+    json_data = buscar_productos_ruta_schema(results)
+
+ 
+    print("/buscar/ruta")
+
+    return json_data

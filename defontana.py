@@ -77,6 +77,16 @@ def ejecutar_api_defontana():
             print(f"El archivo {archivo_a_eliminar} ha sido eliminado.")
         else:
             print(f"El archivo {archivo_a_eliminar} no existe.")    
+
+            url_login = config('ACCESS_DEFONTA')
+            # client = httpx.Client()
+            print("necesito un token")
+            login = httpx.get(url_login, timeout=40)
+            body_login = login.json()
+            access_token = body_login['access_token']
+            ultima_ejecucion_token = ahora
+
+            guardar_estado(access_token, ultima_ejecucion_token)
                 
         # os.remove('/root/estado.json')
     else:

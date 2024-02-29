@@ -29,6 +29,9 @@ class bodyUpdateVerified(BaseModel):
     longitud:  Optional[str]
     check : Optional[bool]
     observacion : Optional[str]
+    ruta : Optional[str]
+    id_ruta : Optional[int]
+    fecha_ruta: Optional[str]
 
 
 class dataBitacora(BaseModel):

@@ -52,6 +52,8 @@ from database.models.ns_valor_ruta import asignarValor
 
 from database.schema.estado.ns_verificado import ns_verificados_schema
 
+from database.schema.nivel_servicio.ns_fecha_real import ns_por_fecha_schema
+
 import datetime
 from typing import List
 from fastapi.params import Query
@@ -502,3 +504,17 @@ async def cargas_por_hora():
     results = conn.read_lista_pendientes_bodega_hasta_hoy()
 
     return pendientes_bodega_schema(results)
+
+
+### promedio ns fecha
+@router.get("/ns/fecha_c_real",status_code=status.HTTP_202_ACCEPTED)
+async def get_ns_fecha_real(fecha : str):
+    results = conn.revisar_nivel_servicio_fec_real(fecha)
+
+    promedio = conn.revisar_nivel_servicio_fec_real_promedio(fecha)[0]
+
+    return {
+        "datos" : ns_por_fecha_schema(results),
+        "promedio" : promedio
+    }
+

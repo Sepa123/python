@@ -3,6 +3,7 @@ import codecs
 from decouple import config
 import os, sys, codecs
 import subprocess
+from database.queries import recuperar_query
 
 # import datetime
 # import pytz
@@ -7208,7 +7209,28 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             
             return cur.fetchall()
 
+
+    def buscar_productos_por_4_digitos(self,codigo_producto : str):
+        with self.conn.cursor() as cur:
+            cur.execute(recuperar_query(codigo_producto))
+            return cur.fetchall()
+
+    def revisar_nivel_servicio_fec_real(self,fecha : str):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                select * from rutas.nivel_servicio_fec_real('{fecha}');
+                         """)
+            return cur.fetchall()
     
+    def revisar_nivel_servicio_fec_real_promedio(self,fecha : str):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                SELECT round(AVG(nivel_servicio),2) AS promedio
+                FROM rutas.nivel_servicio_fec_real('{fecha}');
+                         """)
+            return cur.fetchone()
+
+
 class transyanezConnection():
     conn = None
     def __init__(self) -> None:
