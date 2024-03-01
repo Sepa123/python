@@ -1196,6 +1196,21 @@ async def get_media_eficiencia_conductor(fecha : str,tienda : str, region: str):
     }
 
 
+@router.get("/regiones")
+async def get_regiones():
+    
+    # result = conn.obtener_region()
+    # obtener_region
+    return [
+        {
+            "region" : "V - Valparaiso"
+        },
+        {
+            "region" : "XIII - Metropolitana"
+        }
+    ]
+
+
 
 
 @router.post("/agregar/porDespachoRuta",status_code=status.HTTP_201_CREATED)

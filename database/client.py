@@ -7278,6 +7278,16 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 select * from areati.reporte_fechas_easy_desfase('{fecha_inicio}','{fecha_fin}',{offset});
                          """)
             return cur.fetchall()
+        
+    ###Diferencias fechas Easy
+    def obtener_region(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                select distinct on (region_beetrack)
+                    region_beetrack
+                from public.ti_comuna_region tcr
+                         """)
+            return cur.fetchall()
 
 class transyanezConnection():
     conn = None
