@@ -7275,7 +7275,70 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def obtener_dif_fechas_easy_excel(self,fecha_inicio : str,fecha_fin : str, offset : int):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-                select * from areati.reporte_fechas_easy_desfase('{fecha_inicio}','{fecha_fin}',{offset});
+                ---funcion con offset
+                --select * from areati.reporte_fechas_easy_desfase('{fecha_inicio}','{fecha_fin}',{offset});
+                --query sin limite
+                select	subquery.cliente,
+			subquery.ingreso_sistema,
+			subquery.fecha_compromiso,
+			subquery.ultima_actualizacion,
+			CASE 
+		        WHEN subquery.ultima_actualizacion IS NOT NULL 
+		        	THEN to_date(subquery.ultima_actualizacion,'dd/mm/yyyy hh24:mi') - to_date(subquery.ingreso_sistema,'dd/mm/yyyy hh24:mi')
+		        ELSE NULL
+	    	END AS dias_ejecucion,
+			subquery.cod_pedido,
+			subquery.id_entrega,
+			subquery.direccion,
+			subquery.comuna,
+			subquery.descripcion,
+			subquery.unidades,
+			subquery.estado,
+			subquery.subestado
+	from (
+		select 	'Easy OPL' as cliente,
+				to_char(tcego.created_at,'dd/mm/yyyy hh24:mi') as ingreso_sistema,
+				to_char(tcego.fec_compromiso,'dd/mm/yyyy') as fecha_compromiso,
+				(	select to_char(rt.fecha_llegada,'dd/mm/yyyy hh24:mi') 
+					from beetrack.ruta_transyanez rt 
+					where rt.guia=tcego.suborden 
+					limit 1) as ultima_actualizacion,
+				tcego.suborden as cod_pedido,
+				tcego.id_entrega::text as id_entrega,
+				tcego.direc_despacho as direccion,
+				tcego.comuna_despacho as comuna,
+				tcego.descripcion as descripcion,
+				tcego.unidades::text as unidades,
+				initcap(ee.descripcion) as estado,
+				se."name" as subestado
+		from areati.ti_carga_easy_go_opl tcego
+		left join areati.estado_entregas ee on ee.estado=tcego.estado
+		left join areati.subestado_entregas se on (se.parent_code=tcego.estado and se.code=tcego.subestado)
+		where tcego.created_at::date >= tcego.fec_compromiso 
+		and tcego.created_at::date >= '{fecha_inicio}'::date and tcego.created_at::date<= '{fecha_fin}'::date
+		union all 
+		select 	'Easy CD' as cliente,
+				to_char(twce.created_at,'dd/mm/yyyy hh24:mi') as ingreso_sistema,
+				to_char(twce.fecha_entrega,'dd/mm/yyyy') as fecha_compromiso,
+				(	select to_char(rt.fecha_llegada,'dd/mm/yyyy hh24:mi') 
+					from beetrack.ruta_transyanez rt 
+					where rt.guia=twce.entrega 
+					limit 1) as ultima_actualizacion,
+				twce.entrega as cod_pedido,
+				twce.carton as id_entrega,
+				twce.direccion as direccion,
+				twce.comuna as comuna,
+				twce.descripcion as descripcion,
+				twce.cant as unidades,
+				initcap(ee.descripcion) as estado,
+				se."name" as subestado
+		from areati.ti_wms_carga_easy twce
+		left join areati.estado_entregas ee on ee.estado=twce.estado
+		left join areati.subestado_entregas se on (se.parent_code=twce.estado and se.code=twce.subestado)
+		where twce.created_at::date >= twce.fecha_entrega 
+		and twce.created_at::date >= '{fecha_inicio}'::date and twce.created_at::date<= '{fecha_fin}'::date
+		order by cliente, ingreso_sistema asc
+	) subquery
                          """)
             return cur.fetchall()
         
