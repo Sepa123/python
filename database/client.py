@@ -7271,6 +7271,13 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                          """)
             return cur.fetchone()
 
+    ###Diferencias fechas Easy
+    def obtener_dif_fechas_easy_excel(self,fecha_inicio : str,fecha_fin : str, offset : int):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                select * from areati.reporte_fechas_easy_desfase('{fecha_inicio}','{fecha_fin}',{offset});
+                         """)
+            return cur.fetchall()
 
 class transyanezConnection():
     conn = None

@@ -62,6 +62,7 @@ connHela = HelaConnection()
 
 @router.post("/buscar",status_code=status.HTTP_202_ACCEPTED)
 async def get_ruta_manual(body : bodyUpdateVerified ):
+
     results = conn.get_ruta_manual(body.n_guia)
     # print(results[0][10])
 

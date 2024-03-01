@@ -31,6 +31,8 @@ from database.schema.toc.buscar_alerta import buscar_alerta, buscar_alertas_sche
 
 from database.models.toc.editar_toc import EditarTOC
 
+from database.schema.toc.dif_fechas_easy import dif_fecha_easy_schema
+
 router = APIRouter(tags=["TOC"], prefix="/api/toc")
 
 conn = reportesConnection()
@@ -253,6 +255,29 @@ async def get_guia_by_codigo(codigo : str):
      return {
           "Guia" : result[0]
           }
+
+@router.get("/diferencia/fechas/easy")
+async def get_differencia_fechas_easy(fecha_inicio : str,fecha_fin : str, offset: int):
+    result = conn.obtener_dif_fechas_easy_excel(fecha_inicio,fecha_fin , offset)
+    largo = len(result)
+    return {
+         "visible": True,
+         "items" : largo,
+         "datos" : dif_fecha_easy_schema(result)
+    }
+     
+
+
+# @router.get("/diferencia/fechas/easy/descargar")
+# async def datos_rutas_mes(dia : str):
+#     result = conn.get_reportes_rutas_diario(dia)
+#     nombre_filas = ( "Fecha Ruta", "Ruta", "Ruta Beetrack", "Posición", "Código Cliente", "Nombre",
+#                     "Dirección", "Comuna","Región","Telefono","Email","Código Pedido","Fecha pedido",
+#                     "Descripción","Cantidad","Creado por", "Daño embalaje", "Daño producto",
+#                     "Pickeado")
+#     nombre_excel = f"inventario-rutas-{dia}"
+
+#     return excel.generar_excel_generico(result,nombre_filas,nombre_excel)
 
 
 
