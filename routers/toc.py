@@ -1,6 +1,7 @@
 from fastapi import APIRouter, status,HTTPException
 from typing import List
-import re
+import re, json
+import lib.excel_generico as excel
 
 ##Conexiones
 from database.client import reportesConnection , UserConnection
@@ -32,6 +33,8 @@ from database.schema.toc.buscar_alerta import buscar_alerta, buscar_alertas_sche
 from database.models.toc.editar_toc import EditarTOC
 
 from database.schema.toc.dif_fechas_easy import dif_fecha_easy_schema
+
+from database.models.toc.dif_fecha_easy import DifFechaEasy
 
 router = APIRouter(tags=["TOC"], prefix="/api/toc")
 
@@ -268,16 +271,35 @@ async def get_differencia_fechas_easy(fecha_inicio : str,fecha_fin : str, offset
      
 
 
-# @router.get("/diferencia/fechas/easy/descargar")
-# async def datos_rutas_mes(dia : str):
+@router.post("/diferencia/fechas/easy/descargar")
+async def descargar_differencia_fechas_easy(body : List[DifFechaEasy]):
 #     result = conn.get_reportes_rutas_diario(dia)
-#     nombre_filas = ( "Fecha Ruta", "Ruta", "Ruta Beetrack", "Posición", "Código Cliente", "Nombre",
-#                     "Dirección", "Comuna","Región","Telefono","Email","Código Pedido","Fecha pedido",
-#                     "Descripción","Cantidad","Creado por", "Daño embalaje", "Daño producto",
-#                     "Pickeado")
-#     nombre_excel = f"inventario-rutas-{dia}"
+    
+#     cadena = json.dumps(body)
 
-#     return excel.generar_excel_generico(result,nombre_filas,nombre_excel)
+    
+#     lista_dict = json.loads(cadena)
+    tupla = [tuple((obj.Cliente,
+    obj.Ingreso_sistema,
+    obj.Fecha_compromiso,
+    obj.Ultima_actualizacion,
+    obj.Dias_ejecucion,
+    obj.Cod_pedido,
+    obj.Id_entrega,
+    obj.Direccion,
+    obj.Comuna,
+    obj.Descripcion,
+    obj.Unidades,
+    obj.Estado,
+    obj.Subestado)) for obj in body]
+
+    nombre_filas = ('Cliente', 'Ingreso Sistema', 'Fecha Compromiso', 'Ultima Actualización', 'Dias Ejecución', 
+                    'Código Pedido', 'Id Entrega', 'Dirección', 'Comuna', 'Descripción', 'Unidades', 'Estado', 
+                    'Subestado')
+
+    nombre_excel = f"excel_dif_easy"
+
+    return excel.generar_excel_generico(tupla,nombre_filas,nombre_excel)
 
 
 
