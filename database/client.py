@@ -5347,6 +5347,40 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
 
   ## MANTENEDORES INVENTARIO TI
 
+    def bitacora_asignar_chip(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute(""" INSERT INTO inventario.bitacora
+                        (id_usuario, ids_usuario, id_equipo, id_persona, observacion, 
+                         latitud, longitud, id_chip, ubicacionarchivo)
+                        VALUES( %(id_user)s, %(ids_user)s, %(equipo)s, %(persona)s, %(observacion)s, %(lat)s, 
+                        %(long)s, %(id_chip)s, %(ubicacionarchivo)s);""", data)
+            self.conn.commit()
+
+    def read_chips_asignados_a_equipos(self):
+        with self.conn.cursor() as cur:
+            cur.execute(""" select  b.id_chip, p.nombres || p.apellidos as persona , e.modelo || e.marca as linea, e.serial , e.descripcion as número,
+                       e2.id as id_equipo, e2.modelo as celular, e2.serial as imei, s.descripcion  as estado
+                        from inventario.bitacora b 
+                        inner join inventario.equipo e  on b.id_chip = e.id 
+                        inner join inventario.equipo e2 on b.id_equipo =e2.id
+                        inner join inventario.persona p on b.id_persona  = p.id 
+                        inner join inventario.subestados s on e.subestado = s.code
+                        where e.subestado = 4""")
+            return cur.fetchall()
+        
+    
+    def read_chip_no_asignado(self):
+        with self.conn.cursor() as cur:
+            cur.execute(""" SELECT e.id, e.marca, e.modelo, e.serial, e.mac_wifi, e.serie, e.resolucion, e.dimensiones, e.descripcion, e.ubicacion,
+                        e.almacenamiento, e.ram, es.descripcion AS estado, s.descripcion as subestado, t.nombre AS tipo, e.cantidad, e.nr_equipo 
+                        FROM inventario.equipo e
+                        INNER JOIN inventario.tipo t ON e.tipo = t.id
+                        INNER JOIN inventario.estados es ON e.estado = es.id
+                        inner join inventario.subestados s on s.code = e.subestado and s.parent_code = e.estado
+                        where e.tipo = 3  and e.subestado = 1 order by e.id DESC ; """)
+            return cur.fetchall()
+        
+
     
 
     def imprimir_planilla_personas(self):
@@ -5657,10 +5691,10 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def read_equipo_por_serial(self, serial):
         with self.conn.cursor() as cur:
             cur.execute(""" SELECT e.id, e.marca, e.modelo, e.serial, e.mac_wifi, e.serie, e.resolucion, e.dimensiones, e.descripcion, e.ubicacion,
-                        e.almacenamiento, e.ram, es.nombre AS estado, s.descripcion as subestado, t.nombre AS tipo, e.cantidad, e.nr_equipo 
+                        e.almacenamiento, e.ram, es.descripcion AS estado, s.descripcion as subestado, t.nombre AS tipo, e.cantidad, e.nr_equipo 
                         FROM inventario.equipo e
                         INNER JOIN inventario.tipo t ON e.tipo = t.id
-                        INNER JOIN inventario.estado es ON e.estado = es.id
+                        INNER JOIN inventario.estados es ON e.estado = es.id
                         inner join inventario.subestados s on s.code = e.subestado and s.parent_code = e.estado  where e.serial=%(serial)s """, {"serial" : serial})
             return cur.fetchall()
     def read_equipos_general(self):
@@ -5695,7 +5729,8 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                         FROM inventario.asignacion a  
                         INNER JOIN inventario.equipo e ON a.equipo = e.id
                         INNER JOIN inventario.departamento d ON a.departamento = d.id
-                        inner join inventario.tipo t on e.tipo = t.id  """)
+                        inner join inventario.tipo t on e.tipo = t.id
+                        where e.tipo != 1 and e.tipo != 2 and e.tipo != 14  """)
             return cur.fetchall()
     
     def read_asignados_sin_join(self):
@@ -6010,6 +6045,14 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
         with self.conn.cursor() as cur:
             cur.execute(""" UPDATE inventario.equipo SET estado=%(status)s, ubicacionarchivo=%(ubicacionarchivo)s where id=%(equipo)s""", data)
         self.conn.commit()
+
+
+    ##al asignar un chip se le cambia el estado a asignado
+    def actualizar_estado_chip(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute(""" UPDATE inventario.equipo SET estado=%(estadoChip)s, subestado=%(subestadoChip)s  where id=%(id_chip)s""", data)
+        self.conn.commit()
+        
     ##cambio de estado del equipo al asignar reciente (cambia a estado POR ENTREGAR)
 
     def actualizar_por_entregar(self,data):

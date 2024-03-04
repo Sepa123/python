@@ -20,7 +20,7 @@ from database.models.mantenedores.personaHabilitada import PersonaHabilitada
 from database.models.mantenedores.liberar_licencia import  LiberarLicencia
 
 from database.schema.inventario.persona import firma_entrega_schema, firma_devolucion_schema, accesorio_schema, ultima_persona_schema, crear_persona_schema, persona_equipo_schema, equipo_asignado_por_id_schema, equipo_asignado_por_persona_schema,equipo_devuelto_por_id_schema, ruta_pdf_entrega_schema, ruta_pdf_devolucion_schema
-from database.schema.inventario.equipo import lista_licencia_asignada_equipo_schema, ultimo_equipo_schema, lista_estado_schema, lista_estado_schema, lista_nr_equipo_schema,descripcion_equipo_schema, tipo_equipo_schema, lista_inventario_estado_schema, licencia_equipo_schema, folio_devolucion_schema, folio_entrega_schema, lista_subestado_schema, lista_nr_code_schema, lista_equipo_sin_join_schema, ultimo_estado_schema
+from database.schema.inventario.equipo import lista_chip_asignado_equipo_schema, lista_licencia_asignada_equipo_schema, ultimo_equipo_schema, lista_estado_schema, lista_estado_schema, lista_nr_equipo_schema,descripcion_equipo_schema, tipo_equipo_schema, lista_inventario_estado_schema, licencia_equipo_schema, folio_devolucion_schema, folio_entrega_schema, lista_subestado_schema, lista_nr_code_schema, lista_equipo_sin_join_schema, ultimo_estado_schema
 from database.schema.inventario.sucursal import lista_sucursa_schema, lista_departamento_schema
 ##Conexiones
 from database.client import reportesConnection
@@ -159,7 +159,9 @@ async def asignar_equipo(body: AsignarEquipo):
         data = body.dict()
         conn.ingresar_equipo_asignado(data)
         conn.bitacora_asignar_licencia(data)
+        conn.bitacora_asignar_chip(data)
         conn.actualizar_estado_equipo(data)
+        conn.actualizar_estado_chip(data)
         return{
              "message": "Equipo asignado correctamente"
         }
@@ -527,9 +529,19 @@ async def lista_licencias_asignadas_a_equipos():
     result = conn.read_licencias_asignadas_a_equipos()
     return lista_licencia_asignada_equipo_schema(result)
 
+@router.get("/chip-asignados-a-equipos")
+async def lista_chips_asignados_a_equipos():                                 
+    result = conn.read_chips_asignados_a_equipos()
+    return lista_chip_asignado_equipo_schema(result)
+
 @router.get("/chip-by-estado")
 async def lista_chips_by_estado():
     result = conn.read_chip_by_estado()
+    return descripcion_equipo_schema(result)
+
+@router.get("/chip-no-asignado")
+async def lista_chip_no_asignado():
+    result = conn.read_chip_no_asignado()
     return descripcion_equipo_schema(result)
 
 @router.get("/lista-personas")

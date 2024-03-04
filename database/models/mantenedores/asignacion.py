@@ -21,8 +21,11 @@ class AsignarEquipo(BaseModel):
     pdf_devolucion: Optional[str]
     departamento: Optional [int]
     id_licencia: Optional[int]
+    id_chip: Optional[int]
     status: Optional[int]
     subestado: Optional[int]
     sub_estado:Optional[int]
     ubicacionarchivo: Optional[str]
+    estadoChip: Optional[int]
+    subestadoChip: Optional[int]
     #cuando se requiere enviar el estado de equipo y asignacion en el mismo contenido se cambia el nombre de la variable
