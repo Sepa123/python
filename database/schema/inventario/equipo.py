@@ -152,6 +152,20 @@ def lista_licencia_asignada_equipo(data):
 def lista_licencia_asignada_equipo_schema(datos):
     return[lista_licencia_asignada_equipo(data) for data in datos]
 
+def lista_chip_asignado_equipo(data):
+    return{
+        "id_chip": data[0],
+        "persona": data[1],
+        "linea": data[2],
+        "serial": data[3],
+        "numero": data[4],
+        "id_equipo": data[5],
+        "celular": data[6],
+        "imei": data[7],
+        "estado":data[8]
+    }
+def lista_chip_asignado_equipo_schema(datos):
+    return[lista_chip_asignado_equipo(data) for data in datos]
 
 def folio_entrega_schema(result):
     return result
