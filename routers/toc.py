@@ -279,19 +279,8 @@ async def descargar_differencia_fechas_easy(body : List[DifFechaEasy]):
 
     
 #     lista_dict = json.loads(cadena)
-    tupla = [tuple((obj.Cliente,
-    obj.Ingreso_sistema,
-    obj.Fecha_compromiso,
-    obj.Ultima_actualizacion,
-    obj.Dias_ejecucion,
-    obj.Cod_pedido,
-    obj.Id_entrega,
-    obj.Direccion,
-    obj.Comuna,
-    obj.Descripcion,
-    obj.Unidades,
-    obj.Estado,
-    obj.Subestado)) for obj in body]
+    tupla = [tuple((obj.Cliente,obj.Ingreso_sistema,obj.Fecha_compromiso,obj.Ultima_actualizacion,obj.Dias_ejecucion,obj.Cod_pedido,obj.Id_entrega,
+             obj.Direccion,obj.Comuna,obj.Descripcion,obj.Unidades,obj.Estado,obj.Subestado)) for obj in body]
 
     nombre_filas = ('Cliente', 'Ingreso Sistema', 'Fecha Compromiso', 'Ultima Actualización', 'Dias Ejecución', 
                     'Código Pedido', 'Id Entrega', 'Dirección', 'Comuna', 'Descripción', 'Unidades', 'Estado', 

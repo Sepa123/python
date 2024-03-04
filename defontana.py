@@ -56,6 +56,7 @@ def ejecutar_api_defontana():
         print("necesito un token")
         login = httpx.get(url_login, timeout=40)
         body_login = login.json()
+        print(body_login)
         access_token = body_login['access_token']
 
         
