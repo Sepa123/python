@@ -50,7 +50,7 @@ def ejecutar_api_defontana():
 
     print(ahora)
     # Verificar si la función ya se ejecutó hoy
-    if access_token is None or (ultima_ejecucion_token is None or ahora - ultima_ejecucion_token > timedelta(minutes=120)):
+    if access_token is None or (ultima_ejecucion_token is None or ahora - ultima_ejecucion_token > timedelta(minutes=360)):
         url_login = config('ACCESS_DEFONTA')
         # client = httpx.Client()
         print("necesito un token")
