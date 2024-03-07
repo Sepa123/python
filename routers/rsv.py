@@ -1,5 +1,6 @@
 from fastapi import APIRouter, status,HTTPException, Path
 from datetime import datetime, timedelta
+import json
 ##Modelos y schemas
 from typing import List
 from database.schema.rsv.catalogo_producto import catalogos_productos_schema , codigos_por_color_schema
@@ -70,6 +71,9 @@ from database.schema.rsv.obtener_ubicacion_cantidad import obtener_ubicacion_can
 from database.models.rsv.obtener_ubicacion_cantidad import ObtUbicacionCantidad
 
 from database.models.rsv.defontana.venta import listaVenta
+
+from database.models.rsv.defontana.notificacion import Notificacion
+from database.schema.rsv.defontana.notificacion import notificaciones_schema
 ##Conexiones
 from database.client import reportesConnection
 
@@ -874,3 +878,72 @@ async def obtener_ubicacion_y_cantidad_rsv(body : ObtUbicacionCantidad):
     result = conn.obtener_ubicacion_cantidad(body.Sucursal, body.Codigo)
     # print(len(result))
     return obtener_ubicacion_cantidad_schema(result)
+
+
+
+def cargar_estado_notificaciones():
+    try:
+        with open('json/estado_notificaciones.json', 'r') as f:
+            estado = json.load(f)
+            notificaciones_registradas = estado
+
+    except FileNotFoundError:
+        notificaciones_registradas = None
+    
+    return notificaciones_registradas
+
+
+def guardar_estado_notificacion(mail, folios):
+
+    estado = {'Mail': mail, 'Folios': folios}
+
+    try:
+        # Intenta abrir el archivo existente para lectura
+        with open('json/estado_notificaciones.json', "r") as archivo:
+            datos = json.load(archivo)
+    except FileNotFoundError:
+        # Si el archivo no existe, crea una lista vacía
+        print('El archivo no existe')
+        datos = []
+
+    # Verificar si ya existe un JSON con el mismo correo electrónico
+    correo_existente = False
+
+    for item in datos:
+        if item["Mail"] == estado["Mail"]:
+            correo_existente = True
+            print(estado["Mail"]+ ' existe')
+            break
+
+    # Si el correo electrónico no está duplicado, agrega el nuevo JSON
+    if not correo_existente:
+        print('sea grego nuevo correo')
+        datos.append(estado)
+
+    with open('json/estado_notificaciones.json', 'w') as f:
+        json.dump(datos, f, indent=4)
+
+@router.post("/notificiones")
+async def notificaciones_api_defontana(body : Notificacion):
+
+    notificaciones = cargar_estado_notificaciones()
+
+    for noti in notificaciones:
+        if body.Mail == noti["Mail"]:
+            return {
+                "Folios" : noti['Folios'],
+                "Cantidad": len(noti['Folios'] )
+            }
+
+    
+    
+    result = conn.notificacion_defontana_hoy()
+    folios = notificaciones_schema(result)
+
+    guardar_estado_notificacion(body.Mail,folios)
+    
+    return {
+        "Folios" : folios,
+        "Cantidad": len(folios),
+        "visto": False
+    }

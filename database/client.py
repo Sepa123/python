@@ -7384,14 +7384,135 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
 	) subquery
                          """)
             return cur.fetchall()
-        
-    ###Diferencias fechas Easy
+
+
+    ###Productos Ingresados
+    def obtener_Productos_ingresados_excel(self,fecha_inicio : str,fecha_fin : str, offset : int):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                ---funcion con offset
+                --select * from areati.reporte_productos_ingresado('{fecha_inicio}','{fecha_fin}',{offset});
+                --query sin limite
+
+            ----------------------------------------------------------------------------
+            -- (1) Recupera Easy CD
+            ----------------------------------------------------------------------------
+            select  to_char(twce.created_at,'dd/mm/yyyy hh24:mi:ss') as ingreso_sistema,
+                    'Easy CD' as cliente,
+                    CASE
+                        WHEN twce.anden IS NULL THEN easy.anden
+                        ELSE twce.anden
+                    end as anden,
+                    -- twce.anden as anden,
+                    twce.entrega as cod_pedido,
+                    twce.fecha_entrega as fec_compromiso,
+                    twce.carton as cod_producto,
+                    twce.producto::text as sku,
+                    case
+                    when unaccent(lower(twce.comuna)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                            (select oc.comuna_name from public.op_comunas oc 
+                            where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+                                                    where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(twce.comuna))
+                                                )
+                            )
+                    else (select initcap(oc2.comuna_name) from public.op_comunas oc2 
+                            where unaccent(lower(twce.comuna)) = unaccent(lower(oc2.comuna_name))
+                            )
+                    end as comuna,
+                    case
+                        when unaccent(lower(twce.comuna)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                        (select opr.region_name  from public.op_regiones opr 
+                        where opr.id_region = (select oc.id_region from public.op_comunas oc 
+                            where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+                            where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(twce.comuna))
+                            )    
+                        ))
+                        else(select opr.region_name  from public.op_regiones opr 
+                        where opr.id_region =(select oc2.id_region from public.op_comunas oc2 
+                        where unaccent(lower(twce.comuna)) = unaccent(lower(oc2.comuna_name))
+                        ))
+                    end as region,
+                    twce.bultos as cantidad,
+                    twce.verified as verificado,
+                    twce.recepcion as recepcionado,
+                    ee.descripcion as estado,
+                    se.name as subestado 
+            from areati.ti_wms_carga_easy twce
+            left join public.ti_wms_carga_easy_paso easy on  easy.carton = (CASE 
+                    WHEN POSITION('-' IN twce.carton) > 0 THEN 
+                        substring(twce.carton FROM 1 FOR POSITION('-' IN twce.carton) - 1)
+                    ELSE 
+                        twce.carton
+                    END )
+            left join areati.estado_entregas ee on ee.estado = twce.estado
+            left join areati.subestado_entregas se on (se.parent_code = twce.estado and se.code = twce.subestado)
+            where twce.created_at::date >= '{fecha_inicio}'::date and twce.created_at::date <= '{fecha_fin}'::date
+            ----------------------------------------------------------------------------
+            -- (2) Recupera Easy OPL
+            ----------------------------------------------------------------------------
+            union all
+            select  to_char(tcego.created_at,'dd/mm/yyyy hh24:mi:ss') as ingreso_sistema,
+                    'Easy Tienda' as cliente,
+                    null as anden,
+                    tcego.suborden as cod_pedido,
+                    tcego.fec_compromiso as fec_compromiso,
+                    tcego.codigo_ean as cod_producto,
+                    tcego.codigo_sku::text as sku,
+                    case
+                    when unaccent(lower(tcego.comuna_despacho)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                            (select oc.comuna_name from public.op_comunas oc 
+                            where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+                                                    where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(tcego.comuna_despacho))
+                                                )
+                            )
+                    else (select initcap(oc2.comuna_name) from public.op_comunas oc2 
+                            where unaccent(lower(tcego.comuna_despacho)) = unaccent(lower(oc2.comuna_name))
+                            )
+                    end as comuna,
+                    case
+                        when unaccent(lower(tcego.comuna_despacho)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                        (select opr.region_name  from public.op_regiones opr 
+                        where opr.id_region = (select oc.id_region from public.op_comunas oc 
+                            where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+                            where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(tcego.comuna_despacho))
+                            )    
+                        ))
+                        else(select opr.region_name  from public.op_regiones opr 
+                        where opr.id_region =(select oc2.id_region from public.op_comunas oc2 
+                        where unaccent(lower(tcego.comuna_despacho)) = unaccent(lower(oc2.comuna_name))
+                        ))
+                    end as region,
+                    tcego.unidades as cantidad,
+                    tcego.verified as verificado,
+                    tcego.recepcion as recepcionado,
+                    ee.descripcion as estado,
+                    se.name as subestado 
+            from areati.ti_carga_easy_go_opl tcego
+            left join areati.estado_entregas ee on ee.estado = tcego.estado
+            left join areati.subestado_entregas se on (se.parent_code = tcego.estado and se.code = tcego.subestado)
+            where tcego.created_at::date >= '{fecha_inicio}'::date and tcego.created_at::date <= '{fecha_fin}'::date
+            ----------------------------------------------------------------------------
+            order by ingreso_sistema asc
+
+                         """)
+            return cur.fetchall()
+
+    ###Regiones
     def obtener_region(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""
                 select distinct on (region_beetrack)
                     region_beetrack
                 from public.ti_comuna_region tcr
+                         """)
+            return cur.fetchall()
+        
+    ###Notificaciones defontana
+    def notificacion_defontana_hoy(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                SELECT dv.numero_folio  FROM rsv.defontana_venta dv 
+                where TO_CHAR(dv.fecha_creacion, 'DD-MM-YYYY') = TO_CHAR(CURRENT_DATE - 1, 'DD-MM-YYYY')
                          """)
             return cur.fetchall()
 

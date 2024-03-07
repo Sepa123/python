@@ -36,6 +36,8 @@ from database.schema.toc.dif_fechas_easy import dif_fecha_easy_schema
 
 from database.models.toc.dif_fecha_easy import DifFechaEasy
 
+from database.schema.toc.productos_agregados_easy import productos_agregados_schema
+
 router = APIRouter(tags=["TOC"], prefix="/api/toc")
 
 conn = reportesConnection()
@@ -267,6 +269,17 @@ async def get_differencia_fechas_easy(fecha_inicio : str,fecha_fin : str, offset
          "visible": True,
          "items" : largo,
          "datos" : dif_fecha_easy_schema(result)
+    }
+
+
+@router.get("/productos_ingresados/fechas/easy")
+async def get_productos_ingresados_fechas_easy(fecha_inicio : str,fecha_fin : str, offset: int):
+    result = conn.obtener_Productos_ingresados_excel(fecha_inicio,fecha_fin , offset)
+    largo = len(result)
+    return {
+         "visible": True,
+         "items" : largo,
+         "datos" : productos_agregados_schema(result)
     }
      
 
