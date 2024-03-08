@@ -304,16 +304,23 @@ async def descargar_differencia_fechas_easy(body : List[DifFechaEasy]):
     return excel.generar_excel_generico(tupla,nombre_filas,nombre_excel)
 
 @router.post("/productos_ingresados/fechas/easy/descargar")
-async def descargar_differencia_fechas_easy(body : List[ProductoIngresado]):
+async def descargar_differencia_fechas_easy(body :ProductoIngresado):
+    
+#     conn.obtener_Productos_ingresados_excel(fecha_inicio,fecha_fin , offset)
+    tupla = []
+
+    for fechas in body.Rango_fecha:
+         tupla = tupla + conn.obtener_Productos_ingresados_excel(fechas[0],fechas[1] , 0)
+
 #     result = conn.get_reportes_rutas_diario(dia)
     
 #     cadena = json.dumps(body)
 
     
 #     lista_dict = json.loads(cadena)
-    tupla = [tuple((obj.Ingreso_sistema, obj.Cliente, obj.Anden, obj.Cod_pedido, obj.Fec_compromiso, obj.Cod_producto,
-                     obj.Sku, obj.Comuna, obj.Region, obj.Cantidad, excel.cambiar_bool(obj.Verificado), excel.cambiar_bool(obj.Recepcionado), obj.Estado, 
-                     obj.Subestado)) for obj in body]
+#     tupla = [tuple((obj.Ingreso_sistema, obj.Cliente, obj.Anden, obj.Cod_pedido, obj.Fec_compromiso, obj.Cod_producto,
+#                      obj.Sku, obj.Comuna, obj.Region, obj.Cantidad, excel.cambiar_bool(obj.Verificado), excel.cambiar_bool(obj.Recepcionado), obj.Estado, 
+#                      obj.Subestado)) for obj in body]
 
     nombre_filas = ('Ingreso Sistema', 'Cliente', 'Anden', 'Código Pedido', 'Fecha Compromiso', 
                     'Código Producto', 'SKU', 'Comuna', 'Región', 'Cantidad', 'Verificado', 'Recepcionado', 

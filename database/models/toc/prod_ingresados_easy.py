@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional, Union
+from typing import Optional, Union, List
 
 class ProductoIngresado(BaseModel):
     Ingreso_sistema: Optional[str]
@@ -16,3 +16,4 @@ class ProductoIngresado(BaseModel):
     Recepcionado: Optional[bool]
     Estado: Optional[str]
     Subestado: Optional[str]
+    Rango_fecha : Optional[List]
