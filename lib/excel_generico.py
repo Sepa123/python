@@ -69,3 +69,11 @@ def generar_excel_con_titulo(results, nombre_filas, nombre_excel,titulo ):
     wb.save(f"excel/{nombre_excel}.xlsx")
 
     return FileResponse(f"excel/{nombre_excel}.xlsx")
+
+
+
+def cambiar_bool(valor):
+     if valor is True:
+          return "x"
+     else:
+          return ""

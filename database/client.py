@@ -7286,7 +7286,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                     SUM(total) AS suma,
                     SUM(entregados) AS t_ent,
                     SUM(no_entregado) AS n_ent,
-                    AVG(ee) AS efectividad_entrega
+                    round(AVG(ee),2) AS efectividad_entrega
                 FROM rutas.resumen_ns_toc(%(fecha)s,%(tienda)s,%(region)s)
                          """, data)
             
