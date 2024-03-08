@@ -8,7 +8,7 @@ class ProductoIngresado(BaseModel):
     Cod_pedido: Optional[str]
     Fec_compromiso: Optional[str]
     Cod_producto: Optional[str]
-    Sku: Optional[int]
+    Sku: Union[str, int, None]
     Comuna: Optional[str]
     Region: Optional[str]
     Cantidad: Optional[int]
