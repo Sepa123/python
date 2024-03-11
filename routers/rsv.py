@@ -888,7 +888,7 @@ def cargar_estado_notificaciones():
             notificaciones_registradas = estado
 
     except FileNotFoundError:
-        notificaciones_registradas = None
+        notificaciones_registradas = []
     
     return notificaciones_registradas
 
@@ -913,6 +913,18 @@ def guardar_estado_notificacion(mail, folios):
         if item["Mail"] == estado["Mail"]:
             correo_existente = True
             print(estado["Mail"]+ ' existe')
+            # 
+            for folio in folios :
+                if any(d["Numero_Factura"] == folio["Numero_Factura"] for d in item['Folios']) :
+                    pass
+                    # cambiar_estado_act = next((d for d in item['Folios'] if d["Numero_Factura"] == folio["Numero_Factura"]), None)
+                    # print(cambiar_estado_act)
+                    # if cambiar_estado_act:
+                    #     cambiar_estado_act["Visto"] = True
+                    # item["Numero_Factura"] == True
+
+                else:
+                    item['Folios'].append(folio)
             break
 
     # Si el correo electrónico no está duplicado, agrega el nuevo JSON
@@ -923,22 +935,60 @@ def guardar_estado_notificacion(mail, folios):
     with open('json/estado_notificaciones.json', 'w') as f:
         json.dump(datos, f, indent=4)
 
+
+
+
+def guardar_estado_notificacion_actualizado(mail, folios):
+
+    estado = {'Mail': mail, 'Folios': folios}
+
+    try:
+        # Intenta abrir el archivo existente para lectura
+        with open('json/estado_notificaciones.json', "r") as archivo:
+            datos = json.load(archivo)
+    except FileNotFoundError:
+        # Si el archivo no existe, crea una lista vacía
+        print('El archivo no existe')
+        datos = []
+
+    # Verificar si ya existe un JSON con el mismo correo electrónico
+    correo_existente = False
+
+    for item in datos:
+        if item["Mail"] == estado["Mail"]:
+            correo_existente = True
+            print(estado["Mail"]+ ' existe')
+            # 
+            for folio in folios :
+                if any(d["Numero_Factura"] == folio["Numero_Factura"] for d in item['Folios']) :
+                    cambiar_estado_act = next((d for d in item['Folios'] if d["Numero_Factura"] == folio["Numero_Factura"]), None)
+                    if cambiar_estado_act:
+                        cambiar_estado_act["Visto"] = True
+
+            retorno_datos_folio = {'Mail': mail, 'Folios': folios}
+            break
+
+    with open('json/estado_notificaciones.json', 'w') as f:
+        json.dump(datos, f, indent=4)
+
+
+    return retorno_datos_folio
+
+
 @router.post("/notificiones")
 async def notificaciones_api_defontana(body : Notificacion):
 
     notificaciones = cargar_estado_notificaciones()
+    result = conn.notificacion_defontana_hoy()
+    folios = notificaciones_schema(result)
 
     for noti in notificaciones:
         if body.Mail == noti["Mail"]:
+            guardar_estado_notificacion(body.Mail,folios)
             return {
                 "Folios" : noti['Folios'],
                 "Cantidad": len(noti['Folios'] )
             }
-
-    
-    
-    result = conn.notificacion_defontana_hoy()
-    folios = notificaciones_schema(result)
 
     guardar_estado_notificacion(body.Mail,folios)
     
@@ -946,4 +996,29 @@ async def notificaciones_api_defontana(body : Notificacion):
         "Folios" : folios,
         "Cantidad": len(folios),
         "visto": False
+    }
+
+
+@router.post("/notificiones/revisar")
+async def notificaciones_api_defontana(body : Notificacion):
+
+    notificaciones = cargar_estado_notificaciones()
+
+    for noti in notificaciones:
+        if body.Mail == noti["Mail"]:
+            # noti["Folios"] = 
+            for item in noti["Folios"]:
+                for folio in item["Folios"]:
+                    folio["Visto"] = True
+
+            actualizado_folio = guardar_estado_notificacion_actualizado(body.Mail,noti["Folios"])
+            # guardar_estado_notificacion(body.Mail,folios)
+            return {
+                "Folios" : actualizado_folio['Folios'],
+                "Cantidad": len(actualizado_folio['Folios'] )
+            }
+        
+
+    return {
+        'message' : 'SOS'
     }

@@ -38,6 +38,8 @@ from database.models.toc.dif_fecha_easy import DifFechaEasy
 from database.schema.toc.productos_agregados_easy import productos_agregados_schema
 from database.models.toc.prod_ingresados_easy import ProductoIngresado
 
+from database.schema.toc.reporte_telefono import reporte_telefonos_schema
+
 router = APIRouter(tags=["TOC"], prefix="/api/toc")
 
 conn = reportesConnection()
@@ -281,6 +283,18 @@ async def get_productos_ingresados_fechas_easy(fecha_inicio : str,fecha_fin : st
          "items" : largo,
          "datos" : productos_agregados_schema(result)
     }
+
+
+
+@router.get("/telefonos/truncados")
+async def get_telefonos_truncados(fecha_inicio : str,fecha_fin : str, offset: int):
+    result = conn.obtener_telefonos_truncados_excel(fecha_inicio,fecha_fin , offset)
+    largo = len(result)
+    return {
+         "visible": True,
+         "items" : largo,
+         "datos" : reporte_telefonos_schema(result)
+    }
      
 
 
@@ -312,16 +326,6 @@ async def descargar_differencia_fechas_easy(body :ProductoIngresado):
     for fechas in body.Rango_fecha:
          tupla = tupla + conn.obtener_Productos_ingresados_excel(fechas[0],fechas[1] , 0)
 
-#     result = conn.get_reportes_rutas_diario(dia)
-    
-#     cadena = json.dumps(body)
-
-    
-#     lista_dict = json.loads(cadena)
-#     tupla = [tuple((obj.Ingreso_sistema, obj.Cliente, obj.Anden, obj.Cod_pedido, obj.Fec_compromiso, obj.Cod_producto,
-#                      obj.Sku, obj.Comuna, obj.Region, obj.Cantidad, excel.cambiar_bool(obj.Verificado), excel.cambiar_bool(obj.Recepcionado), obj.Estado, 
-#                      obj.Subestado)) for obj in body]
-
     nombre_filas = ('Ingreso Sistema', 'Cliente', 'Anden', 'Código Pedido', 'Fecha Compromiso', 
                     'Código Producto', 'SKU', 'Comuna', 'Región', 'Cantidad', 'Verificado', 'Recepcionado', 
                     'Estado','Subestado')
@@ -330,6 +334,23 @@ async def descargar_differencia_fechas_easy(body :ProductoIngresado):
 
     return excel.generar_excel_generico(tupla,nombre_filas,nombre_excel)
 
+
+@router.post("/telefonos/truncados/descargar")
+async def descargar_reporte_telefonos_easy(body :ProductoIngresado):
+    
+#     conn.obtener_Productos_ingresados_excel(fecha_inicio,fecha_fin , offset)
+    tupla = []
+
+    for fechas in body.Rango_fecha:
+         tupla = tupla + conn.obtener_telefonos_truncados_excel(fechas[0],fechas[1] , 0)
+
+    nombre_filas = ('Ingreso Sistema', 'Cliente', 'Telefono', 'Código Pedido', 'Fecha Compromiso', 
+                    'Código Producto', 'SKU', 'Nombre' 'Dirección', 'Comuna', 'Región', 'Cantidad', 'Verificado', 'Recepcionado', 
+                    'Estado','Subestado')
+
+    nombre_excel = f"excel_telenonos"
+
+    return excel.generar_excel_generico(tupla,nombre_filas,nombre_excel)
 
 
 
