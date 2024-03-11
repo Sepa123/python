@@ -17,3 +17,5 @@ class ProductoIngresado(BaseModel):
     Estado: Optional[str]
     Subestado: Optional[str]
     Rango_fecha : Optional[List]
+    Fecha_inicio_f : Optional[str]
+    Fecha_final_f : Optional[str]

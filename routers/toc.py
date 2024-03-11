@@ -339,10 +339,26 @@ async def descargar_differencia_fechas_easy(body :ProductoIngresado):
 async def descargar_reporte_telefonos_easy(body :ProductoIngresado):
     
 #     conn.obtener_Productos_ingresados_excel(fecha_inicio,fecha_fin , offset)
+    print(body.Rango_fecha)
+    
+
     tupla = []
 
-    for fechas in body.Rango_fecha:
-         tupla = tupla + conn.obtener_telefonos_truncados_excel(fechas[0],fechas[1] , 0)
+    for i, fecha in enumerate(body.Rango_fecha):
+        if i == 0 and len(body.Rango_fecha) != 1:
+           tupla = tupla + conn.obtener_telefonos_truncados_excel(body.Fecha_inicio_f, fecha[1], 'inicio')
+        elif i + 1 == len(body.Rango_fecha) and len(body.Rango_fecha) != 1:
+          #   diferencia_fechas_easy(fecha[0], fecha_fin_f, 'final')
+           tupla = tupla + conn.obtener_telefonos_truncados_excel(fecha[0], body.Fecha_final_f, 'final')
+        elif i == 0 and len(body.Rango_fecha) == 1:
+          #   diferencia_fechas_easy(fecha_inicio_f, fecha_fin_f, 'final')
+           tupla = tupla + conn.obtener_telefonos_truncados_excel(body.Fecha_inicio_f, body.Fecha_final_f, 'final')
+        else:
+          #   diferencia_fechas_easy(fecha[0], fecha[1], 'medio')
+          tupla = tupla + conn.obtener_telefonos_truncados_excel(fecha[0], fecha[1], 'medio')
+         
+     
+#          tupla = tupla + conn.obtener_telefonos_truncados_excel(fechas[0],fechas[1] , 0)
 
     nombre_filas = ('Ingreso Sistema', 'Cliente', 'Telefono', 'Código Pedido', 'Fecha Compromiso', 
                     'Código Producto', 'SKU', 'Nombre' 'Dirección', 'Comuna', 'Región', 'Cantidad', 'Verificado', 'Recepcionado', 
