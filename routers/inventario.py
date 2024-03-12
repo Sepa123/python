@@ -19,7 +19,7 @@ from database.models.mantenedores.bitacoraEquipo import BitacoraEquipo
 from database.models.mantenedores.personaHabilitada import PersonaHabilitada
 from database.models.mantenedores.liberar_licencia import  LiberarLicencia
 
-from database.schema.inventario.persona import firma_entrega_schema, firma_devolucion_schema, accesorio_schema, ultima_persona_schema, crear_persona_schema, persona_equipo_schema, equipo_asignado_por_id_schema, equipo_asignado_por_persona_schema,equipo_devuelto_por_id_schema, ruta_pdf_entrega_schema, ruta_pdf_devolucion_schema
+from database.schema.inventario.persona import equipos_asignado_por_serial_schema, todos_los_equipo_asignado_por_persona_schema,insumo_schema,firma_entrega_schema, firma_devolucion_schema, accesorio_schema, ultima_persona_schema, crear_persona_schema, persona_equipo_schema, equipo_asignado_por_id_schema, equipo_asignado_por_persona_schema,equipo_devuelto_por_id_schema, ruta_pdf_entrega_schema, ruta_pdf_devolucion_schema
 from database.schema.inventario.equipo import lista_chip_asignado_equipo_schema, lista_licencia_asignada_equipo_schema, ultimo_equipo_schema, lista_estado_schema, lista_estado_schema, lista_nr_equipo_schema,descripcion_equipo_schema, tipo_equipo_schema, lista_inventario_estado_schema, licencia_equipo_schema, folio_devolucion_schema, folio_entrega_schema, lista_subestado_schema, lista_nr_code_schema, lista_equipo_sin_join_schema, ultimo_estado_schema
 from database.schema.inventario.sucursal import lista_sucursa_schema, lista_departamento_schema
 ##Conexiones
@@ -608,6 +608,11 @@ async def lista_accesorios_asignados():
     result = conn.read_accesorios_asignados()
     return accesorio_schema(result)
 
+@router.get("/lista-insumos-asignados")
+async def lista_insumos_asignados():
+    result = conn.read_insumos_asignados()
+    return accesorio_schema(result)
+
 @router.get("/tabla-asignados")
 async def lista_asignados_sin_join():
     result = conn.read_asignados_sin_join()
@@ -718,6 +723,17 @@ async def obtener_lista_de_equipos_por_persona(id:str):
     result = conn.read_equipos_por_persona(id)
     return equipo_asignado_por_persona_schema(result)
 
+
+@router.get("/all-equipos-por-persona/{rut}")
+async def obtener_todos_los_equipos_por_persona_asignados(rut:str):
+    result = conn.read_todos_los_equipos_asignados_por_persona(rut)
+    return todos_los_equipo_asignado_por_persona_schema(result)
+
+@router.get("/equipos-asignado-por-serial/{serial}")
+async def obtener_equipos_asignados_por_serial(serial:str):
+    result = conn.read_todos_los_equipos_asignados_por_serial(serial)
+    return equipos_asignado_por_serial_schema(result)
+
 @router.get("/lista-equipos-por-persona-para-devolver/{id}")
 async def obtener_lista_de_equipos_por_persona_por_devolver(id:str):
     result = conn.read_equipos_por_persona_por_devolver(id)
@@ -727,6 +743,8 @@ async def obtener_lista_de_equipos_por_persona_por_devolver(id:str):
 async def obtener_lista_de_equipos_devueltos(id:str):
     result = conn.read_equipos_devueltos_por_persona(id)
     return equipo_asignado_por_persona_schema(result)
+
+    
 
 @router.get("/equipo-by-serial/{serial}")
 async def obtener_equipo_por_serial(serial: str):

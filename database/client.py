@@ -254,8 +254,8 @@ class reportesConnection():
     def bitacora_accesorios(self,data):
         with self.conn.cursor() as cur:
             cur.execute(""" INSERT INTO inventario.bitacora
-                        (id_usuario, ids_usuario, id_equipo,  estado, subestado, observacion, latitud, longitud)
-                        VALUES( %(id_user)s, %(ids_user)s, %(equipo)s,  %(status)s,
+                        (id_usuario, ids_usuario, id_equipo, id_persona,  estado, subestado, observacion, latitud, longitud)
+                        VALUES( %(id_user)s, %(ids_user)s, %(equipo)s, %(persona)s,  %(status)s,
                          %(subestado)s, %(observacion)s, %(lat)s, %(long)s);""", data)
             self.conn.commit()
     def bitacora_asignar_licencia(self,data):
@@ -337,8 +337,8 @@ class reportesConnection():
     def ingresar_accesorio_asignado(self, data):
         with self.conn.cursor() as cur: 
             cur.execute("""INSERT INTO inventario.asignacion
-                (id_user, ids_user, lat, long, equipo,  fecha_entrega, estado, observacion,departamento, sub_estado) 
-                VALUES(%(id_user)s, %(ids_user)s,%(lat)s,%(long)s,%(equipo)s,%(fecha_entrega)s,
+                (id_user, ids_user, lat, long, equipo, persona, fecha_entrega, estado, observacion,departamento, sub_estado) 
+                VALUES(%(id_user)s, %(ids_user)s,%(lat)s,%(long)s,%(equipo)s, %(persona)s, %(fecha_entrega)s,
                 %(estado)s,%(observacion)s, %(departamento)s, %(sub_estado)s)""",data)
         self.conn.commit()
 
@@ -598,18 +598,32 @@ class reportesConnection():
                         INNER JOIN inventario.persona p ON a.persona = p.id
                         INNER JOIN inventario.equipo e ON a.equipo = e.id
                         INNER JOIN inventario.departamento d ON a.departamento = d.id
-                        inner join inventario.tipo t on e.tipo = t.id order by nombres asc """)
+                        inner join inventario.tipo t on e.tipo = t.id where t.documentacion = true
+                        order by nombres asc """)
             return cur.fetchall()
         
     def read_accesorios_asignados(self):
         with self.conn.cursor() as cur:
-            cur.execute("""SELECT e.id, d.nombre as departamento, e.marca|| ' ' || e.modelo AS equipo,  a.fecha_entrega,
+            cur.execute("""SELECT e.id, d.nombre as departamento, e.marca|| ' ' || e.modelo AS equipo,  p.nombres ||' ' || p.apellidos  as persona, a.fecha_entrega,
                          a.estado, a.observacion, a.id as id_asignacion
                         FROM inventario.asignacion a  
                         INNER JOIN inventario.equipo e ON a.equipo = e.id
                         INNER JOIN inventario.departamento d ON a.departamento = d.id
                         inner join inventario.tipo t on e.tipo = t.id
-                        where e.tipo != 1 and e.tipo != 2 and e.tipo != 14  """)
+                        inner join inventario.persona p on p.id = a.persona 
+                        where t.documentacion = false  """)
+            return cur.fetchall()
+        
+    def read_insumos_asignados(self):
+        with self.conn.cursor() as cur:
+            cur.execute("""                     
+                         SELECT e.id, d.nombre as departamento, e.marca|| ' ' || e.modelo AS equipo,  a.fecha_entrega,
+                         a.estado, a.observacion, a.id as id_asignacion
+                        FROM inventario.asignacion a  
+                        INNER JOIN inventario.equipo e ON a.equipo = e.id
+                        INNER JOIN inventario.departamento d ON a.departamento = d.id
+                        inner join inventario.tipo t on e.tipo = t.id
+                        where e.tipo = 7 and e.tipo = 15   """)
             return cur.fetchall()
     
     def read_asignados_sin_join(self):
@@ -676,6 +690,32 @@ class reportesConnection():
                 INNER JOIN inventario.tipo t ON e.tipo = t.id
                 WHERE p.rut =%(persona)s and a.estado = false and a.firma_devolucion =false""", {"persona": persona})
             return cur.fetchall()
+        
+    def read_todos_los_equipos_asignados_por_persona(self,persona):
+        with self.conn.cursor() as cur:
+            cur.execute(""" SELECT a.id, p.nombres || ' ' || p.apellidos as persona , p.rut, p.cargo, d.nombre as departamento,e.marca, e.serial ,
+                   e.marca || ' ' || e.modelo AS equipo, a.fecha_entrega, e.descripcion, e.id AS equipo_id, t.nombre AS tipo, a.estado 
+                    FROM inventario.asignacion a  
+                INNER JOIN inventario.persona p ON a.persona = p.id
+                INNER JOIN inventario.equipo e ON a.equipo = e.id
+                INNER JOIN inventario.departamento d ON a.departamento = d.id
+                INNER JOIN inventario.tipo t ON e.tipo = t.id
+                WHERE p.rut =%(persona)s and a.estado = true""", {"persona": persona})
+            return cur.fetchall()
+    
+    def read_todos_los_equipos_asignados_por_serial(self,serial):
+        with self.conn.cursor() as cur:
+            cur.execute(""" SELECT e.id, p.nombres || ' ' || p.apellidos as persona,t.nombre AS tipo, e.marca, e.modelo, e.serial, es.descripcion AS estado, s.descripcion as subestado,
+                            a.fecha_entrega, a.fecha_devolucion 
+                        FROM inventario.equipo e
+                        inner join inventario.asignacion a on a.equipo  =e.id
+                        inner join inventario.persona p on p.id =a.persona 
+                        INNER JOIN inventario.tipo t ON e.tipo = t.id
+                        INNER JOIN inventario.estados es ON e.estado = es.id
+                        inner join inventario.subestados s on s.code = e.subestado   and s.parent_code = e.estado 
+                         where e.serial=%(serial)s """, {"serial":serial})
+            return cur.fetchall()
+        
         
     def read_equipos_por_persona_por_devolver(self,persona):
           with self.conn.cursor() as cur:
