@@ -25,13 +25,27 @@ def lista_accesorio_asignado(data):
         "id": data[0],
         "departamento":data[1],
         "equipo": data[2],
+        "persona":data[3],
+        "fecha_entrega": data[4],
+        "estado":data[5],
+        "observacion":data[6],
+        "id_asignacion":data[7]
+    }
+def accesorio_schema(datos):
+    return[lista_accesorio_asignado(data) for data in datos]
+
+def lista_insumos_asignado(data):
+    return{
+        "id": data[0],
+        "departamento":data[1],
+        "equipo": data[2],
         "fecha_entrega": data[3],
         "estado":data[4],
         "observacion":data[5],
         "id_asignacion":data[6]
     }
-def accesorio_schema(datos):
-    return[lista_accesorio_asignado(data) for data in datos]
+def insumo_schema(datos):
+    return[lista_insumos_asignado(data) for data in datos]
 
 def lista_crear_persona(data):
     return{
@@ -101,8 +115,6 @@ def lista_equipo_asignado_por_id(data):
             "firma_devolucion": data[19],
             "pdf_entrega":data[20],
             "pdf_devolucion":data[21]
-            # "pdf_entrega":data[18],
-            # "pdf_devolucion":data[19]
             # "modelo":data[17]
 
 
@@ -156,6 +168,44 @@ def lista_equipo_asignado_por_persona(data):
 
 def equipo_asignado_por_persona_schema(datos):
     return[lista_equipo_asignado_por_persona(data) for data in datos]
+
+
+def lista_todos_los_equipo_asignado_por_persona(data):
+    return{
+            "id": data[0],
+            "persona": data[1],
+            "rut":data[2],
+            "cargo": data[3],
+            "departamento":data[4],
+            "marca":data[5],
+            "serial": data[6],
+            "equipo":data[7],
+            "fecha_entrega":data[8],
+            "descripcion": data[9],
+            "equipo_id": data[10],
+            "tipo": data[11],
+            "estado":data[12],
+            }
+
+def todos_los_equipo_asignado_por_persona_schema(datos):
+    return[lista_todos_los_equipo_asignado_por_persona(data) for data in datos]
+
+def equipos_asignado_por_serial(data):
+    return{
+            "id": data[0],
+            "persona": data[1],
+            "tipo":data[2],
+             "marca":data[3],
+             "modelo":data[4],
+            "serial": data[5],
+             "estado":data[6],
+            "subestado": data[7],
+            "fecha_entrega":data[8],
+            "fecha_devolucion":data[9]
+            }
+
+def equipos_asignado_por_serial_schema(datos):
+    return[equipos_asignado_por_serial(data) for data in datos]
 
 def ruta_pdf_entrega(data):
     return{
