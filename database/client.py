@@ -7667,8 +7667,8 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
         with self.conn.cursor() as cur:
             cur.execute(f"""
                 SELECT dv.numero_folio  FROM rsv.defontana_venta dv 
-                -- where TO_CHAR(dv.fecha_creacion, 'DD-MM-YYYY') = TO_CHAR(CURRENT_DATE , 'DD-MM-YYYY')
-                where TO_CHAR(dv.fecha_creacion, 'DD-MM-YYYY') = '07-03-2024'
+                where TO_CHAR(dv.fecha_creacion, 'DD-MM-YYYY') = TO_CHAR(CURRENT_DATE , 'DD-MM-YYYY')
+                --where TO_CHAR(dv.fecha_creacion, 'DD-MM-YYYY') = '07-03-2024'
                         
                          """)
             return cur.fetchall()

@@ -987,15 +987,17 @@ async def notificaciones_api_defontana(body : Notificacion):
             guardar_estado_notificacion(body.Mail,folios)
             return {
                 "Folios" : noti['Folios'],
-                "Cantidad": len(noti['Folios'] )
+                "Cantidad": sum(1 for folio in noti['Folios'] if not folio['Visto'])
+                
             }
 
     guardar_estado_notificacion(body.Mail,folios)
     
     return {
         "Folios" : folios,
-        "Cantidad": len(folios),
+        "Cantidad": sum(1 for folio in folios if not folio['Visto']),
         "visto": False
+       
     }
 
 
@@ -1008,16 +1010,15 @@ async def notificaciones_api_defontana(body : Notificacion):
         if body.Mail == noti["Mail"]:
             # noti["Folios"] = 
             for item in noti["Folios"]:
-                for folio in item["Folios"]:
-                    folio["Visto"] = True
+                item["Visto"] = True
 
             actualizado_folio = guardar_estado_notificacion_actualizado(body.Mail,noti["Folios"])
             # guardar_estado_notificacion(body.Mail,folios)
             return {
                 "Folios" : actualizado_folio['Folios'],
-                "Cantidad": len(actualizado_folio['Folios'] )
+                "Cantidad": sum(1 for folio in actualizado_folio['Folios'] if not folio['Visto'])
+               
             }
-        
 
     return {
         'message' : 'SOS'
