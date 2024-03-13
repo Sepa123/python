@@ -7344,6 +7344,53 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 select * from rutas.nivel_servicio_fec_real('{fecha}');
                          """)
             return cur.fetchall()
+        
+
+    def revisar_nivel_servicio_fec_real_easy(self,fecha : str):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                select 	'Easy CD' as cliente,
+                        total_registros	as compromiso_real,
+                        registros_con_entrega_real as entregados,
+                        total_anulados as anulados,
+                        porcentaje_entregas_real as nivel_servicio
+                from rutas.calcular_ns_easy_fecha('{fecha}')
+                         """)
+            return cur.fetchall()
+        
+
+    def revisar_nivel_servicio_fec_real_easy_opl(self,fecha : str):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select 	'Easy OPL' as cliente,
+                    total_registros	as compromiso_real,
+                    registros_con_entrega_real as entregados,
+                    total_anulados as anulados,
+                    porcentaje_entregas_real as nivel_servicio
+            from rutas.calcular_ns_easyopl_fecha('{fecha}')
+
+                         """)
+            return cur.fetchall()
+        
+    def revisar_nivel_servicio_fec_real_elux(self,fecha : str):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select 	'Electrolux' as cliente,
+                    total_registros	as compromiso_real,
+                    registros_con_entrega_real as entregados,
+                    total_anulados as anulados,
+                    porcentaje_entregas_real as nivel_servicio
+            from rutas.calcular_ns_electrolux_fecha('{fecha}')
+            union all
+            select 	'Envio/Retiros' as cliente,
+                    total_registros	as compromiso_real,
+                    registros_con_entrega_real as entregados,
+                    total_anulados as anulados,
+                    porcentaje_entregas_real as nivel_servicio
+            from rutas.calcular_ns_retirocliente_fecha('{fecha}')
+
+                         """)
+            return cur.fetchall()
     
     def revisar_nivel_servicio_fec_real_promedio(self,fecha : str):
         with self.conn.cursor() as cur:

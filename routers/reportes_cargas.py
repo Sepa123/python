@@ -518,3 +518,22 @@ async def get_ns_fecha_real(fecha : str):
         "promedio" : promedio
     }
 
+
+
+### promedio ns fecha easy
+@router.get("/ns/fecha_c_real/easy",status_code=status.HTTP_202_ACCEPTED)
+async def get_ns_fecha_real_easy(fecha : str, tienda: str):
+
+    if tienda == 'easy':
+        results = conn.revisar_nivel_servicio_fec_real_easy(fecha)
+
+    if tienda == 'opl':
+        results = conn.revisar_nivel_servicio_fec_real_easy_opl(fecha)
+
+    if tienda == 'elux':
+        results = conn.revisar_nivel_servicio_fec_real_elux(fecha)
+
+    return {
+        "datos" : ns_por_fecha_schema(results),
+    }
+
