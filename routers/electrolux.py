@@ -24,7 +24,7 @@ async def datos_confirma_facil():
         
         body = {
                 "embarque": {
-                    "numero": dato["Factura"],
+                    "numero": dato["Numero"],
                     "serie": "02"
                 },
                 "embarcador": {
