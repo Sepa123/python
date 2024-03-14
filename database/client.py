@@ -7063,6 +7063,18 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
         
     ### Logistica Inversa
         
+
+    def recuperar_bodega_virtual(self):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+                select * from log_inversa.recuperar_bodega_virtual();         
+                         """)
+            
+            return cur.fetchall()
+        
+
+
+        
     def obtener_estados_entrega(self):
         with self.conn.cursor() as cur:
             cur.execute("""

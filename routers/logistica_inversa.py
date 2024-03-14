@@ -13,6 +13,7 @@ import lib.excel_generico as excel
 from database.schema.log_inversa.ruta_producto import ruta_productos_schema
 from database.schema.log_inversa.lista_productos import lista_productos_schema
 from database.schema.log_inversa.pendientes_dia import pendientes_schema
+from database.schema.log_inversa.bodega_virtual import bodega_virtual_schema
 
 ## Modelos
 from database.models.log_inversa.pendientes import PedidosPendientes
@@ -190,6 +191,14 @@ async def get_pendientes_log_inversa(fecha : str):
     no_entregado  = conn.pendientes_log_inversa(fecha)
 
     return pendientes_schema(no_entregado)
+
+
+
+@router.get("/bodega-virtual",status_code=status.HTTP_202_ACCEPTED)
+async def recuperar_bodega_virtual():
+    result  = conn.recuperar_bodega_virtual()
+
+    return bodega_virtual_schema(result)
 
 
 
