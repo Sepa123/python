@@ -310,8 +310,8 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]], fecha_pedido : str)
         
         print(f"error al crear ruta: {e}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
-    finally:
-        conn.recalcular_posicion_ruta(nombre_ruta)
+    # finally:
+    #     conn.recalcular_posicion_ruta(nombre_ruta)
         
 
 @router.put("/actualizar/estado/{cod_producto}",status_code=status.HTTP_202_ACCEPTED)
@@ -380,8 +380,6 @@ def separar_por_codigo_pedido(lista_objetos):
 @router.post("/agregar/ruta_activa_existente",status_code=status.HTTP_201_CREATED)
 async def insert_ruta_existente_activa(fecha_ruta_nueva : str, rutas : List[List[RutaManual]]):
     try:
-        print(len(rutas))
-
         fecha_ruta = fecha_ruta_nueva
 
         for i, ruta in enumerate(rutas):
@@ -392,15 +390,15 @@ async def insert_ruta_existente_activa(fecha_ruta_nueva : str, rutas : List[List
                     nombre_ruta = producto.Nombre_ruta 
                     break
 
-            valores_unicos = set(objeto.Codigo_pedido for objeto in ruta)
-            lista_val = list(valores_unicos)
+            # valores_unicos = set(objeto.Codigo_pedido for objeto in ruta)
+            # lista_val = list(valores_unicos)
 
-            if len(lista_val) > 1:
-                nueva_pos = separar_por_codigo_pedido(ruta)
-                index_eliminar = i
-                rutas.pop(index_eliminar)
-                for c,pos in enumerate(nueva_pos):
-                    rutas.insert(index_eliminar + c, pos )
+            # if len(lista_val) > 1:
+            #     nueva_pos = separar_por_codigo_pedido(ruta)
+            #     index_eliminar = i
+            #     rutas.pop(index_eliminar)
+            #     for c,pos in enumerate(nueva_pos):
+            #         rutas.insert(index_eliminar + c, pos )
 
             
         # id_ruta = rutas[0][0].Id_ruta
@@ -449,7 +447,7 @@ async def insert_ruta_existente_activa(fecha_ruta_nueva : str, rutas : List[List
                     conn.recalcular_posicion_ruta(nombre_ruta)
         
         
-        conn.recalcular_posicion_ruta(nombre_ruta)
+        # conn.recalcular_posicion_ruta(nombre_ruta)
         return { "message": f"La Ruta {nombre_ruta} fue actualizada exitosamente" }
     except Exception as e:
         print("error an actualizar ruta: ",e)
