@@ -380,8 +380,6 @@ def separar_por_codigo_pedido(lista_objetos):
 @router.post("/agregar/ruta_activa_existente",status_code=status.HTTP_201_CREATED)
 async def insert_ruta_existente_activa(fecha_ruta_nueva : str, rutas : List[List[RutaManual]]):
     try:
-        print(len(rutas))
-
         fecha_ruta = fecha_ruta_nueva
 
         for i, ruta in enumerate(rutas):
