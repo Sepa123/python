@@ -196,7 +196,7 @@ async def insert_carga_rsv(list_body : List[CargaRSV]):
             body.Nombre_carga = body.Nombre_carga.strip()
             nombre_carga = body.Nombre_carga
             data = body.dict()
-            print(data)
+            # print(data)
             conn.insert_carga_rsv(data)
         # print(data)
         return {
@@ -214,7 +214,7 @@ async def insert_carga_rsv(list_body : List[CargaRSV]):
 @router.get("/carga/buscar")
 async def buscar_carga_por_nombre(nombre_carga : str):
     result = conn.buscar_cargas_rsv(nombre_carga)
-    print("resultado", result)
+    # print("resultado", result)
     if result is None:
         return { "repetido": False}
     else:
@@ -309,10 +309,10 @@ async def delete_cargas_rsv(lista : ListaEliminar):
     }
     codigos = lista.lista.split(',')
 
-    print(codigos)
+    # print(codigos)
 
     print(', '.join(['%s']*len(codigos)))
-    print(lista.nombre_carga)
+    # print(lista.nombre_carga)
 
     results = conn.delete_cargas(lista.lista, lista.nombre_carga)
     return {
@@ -328,10 +328,10 @@ async def update_carga(list_body : List[CargaRSV]):
         for body in list_body:
             data = body.dict()
             nombre_carga = body.Nombre_carga
-            print(data)
+            # print(data)
             #verificar si producto existe en esta carga
             check = conn.check_codigo_existente_carga(nombre_carga, body.Codigo)
-            print(check)
+            # print(check)
             # update de codigo existente
             if len(check) != 0:
                 conn.update_carga_rsv(data)
@@ -523,10 +523,10 @@ async def abrir_paquete_etiquetas_nuevas(bar_code: str):
 
 @router.put("/bitacora/rsv", status_code=status.HTTP_202_ACCEPTED)
 async def actualizar_bitacora_rsv(body: bodyPaqueteYBitacora):
-    print(body)
+    # print(body)
     try:
         data = body.dict()
-        print(data)
+        # print(data)
         conn.insert_data_bitacora_rsv(data)
     except:
           print("error en /bitacora/rsv")
@@ -581,15 +581,15 @@ async def update_estado_entrega_nota_venta(body : BodyEntregaNotaVenta) :
 
     # Formatea la fecha en el formato "yyyy-mm-dd"
     fecha_formateada = fecha_actual.strftime("%Y-%m-%d")
-    print(fecha_actual)
-    print(fecha_formateada)
+    # print(fecha_actual)
+    # print(fecha_formateada)
 
     body.Fecha_despacho = fecha_formateada
 
     data = body.dict()
     conn.update_estado_entrega_nota_venta_rsv(data)
 
-    print(data)
+    # print(data)
     return {
         "message": "Venta cerrada correctamente",
         "Fecha_p" : fecha_formateada,
@@ -714,7 +714,7 @@ async def obtener_unidades_sin_etiquetas_rsv(body : Despacho):
         unid_x_paq = catalogo[0]
         unid_con_etiqueta = catalogo[1]
 
-    print('barcode es:',body.Bar_code)
+    # print('barcode es:',body.Bar_code)
     
 
     check = conn.verificar_stock_paquete(body.Bar_code)
@@ -726,14 +726,14 @@ async def obtener_unidades_sin_etiquetas_rsv(body : Despacho):
     resta = unid_x_paq - (body.Unidades- body.Uni_agregadas)
     unid_total = unid_x_paq - resta
 
-    print("Id BAR_CODE ",check_id)
-    print("Stock BAR_CODE ",check_stock)
-    print(body.Uni_agregadas)
-    print(unid_x_paq)
-    print(body.Unidades)
+    # print("Id BAR_CODE ",check_id)
+    # print("Stock BAR_CODE ",check_stock)
+    # print(body.Uni_agregadas)
+    # print(unid_x_paq)
+    # print(body.Unidades)
 
 
-    print(unid_con_etiqueta)
+    # print(unid_con_etiqueta)
     
     if check_stock == False:
         return {
@@ -873,8 +873,6 @@ async def obtener_catalogo_rsv(sucursal_id : int, var_r : str):
 @router.post("/inventario/sucursales/ubicaciones")
 async def obtener_ubicacion_y_cantidad_rsv(body : ObtUbicacionCantidad):
 
-    print("Cuerpo del deloto")
-    print(body)
     result = conn.obtener_ubicacion_cantidad(body.Sucursal, body.Codigo)
     # print(len(result))
     return obtener_ubicacion_cantidad_schema(result)
@@ -929,7 +927,6 @@ def guardar_estado_notificacion(mail, folios):
 
     # Si el correo electrónico no está duplicado, agrega el nuevo JSON
     if not correo_existente:
-        print('sea grego nuevo correo')
         datos.append(estado)
 
     with open('json/estado_notificaciones.json', 'w') as f:
@@ -957,8 +954,6 @@ def guardar_estado_notificacion_actualizado(mail, folios):
     for item in datos:
         if item["Mail"] == estado["Mail"]:
             correo_existente = True
-            print(estado["Mail"]+ ' existe')
-            # 
             for folio in folios :
                 if any(d["Numero_Factura"] == folio["Numero_Factura"] for d in item['Folios']) :
                     cambiar_estado_act = next((d for d in item['Folios'] if d["Numero_Factura"] == folio["Numero_Factura"]), None)

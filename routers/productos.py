@@ -39,7 +39,7 @@ async def get_productos_sin_clasificar():
 async def insert_producto_sin_clasificar(producto : ProductoSinClasificacion):
         # try:
             data =  producto.dict()
-            print(data)
+            # print(data)
             conn.write_producto_sin_clasificar(data)
             return { "message":"Producto agregado correctamente" }
             # conn.write_producto_sin_clasificar(data)
@@ -92,7 +92,7 @@ async def get_productos_OPL_by_sku(codigo_sku : str):
 @router.put("/actualizar/verificado/OPL",status_code=status.HTTP_202_ACCEPTED)
 async def update_verificado_producto_OPL(body: bodyUpdate):
     try:
-        print(body.cod_producto, body.cod_sku)
+        # print(body.cod_producto, body.cod_sku)
         producto = body.cod_producto
         #   print(cod_producto)
         conn.update_producto_picking_OPL(body.cod_producto,body.cod_sku)

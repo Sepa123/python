@@ -66,7 +66,7 @@ async def download_imprimir_planilla_devolucion(id:int):
 async def download_imprimir_planilla_entrega(id:int):
     #se realiza la busqueda por el id de asignacion y se ubica la ruta del pdf
     result = conn.read_ubicacion_pdf_entrega(id)
-    print(result)
+    # print(result)
     return FileResponse(result[0], media_type="application/octet-stream")
     # if result:
 
@@ -224,7 +224,7 @@ async def crear_personal(body: PersonalEquipo):
 async def bitacora_persona(body: BitacoraPersona):
     try:
         data = body.dict()
-        print(data)
+        # print(data)
         conn.bitacora_inventario_persona(data)
         return {
             "message": "Persona agregada correctamente"
@@ -246,10 +246,10 @@ async def crear_departamento(body: DepartamentoInventario):
         raise HTTPException(status_code=422, detail=str(e))
 @router.post("/sucursal")
 async def crear_sucursal(body: SucursalInventario):
-    print(body)
+    # print(body)
     try:
         data = body.dict()
-        print(data)
+        # print(data)
         conn.ingresar_sucursal(data)
         return{
             "message": "Sucursal agregada correctamente"
@@ -286,9 +286,9 @@ async def agregar_descripcion_de_equipo(body: DescripcionEquipo):
     try: 
         filename = os.path.basename(body.ubicacionarchivo)
         body.ubicacionarchivo = 'pdfs/foto_nuevo/'+filename
-        print(body.ubicacionarchivo )
+        # print(body.ubicacionarchivo )
         data = body.dict()
-        print(data)
+        # print(data)
         conn.agregar_descripcion_equipo(data)
         conn.bitacora_inventario_equipo(data)
        

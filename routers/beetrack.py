@@ -36,7 +36,7 @@ def validar_encabezados(content_type: str = Header(None), x_auth_token: str = He
 @router.post("/dispatch_guide")
 async def post_dispatch_guide(body: DistpatchGuide, headers: tuple = Depends(validar_encabezados)):
     content_type, x_auth_token = headers
-    print("/beetrack/dispatch_guide")
+    # print("/beetrack/dispatch_guide")
     
     return {
             "body" : body
@@ -151,7 +151,7 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
 async def post_route(body : Route , headers: tuple = Depends(validar_encabezados)):
     content_type, x_auth_token = headers
     print("/beetrack/route")
-    print(body)
+    # print(body)
     return {
             "body" : body
             }
@@ -160,7 +160,7 @@ async def post_route(body : Route , headers: tuple = Depends(validar_encabezados
 @router.post("/Enviar/loquesea")
 async def post_route(body : Union[Dict, List[Dict]] ):
     print("/beetrack/route")
-    print(body)
+    # print(body)
     return {
             "body" : body
             }

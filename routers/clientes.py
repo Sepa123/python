@@ -16,7 +16,7 @@ async def registrar_retiro_clientes(retiro_cliente : RetiroCliente):
     try:
         results = conn.get_ruta_manual(retiro_cliente.Codigo_pedido)
         data = retiro_cliente.dict()
-        print("retiro cliente datos :",retiro_cliente)
+        # print("retiro cliente datos :",retiro_cliente)
         # existe_registro = conn.find_retiro_cliente_existente(retiro_cliente.Codigo_pedido)
         # print(existe_registro == [])
         conn.registrar_retiro_cliente(data)

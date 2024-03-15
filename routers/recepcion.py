@@ -134,7 +134,7 @@ async def get_recepcion_easy_opl_by_codigo_pedido(cod_pedido : str):
 async def get_recepcion_electrolux(body: bodyUpdateVerified):
     try:
 
-        print(f" producto electrolux verificar {body.cod_producto}")
+        # print(f" producto electrolux verificar {body.cod_producto}")
         data = body.dict()
         rows = conn.update_verified_electrolux(body.cod_producto)
         if rows != 0:
@@ -171,8 +171,8 @@ async def get_recepcion_sportex_by_codigo_producto(body: bodyUpdateVerified):
 @router.put("/easy_opl", status_code=status.HTTP_202_ACCEPTED)
 async def get_recepcion_easy_opl_by_codigo_producto(body: bodyUpdateVerified):
     codigo = conn.get_codigo_pedido_opl(body.cod_producto)
-    print(codigo)
-    print(f"producto El  producto {body.cod_producto} OPL, codigo[0][0] = {codigo[0][0]}")
+    # print(codigo)
+    # print(f"producto El  producto {body.cod_producto} OPL, codigo[0][0] = {codigo[0][0]}")
     body.n_guia = codigo[0][0]
     try:
         if body.ids_usuario == 'hela-null' or body.ids_usuario == 'portal-null':
@@ -198,10 +198,10 @@ async def get_recepcion_easy_cd_by_codigo_producto(body: bodyUpdateVerified):
     # results = conn.read_recepcion_easy_cd_by_codigo_producto(body.cod_producto)
     try:
         data = body.dict()
-        print(f"El  producto {body.cod_producto} CD")
+        # print(f"El  producto {body.cod_producto} CD")
         
         rows = conn.update_verified_cd(body.cod_producto)
-        print(rows)
+        # print(rows)
         if rows != 0:
             connHela.insert_data_bitacora_recepcion(data)
         else:
@@ -221,9 +221,9 @@ async def get_recepcion_easy_cd_by_codigo_producto(body: bodyUpdateVerified):
 async def update_verificado_producto(body: bodyUpdateVerified):
     try:
         data = body.dict()
-        print(body.cod_producto)
+        # print(body.cod_producto)
         rows = conn.update_verified_recepcion(body.cod_pedido,body.cod_producto,body.sku)
-        print(rows)
+        # print(rows)
         if any(number != 0 for number in rows):
             connHela.insert_data_bitacora_recepcion(data)
             return { "message": f"Producto de codigo {body.cod_producto} verificado." }
@@ -268,8 +268,8 @@ async def update_recepcion_easy_cd_by_codigo_producto(body: bodyUpdateVerified):
     try:
         data = body.dict()        
         rows = conn.update_recepcion_cd(body.cod_producto)
-        print(f"easy_cd codigo {body.cod_producto}")
-        print(rows)
+        # print(f"easy_cd codigo {body.cod_producto}")
+        # print(rows)
         if rows != 0:
             connHela.insert_data_bitacora_recepcion(data)
         else:
@@ -299,8 +299,8 @@ async def update_recepcion_easy_opl_by_codigo_producto_sko(body: bodyUpdateVerif
 
         data = body.dict()     
         rows = conn.update_recepcion_opl(codigo_pedido, body.sku)
-        print(f"easy_opl codigo {codigo_pedido} y sku {body.sku}")
-        print(rows)
+        # print(f"easy_opl codigo {codigo_pedido} y sku {body.sku}")
+        # print(rows)
         if rows != 0:
             connHela.insert_data_bitacora_recepcion(data)
         else:

@@ -105,7 +105,7 @@ async def get_ruta_manual(body : bodyUpdateVerified ):
     json_data = rutas_manuales_schema(results)
 
     if json_data[0]['Calle'] is None:
-        print("La direccion es null")
+        # print("La direccion es null")
         json_data[0]['Calle'] = json_data[0]['Direccion_textual']
 
     body.cliente = json_data[0]['Notas']
@@ -146,13 +146,13 @@ async def buscar_rutas_activas():
 async def get_ruta_manual(pedido_id : str):
     results = conn.get_ruta_manual(pedido_id)
 
-    print("codigo_pedido ",pedido_id)
+    # print("codigo_pedido ",pedido_id)
 
     check = conn.check_producto_existe(pedido_id)
     check = re.sub(r'\(|\)', '',check[0])
     check = check.split(",")
 
-    print(check)
+    # print(check)
     
     if(check[0] == "1"):
         print("codigo pedido repetido")
@@ -177,7 +177,7 @@ async def get_ruta_manual(pedido_id : str):
         print("La direccion es null")
         json_data[0]['Calle'] = json_data[0]['Direccion_textual']
     # print(results)
-    print("/buscar/ruta")
+    # print("/buscar/ruta")
 
     return json_data
 
@@ -251,7 +251,7 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]], fecha_pedido : str)
         if validar_fecha(fecha_pedido) == False: raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, 
             detail=f"No se puede crear ruta con la fecha {fecha_pedido}")
 
-        print(fecha_pedido)
+        # print(fecha_pedido)
         id_ruta = conn.read_id_ruta()[0]
         nombre_ruta = conn.get_nombre_ruta_manual(rutas[0][0].Created_by)[0][0]
 
@@ -262,8 +262,8 @@ async def insert_ruta_manual(rutas : List[List[RutaManual]], fecha_pedido : str)
         # print(check)
 
         if(check[0] == "1"):
-            print("codigo pedido repetido")
-            print(f'El Producto "{rutas[0][0].Codigo_pedido}" se encuentra en la ruta {check[1]}')
+            # print("codigo pedido repetido")
+            # print(f'El Producto "{rutas[0][0].Codigo_pedido}" se encuentra en la ruta {check[1]}')
 
             raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, 
                                 detail=f'El Producto "{rutas[0][0].Codigo_pedido}" se encuentra en la ruta {check[1]}')
@@ -342,7 +342,7 @@ async def get_rutas_en_activo(nombre_ruta : str):
 
 @router.get("/listar/activo/cantidad/productos",status_code=status.HTTP_200_OK)
 async def get_rutas_en_activo(nombre_ruta : str):
-     print(nombre_ruta)
+    #  print(nombre_ruta)
      results = conn.read_cant_productos_ruta_activa(nombre_ruta)
 
      cant_productos_rutas_schema
@@ -487,7 +487,7 @@ async def filter_nombre_ruta_by_comuna(fecha: str, comuna : str, region : str):
 @router.put("/actualizar/estado/activo/{nombre_ruta}",status_code=status.HTTP_202_ACCEPTED)
 async def update_estado_ruta(nombre_ruta:str):
      try:
-          print(nombre_ruta)
+        #   print(nombre_ruta)
           conn.update_estado_rutas(nombre_ruta)
           return { "message": "Estado de Ruta Actualizado Correctamente" }
      except:
@@ -496,7 +496,7 @@ async def update_estado_ruta(nombre_ruta:str):
 
 @router.get("/datos_ruta/{nombre_ruta}",status_code=status.HTTP_202_ACCEPTED)
 async def get_ruta_by_nombre_ruta(nombre_ruta: str):
-     print(nombre_ruta)
+    #  print(nombre_ruta)
      results = conn.read_ruta_activa_by_nombre_ruta(nombre_ruta)
      return datos_rutas_activas_editar_schema(results)
 
@@ -537,7 +537,7 @@ async def delete_cargas_rsv(lista : ListaEliminar):
     }
     codigos = lista.lista.split(',')
 
-    print(codigos)
+    # print(codigos)
 
     results = conn.delete_productos_ruta(lista.lista, lista.nombre_ruta)
 
@@ -994,7 +994,7 @@ async def recuperar_linea_producto(codigo : str):
 async def recuperar_fecha_ingreso_sistema(cod_pedido : str):
     result = conn.recuperar_fecha_ingreso_cliente(cod_pedido)
     if(result == []) :
-         print(f"codigo {cod_pedido} no encontrado")
+        #  print(f"codigo {cod_pedido} no encontrado")
          return {"Fecha_ingreso_sistema":"Sin Fecha de ingreso al sistema"}
 
     return recuperar_fecha_ingreso_sistema_schema(result)
@@ -1008,7 +1008,7 @@ async def test():
 async def geolocalizar_direccion(body : Latlong):
     try:
         check = conn.check_direccion_existe(body.Direccion)
-        print(check[0])
+        # print(check[0])
         if check[0] >= 1:
             return f"La direccion {body.Direccion} ya se encuentra registrada"
         
@@ -1067,7 +1067,7 @@ async def pedido_en_ruta(pedido_id : str):
 @router.put("/actualizar/estado/activo/{nombre_ruta}/abrir",status_code=status.HTTP_202_ACCEPTED)
 async def update_estado_ruta_a_true(nombre_ruta:str):
      try:
-          print(nombre_ruta)
+        #   print(nombre_ruta)
           conn.update_estado_rutas_a_true_abierta(nombre_ruta)
           return { "message": "Estado de Ruta Actualizado Correctamente" }
      except:
@@ -1262,7 +1262,7 @@ async def insert_ruta_manual_por_despacho_ruta(body : bodyUpdateVerified):
 
     data = body.dict()
 
-    print(json_data)
+    # print(json_data)
     # connHela.insert_data_bitacora_recepcion(data)
 
     try:
@@ -1312,13 +1312,13 @@ async def insert_ruta_manual_por_despacho_ruta(body : bodyUpdateVerified):
 async def get_ruta_manual(pedido_id : str):
     results = conn.buscar_productos_por_4_digitos(pedido_id)
 
-    print("codigo_pedido ",pedido_id)
+    # print("codigo_pedido ",pedido_id)
 
     check = conn.check_producto_existe(pedido_id)
     check = re.sub(r'\(|\)', '',check[0])
     check = check.split(",")
 
-    print(check)
+    # print(check)
     
     if(check[0] == "1"):
         print("codigo pedido repetido")

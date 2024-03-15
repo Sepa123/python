@@ -126,7 +126,7 @@ async def get_ruta_manual(body : bodyUpdateVerified):
         body.cod_producto = cod_opl
 
 
-    print(body)
+    # print(body)
 
     if results is None or results == []:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El codigo del producto no existe")
@@ -143,7 +143,7 @@ async def get_ruta_manual(body : bodyUpdateVerified):
 async def get_ruta_manual(body : bodyUpdateVerified):
     results  = conn.obtener_rutas_productos_por_ruta(body.cod_pedido)
 
-    print(body)
+    # print(body)
 
     if results is None or results == []:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El codigo del producto no existe")
@@ -187,7 +187,7 @@ async def get_estados_pedidos(cod_pedido : str):
 async def get_pendientes_log_inversa(fecha : str):
 
     fecha = fecha.replace("-","")
-    print(fecha)
+    # print(fecha)
     no_entregado  = conn.pendientes_log_inversa(fecha)
 
     return pendientes_schema(no_entregado)

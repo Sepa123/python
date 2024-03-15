@@ -253,7 +253,7 @@ async def editar_alerta(body : EditarTOC):
 @router.get("/buscar/alerta/{ids_ty}")
 async def buscar_alerta(ids_ty : str):
      results = conn.buscar_alerta_by_ids_transyanez(ids_ty)
-     print(results)
+     # print(results)
      return buscar_alertas_schema(results)
 
 @router.get("/guia/{codigo}")
@@ -351,7 +351,7 @@ async def descargar_differencia_fechas_easy(body :ProductoIngresado):
 async def descargar_reporte_telefonos_easy(body :ProductoIngresado):
     
 #     conn.obtener_Productos_ingresados_excel(fecha_inicio,fecha_fin , offset)
-    print(body.Rango_fecha)
+#     print(body.Rango_fecha)
     
 
     tupla = []
