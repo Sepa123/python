@@ -52,7 +52,7 @@ from database.models.ns_valor_ruta import asignarValor
 
 from database.schema.estado.ns_verificado import ns_verificados_schema
 
-from database.schema.nivel_servicio.ns_fecha_real import ns_por_fecha_schema
+from database.schema.nivel_servicio.ns_fecha_real import ns_por_fecha_schema , ns_por_fecha_inicial_schema
 
 import datetime
 from typing import List
@@ -514,7 +514,7 @@ async def get_ns_fecha_real(fecha : str):
     promedio = conn.revisar_nivel_servicio_fec_real_promedio(fecha)[0]
 
     return {
-        "datos" : ns_por_fecha_schema(results),
+        "datos" : ns_por_fecha_inicial_schema(results),
         "promedio" : promedio
     }
 

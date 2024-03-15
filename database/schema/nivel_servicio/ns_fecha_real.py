@@ -10,4 +10,19 @@ def ns_por_fecha(ns):
 
 
 def ns_por_fecha_schema(nss):
-    return [ ns_por_fecha(ns) for ns in nss]
+    return [ns_por_fecha(ns) for ns in nss]
+
+
+
+def ns_por_fecha_inicial(ns):
+    return {
+		"Cliente" : ns[0],
+		"Compromiso_real" : ns[1],
+		"Entregados" : ns[2],
+		"Anulados" : ns[3],
+		"Nivel_servicio" : ns[4]
+	}
+
+
+def ns_por_fecha_inicial_schema(nss):
+    return [ns_por_fecha_inicial(ns) for ns in nss]
