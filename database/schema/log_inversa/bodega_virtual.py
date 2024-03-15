@@ -8,7 +8,8 @@ def bodega_virtual(bodega):
 		"Cantidad" : bodega[5],
 		"Comuna" : bodega[6],
 		"Region" : bodega[7],
-		"Pistoleado" : bodega[8]
+		"Pistoleado" : bodega[8],
+        "Cliente": bodega[9]
 	}
 
 
