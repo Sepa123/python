@@ -7361,12 +7361,39 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def revisar_nivel_servicio_fec_real_easy(self,fecha : str):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-                select 	'Easy CD' as cliente,
-                        total_registros	as compromiso_real,
-                        registros_con_entrega_real as entregados,
-                        total_anulados as anulados,
-                        porcentaje_entregas_real as nivel_servicio
-                from rutas.calcular_ns_easy_fecha('{fecha}')
+               -- select 	'Easy CD' as cliente,
+                  --      total_registros	as compromiso_real,
+                   --     registros_con_entrega_real as entregados,
+                    --    total_anulados as anulados,
+                     --   porcentaje_entregas_real as nivel_servicio
+               -- from rutas.calcular_ns_easy_fecha('{fecha}')
+               WITH conteo_easy AS (
+            SELECT
+                twce.entrega,
+                twce.fecha_entrega,
+                (SELECT rt.fecha_llegada::date
+                FROM beetrack.ruta_transyanez rt
+                WHERE rt.guia = twce.entrega
+                AND LOWER(rt.estado) IN ('entregado', 'retirado')
+                AND rt.fecha_llegada::date <= twce.fecha_entrega::date
+                ORDER BY rt.created_at DESC
+                LIMIT 1) AS fec_entrega_real,
+                CASE
+                    WHEN ((twce.estado = 2 AND twce.subestado IN (7, 10, 12, 19, 43, 44, 50, 51, 70, 80)) OR twce.estado IN (3)) THEN 1
+                    ELSE 0
+                END AS anulado
+            FROM
+                areati.ti_wms_carga_easy twce
+            WHERE
+                twce.fecha_entrega::date = '{fecha}'::date -- Fecha Parametro
+        )
+        select 	'Easy CD' as cliente,
+            COUNT(*) AS total_registros,
+            COUNT(fec_entrega_real) AS registros_con_entrega_real,
+            SUM(anulado) AS total_anulados
+            --ROUND(COUNT(fec_entrega_real) * 100.0 / NULLIF((COUNT(*) - SUM(anulado)), 0), 2) AS porcentaje_entregas_real
+        FROM
+            conteo_easy;
                          """)
             return cur.fetchall()
         
@@ -7374,12 +7401,41 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def revisar_nivel_servicio_fec_real_easy_opl(self,fecha : str):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            select 	'Easy OPL' as cliente,
-                    total_registros	as compromiso_real,
-                    registros_con_entrega_real as entregados,
-                    total_anulados as anulados,
-                    porcentaje_entregas_real as nivel_servicio
-            from rutas.calcular_ns_easyopl_fecha('{fecha}')
+            --select 	'Easy OPL' as cliente,
+                   -- total_registros	as compromiso_real,
+                   -- registros_con_entrega_real as entregados,
+                   -- total_anulados as anulados,
+                   -- porcentaje_entregas_real as nivel_servicio
+           -- from rutas.calcular_ns_easyopl_fecha('{fecha}')
+
+            WITH conteo_easyOPL AS (
+        SELECT
+            twce.suborden,
+            twce.fec_compromiso,
+            (SELECT rt.fecha_llegada::date
+             FROM beetrack.ruta_transyanez rt
+             WHERE rt.guia = twce.suborden
+               AND LOWER(rt.estado) IN ('entregado', 'retirado')
+               AND rt.fecha_llegada::date <= twce.fec_compromiso::date
+             ORDER BY rt.created_at DESC
+             LIMIT 1) AS fec_entrega_real,
+            CASE
+                WHEN ((twce.estado = 2 AND twce.subestado IN (7, 10, 12, 19, 43, 44, 50, 51, 70, 80)) OR twce.estado IN (3)) THEN 1
+                ELSE 0
+            END AS anulado
+        FROM
+            areati.ti_carga_easy_go_opl twce
+        WHERE
+            twce.fec_compromiso::date = '{fecha}'::date -- Fecha Parametro
+    )
+    select 	'Easy OPL' as cliente,
+        COUNT(*) AS total_registros,
+        COUNT(fec_entrega_real) AS registros_con_entrega_real,
+        SUM(anulado) AS total_anulados
+        --ROUND(COUNT(fec_entrega_real) * 100.0 / NULLIF((COUNT(*) - SUM(anulado)), 0), 2) AS porcentaje_entregas_real
+    FROM
+        conteo_easyOPL;    
+       
 
                          """)
             return cur.fetchall()

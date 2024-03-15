@@ -4,7 +4,8 @@ def ns_por_fecha(ns):
 		"Compromiso_real" : ns[1],
 		"Entregados" : ns[2],
 		"Anulados" : ns[3],
-		"Nivel_servicio" : ns[4]
+		# "Nivel_servicio" : ns[4]
+        "Nivel_servicio" : 0
 	}
 
 
