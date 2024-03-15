@@ -7826,7 +7826,16 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                         
                          """)
             return cur.fetchall()
-
+        
+    ### seguimiento_transporte
+    def seguimiento_transporte(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                 select * from rutas.seguimiento_transporte(); 
+                        
+                         """)
+            return cur.fetchall()
+    
 class transyanezConnection():
     conn = None
     def __init__(self) -> None:

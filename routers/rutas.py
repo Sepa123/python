@@ -54,6 +54,8 @@ from database.schema.rutas.no_entregados import no_entregados_schema
 
 from database.schema.rutas.eficiencia_coductor import eficiencia_conductor_schema
 
+from database.schema.rutas.seguimiento_ruta import seguimiento_ruta_schema
+
 router = APIRouter(tags=["rutas"], prefix="/api/rutas")
 
 conn = reportesConnection()
@@ -1346,3 +1348,10 @@ async def get_ruta_manual(pedido_id : str):
 
 
 
+## seguimento ruta
+@router.get("/seguimento")
+async def get_seguimento_ruta():
+    
+    result = conn.seguimiento_transporte()
+    # obtener_region
+    return seguimiento_ruta_schema(result)
