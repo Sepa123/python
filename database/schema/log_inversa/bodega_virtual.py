@@ -1,15 +1,16 @@
 def bodega_virtual(bodega):
     return {
 		"Ingreso_li" : bodega[0],
-		"Entrega" : bodega[1],
-		"Fecha_pedido" : bodega[2],
-		"Fec_original_pedido" :bodega[3],
-		"Descripcion" : bodega[4],
-		"Cantidad" : bodega[5],
-		"Comuna" : bodega[6],
-		"Region" : bodega[7],
-		"Pistoleado" : bodega[8],
-        "Cliente": bodega[9]
+        "Cliente": bodega[1],
+		"Entrega" : bodega[2],
+		"Fecha_pedido" : bodega[3],
+		"Fec_original_pedido" :bodega[4],
+		"Descripcion" : bodega[5],
+		"Cantidad" : bodega[6],
+		"Comuna" : bodega[7],
+		"Region" : bodega[8],
+		"Pistoleado" : bodega[9],
+        "Cliente": bodega[10]
 	}
 
 
