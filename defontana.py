@@ -65,7 +65,7 @@ def ejecutar_api_defontana():
         print("ultima ejecucion auth:", ultima_ejecucion_token)
     fecha_formateada = ahora.strftime("%Y-%m-%d")
 
-    reqUrl = f"https://api.defontana.com/api/sale/GetSaleByDate?initialDate=2024-03-18&endingDate={fecha_formateada}&itemsPerPage=50&pageNumber=1"
+    reqUrl = f"https://api.defontana.com/api/sale/GetSaleByDate?initialDate={fecha_formateada}&endingDate={fecha_formateada}&itemsPerPage=50&pageNumber=1"
 
     if access_token is None:
         print("Por algun motivo no recupero token")
