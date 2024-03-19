@@ -7446,15 +7446,15 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             select 	'Electrolux' as cliente,
                     total_registros	as compromiso_real,
                     registros_con_entrega_real as entregados,
-                    total_anulados as anulados,
-                    porcentaje_entregas_real as nivel_servicio
+                    coalesce(total_anulados,0) as anulados,
+                    coalesce(porcentaje_entregas_real,0) as nivel_servicio
             from rutas.calcular_ns_electrolux_fecha('{fecha}')
             union all
             select 	'Envio/Retiros' as cliente,
                     total_registros	as compromiso_real,
                     registros_con_entrega_real as entregados,
-                    total_anulados as anulados,
-                    porcentaje_entregas_real as nivel_servicio
+                    coalesce(total_anulados,0) as anulados,
+                    coalesce(porcentaje_entregas_real,0) as nivel_servicio
             from rutas.calcular_ns_retirocliente_fecha('{fecha}')
 
                          """)
