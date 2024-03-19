@@ -7831,7 +7831,20 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def seguimiento_transporte(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-                 select * from rutas.seguimiento_transporte(); 
+                 --select * from rutas.seguimiento_transporte(); 
+            select 
+           		ruta_beetrack,
+           		ppu,
+           		region,
+           		cliente,
+           		carga_total,
+           		fecha_compromiso,
+           		entregados,
+           		entregado_fec_comp,
+           		pendientes,
+           		no_entregados,
+           		coalesce(obs_total_pedidos,'No hay registros')
+           	from rutas.seguimiento_transporte();
                         
                          """)
             return cur.fetchall()
