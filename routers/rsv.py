@@ -910,7 +910,7 @@ def guardar_estado_notificacion(mail, folios):
     for item in datos:
         if item["Mail"] == estado["Mail"]:
             correo_existente = True
-            print(estado["Mail"]+ ' existe')
+            # print(estado["Mail"]+ ' existe')
             # 
             for folio in folios :
                 if any(d["Numero_Factura"] == folio["Numero_Factura"] for d in item['Folios']) :
