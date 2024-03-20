@@ -2,19 +2,19 @@ from typing import Optional
 from pydantic import BaseModel
 
 class RetiroCliente(BaseModel):
-    Cliente: str
-    Codigo_pedido: str
-    Tipo: str
-    Envio_asociado: str
-    Fecha_pedido: str
+    Cliente: Optional[str]
+    Codigo_pedido: Optional[str]
+    Tipo: Optional[str]
+    Envio_asociado: Optional[str]
+    Fecha_pedido: Optional[str]
     SKU: int
-    Descripcion_producto: str
+    Descripcion_producto: Optional[str]
     Cantidad: int
     Bultos: int
-    Nombre_cliente: str
-    Direccion: str
-    Comuna: str
-    Telefono: str
-    Email: str
-    Region: int
-    Id_usuario : str
+    Nombre_cliente: Optional[str]
+    Direccion: Optional[str]
+    Comuna: Optional[str]
+    Telefono: Optional[str]
+    Email: Optional[str]
+    Region: Optional[int]
+    Id_usuario : Optional[str]
