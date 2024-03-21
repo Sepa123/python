@@ -7817,12 +7817,17 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             return cur.fetchall()
         
     ###Notificaciones defontana
-    def notificacion_defontana_hoy(self):
+    def notificacion_defontana_hoy(self,dias7):
         with self.conn.cursor() as cur:
             cur.execute(f"""    
+                --SELECT dv.numero_folio, nv.preparado FROM rsv.defontana_venta dv 
+                -- left join rsv.nota_venta nv on cast(dv.numero_folio as varchar)  = nv.numero_factura 
+                 --where TO_CHAR(dv.fecha_creacion, 'DD-MM-YYYY') = TO_CHAR(CURRENT_DATE, 'DD-MM-YYYY')
+
                 SELECT dv.numero_folio, nv.preparado FROM rsv.defontana_venta dv 
-                 left join rsv.nota_venta nv on cast(dv.numero_folio as varchar)  = nv.numero_factura 
-                 where TO_CHAR(dv.fecha_creacion, 'DD-MM-YYYY') = TO_CHAR(CURRENT_DATE, 'DD-MM-YYYY')
+	            left join rsv.nota_venta nv on cast(dv.numero_folio as varchar)  = nv.numero_factura 
+	            where dv.fecha_creacion::date >= '{dias7}'::date and dv.fecha_creacion::date <= current_date::date
+
  
                         
                          """)

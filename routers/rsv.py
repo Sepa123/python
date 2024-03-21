@@ -978,8 +978,15 @@ def guardar_estado_notificacion_actualizado(mail, folios):
 @router.post("/notificiones")
 async def notificaciones_api_defontana(body : Notificacion):
 
+    # Obtener la fecha actual
+    fecha_actual = datetime.now()
+
+    # Restar 7 días a la fecha actual
+    fecha_hace_siete_dias = fecha_actual - timedelta(days=7)
+    
+    
     notificaciones = cargar_estado_notificaciones()
-    result = conn.notificacion_defontana_hoy()
+    result = conn.notificacion_defontana_hoy(fecha_hace_siete_dias.strftime("%Y%m%d"))
     folios = notificaciones_schema(result)
 
     notas_no_preparadas = [nota for nota in folios if nota["Preparado"] == False]
