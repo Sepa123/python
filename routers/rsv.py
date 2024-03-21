@@ -913,7 +913,12 @@ def guardar_estado_notificacion(mail, folios):
             # print(estado["Mail"]+ ' existe')
             # 
             for folio in folios :
+                ## Verifica si existe factura en json
                 if any(d["Numero_Factura"] == folio["Numero_Factura"] for d in item['Folios']) :
+                    cambiar_estado_act = next((d for d in item['Folios'] if d["Numero_Factura"] == folio["Numero_Factura"]), None)
+                    if cambiar_estado_act:
+                        cambiar_estado_act["Preparado"] = folio["Preparado"]
+
                     pass
                     # cambiar_estado_act = next((d for d in item['Folios'] if d["Numero_Factura"] == folio["Numero_Factura"]), None)
                     # print(cambiar_estado_act)
@@ -992,7 +997,7 @@ async def notificaciones_api_defontana(body : Notificacion):
     
     return {
         "Folios" : notas_no_preparadas,
-        "Cantidad": sum(1 for folio in folios if not folio['Visto']),
+        "Cantidad": sum(1 for folio in notas_no_preparadas if not folio['Visto']),
         "visto": False
        
     }
