@@ -285,6 +285,24 @@ class reportesConnection():
                         VALUES( %(id_user)s, %(ids_user)s, %(equipo)s, %(persona)s, %(observacion)s, %(lat)s, 
                         %(long)s, %(id_licencia)s);""", data)
             self.conn.commit()
+
+    def bitacora_liberar_chip(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute(""" INSERT INTO inventario.bitacora
+                        (id_usuario, ids_usuario, id_equipo, id_persona, observacion, 
+                         latitud, longitud, id_licencia)
+                        VALUES( %(id_user)s, %(ids_user)s, %(equipo)s, %(persona)s, %(observacion)s, %(lat)s, 
+                        %(long)s, %(id_chip)s);""", data)
+            self.conn.commit()
+
+    def bitacora_liberar_insumo(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute(""" INSERT INTO inventario.bitacora
+                        (id_usuario, ids_usuario, id_equipo, observacion, 
+                         latitud, longitud)
+                        VALUES( %(id_user)s, %(ids_user)s, %(id)s, %(observacion)s, %(lat)s, 
+                        %(long)s);""", data)
+            self.conn.commit()
     def bitacora_inventario_equipo(self,data):
         with self.conn.cursor() as cur:
             cur.execute(""" INSERT INTO inventario.bitacora
@@ -333,13 +351,21 @@ class reportesConnection():
                 %(estado)s,%(fecha_devolucion)s,%(observacion)s,%(folio_entrega)s,%(folio_devolucion)s, %(firma_entrega)s
                         ,%(firma_devolucion)s, %(pdf_entrega)s,%(pdf_devolucion)s, %(departamento)s)""",data)
         self.conn.commit()
-
+    def ingresar_chip_asignado(self, data):
+        with self.conn.cursor() as cur: 
+            cur.execute("""INSERT INTO inventario.asignacion
+                (id_user, ids_user, lat, long, equipo, persona, fecha_entrega, estado,
+                         fecha_devolucion, observacion,folio_entrega, folio_devolucion, departamento, sub_estado) 
+                VALUES(%(id_user)s, %(ids_user)s,%(lat)s,%(long)s,%(id_chip)s,%(persona)s,%(fecha_entrega)s,
+                %(estado)s,%(fecha_devolucion)s,%(observacion)s, %(folio_entrega)s,%(folio_devolucion)s, %(departamento)s, %(subestadoChip)s)""",data)
+        self.conn.commit()
     def ingresar_accesorio_asignado(self, data):
         with self.conn.cursor() as cur: 
             cur.execute("""INSERT INTO inventario.asignacion
-                (id_user, ids_user, lat, long, equipo, persona, fecha_entrega, estado, observacion,departamento, sub_estado) 
+                (id_user, ids_user, lat, long, equipo, persona, fecha_entrega, estado, observacion,departamento, sub_estado,
+                        folio_entrega, folio_devolucion) 
                 VALUES(%(id_user)s, %(ids_user)s,%(lat)s,%(long)s,%(equipo)s, %(persona)s, %(fecha_entrega)s,
-                %(estado)s,%(observacion)s, %(departamento)s, %(sub_estado)s)""",data)
+                %(estado)s,%(observacion)s, %(departamento)s, %(sub_estado)s, %(folio_entrega)s, %(folio_devolucion)s)""",data)
         self.conn.commit()
 
     def devolucion_accesorio_asignado(self, data):
@@ -471,14 +497,36 @@ class reportesConnection():
         
     def read_chips_asignados_a_equipos(self):
         with self.conn.cursor() as cur:
-            cur.execute(""" select  b.id_chip, p.nombres || p.apellidos as persona , e.modelo || e.marca as linea, e.serial , e.descripcion as número,
-                       e2.id as id_equipo, e2.modelo as celular, e2.serial as imei, s.descripcion  as estado
+            cur.execute("""   select a.equipo,  p.nombres || p.apellidos as persona , e.modelo || e.marca as linea, e.serial , e.descripcion as número,
+                e.id as id_equipo, e.modelo as celular, e.serial as imei, s.descripcion  as estado
+                from inventario.asignacion a  
+                inner join inventario.equipo e on a.equipo = e.id 
+                inner join inventario.tipo t on e.tipo = t.id
+                inner join inventario.persona p on p.id = a.persona 
+                inner join inventario.subestados s on a.sub_estado = s.code 
+                where a.sub_estado = 4 and e.tipo = 3""")
+            return cur.fetchall()
+        
+    def read_chips_asignados_para_devolucion(self):
+        with self.conn.cursor() as cur:
+            cur.execute("""   select  b.id_chip, p.id as persona , e.modelo || e.marca as linea, e.serial , e.descripcion as número,
+                       e2.id as id_equipo, e2.modelo as celular, e2.serial as imei, s.id as estado
                         from inventario.bitacora b 
                         inner join inventario.equipo e  on b.id_chip = e.id 
                         inner join inventario.equipo e2 on b.id_equipo =e2.id
                         inner join inventario.persona p on b.id_persona  = p.id 
                         inner join inventario.subestados s on e.subestado = s.code
                         where e.subestado = 4""")
+            # cur.execute("""                         
+            #         select  b.id_chip, p.id as persona , e.modelo || e.marca as linea, e.serial , e.descripcion as número,
+            #            e2.id as id_equipo, e2.modelo as celular, e2.serial as imei, s.id as estado
+            #             from inventario.bitacora b 
+            #             inner join inventario.equipo e  on b.id_chip = e.id 
+            #             inner join inventario.equipo e2 on b.id_equipo =e2.id
+            #             inner join inventario.persona p on b.id_persona  = p.id 
+            #             inner join inventario.subestados s on e.subestado = s.code
+            #             where e.subestado = 4
+            #                """)
             return cur.fetchall()
         
     def read_tipo_equipo(self):
@@ -579,7 +627,7 @@ class reportesConnection():
     def read_equipos_general(self):
         with self.conn.cursor() as cur:
             cur.execute(""" SELECT id, marca, modelo, serial, mac_wifi, serie, resolucion, dimensiones,
-                         descripcion, ubicacion, almacenamiento, ram, estado, tipo, cantidad, nr_equipo, subestado
+                         descripcion, ubicacion, almacenamiento, ram, estado, subestado, tipo, cantidad, nr_equipo
                         FROM inventario.equipo; """)
             return cur.fetchall()
     def read_equipos_by_tipo(self, tipo):
@@ -617,13 +665,13 @@ class reportesConnection():
     def read_insumos_asignados(self):
         with self.conn.cursor() as cur:
             cur.execute("""                     
-                         SELECT e.id, d.nombre as departamento, e.marca|| ' ' || e.modelo AS equipo,  a.fecha_entrega,
+                         SELECT e.id as id , d.nombre as departamento, e.marca|| ' ' || e.modelo AS equipo,  a.fecha_entrega,
                          a.estado, a.observacion, a.id as id_asignacion
                         FROM inventario.asignacion a  
                         INNER JOIN inventario.equipo e ON a.equipo = e.id
                         INNER JOIN inventario.departamento d ON a.departamento = d.id
                         inner join inventario.tipo t on e.tipo = t.id
-                        where e.tipo = 7 and e.tipo = 15   """)
+                        where  a.estado =1  and e.tipo = 7 or e.tipo = 15   """)
             return cur.fetchall()
     
     def read_asignados_sin_join(self):
@@ -715,6 +763,18 @@ class reportesConnection():
                         inner join inventario.subestados s on s.code = e.subestado   and s.parent_code = e.estado 
                          where e.serial=%(serial)s """, {"serial":serial})
             return cur.fetchall()
+    def read_todos_los_insumos_asignados_por_serial(self,serial):
+        with self.conn.cursor() as cur:
+            cur.execute(""" SELECT e.id, d.nombre as departamento,t.nombre AS tipo, e.marca, e.modelo, e.serial, es.descripcion AS estado, s.descripcion as subestado,
+                            a.fecha_entrega, a.fecha_devolucion 
+                        FROM inventario.equipo e
+                        inner join inventario.asignacion a on a.equipo  =e.id
+                        inner join inventario.departamento d on d.id =a.departamento
+                        INNER JOIN inventario.tipo t ON e.tipo = t.id
+                        INNER JOIN inventario.estados es ON e.estado = es.id
+                        inner join inventario.subestados s on s.code = e.subestado   and s.parent_code = e.estado 
+                         where e.serial=%(serial)s """, {"serial":serial})
+            return cur.fetchall()
         
         
     def read_equipos_por_persona_por_devolver(self,persona):
@@ -727,7 +787,7 @@ class reportesConnection():
                 INNER JOIN inventario.equipo e ON a.equipo = e.id
                 INNER JOIN inventario.departamento d ON a.departamento = d.id
                 INNER JOIN inventario.tipo t ON e.tipo = t.id
-                WHERE p.rut =%(persona)s and a.estado = true""", {"persona": persona})
+                WHERE p.rut =%(persona)s and a.estado = true  and (e.tipo = 1 or e.tipo  = 2 or e.tipo  = 14)""", {"persona": persona})
             return cur.fetchall()
     def read_equipos_devueltos_por_persona(self,persona):
         with self.conn.cursor() as cur:
@@ -806,6 +866,11 @@ class reportesConnection():
             cur.execute(""" SELECT * from inventario.estados where estado != 4 and estado != 1""")
             return cur.fetchall()
         
+    def read_estado_chip(self):
+        with self.conn.cursor() as cur:
+            cur.execute(""" SELECT * from inventario.estados where estado = 4""")
+            return cur.fetchall()
+        
     def read_subestado(self):
         with self.conn.cursor() as cur:
             cur.execute(""" SELECT * FROM inventario.subestados """)
@@ -877,8 +942,29 @@ class reportesConnection():
     def liberar_licencia(self,data):
         with self.conn.cursor() as cur:
             cur.execute(""" UPDATE inventario.licencias SET asignada=%(asignado)s where id=%(id_licencia)s""",data)
-
             self.conn.commit()
+
+    def liberar_chip(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute(""" UPDATE inventario.equipo SET estado=%(estadoChip)s ,subestado=%(subestadoChip)s where id=%(id_chip)s""",data)
+            self.conn.commit()
+
+    def devolver_chip(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute(""" UPDATE inventario.asignacion SET fecha_devolucion=%(fecha_devolucion)s,  sub_estado=%(subestadoChip)s, estado=%(estado)s where id=%(id_chip)s""",data)
+            self.conn.commit()
+
+    def liberar_insumo(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute(""" UPDATE inventario.equipo SET estado=%(estadoInsumo)s ,subestado=%(subestadoInsumo)s where id=%(equipo)s""",data)
+            self.conn.commit()
+    
+    def devolver_insumo(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute(""" UPDATE inventario.asignacion SET fecha_devolucion=%(fecha_devolucion)s, folio_devolucion=%(folio_devolucion)s, sub_estado=%(subestadoInsumo)s, estado=%(status)s  where id=%(id)s""",data)
+            self.conn.commit()
+    
+
     ##INGRESAR RUTAS DE PDF
 
     ##se envia la ruta del pdf sin el "/" para que al momento de descargarlo se encuentre la ruta

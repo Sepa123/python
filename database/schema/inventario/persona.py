@@ -34,6 +34,19 @@ def lista_accesorio_asignado(data):
 def accesorio_schema(datos):
     return[lista_accesorio_asignado(data) for data in datos]
 
+def lista_insumo_asignado(data):
+    return{
+        "id": data[0],
+        "departamento":data[1],
+        "equipo": data[2],
+        "fecha_entrega": data[3],
+        "estado":data[4],
+        "observacion":data[5],
+        "id_asignacion":data[6]
+    }
+def insumo_schema(datos):
+    return[lista_insumo_asignado(data) for data in datos]
+
 def lista_insumos_asignado(data):
     return{
         "id": data[0],
@@ -206,6 +219,23 @@ def equipos_asignado_por_serial(data):
 
 def equipos_asignado_por_serial_schema(datos):
     return[equipos_asignado_por_serial(data) for data in datos]
+
+def insumos_asignado_por_serial(data):
+    return{
+            "id": data[0],
+            "departamento": data[1],
+            "tipo":data[2],
+             "marca":data[3],
+             "modelo":data[4],
+            "serial": data[5],
+             "estado":data[6],
+            "subestado": data[7],
+            "fecha_entrega":data[8],
+            "fecha_devolucion":data[9]
+            }
+
+def insumos_asignado_por_serial_schema(datos):
+    return[insumos_asignado_por_serial(data) for data in datos]
 
 def ruta_pdf_entrega(data):
     return{

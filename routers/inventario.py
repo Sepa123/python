@@ -18,8 +18,10 @@ from database.models.mantenedores.bitacoPersona import BitacoraPersona
 from database.models.mantenedores.bitacoraEquipo import BitacoraEquipo
 from database.models.mantenedores.personaHabilitada import PersonaHabilitada
 from database.models.mantenedores.liberar_licencia import  LiberarLicencia
+from database.models.mantenedores.liberar_chip import LiberarChip
+from database.models.mantenedores.liberarInsumo import LiberarInsumo
 
-from database.schema.inventario.persona import equipos_asignado_por_serial_schema, todos_los_equipo_asignado_por_persona_schema,insumo_schema,firma_entrega_schema, firma_devolucion_schema, accesorio_schema, ultima_persona_schema, crear_persona_schema, persona_equipo_schema, equipo_asignado_por_id_schema, equipo_asignado_por_persona_schema,equipo_devuelto_por_id_schema, ruta_pdf_entrega_schema, ruta_pdf_devolucion_schema
+from database.schema.inventario.persona import insumos_asignado_por_serial_schema, insumo_schema, equipos_asignado_por_serial_schema, todos_los_equipo_asignado_por_persona_schema,insumo_schema,firma_entrega_schema, firma_devolucion_schema, accesorio_schema, ultima_persona_schema, crear_persona_schema, persona_equipo_schema, equipo_asignado_por_id_schema, equipo_asignado_por_persona_schema,equipo_devuelto_por_id_schema, ruta_pdf_entrega_schema, ruta_pdf_devolucion_schema
 from database.schema.inventario.equipo import lista_chip_asignado_equipo_schema, lista_licencia_asignada_equipo_schema, ultimo_equipo_schema, lista_estado_schema, lista_estado_schema, lista_nr_equipo_schema,descripcion_equipo_schema, tipo_equipo_schema, lista_inventario_estado_schema, licencia_equipo_schema, folio_devolucion_schema, folio_entrega_schema, lista_subestado_schema, lista_nr_code_schema, lista_equipo_sin_join_schema, ultimo_estado_schema
 from database.schema.inventario.sucursal import lista_sucursa_schema, lista_departamento_schema
 ##Conexiones
@@ -159,9 +161,9 @@ async def asignar_equipo(body: AsignarEquipo):
         data = body.dict()
         conn.ingresar_equipo_asignado(data)
         conn.bitacora_asignar_licencia(data)
-        conn.bitacora_asignar_chip(data)
+        # conn.bitacora_asignar_chip(data)
         conn.actualizar_estado_equipo(data)
-        conn.actualizar_estado_chip(data)
+        # conn.actualizar_estado_chip(data)
         return{
              "message": "Equipo asignado correctamente"
         }
@@ -169,6 +171,24 @@ async def asignar_equipo(body: AsignarEquipo):
         print("error", data)
         raise HTTPException(status_code=422, detail=str(e))
 
+## se ingresa a la tabla de asignacion los datos del chip para asi poder realizar los cambios de estado
+@router.post("/asignacion-chip")
+async def asignar_chip(body: AsignarEquipo):
+    try:
+        # filename = os.path.basename(body.ubicacionarchivo)
+        # body.ubicacionarchivo = 'pdfs/foto_entrega/'+filename
+        data = body.dict()
+        conn.ingresar_chip_asignado(data) 
+        conn.bitacora_asignar_chip(data)
+        # conn.actualizar_estado_equipo(data)
+        conn.actualizar_estado_chip(data)
+        return{
+             "message": "Equipo asignado correctamente"
+        }
+    except Exception as e:
+        print("error")
+        raise HTTPException(status_code=422, detail=str(e))
+    
 @router.post("/asignacion-accesorio")
 async def asignar_accesorio(body: AsignarEquipo):
     try:
@@ -196,6 +216,35 @@ async def liberar_licencia(body:  LiberarLicencia):
     except Exception as e:
         print("error", data)
         raise HTTPException(status_code=422, detail=str(e))
+    
+@router.post("/liberar-chip")
+async def liberar_chip(body:  LiberarChip):
+    try:
+        data = body.dict()
+        conn.liberar_chip(data)
+        conn.bitacora_liberar_chip(data)
+        conn.devolver_chip(data)
+        return{
+             "message": "Chip liberado"
+        }
+    except Exception as e:
+        print("error", data)
+        raise HTTPException(status_code=422, detail=str(e))
+    
+@router.post("/liberar-insumo")
+async def liberar_insumo(body:  LiberarInsumo):
+    try:
+        data = body.dict()
+        conn.liberar_insumo(data)
+        conn.bitacora_liberar_insumo(data)
+        conn.devolver_insumo(data)
+        return{
+             "message": "Insumo liberado"
+        }
+    except Exception as e:
+        print("error", data)
+        raise HTTPException(status_code=422, detail=str(e))
+    
 @router.post("/licencia")
 async def crear_licencia(body: CrearLicencia):
     try: 
@@ -533,6 +582,11 @@ async def lista_licencias_asignadas_a_equipos():
 async def lista_chips_asignados_a_equipos():                                 
     result = conn.read_chips_asignados_a_equipos()
     return lista_chip_asignado_equipo_schema(result)
+##modelo ocupado para obtener los datos correspondientes al realizar la devolucion del chip
+@router.get("/lista-chip-devolucion")
+async def lista_chips_para_devolucion():                                 
+    result = conn.read_chips_asignados_para_devolucion()
+    return lista_chip_asignado_equipo_schema(result)
 
 @router.get("/chip-by-estado")
 async def lista_chips_by_estado():
@@ -588,6 +642,11 @@ async def listar_descripcion_por_id(id: int):
     result = conn.read_descripcion_por_id(id)
     return descripcion_equipo_schema(result)
 
+# @router.get("/lista-equipo-by-chip/{id}")
+# async def listar_descripcion_por_idchip(id: int):
+#     result = conn.read_descripcion_por_idchip(id)
+#     return descripcion_equipo_schema(result)
+
 @router.get("/lista-equipos")
 async def lista_equipos_sin_join():
     result = conn.read_lista_equipos()
@@ -611,7 +670,7 @@ async def lista_accesorios_asignados():
 @router.get("/lista-insumos-asignados")
 async def lista_insumos_asignados():
     result = conn.read_insumos_asignados()
-    return accesorio_schema(result)
+    return insumo_schema(result)
 
 @router.get("/tabla-asignados")
 async def lista_asignados_sin_join():
@@ -641,6 +700,12 @@ async def lista_estado_inventario():
 @router.get("/lista-estados-devolucion")
 async def listado_estado_devolucion():
     result = conn.read_estados_devolucion()
+    return lista_estado_schema(result)
+
+
+@router.get("/lista-estado-chip")
+async def listado_estado_chip():
+    result = conn.read_estado_chip()
     return lista_estado_schema(result)
 
 @router.get("/ultimo-estado")
@@ -733,6 +798,11 @@ async def obtener_todos_los_equipos_por_persona_asignados(rut:str):
 async def obtener_equipos_asignados_por_serial(serial:str):
     result = conn.read_todos_los_equipos_asignados_por_serial(serial)
     return equipos_asignado_por_serial_schema(result)
+
+@router.get("/insumo-asignado-por-serial/{serial}")
+async def obtener_insumos_asignados_por_serial(serial:str):
+    result = conn.read_todos_los_insumos_asignados_por_serial(serial)
+    return insumos_asignado_por_serial_schema(result)
 
 @router.get("/lista-equipos-por-persona-para-devolver/{id}")
 async def obtener_lista_de_equipos_por_persona_por_devolver(id:str):
