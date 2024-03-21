@@ -1,6 +1,7 @@
 def notificacion(noti):
     return {
         "Numero_Factura": noti[0],
+        "Preparado" : noti[1],
         "Visto" : False
     }
 

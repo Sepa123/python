@@ -7819,10 +7819,11 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     ###Notificaciones defontana
     def notificacion_defontana_hoy(self):
         with self.conn.cursor() as cur:
-            cur.execute(f"""
-                SELECT dv.numero_folio  FROM rsv.defontana_venta dv 
-                where TO_CHAR(dv.fecha_creacion, 'DD-MM-YYYY') = TO_CHAR(CURRENT_DATE , 'DD-MM-YYYY')
-                --where TO_CHAR(dv.fecha_creacion, 'DD-MM-YYYY') = '07-03-2024'
+            cur.execute(f"""    
+                SELECT dv.numero_folio, nv.preparado FROM rsv.defontana_venta dv 
+                 left join rsv.nota_venta nv on cast(dv.numero_folio as varchar)  = nv.numero_factura 
+                 where TO_CHAR(dv.fecha_creacion, 'DD-MM-YYYY') = TO_CHAR(CURRENT_DATE, 'DD-MM-YYYY')
+ 
                         
                          """)
             return cur.fetchall()
