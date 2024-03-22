@@ -1355,3 +1355,16 @@ async def get_seguimento_ruta():
     result = conn.seguimiento_transporte()
     # obtener_region
     return seguimiento_ruta_schema(result)
+
+
+
+## seguimento ruta
+@router.get("/comuna_por_ruta")
+async def get_comuna_por_ruta():
+    
+    result = conn.comuna_por_ruta()
+    # obtener_region
+    nombre_filas = ( "Nombre Ruta", "Comunas", "Total Puntos")
+    nombre_excel = f"lista_comunas_por_ruta"
+
+    return excel.generar_excel_generico(result,nombre_filas,nombre_excel)
