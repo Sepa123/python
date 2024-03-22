@@ -7921,7 +7921,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 SELECT dv.numero_folio, nv.preparado FROM rsv.defontana_venta dv 
 	            left join rsv.nota_venta nv on cast(dv.numero_folio as varchar)  = nv.numero_factura 
 	            where dv.fecha_creacion::date >= '{dias7}'::date and dv.fecha_creacion::date <= current_date::date
-
+               --- and nv.preparado = false
  
                         
                          """)

@@ -993,18 +993,24 @@ async def notificaciones_api_defontana(body : Notificacion):
 
     for noti in notificaciones:
         if body.Mail == noti["Mail"]:
+            print(noti["Mail"])
             guardar_estado_notificacion(body.Mail,folios)
+
+            print([nota for nota in noti['Folios'] if not nota["Preparado"]])
+
+
+                
             return {
-                "Folios" : [nota for nota in noti['Folios'] if nota["Preparado"] == False],
-                "Cantidad": sum(1 for folio in noti['Folios'] if not folio['Visto'] and folio["Preparado"] == False)
+                "Folios" : [nota for nota in noti['Folios'] if not nota["Preparado"]],
+                "Cantidad": sum(1 for folio in noti['Folios'] if not folio['Visto'] and not folio["Preparado"])
                 
             }
 
     guardar_estado_notificacion(body.Mail,folios)
     
     return {
-        "Folios" : [nota for nota in folios if nota["Preparado"] == False],
-        "Cantidad": sum(1 for folio in folios if not folio['Visto'] and folio["Preparado"] == False),
+        "Folios" : [nota for nota in folios if not nota["Preparado"]],
+        "Cantidad": sum(1 for folio in folios if not folio['Visto'] and not folio["Preparado"]),
         "visto": False
        
     }
@@ -1024,8 +1030,9 @@ async def notificaciones_api_defontana(body : Notificacion):
             actualizado_folio = guardar_estado_notificacion_actualizado(body.Mail,noti["Folios"])
             # guardar_estado_notificacion(body.Mail,folios)
             return {
-                "Folios" : actualizado_folio['Folios'],
-                "Cantidad": sum(1 for folio in actualizado_folio['Folios'] if not folio['Visto'])
+                
+                "Folios" :  [nota for nota in actualizado_folio['Folios'] if not nota["Preparado"]],
+                "Cantidad": sum(1 for folio in actualizado_folio['Folios'] if not folio['Visto'] )
                
             }
 
