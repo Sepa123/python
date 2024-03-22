@@ -989,22 +989,22 @@ async def notificaciones_api_defontana(body : Notificacion):
     result = conn.notificacion_defontana_hoy(fecha_hace_siete_dias.strftime("%Y%m%d"))
     folios = notificaciones_schema(result)
 
-    notas_no_preparadas = [nota for nota in folios if nota["Preparado"] == False]
+    # notas_no_preparadas = [nota for nota in folios if nota["Preparado"] == False]
 
     for noti in notificaciones:
         if body.Mail == noti["Mail"]:
-            guardar_estado_notificacion(body.Mail,notas_no_preparadas)
+            guardar_estado_notificacion(body.Mail,folios)
             return {
-                "Folios" : noti['Folios'],
-                "Cantidad": sum(1 for folio in noti['Folios'] if not folio['Visto'])
+                "Folios" : [nota for nota in noti['Folios'] if nota["Preparado"] == False],
+                "Cantidad": sum(1 for folio in noti['Folios'] if not folio['Visto'] and folio["Preparado"] == False)
                 
             }
 
-    guardar_estado_notificacion(body.Mail,notas_no_preparadas)
+    guardar_estado_notificacion(body.Mail,folios)
     
     return {
-        "Folios" : notas_no_preparadas,
-        "Cantidad": sum(1 for folio in notas_no_preparadas if not folio['Visto']),
+        "Folios" : [nota for nota in folios if nota["Preparado"] == False],
+        "Cantidad": sum(1 for folio in folios if not folio['Visto'] and folio["Preparado"] == False),
         "visto": False
        
     }
