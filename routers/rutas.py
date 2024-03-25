@@ -56,6 +56,7 @@ from database.schema.rutas.eficiencia_coductor import eficiencia_conductor_schem
 
 from database.schema.rutas.seguimiento_ruta import seguimiento_ruta_schema
 from database.schema.rutas.comuna_por_ruta import comunas_por_ruta_schema
+from database.models.recepcion.recepcion_tiendas import bodyUpdateVerified
 
 router = APIRouter(tags=["rutas"], prefix="/api/rutas")
 
@@ -488,10 +489,13 @@ async def filter_nombre_ruta_by_comuna(fecha: str, comuna : str, region : str):
     return nombres_rutas_activas_schema(results)
 
 @router.put("/actualizar/estado/activo/{nombre_ruta}",status_code=status.HTTP_202_ACCEPTED)
-async def update_estado_ruta(nombre_ruta:str):
+async def update_estado_ruta(nombre_ruta:str, body : bodyUpdateVerified):
      try:
         #   print(nombre_ruta)
+          data = body.dict()
           conn.update_estado_rutas(nombre_ruta)
+
+          connHela.insert_data_bitacora_recepcion(data)
           return { "message": "Estado de Ruta Actualizado Correctamente" }
      except:
           print("error en /actualizar/estado/activo/nombre_ruta")
@@ -1068,10 +1072,12 @@ async def pedido_en_ruta(pedido_id : str):
     }
 
 @router.put("/actualizar/estado/activo/{nombre_ruta}/abrir",status_code=status.HTTP_202_ACCEPTED)
-async def update_estado_ruta_a_true(nombre_ruta:str):
+async def update_estado_ruta_a_true(nombre_ruta:str, body : bodyUpdateVerified):
      try:
         #   print(nombre_ruta)
+          data = body.dict()
           conn.update_estado_rutas_a_true_abierta(nombre_ruta)
+          connHela.insert_data_bitacora_recepcion(data)
           return { "message": "Estado de Ruta Actualizado Correctamente" }
      except:
           print("error en /actualizar/estado/activo/nombre_ruta/abrir ")
