@@ -352,7 +352,11 @@ async def agregar_descripcion_de_equipo(body: DescripcionEquipo):
     try: 
         filename = os.path.basename(body.ubicacionarchivo)
         body.ubicacionarchivo = 'pdfs/foto_nuevo/'+filename
-        print(body.ubicacionarchivo )
+        # print(body.ubicacionarchivo )
+        if body.almacenamiento == "Seleccione una opcion":
+            body.almacenamiento = ""
+        if body.ram == "Seleccione una opcion":
+            body.ram = ""
         data = body.dict()
         print(data)
         conn.agregar_descripcion_equipo(data)
