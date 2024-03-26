@@ -51,8 +51,8 @@ from database.schema.pendientes_bodega import pendientes_bodega_schema
 from database.models.ns_valor_ruta import asignarValor
 
 from database.schema.estado.ns_verificado import ns_verificados_schema
-
 from database.schema.nivel_servicio.ns_fecha_real import ns_por_fecha_schema , ns_por_fecha_inicial_schema
+from database.schema.nivel_servicio.ns_drivers import ns_drivers_schema
 
 import datetime
 from typing import List
@@ -536,4 +536,29 @@ async def get_ns_fecha_real_easy(fecha : str, tienda: str):
     return {
         "datos" : ns_por_fecha_schema(results),
     }
+
+
+
+### Nivel Servicio drivers
+@router.get("/ns/drivers",status_code=status.HTTP_202_ACCEPTED)
+async def get_ns_drivers(fecha_inicio : str, fecha_fin: str):
+
+    results = conn.nivel_servicio_drivers(fecha_inicio,fecha_fin)
+
+    datos = ns_drivers_schema(results)
+
+    patentes = [dato['Patente'] for dato in datos]
+    porcentaje = [dato['P_ee'] for dato in datos]
+    pedidos = [dato['Total_pedidos'] for dato in datos]
+    Entregados = [dato['Total_entregados'] for dato in datos]
+
+
+    return {
+        'Datos' : datos,
+        'Patentes' : patentes,
+        'Porcentaje' : porcentaje,
+        'Pedidos' : pedidos,
+        'Entregados' : Entregados,
+    }
+   
 

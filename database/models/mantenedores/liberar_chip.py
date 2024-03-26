@@ -8,7 +8,7 @@ class LiberarChip(BaseModel):
     ids_user: str
     lat: str
     long: str
-    observacion: str
+    observacion: Optional[str]
     persona:  int
     equipo: int
     estadoChip: int

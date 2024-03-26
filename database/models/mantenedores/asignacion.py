@@ -28,4 +28,5 @@ class AsignarEquipo(BaseModel):
     ubicacionarchivo: Optional[str]
     estadoChip: Optional[int]
     subestadoChip: Optional[int]
+    asignado: Optional[bool]
     #cuando se requiere enviar el estado de equipo y asignacion en el mismo contenido se cambia el nombre de la variable

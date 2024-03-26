@@ -29,14 +29,11 @@ def lista_descripcion_equipo(data):
             "subestado": data[13],
             "tipo":data[14],
             "cantidad" :data[15],
-            "nr_equipo": data[16],
-           
-            
+            "nr_equipo": data[16],     
             }
 
 def descripcion_equipo_schema(datos):
-    return[lista_descripcion_equipo(data) for data in datos
-    ]
+    return[lista_descripcion_equipo(data) for data in datos ]
 
 def lista_equipo_sin_join(data):
     return{
