@@ -993,10 +993,10 @@ async def notificaciones_api_defontana(body : Notificacion):
 
     for noti in notificaciones:
         if body.Mail == noti["Mail"]:
-            print(noti["Mail"])
+            # print(noti["Mail"])
             guardar_estado_notificacion(body.Mail,folios)
 
-            print([nota for nota in noti['Folios'] if not nota["Preparado"]])
+            # print([nota for nota in noti['Folios'] if not nota["Preparado"]])
 
 
                 
