@@ -178,12 +178,29 @@ async def asignar_chip(body: AsignarEquipo):
         # filename = os.path.basename(body.ubicacionarchivo)
         # body.ubicacionarchivo = 'pdfs/foto_entrega/'+filename
         data = body.dict()
+        print(data)
         conn.ingresar_chip_asignado(data) 
         conn.bitacora_asignar_chip(data)
         # conn.actualizar_estado_equipo(data)
         conn.actualizar_estado_chip(data)
         return{
              "message": "Equipo asignado correctamente"
+        }
+    except Exception as e:
+        print("error")
+        raise HTTPException(status_code=422, detail=str(e))
+    
+
+@router.post("/asignacion-licencia")
+async def asignar_licencia(body: AsignarEquipo):
+    try:
+        # filename = os.path.basename(body.ubicacionarchivo)
+        # body.ubicacionarchivo = 'pdfs/foto_entrega/'+filename
+        data = body.dict() 
+        conn.bitacora_asignar_licencia(data)
+        conn.actualizar_estado_licencia(data)
+        return{
+             "message": "Licencia asignada correctamente"
         }
     except Exception as e:
         print("error")
@@ -772,6 +789,21 @@ async def obtener_lista_equipos_generales():
 async def obtener_equipos_por_tipo(tipo :int):
     result = conn.read_equipos_by_tipo(tipo)
     return descripcion_equipo_schema(result)
+
+@router.get("/equipos-by-persona-chip/{id}")
+async def obtener_equipos_by_persona_chip(id:int):
+    result = conn.read_equipos_by_persona_chip(id)
+    return descripcion_equipo_schema(result)
+
+@router.get("/equipos-by-persona-notebook/{id}")
+async def obtener_equipos_by_persona_notebook(id:int):
+    result = conn.read_equipos_by_persona_notebook(id)
+    return descripcion_equipo_schema(result)
+
+@router.get("/persona-by-departamento/{departamento}")
+async def obtener_persona_por_departamento(departamento :int):
+    result = conn.read_persona_by_departamento(departamento)
+    return crear_persona_schema(result)
 
 @router.get("/asignados/{id}")
 async def obtener_asignados_por_id(id:int):

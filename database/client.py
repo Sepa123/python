@@ -261,9 +261,9 @@ class reportesConnection():
     def bitacora_asignar_licencia(self,data):
         with self.conn.cursor() as cur:
             cur.execute(""" INSERT INTO inventario.bitacora
-                        (id_usuario, ids_usuario, id_equipo, id_persona, observacion, 
+                        (id_usuario, ids_usuario, id_equipo, id_persona, estado, observacion, 
                          latitud, longitud, id_licencia, ubicacionarchivo)
-                        VALUES( %(id_user)s, %(ids_user)s, %(equipo)s, %(persona)s, %(observacion)s, %(lat)s, 
+                        VALUES( %(id_user)s, %(ids_user)s, %(equipo)s, %(persona)s,  %(status)s, %(observacion)s, %(lat)s, 
                         %(long)s, %(id_licencia)s, %(ubicacionarchivo)s);""", data)
             self.conn.commit()
 
@@ -272,17 +272,17 @@ class reportesConnection():
         with self.conn.cursor() as cur:
             cur.execute(""" INSERT INTO inventario.bitacora
                         (id_usuario, ids_usuario, id_equipo, id_persona, observacion, 
-                         latitud, longitud, id_chip, ubicacionarchivo)
+                         latitud, longitud, id_chip, ubicacionarchivo, estado, subestado)
                         VALUES( %(id_user)s, %(ids_user)s, %(equipo)s, %(persona)s, %(observacion)s, %(lat)s, 
-                        %(long)s, %(id_chip)s, %(ubicacionarchivo)s);""", data)
+                        %(long)s, %(id_chip)s, %(ubicacionarchivo)s, %(estadoChip)s , %(subestadoChip)s);""", data)
             self.conn.commit()
     
     def bitacora_liberar_licencia(self,data):
         with self.conn.cursor() as cur:
             cur.execute(""" INSERT INTO inventario.bitacora
-                        (id_usuario, ids_usuario, id_equipo, id_persona, observacion, 
+                        (id_usuario, ids_usuario, id_equipo, id_persona, estado, observacion, 
                          latitud, longitud, id_licencia)
-                        VALUES( %(id_user)s, %(ids_user)s, %(equipo)s, %(persona)s, %(observacion)s, %(lat)s, 
+                        VALUES( %(id_user)s, %(ids_user)s, %(equipo)s, %(persona)s , %(status)s, %(observacion)s, %(lat)s, 
                         %(long)s, %(id_licencia)s);""", data)
             self.conn.commit()
 
@@ -290,9 +290,9 @@ class reportesConnection():
         with self.conn.cursor() as cur:
             cur.execute(""" INSERT INTO inventario.bitacora
                         (id_usuario, ids_usuario, id_equipo, id_persona, observacion, 
-                         latitud, longitud, id_licencia)
+                         latitud, longitud, id_licencia, estado, subestado)
                         VALUES( %(id_user)s, %(ids_user)s, %(equipo)s, %(persona)s, %(observacion)s, %(lat)s, 
-                        %(long)s, %(id_chip)s);""", data)
+                        %(long)s, %(id_chip)s, %(estado)s, %(subestado)s);""", data)
             self.conn.commit()
 
     def bitacora_liberar_insumo(self,data):
@@ -331,8 +331,8 @@ class reportesConnection():
 
     def ingresar_tipo_equipo(self, data):
         with self.conn.cursor() as cur:
-            cur.execute(""" INSERT INTO inventario.tipo (nombre)
-                        VALUES(%(nombre)s)
+            cur.execute(""" INSERT INTO inventario.tipo (nombre, documentacion)
+                        VALUES(%(nombre)s , %(documentacion)s)
             """, data)
         self.conn.commit()
 
@@ -411,7 +411,7 @@ class reportesConnection():
     def ingresar_licencia(self, data):
         with self.conn.cursor() as cur:
             cur.execute(""" INSERT INTO inventario.licencias
-                ( id_user, ids_user, lat, long, codigo) VALUES(%(id_user)s, %(ids_user)s,%(lat)s,%(long)s,%(codigo)s) """,data)
+                ( id_user, ids_user, lat, long, codigo, asignada) VALUES(%(id_user)s, %(ids_user)s,%(lat)s,%(long)s,%(codigo)s ,%(asignada)s) """,data)
         self.conn.commit()
 
     def ingresar_sucursal(self,data):
@@ -480,19 +480,27 @@ class reportesConnection():
          with self.conn.cursor() as cur:
              cur.execute("""  SELECT l.id AS id_licencia, l.codigo
                             FROM inventario.licencias l
-                            LEFT JOIN inventario.bitacora b ON l.id = b.id_licencia
-                            WHERE b.id_licencia IS NULL or l.asignada  = false;  """)
+                            WHERE  l.asignada  = false;  """)
              return cur.fetchall()
-         
+    ## posible bug, para obtener los datos de a quien fue entregada de la licencia se utiliza la bitacora, donde se repiten varios datos por lo cual 
+    ## es posible que al mostrar la lista muestre datos erroneos, se realiza el distinc para solo mostrar un codigo de licencia por vez y se orden por fecha
+    ## para mostrar la ultima asignacion de esa licencia 
     def read_licencias_asignadas_a_equipos(self):
         with self.conn.cursor() as cur:
-            cur.execute(""" select l.id, p.nombres || p.apellidos as persona , e.modelo || e.marca as equipo, e.serial , l.codigo,
-                        l.asignada as asignada, e.id as id_equipo, p.id as id_persona
+            # cur.execute(""" select l.id, p.nombres || p.apellidos as persona , e.modelo || e.marca as equipo, e.serial , l.codigo,
+            #             l.asignada as asignada, e.id as id_equipo, p.id as id_persona
+            #             from inventario.bitacora b 
+            #             inner join inventario.licencias l on b.id_licencia = l.id 
+            #             inner join inventario.equipo e on b.id_equipo = e.id
+            #             inner join inventario.persona p on b.id_persona  = p.id 
+            #             where l.asignada = true and b.estado = 1""")
+            cur.execute(""" select DISTINCT ON (l.codigo) l.id, p.nombres || p.apellidos as persona , e.modelo || e.marca as equipo, e.serial , l.codigo,
+                        l.asignada as asignada, e.id as id_equipo, p.id as id_persona, b.id as bitacora_id
                         from inventario.bitacora b 
                         inner join inventario.licencias l on b.id_licencia = l.id 
                         inner join inventario.equipo e on b.id_equipo = e.id
                         inner join inventario.persona p on b.id_persona  = p.id 
-                        where l.asignada = true""")
+                        where l.asignada = true order by  l.codigo,b.created_at desc""")
             return cur.fetchall()
         
     def read_chips_asignados_a_equipos(self):
@@ -636,6 +644,38 @@ class reportesConnection():
                          descripcion, ubicacion, almacenamiento, ram, estado, tipo, cantidad, nr_equipo, subestado
                         FROM inventario.equipo where tipo=%(tipo)s and  estado != 1 and estado != 3 and subestado != 3""", {"tipo" : tipo})
             return cur.fetchall()
+        
+
+    def read_equipos_by_persona_chip(self, id):
+        with self.conn.cursor() as cur:
+            cur.execute(""" SELECT e.id, e.marca, e.modelo, e.serial, e.mac_wifi, e.serie, e.resolucion, e.dimensiones,
+                         e.descripcion, e.ubicacion, e.almacenamiento, e.ram, e.estado, e.tipo, e.cantidad, e.nr_equipo,
+                         e.subestado
+                        FROM inventario.equipo e
+                        inner join inventario.asignacion a on a.equipo  = e.id 
+                        where e.tipo=2 and a.persona =%(id)s and e.estado = 1""", {"id" : id})
+            return cur.fetchall()
+        
+    def read_equipos_by_persona_notebook(self, id):
+        with self.conn.cursor() as cur:
+            cur.execute(""" SELECT e.id, e.marca, e.modelo, e.serial, e.mac_wifi, e.serie, e.resolucion, e.dimensiones,
+                         e.descripcion, e.ubicacion, e.almacenamiento, e.ram, e.estado, e.tipo, e.cantidad, e.nr_equipo,
+                         e.subestado
+                        FROM inventario.equipo e
+                        inner join inventario.asignacion a on a.equipo  = e.id 
+                        where e.tipo=1 and a.persona =%(id)s and e.estado = 1""", {"id" : id})
+            return cur.fetchall()
+        
+    def read_persona_by_departamento(self, departamento):
+        with self.conn.cursor() as cur:
+            cur.execute(""" Select id, nombres, apellidos, rut, nacionalidad, fecha_nacimiento, estado_civil, telefono,
+                         fecha_ingreso, cargo, domicilio, comuna, banco, tipo_cuenta, numero_cuenta, correo, afp, salud,
+                         telefono_adicional, nombre_contacto, seguro_covid, horario, ceco, sueldo_base, tipo_contrato,
+                         direccion_laboral, enfermedad, polera, pantalon, poleron, zapato, foto, pdf, req_comp, req_cel, habilitado
+                    FROM inventario.persona where habilitado= true and departamento=%(departamento)s order by nombres asc""", {"departamento" : departamento})
+            return cur.fetchall()
+        
+      
     
     def read_asignaciones_personal(self):
         with self.conn.cursor() as cur:
@@ -671,7 +711,7 @@ class reportesConnection():
                         INNER JOIN inventario.equipo e ON a.equipo = e.id
                         INNER JOIN inventario.departamento d ON a.departamento = d.id
                         inner join inventario.tipo t on e.tipo = t.id
-                        where  a.estado =1  and e.tipo = 7 or e.tipo = 15   """)
+                        where  a.estado =true  and e.tipo = 7 or e.tipo = 15   """)
             return cur.fetchall()
     
     def read_asignados_sin_join(self):
@@ -1047,6 +1087,12 @@ class reportesConnection():
     def actualizar_estado_chip(self,data):
         with self.conn.cursor() as cur:
             cur.execute(""" UPDATE inventario.equipo SET estado=%(estadoChip)s, subestado=%(subestadoChip)s  where id=%(id_chip)s""", data)
+        self.conn.commit()
+
+    ## la tabla de licencia tiene un campo para distinguir cuando esta asignado o libre para usar
+    def actualizar_estado_licencia(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute(""" UPDATE inventario.licencias SET asignada=%(asignado)s  where id=%(id_licencia)s""", data)
         self.conn.commit()
     ##cambio de estado del equipo al asignar reciente (cambia a estado POR ENTREGAR)
 

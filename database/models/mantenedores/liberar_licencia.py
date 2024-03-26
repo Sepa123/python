@@ -11,3 +11,4 @@ class LiberarLicencia(BaseModel):
     persona:  int
     equipo: int
     asignado: bool
+    status: int
