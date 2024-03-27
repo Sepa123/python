@@ -1044,7 +1044,7 @@ class reportesConnection():
     def editar_tipo_equipo(self,data):
         with self.conn.cursor() as cur:
             cur.execute(""" UPDATE inventario.tipo
-                        SET nombre=%(nombre)s where id=%(id)s""", data)
+                        SET nombre=%(nombre)s, documentacion=%(documentacion)s where id=%(id)s""", data)
         self.conn.commit()
 
     def editar_departamento(self,data):
