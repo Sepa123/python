@@ -53,6 +53,7 @@ from database.models.ns_valor_ruta import asignarValor
 from database.schema.estado.ns_verificado import ns_verificados_schema
 from database.schema.nivel_servicio.ns_fecha_real import ns_por_fecha_schema , ns_por_fecha_inicial_schema
 from database.schema.nivel_servicio.ns_drivers import ns_drivers_schema
+import lib.excel_generico as excel
 
 import datetime
 from typing import List
@@ -562,3 +563,12 @@ async def get_ns_drivers(fecha_inicio : str, fecha_fin: str):
     }
    
 
+@router.get("/ns/drivers/descargar",status_code=status.HTTP_202_ACCEPTED)
+async def get_ns_drivers(fecha_inicio : str, fecha_fin: str):
+    
+    results = conn.nivel_servicio_drivers(fecha_inicio,fecha_fin)
+    # obtener_region
+    nombre_filas = ( "Patente", "Total Rutas", "Total KM","Total Pedidos", "Total Entregados", "Total No Entregados","P EE", "Codigo1")
+    nombre_excel = f"ns_driver"
+
+    return excel.generar_excel_generico(results,nombre_filas,nombre_excel)
