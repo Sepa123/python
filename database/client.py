@@ -4916,6 +4916,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             FROM rsv.nota_venta_productos nvp
             inner join rsv.catalogo_productos cp on cp.codigo = nvp.codigo 
             where id_venta = {id_venta}
+            order by nvp.codigo desc
             """)
             return cur.fetchall()
         
