@@ -25,3 +25,4 @@ excel/etiquetas_carga.xlsx
 __pycache__/main.cpython-311.pyc
 database/schema/__pycache__/user_schema.cpython-311.pyc
 estado.json
+json/estado_notificaciones.json
