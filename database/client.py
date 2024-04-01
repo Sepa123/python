@@ -4445,7 +4445,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             cur.execute("""
            ----actualizarlo del despacho
 
-            UPDATE from rsv.despacho
+            UPDATE rsv.despacho
             SET created_at = current_date, id_usuario = %(Id_user)s , 
                 ids_usuario = %(Ids_user)s, id_etiqueta = %(Id_etiqueta)s,
                 bar_code = %(Bar_code_nuevo)s
@@ -6233,7 +6233,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def editar_tipo_equipo(self,data):
         with self.conn.cursor() as cur:
             cur.execute(""" UPDATE inventario.tipo
-                        SET nombre=%(nombre)s where id=%(id)s""", data)
+                        SET nombre=%(nombre)s, documentacion=%(documentacion)s where id=%(id)s""", data)
         self.conn.commit()
 
     def editar_departamento(self,data):
