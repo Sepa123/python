@@ -4407,6 +4407,56 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             return cur.fetchall()
             
 
+    ##Actualizar en_stock a true codigo antiguo RSV
+        
+
+    def actualizar_stock_true_rsv(self,codigo_bar):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+           UPDATE rsv.etiquetas 
+           SET en_stock=true 
+           WHERE bar_code = '{codigo_bar}'
+            """)
+            row = cur.rowcount
+        self.conn.commit()
+        
+        return row
+    
+    ##Actualizar en_stock a false codigo nuevo RSV
+        
+
+    def actualizar_stock_false_rsv(self,codigo_bar):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+           UPDATE rsv.etiquetas 
+           SET en_stock=false 
+           WHERE bar_code = '{codigo_bar}'
+            """)
+            row = cur.rowcount
+        self.conn.commit()
+        
+        return row
+    
+    ##Actualizar despacho  a codigo nuevo RSV
+        
+
+    def actualizar_despacho_codigo_nuevo_rsv(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+           ----actualizarlo del despacho
+
+            UPDATE from rsv.despacho
+            SET created_at = current_date, id_usuario = %(Id_user)s , 
+                ids_usuario = %(Ids_user)s, id_etiqueta = %(Id_etiqueta)s,
+                bar_code = %(Bar_code_nuevo)s
+            WHERE bar_code =  %(Bar_code_antiguo)s and id_nota_venta = %(Id_nota_venta)s
+            """,data)
+            row = cur.rowcount
+        self.conn.commit()
+        
+        return row
+            
+
     ## New challenger  RSV
 
 

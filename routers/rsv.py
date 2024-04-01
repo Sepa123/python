@@ -71,6 +71,7 @@ from database.schema.rsv.obtener_ubicacion_cantidad import obtener_ubicacion_can
 from database.models.rsv.obtener_ubicacion_cantidad import ObtUbicacionCantidad
 
 from database.models.rsv.defontana.venta import listaVenta
+from database.models.rsv.cambio_etiqueta import CambioEtiqueta
 
 from database.models.rsv.defontana.notificacion import Notificacion
 from database.schema.rsv.defontana.notificacion import notificaciones_schema
@@ -1038,4 +1039,17 @@ async def notificaciones_api_defontana(body : Notificacion):
 
     return {
         'message' : 'SOS'
+    }
+
+
+
+@router.post("/reemplazar/etiquetas")
+async def reemplazar_etiquetas(body : CambioEtiqueta):
+
+    conn.actualizar_stock_true_rsv(body.Bar_code_antiguo)
+    conn.actualizar_stock_false_rsv(body.Bar_code_nuevo)
+    conn.actualizar_despacho_codigo_nuevo_rsv(body.dict())
+
+    return {
+        'message' : 'Se reemplazaron las etiquetas de la venta'
     }
