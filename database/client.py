@@ -1753,7 +1753,8 @@ class reportesConnection():
                 "C20" || ' (' || "(%)20" ||'%)' as "20:00 (100%)",
                 "T-ENT",
                 "N-ENT",
-                "EE"
+                -- "EE",
+                "(%)20"       
                 from(
                     select 
                             coalesce(to_date(to_char(trb.fecha_estimada,'dd-mm-yyyy'),'dd-mm-yyyy'),to_date(to_char(current_date,'yyyymmdd'),'yyyymmdd'))::DATE as "FECHA",
