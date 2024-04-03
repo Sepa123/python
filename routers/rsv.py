@@ -1046,6 +1046,16 @@ async def notificaciones_api_defontana(body : Notificacion):
 @router.post("/reemplazar/etiquetas")
 async def reemplazar_etiquetas(body : CambioEtiqueta):
 
+    check = conn.verificar_stock_paquete(body.Bar_code_nuevo)
+
+    check_id = check[0]
+    check_stock = check[1]
+
+    if check_stock == False:
+        return {
+            "message" : f"El código {body.Bar_code_nuevo} esta sin stock"
+        }
+
     conn.actualizar_stock_true_rsv(body.Bar_code_antiguo)
     conn.actualizar_stock_false_rsv(body.Bar_code_nuevo)
     conn.actualizar_despacho_codigo_nuevo_rsv(body.dict())

@@ -114,7 +114,7 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
         # print("pase por aqui")
         f.write(contents)
 
-    df = pd.read_excel(ruta,skiprows=4)
+    df = pd.read_excel(ruta,sheet_name=1,skiprows=1)
 
     lista = df.to_dict(orient='records')
 
@@ -123,9 +123,9 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
         # if cantidad_encontrada[0] >= 1:
         #     print("Producto ya esta registrado") 
         # else:
-        direccion = data['Domicilio']
-        posicion = i + 1
-        conn.write_pedidos_planificados(data ,posicion, direccion)
+        print(data)
+
+        # conn.write_pedidos_planificados(data ,posicion, direccion)
         # print(posicion)
 
 
@@ -137,29 +137,33 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
     
     time.sleep(8)
    
-    error = conn.asignar_ruta_quadmind_manual(id_usuario, fecha_hora_formateada)
+    # error = conn.asignar_ruta_quadmind_manual(id_usuario, fecha_hora_formateada)
 
-    diferencia = conn.calcular_diferencia_tiempo(fecha_dia)
+    # diferencia = conn.calcular_diferencia_tiempo(fecha_dia)
 
     # error 1 : codigos inexistentes
 
-    if error[0][0] == 1:
-        return {
-                "filename": file.filename, 
-                "message": "Error al subir el archivo", 
-                "codigos": f"{error[0][1]}",
-                "tiempo": diferencia[0][0],
-                "termino" : True ,
-                "error" : 1,
-                }
-    else:   
-        return {"filename": file.filename, 
-                "message": error[0][1], 
-                "codigos": "",
-                "tiempo": diferencia[0][0],
-                "termino" : True,
-                "error" : 0,
-                }
+    return {
+        "message" : "sos"
+    }
+
+    # if error[0][0] == 1:
+    #     return {
+    #             "filename": file.filename, 
+    #             "message": "Error al subir el archivo", 
+    #             "codigos": f"{error[0][1]}",
+    #             "tiempo": diferencia[0][0],
+    #             "termino" : True ,
+    #             "error" : 1,
+    #             }
+    # else:   
+    #     return {"filename": file.filename, 
+    #             "message": error[0][1], 
+    #             "codigos": "",
+    #             "tiempo": diferencia[0][0],
+    #             "termino" : True,
+    #             "error" : 0,
+    #             }
 
 @router.post('/quadminds/asignar')
 async def asignar_ruta(id_usuario : int):
