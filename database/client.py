@@ -7266,8 +7266,14 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             
             return cur.fetchall()
         
-
-
+       
+    def reingresa_producto_a_operacion(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+                select * from log_inversa.reingresa_producto_operacion(%(Id_user)s, %(Ids_user)s, %(Cliente)s,%(Codigo_pedido)s,%(Lat)s,%(Long)s,%(Ingreso)s);
+                         """, data)
+            
+            return cur.fetchall()
         
     def obtener_estados_entrega(self):
         with self.conn.cursor() as cur:

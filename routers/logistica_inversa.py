@@ -18,6 +18,7 @@ from database.schema.log_inversa.bodega_virtual import bodega_virtual_schema
 ## Modelos
 from database.models.log_inversa.pendientes import PedidosPendientes
 from database.models.log_inversa.ruta_producto import BodyRutaProducto
+from database.models.log_inversa.reingreso_operacion import ReingresoOperacion
 
 ##Conexiones
 from database.client import reportesConnection
@@ -199,6 +200,21 @@ async def recuperar_bodega_virtual():
     result  = conn.recuperar_bodega_virtual()
 
     return bodega_virtual_schema(result)
+
+
+# reingresa_producto_a_operacion
+
+
+@router.post("/reingresar/operacion",status_code=status.HTTP_202_ACCEPTED)
+async def recuperar_bodega_virtual(body : ReingresoOperacion):
+    data = body.dict()
+
+    # conn.reingresa_producto_a_operacion(data)
+
+    return {
+        'message': 'Producto reingresado a Operacion',
+        "req" : body
+    }
 
 
 
