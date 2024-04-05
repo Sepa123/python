@@ -3,10 +3,10 @@ from pydantic import BaseModel
 
 
 class ReingresoOperacion(BaseModel):
-    id_user: Optional[int]
-    ids_user: Optional[str]
-    cliente: Optional[str]
-    codigo_pedido: Optional[str]
-    lat: Optional[str]
-    long: Optional[str]
-    ingreso: Optional[str]
+    Id_user: Optional[int]
+    Ids_user: Optional[str]
+    Cliente: Optional[str]
+    Codigo_pedido: Optional[str]
+    Lat: Optional[str]
+    Long: Optional[str]
+    Ingreso: Optional[str]
