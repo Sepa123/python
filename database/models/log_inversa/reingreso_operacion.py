@@ -2,7 +2,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 
-class ReingresoOperacion((BaseModel)):
+class ReingresoOperacion(BaseModel):
     id_user: Optional[int]
     ids_user: Optional[str]
     cliente: Optional[str]
