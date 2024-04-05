@@ -209,11 +209,10 @@ async def recuperar_bodega_virtual():
 async def recuperar_bodega_virtual(body : ReingresoOperacion):
     data = body.dict()
 
-    # conn.reingresa_producto_a_operacion(data)
+    conn.reingresa_producto_a_operacion(data)
 
     return {
-        'message': 'Producto reingresado a Operacion',
-        "req" : body
+        'message': 'Producto reingresado a Operacion'
     }
 
 
