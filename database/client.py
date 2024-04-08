@@ -3220,6 +3220,21 @@ class reportesConnection():
             print("Error durante la actualización:", error)
         finally:
             return cur.rowcount
+        
+
+    def update_verified_masivo_cd(self,codigos_producto):
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute(f"""        
+                UPDATE areati.ti_wms_carga_easy easy 
+                SET verified = true
+                WHERE easy.carton in ({','.join(['%s']*len(codigos_producto))}) or easy.entrega in ({','.join(['%s']*len(codigos_producto))})
+                """)
+            self.conn.commit()
+        except (Exception, psycopg2.DatabaseError) as error:
+            print("Error durante la actualización:", error)
+        finally:
+            return cur.rowcount
     
     def update_recepcion_cd(self,codigo_producto):
         try:

@@ -1,6 +1,6 @@
 from datetime import datetime
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 
 
 class Recepcion_tiendas(BaseModel):
@@ -32,6 +32,7 @@ class bodyUpdateVerified(BaseModel):
     ruta : Optional[str]
     id_ruta : Optional[int]
     fecha_ruta: Optional[str]
+    lista_codigos: Optional[List[str]]
 
 
 class dataBitacora(BaseModel):

@@ -213,6 +213,33 @@ async def get_recepcion_easy_cd_by_codigo_producto(body: bodyUpdateVerified):
                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"El  producto {body.cod_producto} no se pudo verificar")
           
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la verificación")
+    
+
+@router.put("/easy_cd/masivo", status_code=status.HTTP_202_ACCEPTED)
+async def get_recepcion_easy_cd_by_codigo_producto(body: bodyUpdateVerified):
+    # results = conn.read_recepcion_easy_cd_by_codigo_producto(body.cod_producto)
+    try:
+        
+        # print(f"El  producto {body.cod_producto} CD")
+        
+        rows = conn.update_verified_masivo_cd(body.lista_codigos)
+        # print(rows)
+        if rows != 0:
+            for codigo in body.lista_codigos:
+                 body.n_guia = codigo
+                 body.cod_pedido = codigo
+                 body.cod_producto = codigo
+                 data = body.dict()
+                 connHela.insert_data_bitacora_recepcion(data)
+        else:
+            print(" no se verifico ningun producto")
+        return { "message": f"Producto {rows} verificado." }
+    except:
+          print("error con verificar EASY CD")
+          if rows == 0:
+               raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"El  producto {body.cod_producto} no se pudo verificar")
+          
+          raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la verificación")
 
 
 
