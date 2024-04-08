@@ -223,14 +223,15 @@ async def get_recepcion_easy_cd_by_codigo_producto(body: bodyUpdateVerified):
         # print(f"El  producto {body.cod_producto} CD")
         
         rows = conn.update_verified_masivo_cd(body.lista_codigos)
-        # print(rows)
+        print(rows)
         if rows != 0:
             for codigo in body.lista_codigos:
-                 body.n_guia = codigo
-                 body.cod_pedido = codigo
-                 body.cod_producto = codigo
-                 data = body.dict()
-                 connHela.insert_data_bitacora_recepcion(data)
+                 if codigo != '':
+                    body.n_guia = codigo
+                    body.cod_pedido = codigo
+                    body.cod_producto = codigo
+                    data = body.dict()
+                    connHela.insert_data_bitacora_recepcion(data)
         else:
             print(" no se verifico ningun producto")
         return { "message": f"Producto {rows} verificado." }
