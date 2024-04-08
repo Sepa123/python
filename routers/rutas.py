@@ -1371,7 +1371,7 @@ async def get_comuna_por_ruta(fecha : str):
     
     result = conn.comuna_por_ruta(fecha)
     # obtener_region
-    nombre_filas = ( "Nombre Ruta", "Comunas", "Total Puntos")
+    nombre_filas = ( "Nombre Ruta", "Comunas", "Total Puntos", "Compromisos")
     nombre_excel = f"lista_comunas_por_ruta"
 
     return excel.generar_excel_generico(result,nombre_filas,nombre_excel)
