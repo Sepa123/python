@@ -7229,6 +7229,656 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
 
             """)
             return cur.fetchall()
+        
+
+        
+    ### PENDIENTES EN RUTA (PENDEJOS)
+    ##pendientes en ruta full puro
+
+    def pendientes_en_ruta_full(self, fecha_inicio,fecha_fin, offset ):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            SELECT
+            subquery.origen,
+            subquery.guia,
+            to_date(to_char(subquery.fec_ingreso,'yyyy-mm-dd'),'yyyy-mm-dd') as "Fecha Ingreso",
+            funcion_resultado."Fecha de Pedido",
+            funcion_resultado."Provincia/Estado",
+            funcion_resultado."Ciudad",
+            --funcion_resultado."Descripción del Producto",
+            SUBSTRING(funcion_resultado."Descripción del Producto" FROM POSITION(') ' IN funcion_resultado."Descripción del Producto") + 2) as "Descripción del Producto",
+            funcion_resultado."Cantidad de Producto"::int4,
+            ee.descripcion as "Estado",
+            se."name" as "Subestado",
+            subquery.verified,
+            subquery.recepcion,
+            subquery.nombre_ruta
+        FROM (
+            SELECT DISTINCT ON (easy.entrega)
+                easy.entrega as guia,
+                'Easy' as origen,
+                easy.created_at as fec_ingreso,
+                --easy.fecha_entrega as fec_entrega,
+                coalesce(tbm.fecha,
+                        CASE
+                            WHEN twcep.fecha_entrega <> easy.fecha_entrega THEN twcep.fecha_entrega
+                            ELSE easy.fecha_entrega
+                        END
+                        ) as fec_entrega,
+                easy.comuna,
+                easy.estado,
+                easy.subestado,
+                easy.verified,
+                easy.recepcion,
+                drm.nombre_ruta
+            FROM areati.ti_wms_carga_easy easy
+            left join public.ti_wms_carga_easy_paso twcep on twcep.entrega = easy.entrega
+            LEFT JOIN (
+                        SELECT DISTINCT ON (toc.guia) toc.guia as guia, 
+                        toc.direccion_correcta as direccion, 
+                        toc.comuna_correcta as comuna,
+                        toc.fec_reprogramada as fecha,
+                        toc.observacion,
+                        toc.alerta
+                        FROM rutas.toc_bitacora_mae toc
+                        WHERE toc.alerta = true
+                        ORDER BY toc.guia, toc.created_at desc
+                    ) AS tbm ON easy.entrega=tbm.guia
+            left join quadminds.datos_ruta_manual drm on (drm.cod_pedido = easy.entrega and drm.estado = true )
+            WHERE (easy.estado = 0 OR (easy.estado = 2 AND easy.subestado NOT IN (7, 10, 12, 13, 19, 43, 44, 50, 51, 70, 80)))
+            AND easy.estado NOT IN (1, 3)
+            and easy.entrega not in (select rt.guia from beetrack.ruta_transyanez rt where rt.created_at::date = current_date)
+            and easy.fecha_entrega >= '{fecha_inicio}' and easy.fecha_entrega <= '{fecha_fin}'
+            ------------------------------------------------------------
+            -- (2) Electrolux
+            ------------------------------------------------------------
+            union all
+            select distinct on (eltx.numero_guia)
+                eltx.numero_guia as guia,
+                'Electrolux' as origen,
+                eltx.created_at as fec_ingreso,
+                coalesce(tbm.fecha,
+                case
+                        when (select fecha_siguiente from areati.obtener_dias_habiles(to_char(eltx.created_at + interval '1 day','yyyymmdd'))) <> eltx.fecha_min_entrega
+                        then (select fecha_siguiente from areati.obtener_dias_habiles(to_char(eltx.created_at + interval '1 day','yyyymmdd')))
+                        else eltx.fecha_min_entrega
+                    end) as fec_entrega,
+                eltx.comuna as comuna,
+                eltx.estado,
+                eltx.subestado, 
+                eltx.verified,
+                eltx.recepcion,
+                drm.nombre_ruta
+            from areati.ti_wms_carga_electrolux eltx
+            LEFT JOIN (
+                        SELECT DISTINCT ON (toc.guia) toc.guia as guia, 
+                        toc.direccion_correcta as direccion, 
+                        toc.comuna_correcta as comuna,
+                        toc.fec_reprogramada as fecha,
+                        toc.observacion,
+                        toc.alerta
+                        FROM rutas.toc_bitacora_mae toc
+                        WHERE toc.alerta = true
+                        ORDER BY toc.guia, toc.created_at desc
+                    ) AS tbm ON eltx.numero_guia=tbm.guia
+            left join quadminds.datos_ruta_manual drm on (drm.cod_pedido = eltx.numero_guia and drm.estado = true )
+            WHERE (eltx.estado = 0 OR (eltx.estado = 2 AND eltx.subestado NOT IN (7, 10, 12, 13, 19, 43, 44, 50, 51, 70, 80)))
+            AND eltx.estado NOT IN (1, 3)
+            and eltx.numero_guia not in (select rt.guia from beetrack.ruta_transyanez rt where rt.created_at::date = current_date)
+            and eltx.fecha_min_entrega >= '{fecha_inicio}' and eltx.fecha_min_entrega <= '{fecha_fin}'
+            ------------------------------------------------------------
+            -- (3) Tienda Easy
+            ------------------------------------------------------------
+            union all
+            select distinct on (opl.suborden)
+                opl.suborden as guia,
+                'Tienda Easy' as origen,
+                opl.created_at as fec_ingreso,
+                coalesce(tbm.fecha,opl.fec_compromiso) as fec_entrega,
+                opl.comuna_despacho as comuna,
+                opl.estado,
+                opl.subestado, 
+                opl.verified,
+                opl.recepcion,
+                drm.nombre_ruta
+            from areati.ti_carga_easy_go_opl opl
+            LEFT JOIN (
+                        SELECT DISTINCT ON (toc.guia) toc.guia as guia, 
+                        toc.direccion_correcta as direccion, 
+                        toc.comuna_correcta as comuna,
+                        toc.fec_reprogramada as fecha,
+                        toc.observacion,
+                        toc.alerta
+                        FROM rutas.toc_bitacora_mae toc
+                        WHERE toc.alerta = true
+                        ORDER BY toc.guia, toc.created_at desc
+                    ) AS tbm ON opl.suborden=tbm.guia
+            left join quadminds.datos_ruta_manual drm on (drm.cod_pedido = opl.suborden and drm.estado = true )
+            WHERE (opl.estado = 0 OR (opl.estado = 2 AND opl.subestado NOT IN (7, 10, 12, 13, 19, 43, 44, 50, 51, 70, 80)))
+            AND opl.estado NOT IN (1, 3)
+            and opl.suborden not in(select rt.guia from beetrack.ruta_transyanez rt where rt.created_at::date = current_date)
+            and opl.fec_compromiso >= '{fecha_inicio}' and opl.fec_compromiso <= '{fecha_fin}'
+            ------------------------------------------------------------
+            -- (4) Ingreso Manual
+            ------------------------------------------------------------
+            union all
+            select distinct on (rtcl.cod_pedido)
+                rtcl.cod_pedido as guia,
+                'Envio/Retiro' as origen,
+                rtcl.created_at as fec_ingreso,
+                coalesce(tbm.fecha,rtcl.fecha_pedido) as fec_entrega,
+                rtcl.comuna as comuna,
+                rtcl.estado,
+                rtcl.subestado, 
+                rtcl.verified,
+                rtcl.verified,
+                drm.nombre_ruta
+            from areati.ti_retiro_cliente rtcl
+            LEFT JOIN (
+                        SELECT DISTINCT ON (toc.guia) toc.guia as guia, 
+                        toc.direccion_correcta as direccion, 
+                        toc.comuna_correcta as comuna,
+                        toc.fec_reprogramada as fecha,
+                        toc.observacion,
+                        toc.alerta
+                        FROM rutas.toc_bitacora_mae toc
+                        WHERE toc.alerta = true
+                        ORDER BY toc.guia, toc.created_at desc
+                    ) AS tbm ON rtcl.cod_pedido=tbm.guia
+            left join quadminds.datos_ruta_manual drm on (drm.cod_pedido = rtcl.cod_pedido and drm.estado = true )
+            WHERE (rtcl.estado = 0 OR (rtcl.estado = 2 AND rtcl.subestado NOT IN (7, 10, 12, 13, 19, 43, 44, 50, 51, 70, 80)))
+            AND rtcl.estado NOT IN (1, 3)
+            and rtcl.cod_pedido not in(select rt.guia from beetrack.ruta_transyanez rt where rt.created_at::date = current_date)
+            and rtcl.fecha_pedido >= '{fecha_inicio}' and rtcl.fecha_pedido <= '{fecha_fin}'
+            ------------------------------------------------------------
+            --limit 100 offset cuenta
+        ) subquery
+        JOIN LATERAL areati.busca_ruta_manual(subquery.guia) AS funcion_resultado ON true
+        left join areati.estado_entregas ee on subquery.estado = ee.estado 
+        left join areati.subestado_entregas se on subquery.subestado = se.code 
+        where to_char(funcion_resultado."Fecha de Pedido",'yyyymmdd')>='{fecha_inicio}'
+        and to_char(funcion_resultado."Fecha de Pedido",'yyyymmdd')<='{fecha_fin}'
+        --order by subquery.fec_ingreso asc
+
+            """)
+            return cur.fetchall()
+
+    def pendientes_en_ruta_easy_cd(self, fecha_inicio,fecha_fin, offset ):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+       ----- Pendientes Easy CD
+            with f_aux as (
+                        SELECT DISTINCT ON (easy.carton)
+                                easy.entrega as guia,
+                                'Easy' as origen,
+                                easy.created_at as fec_ingreso,
+                                --easy.fecha_entrega as fec_entrega,
+                                coalesce(tbm.comuna,     
+                                case
+                                            when unaccent(lower(easy.comuna)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                                            (select oc.comuna_name from public.op_comunas oc 
+                                            where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+                                                                                    where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(easy.comuna))
+                                                                            )
+                                            )
+                                            else (select initcap(oc2.comuna_name) from public.op_comunas oc2 
+                                                    where unaccent(lower(easy.comuna)) = unaccent(lower(oc2.comuna_name))
+                                                    )
+                                    end) as "Ciudad",
+                                coalesce(tbm.fecha,
+                                        CASE
+                                            WHEN twcep.fecha_entrega <> easy.fecha_entrega THEN twcep.fecha_entrega
+                                            ELSE easy.fecha_entrega
+                                        END
+                                        ) as "Fecha de Pedido",
+                                        
+                                case
+                                    when unaccent(lower(easy.comuna)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                                    (select opr.region_name  from public.op_regiones opr 
+                                    where opr.id_region = (select oc.id_region from public.op_comunas oc 
+                                        where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+                                        where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(easy.comuna))
+                                        )	
+                                    ))
+                                    else(select opr.region_name  from public.op_regiones opr 
+                                    where opr.id_region =(select oc2.id_region from public.op_comunas oc2 
+                                    where unaccent(lower(easy.comuna)) = unaccent(lower(oc2.comuna_name))
+                                    ))
+                                end as "Provincia/Estado",
+                                '(EASY) ' || REPLACE(easy.descripcion, ',', '') AS "Descripción del Producto",
+                                CASE 
+                                        WHEN easy.cant ~ '^\d+$' THEN (select count(*) 
+                                                                        from areati.ti_wms_carga_easy easy_a 
+                                                                        where easy_a.entrega = easy.entrega and easy_a.carton=easy.carton) 
+                                        -- Si el campo es solo un número
+                                        ELSE regexp_replace(easy.cant, '[^\d]', '', 'g')::numeric 
+                                        -- Si el campo contiene una frase con cantidad
+                                    END as "Cantidad de Producto",
+                                easy.comuna,
+                                easy.estado,
+                                easy.subestado,
+                                easy.verified,
+                                easy.recepcion,
+                                drm.nombre_ruta 
+                            FROM areati.ti_wms_carga_easy easy
+                            left join quadminds.datos_ruta_manual drm on (drm.cod_pedido = easy.entrega and drm.estado = true )
+                            left join public.ti_wms_carga_easy_paso twcep on twcep.entrega = easy.entrega
+                            LEFT JOIN (
+                                        SELECT DISTINCT ON (toc.guia) toc.guia as guia, 
+                                        toc.direccion_correcta as direccion, 
+                                        toc.comuna_correcta as comuna,
+                                        toc.fec_reprogramada as fecha,
+                                        toc.observacion,
+                                        toc.alerta
+                                        FROM rutas.toc_bitacora_mae toc
+                                        WHERE toc.alerta = true
+                                        ORDER BY toc.guia, toc.created_at desc
+                                    ) AS tbm ON easy.entrega=tbm.guia
+                                    
+                                    
+                            WHERE (easy.estado = 0 OR (easy.estado = 2 AND easy.subestado NOT IN (7, 10, 12, 13, 19, 43, 44, 50, 51, 70, 80)))
+                            AND easy.estado NOT IN (1, 3)
+                            --and easy.entrega not in (select trb.guia from quadminds.ti_respuesta_beetrack trb)
+                            and easy.entrega not in(select rt.guia from beetrack.ruta_transyanez rt where rt.created_at::date = current_date)
+                            --and easy.entrega not in (select drm.cod_pedido from quadminds.datos_ruta_manual drm where drm.estado=true) 
+                        -- and easy.fecha_entrega >= '2023-05-18' and easy.fecha_entrega <= '2024-11-01'
+                        --limit 100 offset 0
+                        )
+
+            SELECT
+                subquery.origen,
+                subquery.guia,
+                to_date(to_char(subquery.fec_ingreso,'yyyy-mm-dd'),'yyyy-mm-dd') as "Fecha Ingreso",
+                funcion_resultado."Fecha de Pedido",
+                funcion_resultado."Provincia/Estado",
+                funcion_resultado."Ciudad",
+                --funcion_resultado."Descripción del Producto",
+                SUBSTRING(funcion_resultado."Descripción del Producto" FROM POSITION(') ' IN funcion_resultado."Descripción del Producto") + 2) as "Descripción del Producto",
+                funcion_resultado."Cantidad de Producto"::int4,
+                ee.descripcion as "Estado",
+                se."name" as "Subestado",
+                subquery.verified,
+                subquery.recepcion,
+                funcion_resultado.nombre_ruta
+            FROM (
+                SELECT DISTINCT ON (easy.entrega)
+                    easy.entrega as guia,
+                    'Easy' as origen,
+                    easy.created_at as fec_ingreso,
+                    --easy.fecha_entrega as fec_entrega,
+                    coalesce(tbm.fecha,
+                            CASE
+                                WHEN twcep.fecha_entrega <> easy.fecha_entrega THEN twcep.fecha_entrega
+                                ELSE easy.fecha_entrega
+                            END
+                            ) as fec_entrega,
+                    easy.comuna,
+                    easy.estado,
+                    easy.subestado,
+                    easy.verified,
+                    easy.recepcion
+                    --drm.nombre_ruta
+                FROM areati.ti_wms_carga_easy easy
+                left join public.ti_wms_carga_easy_paso twcep on twcep.entrega = easy.entrega
+                LEFT JOIN (
+                            SELECT DISTINCT ON (toc.guia) toc.guia as guia, 
+                            toc.direccion_correcta as direccion, 
+                            toc.comuna_correcta as comuna,
+                            toc.fec_reprogramada as fecha,
+                            toc.observacion,
+                            toc.alerta
+                            FROM rutas.toc_bitacora_mae toc
+                            WHERE toc.alerta = true
+                            ORDER BY toc.guia, toc.created_at desc
+                        ) AS tbm ON easy.entrega=tbm.guia
+                --left join quadminds.datos_ruta_manual drm on (drm.cod_pedido = easy.entrega and drm.estado = true )
+                WHERE (easy.estado = 0 OR (easy.estado = 2 AND easy.subestado NOT IN (7, 10, 12, 13, 19, 43, 44, 50, 51, 70, 80)))
+                AND easy.estado NOT IN (1, 3)
+                and easy.entrega not in (select rt.guia from beetrack.ruta_transyanez rt where rt.created_at::date = current_date)
+                and easy.fecha_entrega >= '{fecha_inicio}' and easy.fecha_entrega <= '{fecha_fin}'
+
+            ) subquery
+            left join f_aux funcion_resultado on subquery.guia = funcion_resultado.guia
+            --JOIN LATERAL areati.busca_ruta_manual_base2(subquery.guia) AS funcion_resultado ON true
+            left join areati.estado_entregas ee on subquery.estado = ee.estado 
+            left join areati.subestado_entregas se on subquery.subestado = se.code 
+            where to_char(funcion_resultado."Fecha de Pedido",'yyyymmdd')>='{fecha_inicio}'
+            and to_char(funcion_resultado."Fecha de Pedido",'yyyymmdd')<='{fecha_fin}'
+
+            """)
+            return cur.fetchall()
+        
+    def pendientes_en_ruta_electrolux(self, fecha_inicio,fecha_fin, offset ):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+        with f_aux as (
+
+            select eltx.identificador_contacto AS "Código de Cliente",
+                    initcap(eltx.nombre_contacto) AS "Nombre",
+                    coalesce(tbm.direccion,
+                    CASE 
+            WHEN substring(initcap(split_part(eltx.direccion,',',1)) from '^\d') ~ '\d' then substring(initcap(split_part(eltx.direccion,',',1)) from '\d+[\w\s]+\d+')
+            WHEN lower(split_part(eltx.direccion,',',1)) ~ '^(pasaje|calle|avenida)\s+\d+\s+' THEN 
+            regexp_replace(REPLACE(regexp_replace(regexp_replace(initcap(split_part(eltx.direccion,',',1)), ',.$', ''), '\s+(\d+\D+\d+).$', ' \1'), '\', ''), '', '')
+            else coalesce(substring(initcap(split_part(eltx.direccion,',',1)) from '^[^0-9]*[0-9]+'),eltx.direccion)
+                    end) as "Calle y Número",
+                    coalesce(tbm.direccion,eltx.direccion) as "Dirección Textual",
+                    coalesce(tbm.comuna, case
+                    when unaccent(lower(eltx.comuna)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                    (select oc.comuna_name from public.op_comunas oc 
+                    where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+            where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(eltx.comuna))
+                )
+                    )
+                    else (select initcap(oc2.comuna_name) from public.op_comunas oc2 
+                where unaccent(lower(eltx.comuna)) = unaccent(lower(oc2.comuna_name))
+                )
+            end) as "Ciudad",
+            case
+                        when unaccent(lower(eltx.comuna)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                        (select opr.region_name  from public.op_regiones opr 
+                        where opr.id_region = (select oc.id_region from public.op_comunas oc 
+                            where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+                            where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(eltx.comuna))
+                            )	
+                        ))
+                        else(select opr.region_name  from public.op_regiones opr 
+                        where opr.id_region =(select oc2.id_region from public.op_comunas oc2 
+                        where unaccent(lower(eltx.comuna)) = unaccent(lower(oc2.comuna_name))
+                        ))
+            end as "Provincia/Estado",
+                    eltx.latitud AS "Latitud",
+                    eltx.longitud AS "Longitud",
+                    coalesce(eltx.telefono,'0') AS "Teléfono con código de país",
+                    lower(eltx.email_contacto) AS "Email",
+                    CAST (eltx.numero_guia AS varchar) AS "Código de Pedido",
+                    coalesce(tbm.fecha,
+                    case
+                        when (select fecha_siguiente from areati.obtener_dias_habiles(to_char(eltx.created_at + interval '1 day','yyyymmdd'))) <> eltx.fecha_min_entrega
+                        then (select fecha_siguiente from areati.obtener_dias_habiles(to_char(eltx.created_at + interval '1 day','yyyymmdd')))
+                        else eltx.fecha_min_entrega
+                    end) AS "Fecha de Pedido",
+                    case
+                        when (select fecha_siguiente from areati.obtener_dias_habiles(to_char(eltx.created_at + interval '1 day','yyyymmdd'))) <> eltx.fecha_min_entrega
+                        then (select fecha_siguiente from areati.obtener_dias_habiles(to_char(eltx.created_at + interval '1 day','yyyymmdd')))
+                        else eltx.fecha_min_entrega
+                    end as "Fecha Original Pedido",
+                    'E' AS "Operación E/R",
+                    CAST (eltx.numero_guia AS varchar) AS "Código de Producto",
+                    '(Electrolux) ' || REPLACE(eltx.nombre_item, ',', '') AS "Descripción del Producto",
+                    cast(eltx.cantidad as numeric) AS "Cantidad de Producto"
+            from areati.ti_wms_carga_electrolux eltx
+            left join public.ti_tamano_sku tts on tts.sku = cast(eltx.codigo_item as text)
+            left join areati.estado_entregas ee on ee.estado=eltx.estado
+            left join beetrack.ruta_transyanez rb on (eltx.numero_guia=rb.guia and rb.created_at::date = current_date)
+            LEFT JOIN (
+                SELECT DISTINCT ON (guia) guia as guia, 
+                direccion_correcta as direccion, 
+                comuna_correcta as comuna,
+                fec_reprogramada as fecha,
+                observacion,
+                alerta
+                FROM rutas.toc_bitacora_mae
+                WHERE alerta = true
+                ORDER BY guia, created_at desc
+            ) AS tbm ON eltx.numero_guia=tbm.guia
+                WHERE (eltx.estado = 0 OR (eltx.estado = 2 AND eltx.subestado NOT IN (7, 10, 12, 13, 19, 43, 44, 50, 51, 70, 80)))
+                AND eltx.estado NOT IN (1, 3)
+                and eltx.numero_guia not in (select rt.guia from beetrack.ruta_transyanez rt where rt.created_at::date = current_date)
+                and eltx.fecha_min_entrega >= '{fecha_inicio}' and eltx.fecha_min_entrega <= '{fecha_fin}'
+            )
+
+            SELECT
+                subquery.origen,
+                subquery.guia,
+                to_date(to_char(subquery.fec_ingreso,'yyyy-mm-dd'),'yyyy-mm-dd') as "Fecha Ingreso",
+                funcion_resultado."Fecha de Pedido",
+                funcion_resultado."Provincia/Estado",
+                funcion_resultado."Ciudad",
+                SUBSTRING(funcion_resultado."Descripción del Producto" FROM POSITION(') ' IN funcion_resultado."Descripción del Producto") + 2) as "Descripción del Producto",
+                funcion_resultado."Cantidad de Producto"::int4,
+                ee.descripcion as "Estado",
+                se."name" as "Subestado",
+                subquery.verified,
+                subquery.recepcion,
+                subquery.nombre_ruta
+            FROM (
+                select distinct on (eltx.numero_guia)
+                    eltx.numero_guia as guia,
+                    'Electrolux' as origen,
+                    eltx.created_at as fec_ingreso,
+                    coalesce(tbm.fecha,
+                    case
+                            when (select fecha_siguiente from areati.obtener_dias_habiles(to_char(eltx.created_at + interval '1 day','yyyymmdd'))) <> eltx.fecha_min_entrega
+                            then (select fecha_siguiente from areati.obtener_dias_habiles(to_char(eltx.created_at + interval '1 day','yyyymmdd')))
+                            else eltx.fecha_min_entrega
+                        end) as fec_entrega,
+                    eltx.comuna as comuna,
+                    eltx.estado,
+                    eltx.subestado, 
+                    eltx.verified,
+                    eltx.recepcion,
+                    drm.nombre_ruta
+                from areati.ti_wms_carga_electrolux eltx
+                LEFT JOIN (
+                            SELECT DISTINCT ON (toc.guia) toc.guia as guia, 
+                            toc.direccion_correcta as direccion, 
+                            toc.comuna_correcta as comuna,
+                            toc.fec_reprogramada as fecha,
+                            toc.observacion,
+                            toc.alerta
+                            FROM rutas.toc_bitacora_mae toc
+                            WHERE toc.alerta = true
+                            ORDER BY toc.guia, toc.created_at desc
+                        ) AS tbm ON eltx.numero_guia=tbm.guia
+                    left join quadminds.datos_ruta_manual drm on (drm.cod_pedido = eltx.numero_guia and drm.estado = true )
+                    WHERE (eltx.estado = 0 OR (eltx.estado = 2 AND eltx.subestado NOT IN (7, 10, 12, 13, 19, 43, 44, 50, 51, 70, 80)))
+                    AND eltx.estado NOT IN (1, 3)
+                    and eltx.numero_guia not in (select rt.guia from beetrack.ruta_transyanez rt where rt.created_at::date = current_date)
+                    and eltx.fecha_min_entrega >= '{fecha_inicio}' and eltx.fecha_min_entrega <= '{fecha_fin}'
+                    
+                ) subquery
+                left join f_aux funcion_resultado on subquery.guia = funcion_resultado."Código de Pedido"
+                --JOIN LATERAL areati.busca_ruta_manual(subquery.guia) AS funcion_resultado ON true
+                left join areati.estado_entregas ee on subquery.estado = ee.estado 
+                left join areati.subestado_entregas se on subquery.subestado = se.code 
+                where to_char(funcion_resultado."Fecha de Pedido",'yyyymmdd')>='{fecha_inicio}'
+                and to_char(funcion_resultado."Fecha de Pedido",'yyyymmdd')<='{fecha_fin}'
+
+            """)
+            return cur.fetchall()
+        
+    def pendientes_en_ruta_easy_opl(self, fecha_inicio,fecha_fin, offset ):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            ---- pendientes tiendas Easy
+            with f_aux as (
+                select  easygo.rut_cliente AS "Código de Cliente",
+                    initcap(easygo.nombre_cliente) AS "Nombre",
+                    coalesce(tbm.direccion,
+                    CASE 
+                        WHEN substring(easygo.direc_despacho from '^\d') ~ '\d' then substring(initcap(easygo.direc_despacho) from '\d+[\w\s]+\d+')
+                        WHEN lower(easygo.direc_despacho) ~ '^(pasaje|calle|avenida)\s+\d+\s+' THEN
+                        regexp_replace(REPLACE(regexp_replace(regexp_replace(initcap(split_part(easygo.direc_despacho,',',1)), ',.$', ''), '\s+(\d+\D+\d+).$', ' \1'), '\', ''), '', '') 
+                        else coalesce(substring(initcap(easygo.direc_despacho) from '^[^0-9]*[0-9]+'),initcap(easygo.direc_despacho))
+                    end) as "Calle y Número",
+                    coalesce(tbm.direccion,easygo.direc_despacho) as "Dirección Textual",
+                    coalesce(tbm.comuna,
+                    case
+                    when unaccent(lower(easygo.comuna_despacho)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                    (select oc.comuna_name from public.op_comunas oc 
+                    where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+                    where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(easygo.comuna_despacho))
+                    )
+                        )
+                        else (select initcap(oc2.comuna_name) from public.op_comunas oc2 
+                    where unaccent(lower(easygo.comuna_despacho)) = unaccent(lower(oc2.comuna_name))
+                    )
+                    end) as "Ciudad",
+                    case
+                        when unaccent(lower(easygo.comuna_despacho)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                        (select opr.region_name  from public.op_regiones opr 
+                        where opr.id_region = (select oc.id_region from public.op_comunas oc 
+                            where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+                            where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(easygo.comuna_despacho))
+                            )	
+                        ))
+                        else(select opr.region_name  from public.op_regiones opr 
+                        where opr.id_region =(select oc2.id_region from public.op_comunas oc2 
+                        where unaccent(lower(easygo.comuna_despacho)) = unaccent(lower(oc2.comuna_name))
+                        ))
+                    end as "Provincia/Estado",
+                    '' AS "Latitud",
+                    '' AS "Longitud",
+                    coalesce(easygo.fono_cliente ,'0') AS "Teléfono con código de país",
+                    lower(easygo.correo_cliente) AS "Email",
+                    CAST (easygo.suborden AS varchar) AS "Código de Pedido",
+                    coalesce(tbm.fecha,easygo.fec_compromiso) AS "Fecha de Pedido",
+                    easygo.fec_compromiso as "Fecha Original Pedido", 						-- [H-001]
+                    'E' AS "Operación E/R",
+                    easygo.id_entrega AS "Código de Producto",
+                    '(Easy OPL) ' || coalesce(REPLACE(easygo.descripcion, ',', ''),'') AS "Descripción del Producto",
+                    cast(easygo.unidades as numeric) AS "Cantidad de Producto"                                     -- Alertado por el Sistema
+            from areati.ti_carga_easy_go_opl easygo
+            left join ti_comuna_region tcr on
+                translate(lower(easygo.comuna_despacho),'áéíóúÁÉÍÓÚäëïöüÄËÏÖÜ','aeiouAEIOUaeiouAEIOU') = lower(tcr.comuna)
+            left join public.ti_tamano_sku tts on tts.sku = cast(easygo.codigo_sku as text)
+            left join areati.estado_entregas ee on ee.estado=easygo.estado
+            --left join quadminds.ti_respuesta_beetrack rb on easygo.suborden=rb.guia
+           -- left join beetrack.ruta_transyanez rb on (easygo.suborden=rb.guia and rb.created_at::date = current_date)
+            LEFT JOIN (
+                SELECT DISTINCT ON (guia) guia as guia, 
+                direccion_correcta as direccion, 
+                comuna_correcta as comuna,
+                fec_reprogramada as fecha,
+                observacion,
+                alerta
+                FROM rutas.toc_bitacora_mae
+                WHERE alerta = true
+                ORDER BY guia, created_at desc
+            ) AS tbm ON easygo.suborden=tbm.guia
+                WHERE (easygo.estado = 0 OR (easygo.estado = 2 AND easygo.subestado NOT IN (7, 10, 12, 13, 19, 43, 44, 50, 51, 70, 80)))
+                AND easygo.estado NOT IN (1, 3)
+                and easygo.suborden not in(select rt.guia from beetrack.ruta_transyanez rt where rt.created_at::date = current_date)
+                and easygo.fec_compromiso >= '{fecha_inicio}' and easygo.fec_compromiso <= '{fecha_fin}'
+
+            )
+            SELECT
+                subquery.origen,
+                subquery.guia,
+                to_date(to_char(subquery.fec_ingreso,'yyyy-mm-dd'),'yyyy-mm-dd') as "Fecha Ingreso",
+                funcion_resultado."Fecha de Pedido",
+                funcion_resultado."Provincia/Estado",
+                funcion_resultado."Ciudad",
+                --funcion_resultado."Descripción del Producto",
+                SUBSTRING(funcion_resultado."Descripción del Producto" FROM POSITION(') ' IN funcion_resultado."Descripción del Producto") + 2) as "Descripción del Producto",
+                funcion_resultado."Cantidad de Producto"::int4,
+                ee.descripcion as "Estado",
+                se."name" as "Subestado",
+                subquery.verified,
+                subquery.recepcion,
+                subquery.nombre_ruta
+            FROM (
+                select distinct on (opl.suborden)
+                    opl.suborden as guia,
+                    'Tienda Easy' as origen,
+                    opl.created_at as fec_ingreso,
+                    coalesce(tbm.fecha,opl.fec_compromiso) as fec_entrega,
+                    opl.comuna_despacho as comuna,
+                    opl.estado,
+                    opl.subestado, 
+                    opl.verified,
+                    opl.recepcion,
+                    drm.nombre_ruta
+                from areati.ti_carga_easy_go_opl opl
+                LEFT JOIN (
+                            SELECT DISTINCT ON (toc.guia) toc.guia as guia, 
+                            toc.direccion_correcta as direccion, 
+                            toc.comuna_correcta as comuna,
+                            toc.fec_reprogramada as fecha,
+                            toc.observacion,
+                            toc.alerta
+                            FROM rutas.toc_bitacora_mae toc
+                            WHERE toc.alerta = true
+                            ORDER BY toc.guia, toc.created_at desc
+                        ) AS tbm ON opl.suborden=tbm.guia
+                left join quadminds.datos_ruta_manual drm on (drm.cod_pedido = opl.suborden and drm.estado = true )
+                WHERE (opl.estado = 0 OR (opl.estado = 2 AND opl.subestado NOT IN (7, 10, 12, 13, 19, 43, 44, 50, 51, 70, 80)))
+                AND opl.estado NOT IN (1, 3)
+                and opl.suborden not in(select rt.guia from beetrack.ruta_transyanez rt where rt.created_at::date = current_date)
+                and opl.fec_compromiso >= '{fecha_inicio}' and opl.fec_compromiso <= '{fecha_fin}'
+                ------------------------------------------------------------
+                --limit 100 offset cuenta
+            ) subquery
+            left join f_aux funcion_resultado on subquery.guia = funcion_resultado."Código de Pedido"
+            --JOIN LATERAL areati.busca_ruta_manual_base2(subquery.guia) AS funcion_resultado ON true
+            left join areati.estado_entregas ee on subquery.estado = ee.estado 
+            left join areati.subestado_entregas se on subquery.subestado = se.code 
+            where to_char(funcion_resultado."Fecha de Pedido",'yyyymmdd')>='{fecha_inicio}'
+            and to_char(funcion_resultado."Fecha de Pedido",'yyyymmdd')<='{fecha_fin}'
+
+            """)
+            return cur.fetchall()
+
+    def pendientes_en_ruta_retiro_tienda(self, fecha_inicio,fecha_fin, offset ):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            ---- pendientes tiendas Easy
+            SELECT
+                subquery.origen,
+                subquery.guia,
+                to_date(to_char(subquery.fec_ingreso,'yyyy-mm-dd'),'yyyy-mm-dd') as "Fecha Ingreso",
+                funcion_resultado."Fecha de Pedido",
+                funcion_resultado."Provincia/Estado",
+                funcion_resultado."Ciudad",
+                --funcion_resultado."Descripción del Producto",
+                SUBSTRING(funcion_resultado."Descripción del Producto" FROM POSITION(') ' IN funcion_resultado."Descripción del Producto") + 2) as "Descripción del Producto",
+                funcion_resultado."Cantidad de Producto"::int4,
+                ee.descripcion as "Estado",
+                se."name" as "Subestado",
+                subquery.verified,
+                subquery.recepcion,
+                subquery.nombre_ruta
+            FROM (
+                select distinct on (rtcl.cod_pedido)
+                rtcl.cod_pedido as guia,
+                'Envio/Retiro' as origen,
+                rtcl.created_at as fec_ingreso,
+                coalesce(tbm.fecha,rtcl.fecha_pedido) as fec_entrega,
+                rtcl.comuna as comuna,
+                rtcl.estado,
+                rtcl.subestado, 
+                rtcl.verified ,
+                rtcl.verified as "recepcion",
+                drm.nombre_ruta
+            from areati.ti_retiro_cliente rtcl
+            LEFT JOIN (
+                        SELECT DISTINCT ON (toc.guia) toc.guia as guia, 
+                        toc.direccion_correcta as direccion, 
+                        toc.comuna_correcta as comuna,
+                        toc.fec_reprogramada as fecha,
+                        toc.observacion,
+                        toc.alerta
+                        FROM rutas.toc_bitacora_mae toc
+                        WHERE toc.alerta = true
+                        ORDER BY toc.guia, toc.created_at desc
+                    ) AS tbm ON rtcl.cod_pedido=tbm.guia
+            left join quadminds.datos_ruta_manual drm on (drm.cod_pedido = rtcl.cod_pedido and drm.estado = true )
+            WHERE (rtcl.estado = 0 OR (rtcl.estado = 2 AND rtcl.subestado NOT IN (7, 10, 12, 13, 19, 43, 44, 50, 51, 70, 80)))
+            AND rtcl.estado NOT IN (1, 3)
+            and rtcl.cod_pedido not in(select rt.guia from beetrack.ruta_transyanez rt where rt.created_at::date = current_date)
+            and rtcl.fecha_pedido >= '{fecha_inicio}' and rtcl.fecha_pedido <= '{fecha_fin}'
+
+            ) subquery
+            JOIN LATERAL areati.busca_ruta_manual_base2(subquery.guia) AS funcion_resultado ON true
+            left join areati.estado_entregas ee on subquery.estado = ee.estado 
+            left join areati.subestado_entregas se on subquery.subestado = se.code 
+            where to_char(funcion_resultado."Fecha de Pedido",'yyyymmdd')>='{fecha_inicio}'
+            and to_char(funcion_resultado."Fecha de Pedido",'yyyymmdd')<='{fecha_fin}'
+
+            """)
+            return cur.fetchall()
+
 
     ###Reportes de rutas mensual
     def get_reportes_rutas_mes(self,mes):

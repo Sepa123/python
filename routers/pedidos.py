@@ -1,6 +1,8 @@
 from fastapi import APIRouter, status,HTTPException
 from fastapi.responses import FileResponse
 from openpyxl import Workbook
+from typing import List
+import lib.excel_generico as excel
 # import re
 # import time
 
@@ -17,10 +19,11 @@ from database.schema.pedidos_sin_tienda import pedidos_sin_tienda_schema
 from database.schema.pedidos_tiendas_easy_opl import pedidos_tiendas_easy_opl_schema
 
 from database.models.pedidos_pendientes import PedidosPendientes
+from database.models.log_inversa.pendientes import PedidosPendientes as pendientesRutas
 from database.schema.pedidos_pendientes import pedidos_pendientes_schema
 
 from database.models.rutas.rango_fecha import RangoFecha
-from database.schema.rutas.rutas_de_pendientes import rutas_de_pendientes_schema
+from database.schema.rutas.rutas_de_pendientes import rutas_de_pendientes_schema,rutas_de_pendientes_con_ruta_schema
 
 from database.client import reportesConnection
 from fastapi.responses import FileResponse
@@ -239,5 +242,71 @@ async def get_rutas_de_pendientes_cd_mio(fecha_inicio, fecha_fin , offset):
      
 
 
+
+@router.get("/pendientes/en-ruta/retiro_tienda")
+async def get_pendientes_en_ruta_retiro_tienda(fecha_inicio, fecha_fin , offset):
+     try:
+        result = conn.pendientes_en_ruta_retiro_tienda(fecha_inicio, fecha_fin, offset)
+        # print('easy cd cantidad:',len(result))
+        return rutas_de_pendientes_con_ruta_schema(result)
+
+     except:
+        print("error pedidos/pendientes")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No se pudieron cargar los pendientes,por favor vuelva a cargar la pagina")
+     
+
+@router.get("/pendientes/en-ruta/easy_cd")
+async def get_pendientes_en_ruta_easy_cd(fecha_inicio, fecha_fin , offset):
+     try:
+        result = conn.pendientes_en_ruta_easy_cd(fecha_inicio, fecha_fin, offset)
+        return  rutas_de_pendientes_con_ruta_schema(result)
+        
+
+     except:
+        print("error pedidos/pendientes")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No se pudieron cargar los pendientes,por favor vuelva a cargar la pagina")
+     
+
+@router.get("/pendientes/en-ruta/electrolux")
+async def get_pendientes_en_ruta_electrolux(fecha_inicio, fecha_fin , offset):
+     try:
+        result = conn.pendientes_en_ruta_electrolux(fecha_inicio, fecha_fin, offset)
+        return rutas_de_pendientes_con_ruta_schema(result)
+        
+     except:
+        print("error pedidos/pendientes")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No se pudieron cargar los pendientes,por favor vuelva a cargar la pagina")
+     
+
+
+@router.get("/pendientes/en-ruta/easy_opl")
+async def get_pendientes_en_ruta_easy_opl(fecha_inicio, fecha_fin , offset):
+     try:
+        result = conn.pendientes_en_ruta_easy_opl(fecha_inicio, fecha_fin, offset)
+        return rutas_de_pendientes_con_ruta_schema(result)
+
+     except:
+        print("error pedidos/pendientes")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No se pudieron cargar los pendientes,por favor vuelva a cargar la pagina")
+
+def cambiar_bool(valor):
+     if valor is True:
+          return "x"
+     else:
+          return ""
+
+@router.post("/pendientes/en-ruta/descargar")
+async def generar_excel_pendentes_en_ruta(pendientes : List[pendientesRutas]):
+
+    tupla = [( datos_envio.Origen, datos_envio.Cod_entrega, datos_envio.Fecha_ingreso, datos_envio.Fecha_compromiso, 
+               datos_envio.Region, datos_envio.Comuna, datos_envio.Descripcion, datos_envio.Bultos, datos_envio.Estado, datos_envio.Subestado,
+               cambiar_bool(datos_envio.Verificado), cambiar_bool(datos_envio.Recibido),datos_envio.Nombre_ruta) for datos_envio in pendientes]
+
+    nombre_filas = ( 'Origen', 'Cod. Entrega', "Fecha Ingreso", "Fecha Compromiso", 
+                     "Region", "Comuna","Descripcion","Bultos","Estado","Subestado",
+                     "Verificado", "Recibido","Nombre_ruta" )
+    nombre_excel = f"Resumen_pendientes_en_ruta"
+
+    return excel.generar_excel_generico(tupla,nombre_filas,nombre_excel)    
 
 

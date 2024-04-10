@@ -29,7 +29,7 @@ async def subir_archivo(file: UploadFile = File(...)):
         # print("pase por aqui")
         f.write(contents)
 
-    df = pd.read_excel(ruta,sheet_name=1,skiprows=4)
+    df = pd.read_excel(ruta,sheet_name=1,skiprows=1)
 
     lista = df.to_dict(orient='records')
 
@@ -38,11 +38,12 @@ async def subir_archivo(file: UploadFile = File(...)):
         # if cantidad_encontrada[0] >= 1:
         #     print("Producto ya esta registrado") 
         # else:
-        print(data)
+        # print(data)
+        print('posicion',i+1)
         # print(posicion)
 
     return {
-        "sos"
+        'message': len(lista)
     }
 
     
