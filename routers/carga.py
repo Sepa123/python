@@ -116,26 +116,19 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
 
     df = pd.read_excel(ruta,sheet_name=1,skiprows=1)
 
+    print(df)
+
     lista = df.to_dict(orient='records')
 
-    for i, data in enumerate(lista):
+    # for i, data in enumerate(lista):
         # cantidad_encontrada = conn.get_pedido_planificados_quadmind_by_cod_pedido()
         # if cantidad_encontrada[0] >= 1:
         #     print("Producto ya esta registrado") 
         # else:
-        print(data)
+        # print(data)
 
         # conn.write_pedidos_planificados(data ,posicion, direccion)
         # print(posicion)
-
-
-    fecha_hora_actual = datetime.now()
-
-    fecha_dia = fecha_hora_actual.strftime("%Y%m%d")
-
-    fecha_hora_formateada = fecha_hora_actual.strftime("%Y%m%d%H%M")
-    
-    time.sleep(8)
    
     # error = conn.asignar_ruta_quadmind_manual(id_usuario, fecha_hora_formateada)
 
@@ -144,7 +137,7 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
     # error 1 : codigos inexistentes
 
     return {
-        "message" : "sos"
+        "message" : len(lista)
     }
 
     # if error[0][0] == 1:
