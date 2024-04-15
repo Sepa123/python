@@ -2,6 +2,7 @@ from fastapi import APIRouter,status,HTTPException
 from database.client import reportesConnection
 from fastapi.responses import FileResponse
 from openpyxl import Workbook
+import time 
 import re ,json
 from urllib.parse import unquote
 # from os import remove
@@ -53,7 +54,11 @@ from database.models.ns_valor_ruta import asignarValor
 from database.schema.estado.ns_verificado import ns_verificados_schema
 from database.schema.nivel_servicio.ns_fecha_real import ns_por_fecha_schema , ns_por_fecha_inicial_schema
 from database.schema.nivel_servicio.ns_drivers import ns_drivers_schema
+from database.schema.nivel_servicio.ns_easy import ns_easy_schema,ns_pendientes_easy_region_schema , panel_principal_ns_easy,panel_regiones_ns_easy_schema
+
+from database.models.nivel_servicio.ns_easy import  NSEasy
 import lib.excel_generico as excel
+import lib.guardar_datos_json as datos_json
 
 import datetime
 from typing import List
@@ -572,3 +577,109 @@ async def get_ns_drivers(fecha_inicio : str, fecha_fin: str):
     nombre_excel = f"ns_driver"
 
     return excel.generar_excel_generico(results,nombre_filas,nombre_excel)
+
+
+
+
+### Nivel Servicio Easy
+@router.get("/ns/easy",status_code=status.HTTP_202_ACCEPTED)
+async def get_ns_easy():
+
+    ahora = datetime.datetime.now()
+    datos =  datos_json.ejecutar_por_minutos(5,'ns_easy')
+
+    if datos is None:
+        results = conn.detalle_pendientes_easy_hoy()
+        datos = ns_easy_schema(results)
+        datos_json.guardar_datos(datos,ahora,'ns_easy')
+
+    return datos
+
+
+### Nivel Servicio Easy
+@router.get("/ns/easy/con-ruta",status_code=status.HTTP_202_ACCEPTED)
+async def get_ns_easy_con_ruta():
+
+    ahora = datetime.datetime.now()
+    datos =  datos_json.ejecutar_por_minutos(5,'ns_easy_con_ruta')
+
+    if datos is None:
+        results = conn.detalle_pendientes_easy_hoy_con_ruta()
+        datos = ns_easy_schema(results)
+        datos_json.guardar_datos(datos,ahora,'ns_easy_con_ruta')
+
+    return datos
+
+
+### Nivel Servicio Easy
+@router.get("/ns/easy/sin-ruta",status_code=status.HTTP_202_ACCEPTED)
+async def get_ns_easy():
+
+    ahora = datetime.datetime.now()
+    datos =  datos_json.ejecutar_por_minutos(5,'ns/ns_easy_sin_ruta')
+
+    results = conn.detalle_pendientes_easy_hoy_sin_ruta()
+
+    datos = ns_easy_schema(results)
+
+    return datos
+
+### Nivel Servicio Easy
+@router.get("/ns/pendiente/easy/por-region",status_code=status.HTTP_202_ACCEPTED)
+async def get_ns_pendiente_easy_por_region():
+
+    ahora = datetime.datetime.now()
+    datos =  datos_json.ejecutar_por_minutos(5,'ns_easy_por_region')
+
+    if datos is None:   
+
+        results = conn.detalle_pendientes_easy_por_region()
+        datos = ns_pendientes_easy_region_schema(results)
+        datos_json.guardar_datos(datos,ahora,'ns_easy_por_region')
+
+    return datos
+
+
+### Nivel Servicio Easy
+@router.get("/ns/easy/panel",status_code=status.HTTP_202_ACCEPTED)
+async def get_panel_principal_ns_easy():
+
+    ahora = datetime.datetime.now()
+    datos =  datos_json.ejecutar_por_minutos(5,'panel_principal_ns_easy')
+
+    if datos is None:   
+
+        results = conn.panel_principal_ns_easy()
+        datos = panel_principal_ns_easy(results)
+        datos_json.guardar_datos(datos,ahora,'panel_principal_ns_easy')
+
+    return datos
+
+
+### Nivel Servicio Easy
+@router.get("/ns/easy/panel/regiones",status_code=status.HTTP_202_ACCEPTED)
+async def get_panel_regiones_ns_easy():
+
+    ahora = datetime.datetime.now()
+    datos =  datos_json.ejecutar_por_minutos(5,'panel_regiones_ns_easy')
+
+    if datos is None:   
+        results = conn.panel_regiones_ns_easy()
+        datos = panel_regiones_ns_easy_schema(results)
+        datos_json.guardar_datos(datos,ahora,'panel_regiones_ns_easy')
+    else:
+        time.sleep(9)
+    return datos
+
+
+
+@router.post("/ns/easy/descargar",status_code=status.HTTP_202_ACCEPTED)
+async def descargar_ns_drivers_easy(pendientes : List[NSEasy]):
+    
+    tupla = [( datos_envio.Cliente, datos_envio.Guia, datos_envio.Ruta_hela, datos_envio.Direccion, 
+               datos_envio.Ciudad, datos_envio.Region) for datos_envio in pendientes]
+
+    nombre_filas = ( 'Cliente', 'Guia', "Ruta Hela","Dirección","Ciudad","Región")
+    nombre_excel = f"Resumen_pendientes_en_ruta"
+
+    return excel.generar_excel_generico(tupla,nombre_filas,nombre_excel)    

@@ -8739,6 +8739,184 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                          """)
             return cur.fetchall()
     
+
+    def detalle_pendientes_easy_hoy(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+                SELECT *
+                FROM (
+                    SELECT DISTINCT ON (eefc.entrega)
+                        eefc.cliente,
+                        eefc.entrega AS guia,
+                        drm.nombre_ruta AS ruta_hela,
+                        initcap(drm.calle_numero) AS direccion,
+                        drm.ciudad AS ciudad,
+                        drm.provincia_estado AS region
+                    FROM areati.estatus_entregas_fec_compromiso_easy() AS eefc
+                    LEFT JOIN quadminds.datos_ruta_manual drm ON drm.cod_pedido = eefc.entrega
+                    WHERE eefc.entrega NOT IN (
+                        SELECT rt.guia 
+                        FROM beetrack.ruta_transyanez rt
+                        WHERE rt.created_at::date = current_date
+                    )
+                    AND eefc.estado != 1 AND drm.nombre_ruta IS NOT NULL
+                    UNION ALL  
+                    SELECT DISTINCT ON (eefc.entrega)
+                        eefc.cliente,
+                        eefc.entrega AS guia,
+                        drm.nombre_ruta AS ruta_hela,
+                        initcap(brm."Dirección Textual") AS direccion,
+                        brm."Ciudad" AS ciudad,
+                        brm."Provincia/Estado" AS region
+                    FROM areati.estatus_entregas_fec_compromiso_easy() AS eefc
+                    LEFT JOIN quadminds.datos_ruta_manual drm ON drm.cod_pedido = eefc.entrega
+                    LEFT JOIN LATERAL (
+                        SELECT * FROM areati.busca_ruta_manual_base2(eefc.entrega) LIMIT 1
+                    ) AS brm ON true
+                    WHERE eefc.entrega NOT IN (
+                        SELECT rt.guia 
+                        FROM beetrack.ruta_transyanez rt
+                        WHERE rt.created_at::date = current_date
+                    )
+                    AND eefc.estado != 1 AND drm.nombre_ruta IS NULL
+                ) AS subquery
+                ORDER BY subquery.ruta_hela ASC;
+            
+                         """)
+            return cur.fetchall()
+
+    def detalle_pendientes_easy_hoy_con_ruta(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+                SELECT *
+                FROM (
+                    SELECT DISTINCT ON (eefc.entrega)
+                        eefc.cliente,
+                        eefc.entrega AS guia,
+                        drm.nombre_ruta AS ruta_hela,
+                        initcap(drm.calle_numero) AS direccion,
+                        drm.ciudad AS ciudad,
+                        drm.provincia_estado AS region
+                    FROM areati.estatus_entregas_fec_compromiso_easy() AS eefc
+                    LEFT JOIN quadminds.datos_ruta_manual drm ON drm.cod_pedido = eefc.entrega
+                    WHERE eefc.entrega NOT IN (
+                        SELECT rt.guia 
+                        FROM beetrack.ruta_transyanez rt
+                        WHERE rt.created_at::date = current_date
+                    )
+                    AND eefc.estado != 1 AND drm.nombre_ruta IS NOT NULL
+                ) AS subquery
+                ORDER BY subquery.ruta_hela ASC;
+            
+                         """)
+            return cur.fetchall()
+        
+    def detalle_pendientes_easy_hoy_sin_ruta(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+                SELECT *
+                FROM (
+                    SELECT DISTINCT ON (eefc.entrega)
+                        eefc.cliente,
+                        eefc.entrega AS guia,
+                        drm.nombre_ruta AS ruta_hela,
+                        initcap(brm."Dirección Textual") AS direccion,
+                        brm."Ciudad" AS ciudad,
+                        brm."Provincia/Estado" AS region
+                    FROM areati.estatus_entregas_fec_compromiso_easy() AS eefc
+                    LEFT JOIN quadminds.datos_ruta_manual drm ON drm.cod_pedido = eefc.entrega
+                    LEFT JOIN LATERAL (
+                        SELECT * FROM areati.busca_ruta_manual_base2(eefc.entrega) LIMIT 1
+                    ) AS brm ON true
+                    WHERE eefc.entrega NOT IN (
+                        SELECT rt.guia 
+                        FROM beetrack.ruta_transyanez rt
+                        WHERE rt.created_at::date = current_date
+                    )
+                    AND eefc.estado != 1 AND drm.nombre_ruta IS NULL
+                ) AS subquery
+                ORDER BY subquery.ruta_hela ASC;
+            
+                         """)
+            return cur.fetchall()
+     
+    def detalle_pendientes_easy_por_region(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+
+            with f_aux as (
+            SELECT *
+            FROM (
+                SELECT DISTINCT ON (eefc.entrega)
+                    eefc.cliente,
+                    eefc.entrega AS guia,
+                    drm.nombre_ruta AS ruta_hela,
+                    initcap(drm.calle_numero) AS direccion,
+                    drm.ciudad AS ciudad,
+                    drm.provincia_estado AS region
+                FROM areati.estatus_entregas_fec_compromiso_easy() AS eefc
+                LEFT JOIN quadminds.datos_ruta_manual drm ON drm.cod_pedido = eefc.entrega
+                WHERE eefc.entrega NOT IN (
+                    SELECT rt.guia 
+                    FROM beetrack.ruta_transyanez rt
+                    WHERE rt.created_at::date = current_date
+                )
+                AND eefc.estado != 1 AND drm.nombre_ruta IS NOT null
+                UNION ALL 
+                SELECT DISTINCT ON (eefc.entrega)
+                    eefc.cliente,
+                    eefc.entrega AS guia,
+                    drm.nombre_ruta AS ruta_hela,
+                    initcap(brm."Dirección Textual") AS direccion,
+                    brm."Ciudad" AS ciudad,
+                    brm."Provincia/Estado" AS region
+                FROM areati.estatus_entregas_fec_compromiso_easy() AS eefc
+                LEFT JOIN quadminds.datos_ruta_manual drm ON drm.cod_pedido = eefc.entrega
+                LEFT JOIN LATERAL (
+                    SELECT * FROM areati.busca_ruta_manual_base2(eefc.entrega) LIMIT 1
+                ) AS brm ON true
+                WHERE eefc.entrega NOT IN (
+                    SELECT rt.guia 
+                    FROM beetrack.ruta_transyanez rt
+                    WHERE rt.created_at::date = current_date
+                )
+                AND eefc.estado != 1 AND drm.nombre_ruta IS NULL
+            ) AS subquery
+            ORDER BY subquery.ruta_hela asc
+            )
+
+            select region, ciudad as comuna, count(*) as pendientes
+            from f_aux
+            group by 1,2 
+            order by 1 desc
+
+                         """)
+            return cur.fetchall()
+
+    def panel_principal_ns_easy(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            select total_entregas,total_entregados,entregados_hoy,en_ruta,
+                sin_ruta_beetrack,anulados,
+                CAST(porcentaje_entrega AS float),
+                CAST(porcentaje_no_entrega AS float)
+            from areati.panel_principal_ns_easy();
+
+                         """)
+            return cur.fetchone()
+        
+    def panel_regiones_ns_easy(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            select region, total_region, entregados,
+                CAST(ns_region AS float)
+            from areati.panel_regiones_ns_easy();
+
+                         """)
+            return cur.fetchall()
+
+
+
 class transyanezConnection():
     conn = None
     def __init__(self) -> None:
