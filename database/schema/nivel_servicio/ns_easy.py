@@ -32,7 +32,8 @@ def panel_principal_ns_easy(easy):
 		"Sin_ruta_beetrack" : easy[4],
 		"Anulados" : easy[5],
 		"Porcentaje_entrega" : easy[6],
-		"Porcentaje_no_entrega" : easy[7]
+		"Porcentaje_no_entrega" : easy[7],
+        "Proyeccion" : easy[8]
 	}
 
 def panel_regiones_ns_easy(easy):

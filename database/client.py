@@ -8899,7 +8899,8 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             select total_entregas,total_entregados,entregados_hoy,en_ruta,
                 sin_ruta_beetrack,anulados,
                 CAST(porcentaje_entrega AS float),
-                CAST(porcentaje_no_entrega AS float)
+                CAST(porcentaje_no_entrega AS float),
+                CAST(proyeccion AS float)
             from areati.panel_principal_ns_easy();
 
                          """)
