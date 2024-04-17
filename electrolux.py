@@ -160,7 +160,17 @@ async def datos_confirma_facil():
             print({"error": "No se pudo obtener la información del usuario",
                     "body" : response.json()}, response.status_code)
         
+def eliminar_archivo_si_pasadas_12am(ruta_archivo):
+    # Obtener la hora actual
+    hora_actual = datetime.datetime.now().time()
 
+    # Verificar si es pasada la medianoche (12:00 AM)
+    if hora_actual.hour >= 0 and hora_actual.hour < 1:
+        # Eliminar el archivo
+        os.remove('json/'+ruta_archivo+'.json')
+        print("Archivo eliminado.")
+    else:
+        print("No es pasada la medianoche.")
 
 
 
@@ -177,6 +187,8 @@ async def datos_confirma_facil_filtro():
     # Inicializar una lista para almacenar los números
     numeros = []
 
+    eliminar_archivo_si_pasadas_12am('info_factura')
+
     if datos_factura is None:
         return print("chao")
 
@@ -189,6 +201,11 @@ async def datos_confirma_facil_filtro():
 
     print(numeros)
     results = conn.recuperar_data_electrolux()
+
+    if len(results) == 0:
+        return print("chao")
+    
+
     datos_cf = datos_confirma_facil_schema(results)
 
     # datos_factura= guarda_datos.cargar_estado('info_factura')
@@ -231,7 +248,6 @@ async def datos_confirma_facil_filtro():
             return response.json()
         elif response.status_code == 400:
             # Si la solicitud no fue exitosa, devolver un error
-             print("cf : la ocurrencia ya existe")
              return {
                 "message" : "No paso, la ocurrencia ya existe"
              }
