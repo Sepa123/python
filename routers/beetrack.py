@@ -87,12 +87,12 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
                 factura = re.sub(patron, '', datos_tags_i["FACTURA"])
                 ahora = datetime.now()
 
-                datos = { 
-                    "Numero" : factura,
-                    "Hora_registro": ahora
-                }
+                # datos = { 
+                #     "Numero" : factura,
+                #     "Hora_registro": ahora
+                # }
 
-                guardar_json.guardar_datos_a_archivo_existente_cf(datos,ahora,'info_factura')
+                # guardar_json.guardar_datos_a_archivo_existente_cf(datos,ahora,'info_factura')
                 # async with httpx.AsyncClient() as client:
                 #     response = await client.get(url=f"https://hela.transyanez.cl/api/electrolux/confirma_facil/codigo/{factura}")
                 #     # Verificar si la solicitud fue exitosa
@@ -118,12 +118,12 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
 
                 ahora = datetime.now()
 
-                datos = { 
-                    "Numero" : factura,
-                    "Hora_registro": ahora
-                }
+                # datos = { 
+                #     "Numero" : factura,
+                #     "Hora_registro": ahora
+                # }
 
-                guardar_json.guardar_datos_a_archivo_existente_cf(datos,ahora,'info_factura')
+                # guardar_json.guardar_datos_a_archivo_existente_cf(datos,ahora,'info_factura')
                 
                 # async with httpx.AsyncClient() as client:
                 #     response = await client.get(url=f"https://hela.transyanez.cl/api/electrolux/confirma_facil/codigo/{factura}",timeout=30)
