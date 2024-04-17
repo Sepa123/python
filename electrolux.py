@@ -9,7 +9,7 @@ from decouple import config
 from database.schema.confirma_facil.electrolux import datos_confirma_facil_schema
 from datetime import timedelta
 import datetime
-import lib.guardar_datos_json as guarda_datos
+# import lib.guardar_datos_json as guarda_datos
 
 import asyncio
 
@@ -74,8 +74,18 @@ async def ejecutar_solo_una_vez_por_hora():
 
 
 
-
-
+def cargar_estado(nombre_archivo):
+    try:
+        with open(nombre_archivo, 'r') as f:
+            archivo = json.load(f)
+            datos_archivos = archivo['datos']
+            ultima_ejecucion_datos = datetime.datetime.fromisoformat(archivo['ultima_ejecucion'])
+    except FileNotFoundError:
+        datos_archivos = None
+        ultima_ejecucion_datos = None
+        print('????')
+        
+    return datos_archivos, ultima_ejecucion_datos
 
 
 
@@ -116,7 +126,7 @@ async def datos_confirma_facil():
         datos_enviar.append(body)
 
 
-    guarda_datos.guardar_datos(datos_enviar,ahora,'datos_cf_elux.js')
+    # guarda_datos.guardar_datos(datos_enviar,ahora,'datos_cf_elux.js')
 
     cf_login = "https://utilities.confirmafacil.com.br/login/login"
     cf_embarque = "https://utilities.confirmafacil.com.br/business/v2/embarque"
@@ -176,7 +186,7 @@ def eliminar_archivo_si_pasadas_12am(ruta_archivo):
 
 async def datos_confirma_facil_filtro():
 
-    datos_factura, hora_ejecucion= guarda_datos.cargar_estado('info_factura')
+    datos_factura, hora_ejecucion= cargar_estado('/home/ubuntu/backend/python/json/info_factura.json')
     print(datos_factura)
     print(hora_ejecucion)
     
