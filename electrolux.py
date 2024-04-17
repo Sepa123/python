@@ -195,7 +195,7 @@ async def datos_confirma_facil_filtro():
     hora_actual = datetime.datetime.now()
 
     # Definir el límite inferior de tiempo (5 minutos antes de la hora actual)
-    limite_inferior = hora_actual - timedelta(minutes=5)
+    limite_inferior = hora_actual - timedelta(minutes=10)
 
     # Inicializar una lista para almacenar los números
     numeros = []
@@ -211,6 +211,7 @@ async def datos_confirma_facil_filtro():
         hora_registro = datetime.datetime.strptime(registro["Hora_registro"], "%Y-%m-%d %H:%M:%S.%f")
         if limite_inferior <= hora_registro <= hora_actual:
             if registro["Numero"]:
+                
                 numeros.append(registro["Numero"])
 
     print(numeros)
@@ -259,10 +260,11 @@ async def datos_confirma_facil_filtro():
         elif response.status_code == 400:
             # Si la solicitud no fue exitosa, devolver un error
             print("status 400, No paso, la ocurrencia ya existe")
+            print(response.json())
         else:
             print("Hubo Otro errors ",response.status_code)
             
 
 
 # Ejecuta el bucle de eventos
-asyncio.run(datos_confirma_facil_filtro())
+asyncio.run(datos_confirma_facil())
