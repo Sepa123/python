@@ -4,6 +4,7 @@ import re
 from decouple import config
 import lib.beetrack_data as data_beetrack
 import httpx
+import lib.guardar_datos_json as guardar_json
 
 ##Conexiones
 from database.client import reportesConnection , UserConnection
@@ -84,13 +85,20 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
                 print("Esta cosa si es de electrolux")
                 patron = r'\D+'
                 factura = re.sub(patron, '', datos_tags_i["FACTURA"])
-                async with httpx.AsyncClient() as client:
-                    response = await client.get(url=f"https://hela.transyanez.cl/api/electrolux/confirma_facil/codigo/{factura}")
-                    # Verificar si la solicitud fue exitosa
-                    if response.status_code == 200:
-                        print("si entro a cf")
-                    else:
-                        print("no entro a cf ",factura)
+                ahora = datetime.now()
+
+                datos = { 
+                    "Numero" : factura
+                }
+
+                guardar_json.guardar_datos(datos,ahora,'info_factura.json')
+                # async with httpx.AsyncClient() as client:
+                #     response = await client.get(url=f"https://hela.transyanez.cl/api/electrolux/confirma_facil/codigo/{factura}")
+                #     # Verificar si la solicitud fue exitosa
+                #     if response.status_code == 200:
+                #         print("si entro a cf")
+                #     else:
+                #         print("no entro a cf ",factura)
             return {
                 "message" : "data recibida correctamente"
                 }
@@ -106,14 +114,22 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
                 print("Esta cosa si es de electrolux")
                 patron = r'\D+'
                 factura = re.sub(patron, '', datos_tags["FACTURA"])
+
+                ahora = datetime.now()
+
+                datos = { 
+                    "Numero" : factura
+                }
+
+                guardar_json.guardar_datos(datos,ahora,'info_factura.json')
                 
-                async with httpx.AsyncClient() as client:
-                    response = await client.get(url=f"https://hela.transyanez.cl/api/electrolux/confirma_facil/codigo/{factura}",timeout=30)
-                    # Verificar si la solicitud fue exitosa
-                    if response.status_code == 200:
-                        print("si entro a cf")
-                    else:
-                        print("no entro a cf ",factura)
+                # async with httpx.AsyncClient() as client:
+                #     response = await client.get(url=f"https://hela.transyanez.cl/api/electrolux/confirma_facil/codigo/{factura}",timeout=30)
+                #     # Verificar si la solicitud fue exitosa
+                #     if response.status_code == 200:
+                #         print("si entro a cf")
+                #     else:
+                #         print("no entro a cf ",factura)
                 
             # print("tablas actualizadas de ruta_ty ",rows)
 

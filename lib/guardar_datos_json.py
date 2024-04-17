@@ -42,7 +42,7 @@ def decimal_to_float(obj):
 def guardar_datos(datos, hora, nombre_archivo):
     estado = {'datos': datos, 'ultima_ejecucion': str(hora)}
     with open('json/'+nombre_archivo+'.json', 'w') as f:
-        json.dump(estado, f)
+        json.dump(estado, f, indent=4)
 
 
 def cargar_estado(nombre_archivo):

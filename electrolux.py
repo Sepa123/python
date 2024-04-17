@@ -9,6 +9,7 @@ from decouple import config
 from database.schema.confirma_facil.electrolux import datos_confirma_facil_schema
 from datetime import timedelta
 import datetime
+import lib.guardar_datos_json as guarda_datos
 
 import asyncio
 
@@ -17,8 +18,19 @@ conn = reportesConnection()
 
 
 async def datos_confirma_facil():
+
+    archivo_json = 'json/info_factura.json'
+    # Verifica si el archivo existe antes de intentar eliminarlo
+
+    if os.path.exists(archivo_json):
+        os.remove(archivo_json)
+        print(f"El archivo {archivo_json} ha sido eliminado correctamente.")
+    else:
+        print(f"El archivo {archivo_json} no existe.")
+    
     results = conn.recuperar_data_electrolux()
     datos_cf = datos_confirma_facil_schema(results)
+    ahora = datetime.datetime.now()
 
     datos_enviar = []
     for dato in datos_cf:
@@ -41,6 +53,9 @@ async def datos_confirma_facil():
             }
         datos_enviar.append(body)
 
+
+    guarda_datos.guardar_datos(datos_enviar,ahora,'datos_cf_elux.js')
+
     cf_login = "https://utilities.confirmafacil.com.br/login/login"
     cf_embarque = "https://utilities.confirmafacil.com.br/business/v2/embarque"
      # Hacer una solicitud a la API externa usando httpx
@@ -57,29 +72,31 @@ async def datos_confirma_facil():
         "Authorization": ""
     }
 
-    async with httpx.AsyncClient() as client:
-        response = await client.post(url=cf_login,json=body_login)
-        # Verificar si la solicitud fue exitosa
-        if response.status_code == 200:
-            # Si la solicitud fue exitosa, devolver los datos obtenidos
-            resp = response.json()
-            token_acceso = resp["resposta"]["token"]
-            header["Authorization"] = token_acceso
+    
 
-            async with httpx.AsyncClient() as client:
-                response = await client.post(url=cf_embarque,json=datos_enviar,headers=header,timeout=60)
-                # Verificar si la solicitud fue exitosa
-                if response.status_code == 200:
+    # async with httpx.AsyncClient() as client:
+    #     response = await client.post(url=cf_login,json=body_login)
+    #     # Verificar si la solicitud fue exitosa
+    #     if response.status_code == 200:
+    #         # Si la solicitud fue exitosa, devolver los datos obtenidos
+    #         resp = response.json()
+    #         token_acceso = resp["resposta"]["token"]
+    #         header["Authorization"] = token_acceso
 
-                    print(response.json())
-                else:
-                    # Si la solicitud no fue exitosa, devolver un error
-                    # return response.json()
-                    print(response.json())
-        else:
-            # Si la solicitud no fue exitosa, devolver un error
-            print({"error": "No se pudo obtener la información del usuario",
-                    "body" : response.json()}, response.status_code)
+    #         async with httpx.AsyncClient() as client:
+    #             response = await client.post(url=cf_embarque,json=datos_enviar,headers=header,timeout=60)
+    #             # Verificar si la solicitud fue exitosa
+    #             if response.status_code == 200:
+
+    #                 print(response.json())
+    #             else:
+    #                 # Si la solicitud no fue exitosa, devolver un error
+    #                 # return response.json()
+    #                 print(response.json())
+    #     else:
+    #         # Si la solicitud no fue exitosa, devolver un error
+    #         print({"error": "No se pudo obtener la información del usuario",
+    #                 "body" : response.json()}, response.status_code)
         
 
 
