@@ -120,6 +120,8 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
 
     lista = df.to_dict(orient='records')
 
+    print(lista[0])
+
     # for i, data in enumerate(lista):
         # cantidad_encontrada = conn.get_pedido_planificados_quadmind_by_cod_pedido()
         # if cantidad_encontrada[0] >= 1:
