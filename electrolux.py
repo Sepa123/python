@@ -177,6 +177,9 @@ def eliminar_archivo_si_pasadas_12am(ruta_archivo):
 async def datos_confirma_facil_filtro():
 
     datos_factura, hora_ejecucion= guarda_datos.cargar_estado('info_factura')
+    print(datos_factura)
+    print(hora_ejecucion)
+    
 
     # Calcular la hora actual
     hora_actual = datetime.datetime.now()
@@ -191,6 +194,7 @@ async def datos_confirma_facil_filtro():
 
     if datos_factura is None:
         print("chao")
+        return 'chao'
 
     # Iterar sobre los datos y filtrar los registros dentro del límite de tiempo
     for registro in datos_factura:
@@ -203,7 +207,8 @@ async def datos_confirma_facil_filtro():
     results = conn.recuperar_data_electrolux()
 
     if len(results) == 0:
-        print("chao")
+        print("chao no ahy registro en la bd")
+        return 'chao'
     
     datos_cf = datos_confirma_facil_schema(results)
 
