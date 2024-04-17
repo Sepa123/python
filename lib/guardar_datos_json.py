@@ -81,5 +81,6 @@ def cargar_estado(nombre_archivo):
     except FileNotFoundError:
         datos_archivos = None
         ultima_ejecucion_datos = None
+        print('????')
     
     return datos_archivos, ultima_ejecucion_datos
