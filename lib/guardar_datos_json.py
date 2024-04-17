@@ -44,6 +44,33 @@ def guardar_datos(datos, hora, nombre_archivo):
     with open('json/'+nombre_archivo+'.json', 'w') as f:
         json.dump(estado, f, indent=4)
 
+def guardar_datos_a_archivo_existente(datos, hora, nombre_archivo):
+    # Ruta del archivo JSON
+    ruta_archivo = 'json/' + nombre_archivo + '.json'
+
+    # Verificar si el archivo ya existe
+    if os.path.exists(ruta_archivo):
+        # Cargar datos existentes
+        with open(ruta_archivo, 'r') as f:
+            estado_existente = json.load(f)
+        
+        # Actualizar datos existentes con nuevos datos
+        estado_existente['datos'].update(datos)
+        estado_existente['ultima_ejecucion'] = str(hora)
+        
+        # Guardar los datos actualizados
+        with open(ruta_archivo, 'w') as f:
+            json.dump(estado_existente, f, indent=4)
+        
+        print(f"Los datos han sido agregados al archivo {nombre_archivo}.json")
+    else:
+        # Si el archivo no existe, simplemente guardar los datos como antes
+        estado = {'datos': datos, 'ultima_ejecucion': str(hora)}
+        with open(ruta_archivo, 'w') as f:
+            json.dump(estado, f, indent=4)
+        
+        print(f"Los datos han sido guardados en un nuevo archivo {nombre_archivo}.json")
+
 
 def cargar_estado(nombre_archivo):
     try:
