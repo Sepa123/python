@@ -182,7 +182,7 @@ async def datos_confirma_facil_filtro():
     hora_actual = datetime.datetime.now()
 
     # Definir el límite inferior de tiempo (5 minutos antes de la hora actual)
-    limite_inferior = hora_actual - timedelta(minutes=30)
+    limite_inferior = hora_actual - timedelta(minutes=5)
 
     # Inicializar una lista para almacenar los números
     numeros = []
@@ -205,10 +205,7 @@ async def datos_confirma_facil_filtro():
     if len(results) == 0:
         return print("chao")
     
-
     datos_cf = datos_confirma_facil_schema(results)
-
-    # datos_factura= guarda_datos.cargar_estado('info_factura')
 
     datos_enviar = []
     for dato in datos_cf:
@@ -243,7 +240,6 @@ async def datos_confirma_facil_filtro():
         response = await client.post(url=cf_embarque,json=datos_enviar,headers=resultado_header_token,timeout=timeout)
         # Verificar si la solicitud fue exitosa
         if response.status_code == 200:
-            # print("Electrolux ",response.json())
             print("si paso cf")
             return response.json()
         elif response.status_code == 400:
