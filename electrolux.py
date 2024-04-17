@@ -6,15 +6,15 @@ import os
 import httpx
 from decouple import config
 ## Modelos
-from database.schema.confirma_facil.electrolux import datos_confirma_facil_schema
-from datetime import timedelta
-import datetime
-import lib.guardar_datos_json as guarda_datos
+# from database.schema.confirma_facil.electrolux import datos_confirma_facil_schema
+# from datetime import timedelta
+# import datetime
+# import lib.guardar_datos_json as guarda_datos
 
-import asyncio
+# import asyncio
 
 
-conn = reportesConnection()
+# conn = reportesConnection()
 
 # ## Reportes Historicos
 # resultado_header_token = None
@@ -265,5 +265,5 @@ conn = reportesConnection()
 
 
 # # Ejecuta el bucle de eventos
-# # asyncio.run(datos_confirma_facil())
-print('me mimpridaszd')
+# asyncio.run(datos_confirma_facil())
+print('hoaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
