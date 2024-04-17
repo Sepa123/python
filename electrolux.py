@@ -198,7 +198,7 @@ async def datos_confirma_facil_filtro():
         if dato["Numero"] in numeros:
             body = {
                     "embarque": {
-                        "numero": dato["Factura"],
+                        "numero": dato["Numero"],
                         "serie": "02"
                     },
                     "embarcador": {
