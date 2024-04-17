@@ -190,7 +190,7 @@ async def datos_confirma_facil_filtro():
     eliminar_archivo_si_pasadas_12am('info_factura')
 
     if datos_factura is None:
-        return print("chao")
+        print("chao")
 
     # Iterar sobre los datos y filtrar los registros dentro del límite de tiempo
     for registro in datos_factura:
@@ -203,7 +203,7 @@ async def datos_confirma_facil_filtro():
     results = conn.recuperar_data_electrolux()
 
     if len(results) == 0:
-        return print("chao")
+        print("chao")
     
     datos_cf = datos_confirma_facil_schema(results)
 
@@ -240,17 +240,13 @@ async def datos_confirma_facil_filtro():
         response = await client.post(url=cf_embarque,json=datos_enviar,headers=resultado_header_token,timeout=timeout)
         # Verificar si la solicitud fue exitosa
         if response.status_code == 200:
-            print("si paso cf")
-            return response.json()
+            print("status 200, si paso cf")
         elif response.status_code == 400:
             # Si la solicitud no fue exitosa, devolver un error
-             return {
-                "message" : "No paso, la ocurrencia ya existe"
-             }
+            print("status 400, No paso, la ocurrencia ya existe")
         else:
-            return {
-                "message": "Hubo Otro errors"
-            }
+            print("Hubo Otro errors ",response.status_code)
+            
 
 
 # Ejecuta el bucle de eventos
