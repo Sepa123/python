@@ -187,7 +187,7 @@ def eliminar_archivo_si_pasadas_12am(ruta_archivo):
 async def datos_confirma_facil_filtro():
     print('')
     datos_factura, hora_ejecucion= cargar_estado('/home/ubuntu/backend/python/json/info_factura.json')
-    print(datos_factura)
+    # print(datos_factura)
     print(hora_ejecucion)
     
 
