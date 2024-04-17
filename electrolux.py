@@ -9,7 +9,7 @@ from decouple import config
 from database.schema.confirma_facil.electrolux import datos_confirma_facil_schema
 from datetime import timedelta
 import datetime
-# import lib.guardar_datos_json as guarda_datos
+import lib.guardar_datos_json as guarda_datos
 
 import asyncio
 
@@ -84,7 +84,7 @@ def cargar_estado(nombre_archivo):
         datos_archivos = None
         ultima_ejecucion_datos = None
         print('????')
-        
+
     return datos_archivos, ultima_ejecucion_datos
 
 
@@ -265,4 +265,5 @@ async def datos_confirma_facil_filtro():
 
 
 # Ejecuta el bucle de eventos
-asyncio.run(datos_confirma_facil_filtro())
+# asyncio.run(datos_confirma_facil())
+print('me mimpridaszd')
