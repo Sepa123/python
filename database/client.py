@@ -8812,7 +8812,10 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def panel_regiones_ns_electrolux(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
-            select * from areati.panel_regiones_ns_electrolux()
+                        
+            select region, total_region, entregados,
+                CAST(ns_region AS float)
+            from areati.panel_regiones_ns_electrolux();
                          """)
             return cur.fetchone()
 
