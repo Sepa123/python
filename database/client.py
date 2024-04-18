@@ -7321,8 +7321,9 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                                 easy.estado,
                                 easy.subestado,
                                 easy.verified,
-                                easy.recepcion,
-                                drm.nombre_ruta 
+                                easy.recepcion
+                               --  easy.recepcion,
+                               -- drm.nombre_ruta 
                             FROM areati.ti_wms_carga_easy easy
                             left join quadminds.datos_ruta_manual drm on (drm.cod_pedido = easy.entrega and drm.estado = true )
                             left join public.ti_wms_carga_easy_paso twcep on twcep.entrega = easy.entrega
@@ -7362,7 +7363,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 se."name" as "Subestado",
                 subquery.verified,
                 subquery.recepcion,
-                funcion_resultado.nombre_ruta
+                subquery.nombre_ruta
             FROM (
                 SELECT DISTINCT ON (easy.entrega)
                     easy.entrega as guia,
@@ -7379,8 +7380,8 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                     easy.estado,
                     easy.subestado,
                     easy.verified,
-                    easy.recepcion
-                    --drm.nombre_ruta
+                    easy.recepcion,
+                    drm.nombre_ruta
                 FROM areati.ti_wms_carga_easy easy
                 left join public.ti_wms_carga_easy_paso twcep on twcep.entrega = easy.entrega
                 LEFT JOIN (
@@ -7394,7 +7395,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                             WHERE toc.alerta = true
                             ORDER BY toc.guia, toc.created_at desc
                         ) AS tbm ON easy.entrega=tbm.guia
-                --left join quadminds.datos_ruta_manual drm on (drm.cod_pedido = easy.entrega and drm.estado = true )
+                left join quadminds.datos_ruta_manual drm on (drm.cod_pedido = easy.entrega and drm.estado = true )
                 WHERE (easy.estado = 0 OR (easy.estado = 2 AND easy.subestado NOT IN (7, 10, 12, 13, 19, 43, 44, 50, 51, 70, 80)))
                 AND easy.estado NOT IN (1, 3)
                 and easy.entrega not in (select rt.guia from beetrack.ruta_transyanez rt where rt.created_at::date = current_date)
