@@ -177,7 +177,7 @@ def eliminar_archivo_si_pasadas_12am(ruta_archivo):
     # Verificar si es pasada la medianoche (12:00 AM)
     if hora_actual.hour >= 0 and hora_actual.hour < 1:
         # Eliminar el archivo
-        os.remove('json/'+ruta_archivo+'.json')
+        os.remove('/home/ubuntu/backend/python/json/info_factura.json')
         print("Archivo eliminado.")
     else:
         print("No es pasada la medianoche.")
@@ -245,6 +245,10 @@ async def datos_confirma_facil_filtro():
             datos_enviar.append(body)
 
     print(datos_enviar)
+
+    if len(datos_enviar) == 0:
+        print('no hay nada que enviar')
+        return 'nada'
 
     cf_embarque = "https://utilities.confirmafacil.com.br/business/v2/embarque"
      # Hacer una solicitud a la API externa usando httpx
