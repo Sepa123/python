@@ -8777,6 +8777,13 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                          """)
             return cur.fetchall()
 
+    def panel_no_entregados_easy(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            select * from areati.panel_noentregas_easy();
+
+                         """)
+            return cur.fetchall()
 
 
 class transyanezConnection():

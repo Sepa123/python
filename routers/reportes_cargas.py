@@ -54,7 +54,7 @@ from database.models.ns_valor_ruta import asignarValor
 from database.schema.estado.ns_verificado import ns_verificados_schema
 from database.schema.nivel_servicio.ns_fecha_real import ns_por_fecha_schema , ns_por_fecha_inicial_schema
 from database.schema.nivel_servicio.ns_drivers import ns_drivers_schema
-from database.schema.nivel_servicio.ns_easy import ns_easy_schema,ns_pendientes_easy_region_schema , panel_principal_ns_easy,panel_regiones_ns_easy_schema
+from database.schema.nivel_servicio.ns_easy import ns_easy_schema,ns_pendientes_easy_region_schema , panel_principal_ns_easy,panel_regiones_ns_easy_schema, panel_noentregas_easy_schema
 
 from database.models.nivel_servicio.ns_easy import  NSEasy
 import lib.excel_generico as excel
@@ -683,3 +683,14 @@ async def descargar_ns_drivers_easy(pendientes : List[NSEasy]):
     nombre_excel = f"Resumen_pendientes_en_ruta"
 
     return excel.generar_excel_generico(tupla,nombre_filas,nombre_excel)    
+
+
+
+### Nivel Servicio Easy
+@router.get("/ns/easy/panel/no_entregados",status_code=status.HTTP_202_ACCEPTED)
+async def get_panel_no_entregados_ns_easy():
+  
+    results = conn.panel_no_entregados_easy()
+    datos = panel_noentregas_easy_schema(results)
+
+    return datos

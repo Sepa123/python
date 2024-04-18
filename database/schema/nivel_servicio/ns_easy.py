@@ -47,3 +47,17 @@ def panel_regiones_ns_easy(easy):
 
 def panel_regiones_ns_easy_schema(easys):
     return [panel_regiones_ns_easy(easy) for easy in easys]
+
+
+
+def panel_noentregas_easy(easy):
+    return{
+        "Estado": easy[0],
+        "Total": easy[1],
+        "Porcentaje": easy[2],
+
+    }
+
+
+def panel_noentregas_easy_schema(easys):
+    return [panel_noentregas_easy(easy) for easy in easys]
