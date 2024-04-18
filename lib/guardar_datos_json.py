@@ -49,27 +49,30 @@ def guardar_datos_a_archivo_existente_cf(datos, hora, nombre_archivo):
     ruta_archivo = 'json/' + nombre_archivo + '.json'
 
     # Verificar si el archivo ya existe
-    if os.path.exists(ruta_archivo):
-        # Cargar datos existentes
-        with open(ruta_archivo, 'r') as f:
-            estado_existente = json.load(f)
+    try:
+        if os.path.exists(ruta_archivo):
+            # Cargar datos existentes
+            with open(ruta_archivo, 'r') as f:
+                estado_existente = json.load(f)
+            
+            # Actualizar datos existentes con nuevos datos
+            estado_existente['datos'].append(datos)
+            estado_existente['ultima_ejecucion'] = str(hora)
+            
+            # Guardar los datos actualizados
+            with open(ruta_archivo, 'w') as f:
+                json.dump(estado_existente, f, indent=4)
+            
+            # print(f"Los datos han sido agregados al archivo {nombre_archivo}.json")
+        else:
+            # Si el archivo no existe, simplemente guardar los datos como antes
+            estado = {'datos': [datos], 'ultima_ejecucion': str(hora)}
+            with open(ruta_archivo, 'w') as f:
+                json.dump(estado, f, indent=4)
+    except:
+        print('error sos,al cargar datos masivos')
         
-        # Actualizar datos existentes con nuevos datos
-        estado_existente['datos'].append(datos)
-        estado_existente['ultima_ejecucion'] = str(hora)
-        
-        # Guardar los datos actualizados
-        with open(ruta_archivo, 'w') as f:
-            json.dump(estado_existente, f, indent=4)
-        
-        # print(f"Los datos han sido agregados al archivo {nombre_archivo}.json")
-    else:
-        # Si el archivo no existe, simplemente guardar los datos como antes
-        estado = {'datos': [datos], 'ultima_ejecucion': str(hora)}
-        with open(ruta_archivo, 'w') as f:
-            json.dump(estado, f, indent=4)
-        
-        # print(f"Los datos han sido guardados en un nuevo archivo {nombre_archivo}.json")
+        # print(f"Los datos han sido guardados en un nuevo archivo {nombre_archivo}.jso
 
 
 def cargar_estado(nombre_archivo):
