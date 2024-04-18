@@ -8817,7 +8817,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 CAST(ns_region AS float)
             from areati.panel_regiones_ns_electrolux();
                          """)
-            return cur.fetchone()
+            return cur.fetchall()
 
 class transyanezConnection():
     conn = None
