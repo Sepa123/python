@@ -728,3 +728,12 @@ async def get_panel_regiones_ns_electrolux():
     else:
         time.sleep(9)
     return datos
+
+
+@router.get("/ns/electrolux/panel/no_entregados",status_code=status.HTTP_202_ACCEPTED)
+async def get_panel_no_entregados_ns_electrolux():
+  
+    results = conn.panel_no_entregados_electrolux()
+    datos = panel_noentregas_easy_schema(results)
+
+    return datos
