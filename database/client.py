@@ -7269,8 +7269,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def pendientes_en_ruta_easy_cd(self, fecha_inicio,fecha_fin, offset ):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-       ----- Pendientes Easy CD
-            with f_aux as (
+       with f_aux as (
                         SELECT DISTINCT ON (easy.carton)
                                 easy.entrega as guia,
                                 'Easy' as origen,
@@ -7322,10 +7321,9 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                                 easy.subestado,
                                 easy.verified,
                                 easy.recepcion
-                               --  easy.recepcion,
-                               -- drm.nombre_ruta 
+                                --drm.nombre_ruta 
                             FROM areati.ti_wms_carga_easy easy
-                            left join quadminds.datos_ruta_manual drm on (drm.cod_pedido = easy.entrega and drm.estado = true )
+                            --left join quadminds.datos_ruta_manual drm on (drm.cod_pedido = easy.entrega and drm.estado = true )
                             left join public.ti_wms_carga_easy_paso twcep on twcep.entrega = easy.entrega
                             LEFT JOIN (
                                         SELECT DISTINCT ON (toc.guia) toc.guia as guia, 
@@ -7345,8 +7343,8 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                             --and easy.entrega not in (select trb.guia from quadminds.ti_respuesta_beetrack trb)
                             and easy.entrega not in(select rt.guia from beetrack.ruta_transyanez rt where rt.created_at::date = current_date)
                             --and easy.entrega not in (select drm.cod_pedido from quadminds.datos_ruta_manual drm where drm.estado=true) 
-                        -- and easy.fecha_entrega >= '2023-05-18' and easy.fecha_entrega <= '2024-11-01'
-                        --limit 100 offset 0
+                        --and easy.fecha_entrega >= '2024-01-01' and easy.fecha_entrega <= '2024-11-01'
+
                         )
 
             SELECT
@@ -7399,15 +7397,14 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 WHERE (easy.estado = 0 OR (easy.estado = 2 AND easy.subestado NOT IN (7, 10, 12, 13, 19, 43, 44, 50, 51, 70, 80)))
                 AND easy.estado NOT IN (1, 3)
                 and easy.entrega not in (select rt.guia from beetrack.ruta_transyanez rt where rt.created_at::date = current_date)
-                and easy.fecha_entrega >= '{fecha_inicio}' and easy.fecha_entrega <= '{fecha_fin}'
-
+                and easy.fecha_entrega >= '2023-05-18' and easy.fecha_entrega <= '2024-11-01'
             ) subquery
             left join f_aux funcion_resultado on subquery.guia = funcion_resultado.guia
             --JOIN LATERAL areati.busca_ruta_manual_base2(subquery.guia) AS funcion_resultado ON true
             left join areati.estado_entregas ee on subquery.estado = ee.estado 
             left join areati.subestado_entregas se on subquery.subestado = se.code 
-            where to_char(funcion_resultado."Fecha de Pedido",'yyyymmdd')>='{fecha_inicio}'
-            and to_char(funcion_resultado."Fecha de Pedido",'yyyymmdd')<='{fecha_fin}'
+            where to_char(funcion_resultado."Fecha de Pedido",'yyyymmdd')>='2023-05-18'
+            and to_char(funcion_resultado."Fecha de Pedido",'yyyymmdd')<='2024-11-01'
 
             """)
             return cur.fetchall()
