@@ -595,8 +595,6 @@ async def get_ns_easy():
 
     return datos
 
-
-### Nivel Servicio Easy
 @router.get("/ns/easy/con-ruta",status_code=status.HTTP_202_ACCEPTED)
 async def get_ns_easy_con_ruta():
 
@@ -611,7 +609,6 @@ async def get_ns_easy_con_ruta():
     return datos
 
 
-### Nivel Servicio Easy
 @router.get("/ns/easy/sin-ruta",status_code=status.HTTP_202_ACCEPTED)
 async def get_ns_easy():
 
@@ -624,7 +621,6 @@ async def get_ns_easy():
 
     return datos
 
-### Nivel Servicio Easy
 @router.get("/ns/pendiente/easy/por-region",status_code=status.HTTP_202_ACCEPTED)
 async def get_ns_pendiente_easy_por_region():
 
@@ -639,8 +635,6 @@ async def get_ns_pendiente_easy_por_region():
 
     return datos
 
-
-### Nivel Servicio Easy
 @router.get("/ns/easy/panel",status_code=status.HTTP_202_ACCEPTED)
 async def get_panel_principal_ns_easy():
 
@@ -655,8 +649,6 @@ async def get_panel_principal_ns_easy():
 
     return datos
 
-
-### Nivel Servicio Easy
 @router.get("/ns/easy/panel/regiones",status_code=status.HTTP_202_ACCEPTED)
 async def get_panel_regiones_ns_easy():
 
@@ -685,12 +677,54 @@ async def descargar_ns_drivers_easy(pendientes : List[NSEasy]):
     return excel.generar_excel_generico(tupla,nombre_filas,nombre_excel)    
 
 
-
-### Nivel Servicio Easy
 @router.get("/ns/easy/panel/no_entregados",status_code=status.HTTP_202_ACCEPTED)
 async def get_panel_no_entregados_ns_easy():
   
     results = conn.panel_no_entregados_easy()
     datos = panel_noentregas_easy_schema(results)
 
+    return datos
+
+
+### Nivel Servicio Electrolux
+@router.get("/ns/electrolux",status_code=status.HTTP_202_ACCEPTED)
+async def get_ns_electrolux():
+
+    ahora = datetime.datetime.now()
+    datos =  datos_json.ejecutar_por_minutos(5,'ns_electrolux')
+
+    if datos is None:
+        results = conn.detalle_pendientes_electrolux_hoy()
+        datos = ns_easy_schema(results)
+        datos_json.guardar_datos(datos,ahora,'ns_electrolux')
+
+    return datos
+
+
+@router.get("/ns/electrolux/panel",status_code=status.HTTP_202_ACCEPTED)
+async def get_panel_principal_ns_electrolux():
+
+    ahora = datetime.datetime.now()
+    datos =  datos_json.ejecutar_por_minutos(5,'panel_principal_ns_electrolux')
+
+    if datos is None:   
+
+        results = conn.panel_principal_electrolux()
+        datos = panel_principal_ns_easy(results)
+        datos_json.guardar_datos(datos,ahora,'panel_principal_ns_electrolux')
+
+    return datos
+
+@router.get("/ns/electrolux/panel/regiones",status_code=status.HTTP_202_ACCEPTED)
+async def get_panel_regiones_ns_electrolux():
+
+    ahora = datetime.datetime.now()
+    datos =  datos_json.ejecutar_por_minutos(5,'panel_regiones_ns_electrolux')
+
+    if datos is None:   
+        results = conn.panel_regiones_ns_electrolux()
+        datos = panel_regiones_ns_easy_schema(results)
+        datos_json.guardar_datos(datos,ahora,'panel_regiones_ns_electrolux')
+    else:
+        time.sleep(9)
     return datos

@@ -8766,7 +8766,15 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
 
                          """)
             return cur.fetchone()
-        
+
+
+    def detalle_pendientes_electrolux_hoy(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            select * from areati.detalle_pendientes_electrolux_hoy()
+
+                         """)
+            return cur.fetchall()  
     def panel_regiones_ns_easy(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
@@ -8785,6 +8793,28 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                          """)
             return cur.fetchall()
 
+
+
+
+    def panel_principal_electrolux(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            select total_entregas,total_entregados,entregados_hoy,en_ruta,
+                sin_ruta_beetrack,anulados,
+                CAST(porcentaje_entrega AS float),
+                CAST(porcentaje_no_entrega AS float),
+                CAST(proyeccion AS float)
+            from areati.panel_principal_ns_electrolux();
+
+                         """)
+            return cur.fetchone()
+        
+    def panel_regiones_ns_electrolux(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            select * from areati.panel_regiones_ns_electrolux()
+                         """)
+            return cur.fetchone()
 
 class transyanezConnection():
     conn = None
