@@ -8835,6 +8835,28 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                          """)
             return cur.fetchall()
 
+    def codigos_obligatorios_dia_excel(self,fecha):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+                        
+            select cliente,cod_pedido,fecha_pedido,fec_reprogramada,comuna,region,descripcion,
+            CASE
+                WHEN sin_moradores THEN 'X'
+                ELSE ''
+            END AS resultado,
+            CASE
+                WHEN verified THEN 'X'
+                ELSE ''
+            END AS resultado,
+            CASE
+                WHEN recepcionado THEN 'X'
+                ELSE ''
+            END AS resultado,
+            ruta_hela   
+            from rutas.codigos_obligatorios_dia('{fecha}')
+                        
+                         """)
+            return cur.fetchall()
 
 
 

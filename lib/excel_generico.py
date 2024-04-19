@@ -3,7 +3,21 @@ from openpyxl import Workbook
 from openpyxl.styles import Font , PatternFill, Border ,Side
 from openpyxl.worksheet.page import PageMargins 
 
-    
+# def cambiar_bool(mi_tupla):
+#     lista= []
+
+#     for valor in mi_tupla:
+
+#         if isinstance(valor, bool):
+#             if valor is True:
+#                 lista.append('x')
+#             else:
+#                 lista.append('')
+#         else:
+#             lista.append(valor)
+
+#     return tuple(lista)
+        
 
 def generar_excel_generico(results, nombre_filas, nombre_excel ):
 
