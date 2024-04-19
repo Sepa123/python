@@ -15,3 +15,5 @@ class PedidosPendientes (BaseModel):
     Verificado: Optional[bool]
     Recibido: Optional[bool]
     Nombre_ruta: Optional[str]
+    Direccion: Optional[str]
+    Talla: Optional[str]

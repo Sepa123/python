@@ -299,12 +299,12 @@ def cambiar_bool(valor):
 async def generar_excel_pendentes_en_ruta(pendientes : List[pendientesRutas]):
 
     tupla = [( datos_envio.Origen, datos_envio.Cod_entrega, datos_envio.Fecha_ingreso, datos_envio.Fecha_compromiso, 
-               datos_envio.Region, datos_envio.Comuna, datos_envio.Descripcion, datos_envio.Bultos, datos_envio.Estado, datos_envio.Subestado,
-               cambiar_bool(datos_envio.Verificado), cambiar_bool(datos_envio.Recibido),datos_envio.Nombre_ruta) for datos_envio in pendientes]
+               datos_envio.Region, datos_envio.Comuna,  datos_envio.Direccion, datos_envio.Descripcion, datos_envio.Bultos, datos_envio.Estado, datos_envio.Subestado,
+               cambiar_bool(datos_envio.Verificado), cambiar_bool(datos_envio.Recibido),datos_envio.Nombre_ruta,datos_envio.Talla) for datos_envio in pendientes]
 
     nombre_filas = ( 'Origen', 'Cod. Entrega', "Fecha Ingreso", "Fecha Compromiso", 
-                     "Region", "Comuna","Descripcion","Bultos","Estado","Subestado",
-                     "Verificado", "Recibido","Nombre_ruta" )
+                     "Region", "Comuna","Dirección","Descripcion","Bultos","Estado","Subestado",
+                     "Verificado", "Recibido","Nombre_ruta","Talla" )
     nombre_excel = f"Resumen_pendientes_en_ruta"
 
     return excel.generar_excel_generico(tupla,nombre_filas,nombre_excel)    
