@@ -7295,12 +7295,14 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
 									        regexp_replace(REPLACE(regexp_replace(regexp_replace(initcap(split_part(easy.direccion,',',1)), ',.$', ''), '\s+(\d+\D+\d+).$', ' \1'), '\', ''), '', '') 
 									        else coalesce(substring(initcap(easy.direccion) from '^[^0-9]*[0-9]+'),initcap(easy.direccion))
 								        end) as "Calle y Número",
+                                coalesce(tbm.direccion,easy.direccion) as "Dirección Textual",
                                 coalesce(tbm.fecha,
                                         CASE
                                             WHEN twcep.fecha_entrega <> easy.fecha_entrega THEN twcep.fecha_entrega
                                             ELSE easy.fecha_entrega
                                         END
                                         ) as "Fecha de Pedido",
+                        
                                         
                                 case
                                     when unaccent(lower(easy.comuna)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
@@ -7373,7 +7375,8 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 subquery.recepcion,
                 subquery.nombre_ruta,
                 cast(funcion_resultado."Calle y Número" as VARCHAR ) ,
-                funcion_resultado."Talla"
+                funcion_resultado."Talla",
+                funcion_resultado."Dirección Textual"
             FROM (
                 SELECT DISTINCT ON (easy.entrega)
                     easy.entrega as guia,
@@ -7435,6 +7438,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             regexp_replace(REPLACE(regexp_replace(regexp_replace(initcap(split_part(eltx.direccion,',',1)), ',.$', ''), '\s+(\d+\D+\d+).$', ' \1'), '\', ''), '', '')
             else coalesce(substring(initcap(split_part(eltx.direccion,',',1)) from '^[^0-9]*[0-9]+'),eltx.direccion)
                     end) as "Calle y Número",
+            coalesce(tbm.direccion,eltx.direccion) as "Dirección Textual",
             coalesce(tbm.comuna, case
             when unaccent(lower(eltx.comuna)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
             (select oc.comuna_name from public.op_comunas oc 
@@ -7506,7 +7510,8 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 subquery.recepcion,
                 subquery.nombre_ruta,
                 funcion_resultado."Calle y Número",
-                funcion_resultado."Talla"
+                funcion_resultado."Talla",
+                funcion_resultado."Dirección Textual"
             FROM (
                 select distinct on (eltx.numero_guia)
                     eltx.numero_guia as guia,
@@ -7627,7 +7632,8 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 subquery.recepcion,
                 subquery.nombre_ruta,
                 funcion_resultado."Calle y Número",
-                funcion_resultado."Talla"
+                funcion_resultado."Talla",
+                funcion_resultado."Dirección Textual"
             FROM (
                 select distinct on (opl.suborden)
                     opl.suborden as guia,
@@ -7690,7 +7696,8 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 subquery.recepcion,
                 subquery.nombre_ruta,
                 funcion_resultado."Calle y Número",
-                funcion_resultado."Talla"
+                funcion_resultado."Talla",
+                funcion_resultado."Dirección Textual"
             FROM (
                 select distinct on (rtcl.cod_pedido)
                 rtcl.cod_pedido as guia,
