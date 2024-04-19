@@ -1390,3 +1390,14 @@ async def get_codigo_obligatorios_dia(fecha : str):
     result = conn.codigos_obligatorios_dia(fecha)
     # obtener_region
     return codigos_obligatorios_dia_schema(result)
+
+
+## seguimento ruta
+@router.get("/codigos/obligatorios/dia/descargar")
+async def get_codigo_obligatorios_dia(fecha : str):
+    result = conn.codigos_obligatorios_dia(fecha)
+    nombre_filas = ( "Clientes", "Código Pedido", "Fecha Pedido", "Fecha Reprogramada", "Comuna", "Región", "Descripción", "Sin Morador", "Verificado",
+                    "Recepcionado", "Ruta Hela")
+    nombre_excel = f"lista_codigo_obligatorios"
+
+    return excel.generar_excel_generico(result,nombre_filas,nombre_excel)

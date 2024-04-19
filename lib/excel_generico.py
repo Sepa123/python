@@ -3,6 +3,8 @@ from openpyxl import Workbook
 from openpyxl.styles import Font , PatternFill, Border ,Side
 from openpyxl.worksheet.page import PageMargins 
 
+    
+
 def generar_excel_generico(results, nombre_filas, nombre_excel ):
 
     # results = conn.obtener_etiqueta_carga_rsv(nombre_carga,codigo,tipo)
@@ -72,8 +74,3 @@ def generar_excel_con_titulo(results, nombre_filas, nombre_excel,titulo ):
 
 
 
-def cambiar_bool(valor):
-     if valor is True:
-          return "x"
-     else:
-          return ""
