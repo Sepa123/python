@@ -7287,6 +7287,14 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                                                     where unaccent(lower(easy.comuna)) = unaccent(lower(oc2.comuna_name))
                                                     )
                                     end) as "Ciudad",
+                                    coalesce(
+								        tbm.direccion,
+								        CASE 
+									        WHEN substring(easy.direccion from '^\d') ~ '\d' then substring(initcap(easy.direccion) from '\d+[\w\s]+\d+')
+									        WHEN lower(easy.direccion) ~ '^(pasaje|calle|avenida)\s+\d+\s+' THEN
+									        regexp_replace(REPLACE(regexp_replace(regexp_replace(initcap(split_part(easy.direccion,',',1)), ',.$', ''), '\s+(\d+\D+\d+).$', ' \1'), '\', ''), '', '') 
+									        else coalesce(substring(initcap(easy.direccion) from '^[^0-9]*[0-9]+'),initcap(easy.direccion))
+								        end) as "Calle y Número",
                                 coalesce(tbm.fecha,
                                         CASE
                                             WHEN twcep.fecha_entrega <> easy.fecha_entrega THEN twcep.fecha_entrega
@@ -7316,6 +7324,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                                         ELSE regexp_replace(easy.cant, '[^\d]', '', 'g')::numeric 
                                         -- Si el campo contiene una frase con cantidad
                                     END as "Cantidad de Producto",
+                                    coalesce (tts.tamano,'?') as "Talla", 
                                 easy.comuna,
                                 easy.estado,
                                 easy.subestado,
@@ -7323,6 +7332,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                                 easy.recepcion
                                 --drm.nombre_ruta 
                             FROM areati.ti_wms_carga_easy easy
+                            left join public.ti_tamano_sku tts on tts.sku = cast(easy.producto as text)
                             --left join quadminds.datos_ruta_manual drm on (drm.cod_pedido = easy.entrega and drm.estado = true )
                             left join public.ti_wms_carga_easy_paso twcep on twcep.entrega = easy.entrega
                             LEFT JOIN (
@@ -7343,7 +7353,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                             --and easy.entrega not in (select trb.guia from quadminds.ti_respuesta_beetrack trb)
                             and easy.entrega not in(select rt.guia from beetrack.ruta_transyanez rt where rt.created_at::date = current_date)
                             --and easy.entrega not in (select drm.cod_pedido from quadminds.datos_ruta_manual drm where drm.estado=true) 
-                        --and easy.fecha_entrega >= '2024-01-01' and easy.fecha_entrega <= '2024-11-01'
+                        --and easy.fecha_entrega >= '{fecha_inicio}' and easy.fecha_entrega <= '{fecha_fin}'
 
                         )
 
@@ -7361,7 +7371,9 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 se."name" as "Subestado",
                 subquery.verified,
                 subquery.recepcion,
-                subquery.nombre_ruta
+                subquery.nombre_ruta,
+                funcion_resultado."Calle y Número",
+                funcion_resultado."Talla"
             FROM (
                 SELECT DISTINCT ON (easy.entrega)
                     easy.entrega as guia,
@@ -7397,14 +7409,15 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 WHERE (easy.estado = 0 OR (easy.estado = 2 AND easy.subestado NOT IN (7, 10, 12, 13, 19, 43, 44, 50, 51, 70, 80)))
                 AND easy.estado NOT IN (1, 3)
                 and easy.entrega not in (select rt.guia from beetrack.ruta_transyanez rt where rt.created_at::date = current_date)
-                and easy.fecha_entrega >= '2023-05-18' and easy.fecha_entrega <= '2024-11-01'
+                and easy.fecha_entrega >= '{fecha_inicio}' and easy.fecha_entrega <= '{fecha_fin}'
             ) subquery
+            
             left join f_aux funcion_resultado on subquery.guia = funcion_resultado.guia
             --JOIN LATERAL areati.busca_ruta_manual_base2(subquery.guia) AS funcion_resultado ON true
             left join areati.estado_entregas ee on subquery.estado = ee.estado 
             left join areati.subestado_entregas se on subquery.subestado = se.code 
-            where to_char(funcion_resultado."Fecha de Pedido",'yyyymmdd')>='2023-05-18'
-            and to_char(funcion_resultado."Fecha de Pedido",'yyyymmdd')<='2024-11-01'
+            where to_char(funcion_resultado."Fecha de Pedido",'yyyymmdd')>='{fecha_inicio}'
+            and to_char(funcion_resultado."Fecha de Pedido",'yyyymmdd')<='{fecha_fin}'
 
             """)
             return cur.fetchall()
@@ -7412,8 +7425,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def pendientes_en_ruta_electrolux(self, fecha_inicio,fecha_fin, offset ):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-        with f_aux as (
-
+ with f_aux as (
             select eltx.identificador_contacto AS "Código de Cliente",
                     initcap(eltx.nombre_contacto) AS "Nombre",
                     coalesce(tbm.direccion,
@@ -7423,11 +7435,10 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             regexp_replace(REPLACE(regexp_replace(regexp_replace(initcap(split_part(eltx.direccion,',',1)), ',.$', ''), '\s+(\d+\D+\d+).$', ' \1'), '\', ''), '', '')
             else coalesce(substring(initcap(split_part(eltx.direccion,',',1)) from '^[^0-9]*[0-9]+'),eltx.direccion)
                     end) as "Calle y Número",
-                    coalesce(tbm.direccion,eltx.direccion) as "Dirección Textual",
-                    coalesce(tbm.comuna, case
-                    when unaccent(lower(eltx.comuna)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
-                    (select oc.comuna_name from public.op_comunas oc 
-                    where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+            coalesce(tbm.comuna, case
+            when unaccent(lower(eltx.comuna)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+            (select oc.comuna_name from public.op_comunas oc 
+            where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
             where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(eltx.comuna))
                 )
                     )
@@ -7448,10 +7459,6 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                         where unaccent(lower(eltx.comuna)) = unaccent(lower(oc2.comuna_name))
                         ))
             end as "Provincia/Estado",
-                    eltx.latitud AS "Latitud",
-                    eltx.longitud AS "Longitud",
-                    coalesce(eltx.telefono,'0') AS "Teléfono con código de país",
-                    lower(eltx.email_contacto) AS "Email",
                     CAST (eltx.numero_guia AS varchar) AS "Código de Pedido",
                     coalesce(tbm.fecha,
                     case
@@ -7459,19 +7466,14 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                         then (select fecha_siguiente from areati.obtener_dias_habiles(to_char(eltx.created_at + interval '1 day','yyyymmdd')))
                         else eltx.fecha_min_entrega
                     end) AS "Fecha de Pedido",
-                    case
-                        when (select fecha_siguiente from areati.obtener_dias_habiles(to_char(eltx.created_at + interval '1 day','yyyymmdd'))) <> eltx.fecha_min_entrega
-                        then (select fecha_siguiente from areati.obtener_dias_habiles(to_char(eltx.created_at + interval '1 day','yyyymmdd')))
-                        else eltx.fecha_min_entrega
-                    end as "Fecha Original Pedido",
-                    'E' AS "Operación E/R",
                     CAST (eltx.numero_guia AS varchar) AS "Código de Producto",
                     '(Electrolux) ' || REPLACE(eltx.nombre_item, ',', '') AS "Descripción del Producto",
-                    cast(eltx.cantidad as numeric) AS "Cantidad de Producto"
+                    cast(eltx.cantidad as numeric) AS "Cantidad de Producto",
+                    coalesce (tts.tamano,'?') as "Talla"	
             from areati.ti_wms_carga_electrolux eltx
             left join public.ti_tamano_sku tts on tts.sku = cast(eltx.codigo_item as text)
             left join areati.estado_entregas ee on ee.estado=eltx.estado
-            left join beetrack.ruta_transyanez rb on (eltx.numero_guia=rb.guia and rb.created_at::date = current_date)
+            --left join beetrack.ruta_transyanez rb on (eltx.numero_guia=rb.guia and rb.created_at::date = current_date)
             LEFT JOIN (
                 SELECT DISTINCT ON (guia) guia as guia, 
                 direccion_correcta as direccion, 
@@ -7502,18 +7504,14 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 se."name" as "Subestado",
                 subquery.verified,
                 subquery.recepcion,
-                subquery.nombre_ruta
+                subquery.nombre_ruta,
+                funcion_resultado."Calle y Número",
+                funcion_resultado."Talla"
             FROM (
                 select distinct on (eltx.numero_guia)
                     eltx.numero_guia as guia,
                     'Electrolux' as origen,
                     eltx.created_at as fec_ingreso,
-                    coalesce(tbm.fecha,
-                    case
-                            when (select fecha_siguiente from areati.obtener_dias_habiles(to_char(eltx.created_at + interval '1 day','yyyymmdd'))) <> eltx.fecha_min_entrega
-                            then (select fecha_siguiente from areati.obtener_dias_habiles(to_char(eltx.created_at + interval '1 day','yyyymmdd')))
-                            else eltx.fecha_min_entrega
-                        end) as fec_entrega,
                     eltx.comuna as comuna,
                     eltx.estado,
                     eltx.subestado, 
@@ -7521,17 +7519,6 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                     eltx.recepcion,
                     drm.nombre_ruta
                 from areati.ti_wms_carga_electrolux eltx
-                LEFT JOIN (
-                            SELECT DISTINCT ON (toc.guia) toc.guia as guia, 
-                            toc.direccion_correcta as direccion, 
-                            toc.comuna_correcta as comuna,
-                            toc.fec_reprogramada as fecha,
-                            toc.observacion,
-                            toc.alerta
-                            FROM rutas.toc_bitacora_mae toc
-                            WHERE toc.alerta = true
-                            ORDER BY toc.guia, toc.created_at desc
-                        ) AS tbm ON eltx.numero_guia=tbm.guia
                     left join quadminds.datos_ruta_manual drm on (drm.cod_pedido = eltx.numero_guia and drm.estado = true )
                     WHERE (eltx.estado = 0 OR (eltx.estado = 2 AND eltx.subestado NOT IN (7, 10, 12, 13, 19, 43, 44, 50, 51, 70, 80)))
                     AND eltx.estado NOT IN (1, 3)
@@ -7540,7 +7527,6 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                     
                 ) subquery
                 left join f_aux funcion_resultado on subquery.guia = funcion_resultado."Código de Pedido"
-                --JOIN LATERAL areati.busca_ruta_manual(subquery.guia) AS funcion_resultado ON true
                 left join areati.estado_entregas ee on subquery.estado = ee.estado 
                 left join areati.subestado_entregas se on subquery.subestado = se.code 
                 where to_char(funcion_resultado."Fecha de Pedido",'yyyymmdd')>='{fecha_inicio}'
@@ -7597,6 +7583,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                     coalesce(tbm.fecha,easygo.fec_compromiso) AS "Fecha de Pedido",
                     easygo.fec_compromiso as "Fecha Original Pedido", 						-- [H-001]
                     'E' AS "Operación E/R",
+                    coalesce (tts.tamano,'?') as "Talla",	
                     easygo.id_entrega AS "Código de Producto",
                     '(Easy OPL) ' || coalesce(REPLACE(easygo.descripcion, ',', ''),'') AS "Descripción del Producto",
                     cast(easygo.unidades as numeric) AS "Cantidad de Producto"                                     -- Alertado por el Sistema
@@ -7638,7 +7625,9 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 se."name" as "Subestado",
                 subquery.verified,
                 subquery.recepcion,
-                subquery.nombre_ruta
+                subquery.nombre_ruta,
+                funcion_resultado."Calle y Número",
+                funcion_resultado."Talla"
             FROM (
                 select distinct on (opl.suborden)
                     opl.suborden as guia,
@@ -7699,7 +7688,9 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 se."name" as "Subestado",
                 subquery.verified,
                 subquery.recepcion,
-                subquery.nombre_ruta
+                subquery.nombre_ruta,
+                funcion_resultado."Calle y Número",
+                funcion_resultado."Talla"
             FROM (
                 select distinct on (rtcl.cod_pedido)
                 rtcl.cod_pedido as guia,

@@ -34,7 +34,9 @@ def ruta_de_pendientes_con_ruta(ruta):
 	"Subestado": ruta[9],
 	"Verificado": ruta[10],
 	"Recibido": ruta[11],
-    "Nombre_ruta" : ruta[12]
+    "Nombre_ruta" : ruta[12],
+    "Direccion": ruta[13],
+    "Talla" : ruta[14]
 	}
 
 def rutas_de_pendientes_con_ruta_schema(rutas):
