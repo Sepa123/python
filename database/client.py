@@ -7372,7 +7372,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 subquery.verified,
                 subquery.recepcion,
                 subquery.nombre_ruta,
-                funcion_resultado."Calle y Número",
+                cast(funcion_resultado."Calle y Número" as VARCHAR ) ,
                 funcion_resultado."Talla"
             FROM (
                 SELECT DISTINCT ON (easy.entrega)
