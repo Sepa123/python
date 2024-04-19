@@ -8826,6 +8826,20 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                          """)
             return cur.fetchall()
 
+    def codigos_obligatorios_dia(self,fecha):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+                        
+            select * from rutas.codigos_obligatorios_dia('{fecha}')
+                        
+                         """)
+            return cur.fetchall()
+
+
+
+
+
+
 class transyanezConnection():
     conn = None
     def __init__(self) -> None:

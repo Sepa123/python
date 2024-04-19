@@ -57,6 +57,7 @@ from database.schema.rutas.eficiencia_coductor import eficiencia_conductor_schem
 from database.schema.rutas.seguimiento_ruta import seguimiento_ruta_schema
 from database.schema.rutas.comuna_por_ruta import comunas_por_ruta_schema
 from database.models.recepcion.recepcion_tiendas import bodyUpdateVerified
+from database.schema.rutas.codigo_obligatorio_dia import codigos_obligatorios_dia_schema
 
 router = APIRouter(tags=["rutas"], prefix="/api/rutas")
 
@@ -1382,3 +1383,10 @@ async def get_comuna_por_ruta(fecha : str):
     result = conn.comuna_por_ruta(fecha)
     # obtener_region
     return comunas_por_ruta_schema(result)
+
+## seguimento ruta
+@router.get("/codigos/obligatorios/dia")
+async def get_codigo_obligatorios_dia(fecha : str):
+    result = conn.codigos_obligatorios_dia(fecha)
+    # obtener_region
+    return codigos_obligatorios_dia_schema(result)
