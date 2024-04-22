@@ -178,10 +178,6 @@ class reportesConnection():
                 Where to_char(twce.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
             ) as "Electrolux",
             (
-                Select count(*) from areati.ti_wms_carga_sportex twcs
-                Where to_char(twcs.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
-            ) as "Sportex",
-            (
                 Select count(distinct(entrega))  from areati.ti_wms_carga_easy easy
                 Where to_char(easy.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
             ) as "Easy",
@@ -215,10 +211,6 @@ class reportesConnection():
                 Select count(distinct(numero_guia))  from areati.ti_wms_carga_electrolux twce
                 Where to_char(twce.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
             ) as "Electrolux",
-            (
-                Select count(*) from areati.ti_wms_carga_sportex twcs
-                Where to_char(twcs.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
-            ) as "Sportex",
             (
                 Select count(distinct(entrega)) from areati.ti_wms_carga_easy easy
                 Where to_char(easy.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
@@ -254,10 +246,6 @@ class reportesConnection():
                 Select count(distinct(numero_guia)) from areati.ti_wms_carga_electrolux twce
                 Where to_char(twce.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
             ) as "Electrolux",
-            (
-                Select count(*) from areati.ti_wms_carga_sportex twcs
-                Where to_char(twcs.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
-            ) as "Sportex",
             (
                 Select count(distinct(entrega)) from areati.ti_wms_carga_easy easy
                 Where to_char(easy.created_at,'yyyy-mm-dd') = to_char(CURRENT_DATE+ i,'yyyy-mm-dd')
