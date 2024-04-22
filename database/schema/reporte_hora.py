@@ -2,8 +2,8 @@ def reporte_hora_schema(reporte_hora):
     return  {
     "Hora": reporte_hora[0],
     "Electrolux": reporte_hora[1], 
-    "Easy_CD": reporte_hora[3],
-    "Easy_OPL": reporte_hora[4]
+    "Easy_CD": reporte_hora[2],
+    "Easy_OPL": reporte_hora[3]
     # cambiar Tiendas por Easy_OPL
 }
 
