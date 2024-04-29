@@ -8737,11 +8737,17 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def panel_principal_ns_easy(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
-            select total_entregas,total_entregados,entregados_hoy,en_ruta,
+            select total,total_entregados,entregados_hoy,en_ruta,
                 sin_ruta_beetrack,anulados,
-                CAST(porcentaje_entrega AS float),
-                CAST(porcentaje_no_entrega AS float),
-                CAST(proyeccion AS float)
+                CAST(p_entrega AS float),
+                CAST(p_noentrega AS float),
+                CAST(proyeccion AS float),
+                pendientes_en_ruta, 
+			   CAST(p_pendientes_en_ruta AS float), 
+		       no_entregado,
+		       CAST(p_no_entregado AS float), 
+		       CAST(p_sin_ruta_beetrack AS float)
+                        
             from areati.panel_principal_ns_easy();
 
                          """)
@@ -8817,6 +8823,14 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                          """)
             return cur.fetchall()
 
+
+    def estatus_rutas_beetrack(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+           select * from rutas.estatus_rutas_beetrack();                        
+                         """)
+            return cur.fetchall()
+
     def codigos_obligatorios_dia_excel(self,fecha):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
@@ -8840,6 +8854,13 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                          """)
             return cur.fetchall()
 
+
+    def datos_excel_meli_base(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+           SELECT * from mercadolibre.datos_excel_base deb                        
+                         """)
+            return cur.fetchall()
 
 
 
