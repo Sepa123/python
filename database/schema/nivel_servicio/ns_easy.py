@@ -33,6 +33,24 @@ def panel_principal_ns_easy(easy):
 		"Anulados" : easy[5],
 		"Porcentaje_entrega" : easy[6],
 		"Porcentaje_no_entrega" : easy[7],
+        "Proyeccion" : easy[8],
+        "Pendientes" :easy [9],
+        "Porcentaje_pend_en_ruta" : easy [10],
+        "No_entregado" : easy[11],
+        "Porcentaje_no_entregado":easy[12],
+        "Porcentaje_sin_ruta_beetrack":easy[13]
+	}
+
+def panel_principal_ns(easy):
+    return {
+		"Total_entregas" : easy[0],
+		"Total_entregados" : easy[1],
+		"Entregados_hoy" : easy[2],
+		"En_ruta" : easy[3],
+		"Sin_ruta_beetrack" : easy[4],
+		"Anulados" : easy[5],
+		"Porcentaje_entrega" : easy[6],
+		"Porcentaje_no_entrega" : easy[7],
         "Proyeccion" : easy[8]
 	}
 

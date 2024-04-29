@@ -54,7 +54,7 @@ from database.models.ns_valor_ruta import asignarValor
 from database.schema.estado.ns_verificado import ns_verificados_schema
 from database.schema.nivel_servicio.ns_fecha_real import ns_por_fecha_schema , ns_por_fecha_inicial_schema
 from database.schema.nivel_servicio.ns_drivers import ns_drivers_schema
-from database.schema.nivel_servicio.ns_easy import ns_easy_schema,ns_pendientes_easy_region_schema , panel_principal_ns_easy,panel_regiones_ns_easy_schema, panel_noentregas_easy_schema
+from database.schema.nivel_servicio.ns_easy import panel_principal_ns,ns_easy_schema,ns_pendientes_easy_region_schema , panel_principal_ns_easy,panel_regiones_ns_easy_schema, panel_noentregas_easy_schema
 
 from database.models.nivel_servicio.ns_easy import  NSEasy
 import lib.excel_generico as excel
@@ -717,7 +717,7 @@ async def get_panel_principal_ns_electrolux():
     if datos is None:   
 
         results = conn.panel_principal_electrolux()
-        datos = panel_principal_ns_easy(results)
+        datos = panel_principal_ns(results)
         datos_json.guardar_datos(datos,ahora,'panel_principal_ns_electrolux')
 
     return datos
