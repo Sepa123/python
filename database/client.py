@@ -8862,8 +8862,124 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                          """)
             return cur.fetchall()
 
+    def insert_colaborador(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO transporte.colaborador
+                (id_user, ids_user, tipo_razon, razon_social, rut, celular,telefono, region, comuna, direccion, representante_legal, rut_representante_legal, email_rep_legal,chofer, peoneta)
+                VALUES(%(Id_user)s, %(Ids_user)s, %(Tipo_razon)s, %(Razon_social)s, %(Rut)s, %(Celular)s,
+                        %(Telefono)s, %(Region)s, %(Comuna)s, %(Direccion)s, %(Representante_legal)s,
+                         %(Rut_representante_legal)s, %(Email_representante_legal)s,false,false);                
+    
+                 """,data)
+            self.conn.commit()
 
+    ##Agregar PDFS a colaborador
 
+    def agregar_pdf_colab_constitucion(self,pdf, rut):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            --- PDF Constitucion
+                UPDATE transporte.colaborador
+                SET pdf_legal_contitution='{pdf}'
+                WHERE rut='{rut}'
+            """)
+            self.conn.commit()
+
+    def agregar_pdf_colab_registro_comercio(self,pdf, rut):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            ---  PDF Registro Comercio
+                UPDATE transporte.colaborador
+                SET pdf_registration_comerce='{pdf}'
+                WHERE rut='{rut}'
+            """)
+            self.conn.commit()
+
+    def agregar_pdf_colab_poderes(self,pdf, rut):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            --- PDF Vigencia Poderes
+                UPDATE transporte.colaborador
+                SET pdf_validity_of_powers='{pdf}'
+                WHERE rut='{rut}'
+            """)
+            self.conn.commit()
+
+    def agregar_pdf_colab_rrpp(self,pdf, rut):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            --- PDF RRPP
+                UPDATE transporte.colaborador
+                SET pdf_certificate_rrpp='{pdf}'
+                WHERE rut='{rut}'
+            """)
+            self.conn.commit()
+
+    def insert_detalle_pagos(self,data):
+        with self.conn.cursor() as cur:
+
+            # que es estado ???
+            cur.execute("""
+                INSERT INTO transporte.detalle_pagos
+                (id_user, ids_user, id_razon_social, rut_cuenta, titular_cuenta, numero_cuenta, banco, email, tipo_cuenta, forma_pago, pdf_documento, estado)
+                VALUES(%(Id_user)s, %(Ids_user)s, %(Id_razon_social)s, %(Rut_titular_cta_bancaria)s, %(Titular_cta)s,
+                        %(Numero_cta)s, %(Banco)s, %(Email)s, %(Tipo_cta)s,%(Forma_pago)s, '',0);                
+    
+                 """,data)
+            self.conn.commit()
+
+    def agregar_pdf_detalle_venta(self,pdf, rut):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            --- PDF RRPP
+            UPDATE transporte.detalle_pagos
+            SET pdf_documento='{pdf}'
+            WHERE id_razon_social = (select id from transporte.colaborador where rut = '{rut}' limit 1)
+            """)
+            self.conn.commit()
+
+    def insert_vehiculo_transporte(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO transporte.vehiculo
+                (razon_id, ppu, marca, tipo, modelo, ano, region, comuna, estado, activation_date, capacidad_carga_kg, capacidad_carga_m3, platform_load_capacity_kg, crane_load_capacity_kg, permiso_circulacion_fec_venc, soap_fec_venc, revision_tecnica_fec_venc, agency_id, registration_certificate, pdf_revision_tecnica, pdf_soap, pdf_padron, pdf_gases_certification, validado_por_id, validado_por_ids)
+                VALUES(%(Razon_id)s, %(Ppu)s, %(Marca)s, %(Tipo)s, %(Modelo)s, %(Ano)s, %(Region)s, %(Comuna)s, %(Estado)s, %(Activation_date)s, %(Capacidad_carga_kg)s, 
+                        %(Capacidad_carga_m3)s, %(Platform_load_capacity_kg)s, %(Crane_load_capacity_kg)s, %(Permiso_circulacion_fec_venc)s, %(Soap_fec_venc)s, 
+                        %(Revision_tecnica_fec_venc)s, %(Agency_id)s, %(Registration_certificate)s, %(Pdf_revision_tecnica)s, %(Pdf_soap)s, %(Pdf_padron)s, 
+                        %(Pdf_gases_certification)s, %(Validado_por_id)s, %(Validado_por_ids)s);               
+    
+                 """,data)
+            self.conn.commit()
+
+    def buscar_id_colab_por_rut(self,rut):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+           SELECT * from transporte.colaborador where rut = '{rut}'               
+                         """)
+            return cur.fetchone()
+        
+    def buscar_colaboradores(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+           SELECT col.id, to_char(created_at,'dd/mm/yyyy'), id_user, ids_user, to_char(date_modified,'dd/mm/yyyy'), r.nombre as "tipo razon" , razon_social, rut, celular, telefono, region, comuna, direccion, representante_legal, rut_representante_legal, email_rep_legal, direccion_comercial, pdf_legal_contitution, pdf_registration_comerce, pdf_validity_of_powers, pdf_certificate_rrpp, chofer, peoneta, abogado, seguridad, activo
+            FROM transporte.colaborador col
+            left join hela.rol r 
+            ON col.tipo_razon  = r.id ;  
+                                  
+                         """)
+            return cur.fetchall()
+        
+    def buscar_detalle_pago(self, id):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            SELECT id, created_at, id_user, ids_user, id_razon_social, rut_cuenta, titular_cuenta, numero_cuenta, banco, email, tipo_cuenta, forma_pago, pdf_documento, estado
+            FROM transporte.detalle_pagos
+            WHERE id_razon_social = {id} or rut_cuenta = '{id}';
+
+                                  
+                         """)
+            return cur.fetchall()
 
 class transyanezConnection():
     conn = None

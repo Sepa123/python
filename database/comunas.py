@@ -56,7 +56,7 @@ class ComunasConnection():
     def get_comunas_chile(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-                SELECT  comuna_name, id_region
+                SELECT  comuna_name, id_region, id_comuna
                 FROM public.op_comunas
             """)
             return cur.fetchall()
