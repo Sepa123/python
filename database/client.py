@@ -7785,7 +7785,8 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
         with self.conn.cursor() as cur:
             cur.execute("""
                 SELECT estado, descripcion
-                FROM areati.estado_entregas;             
+                FROM areati.estado_entregas
+                where estado <> 0 and estado <> 1;           
                          """)
             
             return cur.fetchall()
