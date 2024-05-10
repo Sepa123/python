@@ -1,13 +1,22 @@
-from fastapi import APIRouter,status
-from database.client import transyanezConnection
+from fastapi import APIRouter,status,UploadFile, File,HTTPException
+from database.client import transyanezConnection , reportesConnection
 from fastapi.responses import FileResponse
 from openpyxl import Workbook
 from datetime import datetime
-from os import remove
+from database.models.colaboradores.colaborador import Colaboradores,DetallesPago
+from database.models.colaboradores.vehiculos import Vehiculos
+from database.schema.transporte.colaborador import colaboradores_schema, detalle_pagos_schema
+from lib.validar_rut import valida_rut
+from lib.password import hash_password
+import psycopg2.errors
+import os
 
-router = APIRouter(tags=["transyanez"],prefix="/api/transyanez")
+router = APIRouter(tags=["transporte"],prefix="/api/transporte")
 
-conn = transyanezConnection()
+
+connTY = transyanezConnection()
+
+conn = reportesConnection()
 
 dia_actual = datetime.today().strftime('%Y-%m-%d')
 
@@ -18,7 +27,7 @@ nombre_archivo = f"resumen_vehiculos_portal_{dia_actual}".format(dia_actual)
 @router.get("/resumen_vehiculos_portal")
 async def download_resumen_vehiculos_portal():
 
-    results = conn.get_vehiculos_portal()
+    results = connTY.get_vehiculos_portal()
     wb = Workbook()
     ws = wb.active
     results.insert(0, ("Compañia","Región Origen","Patente","Estado","Tipo","Caracteristicas","Marca","Modelo","Año","Región","Comuna"))
@@ -41,3 +50,184 @@ async def download_resumen_vehiculos_portal():
     wb.save("resumen_vehiculos_portal_yyyymmdd.xlsx")
 
     return FileResponse("resumen_vehiculos_portal_yyyymmdd.xlsx")
+
+
+
+@router.post("/agregar/colaborador")
+async def agregar_nuevo_colaborador(body : Colaboradores):
+    try:
+        body.Email_representante_legal = body.Email
+        data = body.dict()
+        conn.insert_colaborador(data)
+
+        id_razon_social = conn.buscar_id_colab_por_rut(body.Rut)
+
+        print(body)
+        return {
+            "message": "Colaborador agregado correctamente",
+            "razon" : id_razon_social[0]
+
+        }
+    except psycopg2.errors.UniqueViolation as error:
+        # Manejar la excepción UniqueViolation específica
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error: El rut {body.Rut} ya se encuentra registrado")
+
+    except Exception as error:
+        print(error)
+        # Manejar otras excepciones
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error al agregar el detalle de pago.")
+
+
+
+@router.put("/actualizar/colaborador")
+async def actualizar_datos_colaborador(body : Colaboradores):
+    try:
+        body.Email_representante_legal = body.Email
+        data = body.dict()
+        conn.update_datos_colaborador(data)
+
+        id_razon_social = conn.buscar_id_colab_por_rut(body.Rut)
+
+        print(body)
+        return {
+            "message": "Colaborador actualizado correctamente",
+            "razon" : id_razon_social[0]
+
+        }
+    except psycopg2.errors.UniqueViolation as error:
+        # Manejar la excepción UniqueViolation específica
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error: El rut {body.Rut} ya se encuentra registrado")
+
+    except Exception as error:
+        print(error)
+        # Manejar otras excepciones
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error al agregar el detalle de pago.")
+    
+@router.get("/activar/colaborador")
+async def activar_colaborador(rut : str,activar: bool):
+
+    conn.activar_colab(rut,activar)
+    return {
+        "message": "Colaborador activado correctamente",
+    }
+
+
+@router.post("/agregar/colaborador/datos/banco")
+async def agregar_detalle_banco(body : DetallesPago):
+    data = body.dict()
+    conn.insert_detalle_pagos(data)
+
+    return {
+        "message": "Colaborador agregado correctamente",
+    }
+
+
+@router.put("/actualizar/colaborador/datos/banco")
+async def agregar_detalle_banco(body : DetallesPago):
+    data = body.dict()
+    conn.update_datos_detalle_pago(data)
+
+    return {
+        "message": "Colaborador actualizado correctamente",
+    }
+
+
+@router.post("/agregar/vehiculos")
+async def agregar_detalle_banco(body : Vehiculos ):
+    razon_id = conn.buscar_id_colab_por_rut(body.Rut_colaborador)[0]
+
+    body.Razon_id = razon_id
+
+    data = body.dict()
+
+    conn.insert_vehiculo_transporte(data)
+
+    return {
+        "message": "vehiculo agregado correctamente",
+    }
+
+@router.get("/ver/colaboradores")
+async def get_lista_colaboradores():
+    
+    result = conn.buscar_colaboradores()
+
+    return colaboradores_schema(result)
+
+@router.get("/buscar/colaboradores")
+async def get_lista_colaboradores(nombre : str):
+    
+    result = conn.buscar_colaboradores_por_nombre(nombre)
+
+    return colaboradores_schema(result)
+
+@router.get("/ver/detalles_pago")
+async def get_lista_colaboradores(id : str):
+    
+    result = conn.buscar_detalle_pago(id)
+
+    return detalle_pagos_schema(result)
+
+
+@router.post("/colaboradores/subir-archivo", status_code=status.HTTP_202_ACCEPTED)
+async def subir_archivo(tipo_archivo : str, nombre : str, file: UploadFile = File(...)):
+
+    directorio  = os.path.abspath(f"pdfs/transporte/colaboradores/{tipo_archivo}")
+    print(directorio)
+    nombre_hash = hash_password(tipo_archivo+nombre)
+
+    nuevo_nombre = nombre_hash +'.pdf'
+
+    ruta = os.path.join(directorio,nuevo_nombre)
+
+    with open(ruta, "wb") as f:
+        contents = await file.read()
+        # print("pase por aqui")
+        f.write(contents)
+
+    if tipo_archivo == 'cert_rrpp':
+        conn.agregar_pdf_colab_rrpp(f'pdfs/transporte/colaboradores/{tipo_archivo}/{nuevo_nombre}',nombre)
+
+    if tipo_archivo == 'cert_vig_poderes':
+        conn.agregar_pdf_colab_poderes(f'pdfs/transporte/colaboradores/{tipo_archivo}/{nuevo_nombre}',nombre)
+
+    if tipo_archivo == 'constitucion_legal':
+        conn.agregar_pdf_colab_constitucion(f'pdfs/transporte/colaboradores/{tipo_archivo}/{nuevo_nombre}',nombre)
+
+    if tipo_archivo == 'registro_comercio':
+        conn.agregar_pdf_colab_registro_comercio(f'pdfs/transporte/colaboradores/{tipo_archivo}/{nuevo_nombre}',nombre)
+
+    if tipo_archivo == 'documento_bancario':
+        conn.agregar_pdf_detalle_venta(f'pdfs/transporte/colaboradores/{tipo_archivo}/{nuevo_nombre}',nombre)
+
+    return {
+        "message" : "ok"
+    }
+
+@router.get("/descargar")
+def download_file(name_file: str):
+    nombre_file = name_file.split('/')[4]
+
+    print(name_file)
+    print(nombre_file)
+    
+    return FileResponse(name_file, filename=nombre_file)
+
+@router.post("/vehiculos/subir-archivo", status_code=status.HTTP_202_ACCEPTED)
+async def subir_archivo(tipo_archivo : str, nombre : str, file: UploadFile = File(...)):
+
+    directorio  = os.path.abspath(f"pdfs/transporte/vehiculos/{tipo_archivo}")
+    print(directorio)
+    nombre_hash = hash_password(tipo_archivo+nombre)
+
+    nuevo_nombre = nombre_hash +'.pdf'
+
+    ruta = os.path.join(directorio,nuevo_nombre)
+
+    with open(ruta, "wb") as f:
+        contents = await file.read()
+        # print("pase por aqui")
+        f.write(contents)
+
+    return {
+        "message" : "ok"
+    }

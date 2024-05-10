@@ -8869,10 +8869,35 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 (id_user, ids_user, tipo_razon, razon_social, rut, celular,telefono, region, comuna, direccion, representante_legal, rut_representante_legal, email_rep_legal,chofer, peoneta)
                 VALUES(%(Id_user)s, %(Ids_user)s, %(Tipo_razon)s, %(Razon_social)s, %(Rut)s, %(Celular)s,
                         %(Telefono)s, %(Region)s, %(Comuna)s, %(Direccion)s, %(Representante_legal)s,
-                         %(Rut_representante_legal)s, %(Email_representante_legal)s,false,false);                
+                         %(Rut_representante_legal)s, %(Email)s,false,false);                
     
                  """,data)
             self.conn.commit()
+    
+    def activar_colab(self, rut,activar):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            --- PDF Constitucion
+                UPDATE transporte.colaborador
+                SET activo={activar}
+                WHERE rut='{rut}'
+            """)
+            self.conn.commit()
+
+    def update_datos_colaborador(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            UPDATE transporte.colaborador
+            SET date_modified=CURRENT_TIMESTAMP,  celular= %(Celular)s, telefono=%(Telefono)s, region=%(Region)s, comuna= %(Comuna)s, direccion=%(Direccion)s, 
+                representante_legal=%(Representante_legal)s, rut_representante_legal=%(Rut_representante_legal)s, email_rep_legal=%(Email)s, 
+                activo=%(Activo)s
+            WHERE rut=%(Rut)s
+              
+    
+                 """,data)
+            self.conn.commit()
+
+    
 
     ##Agregar PDFS a colaborador
 
@@ -8929,6 +8954,18 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                  """,data)
             self.conn.commit()
 
+    def update_datos_detalle_pago(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            ---- actualizar datos bancos
+            UPDATE transporte.detalle_pagos
+            SET rut_cuenta=%(Rut_titular_cta_bancaria)s, titular_cuenta=%(Titular_cta)s, numero_cuenta= %(Numero_cta)s, banco=%(Banco)s, email=%(Email)s,
+                 tipo_cuenta=%(Tipo_cta)s, forma_pago=%(Forma_pago)s, estado=%(Estado)s
+            WHERE id_razon_social=%(Id_razon_social)s
+    
+                 """,data)
+            self.conn.commit()
+
     def agregar_pdf_detalle_venta(self,pdf, rut):
         with self.conn.cursor() as cur:
             cur.execute(f""" 
@@ -8943,11 +8980,10 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
         with self.conn.cursor() as cur:
             cur.execute("""
                 INSERT INTO transporte.vehiculo
-                (razon_id, ppu, marca, tipo, modelo, ano, region, comuna, estado, activation_date, capacidad_carga_kg, capacidad_carga_m3, platform_load_capacity_kg, crane_load_capacity_kg, permiso_circulacion_fec_venc, soap_fec_venc, revision_tecnica_fec_venc, agency_id, registration_certificate, pdf_revision_tecnica, pdf_soap, pdf_padron, pdf_gases_certification, validado_por_id, validado_por_ids)
+                (razon_id, ppu, marca, tipo, modelo, ano, region, comuna, estado, activation_date, capacidad_carga_kg, capacidad_carga_m3, platform_load_capacity_kg, crane_load_capacity_kg, permiso_circulacion_fec_venc, soap_fec_venc, revision_tecnica_fec_venc, agency_id, validado_por_id, validado_por_ids)
                 VALUES(%(Razon_id)s, %(Ppu)s, %(Marca)s, %(Tipo)s, %(Modelo)s, %(Ano)s, %(Region)s, %(Comuna)s, %(Estado)s, %(Activation_date)s, %(Capacidad_carga_kg)s, 
                         %(Capacidad_carga_m3)s, %(Platform_load_capacity_kg)s, %(Crane_load_capacity_kg)s, %(Permiso_circulacion_fec_venc)s, %(Soap_fec_venc)s, 
-                        %(Revision_tecnica_fec_venc)s, %(Agency_id)s, %(Registration_certificate)s, %(Pdf_revision_tecnica)s, %(Pdf_soap)s, %(Pdf_padron)s, 
-                        %(Pdf_gases_certification)s, %(Validado_por_id)s, %(Validado_por_ids)s);               
+                        %(Revision_tecnica_fec_venc)s, %(Agency_id)s, %(Validado_por_id)s, %(Validado_por_ids)s);               
     
                  """,data)
             self.conn.commit()
@@ -8955,17 +8991,29 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def buscar_id_colab_por_rut(self,rut):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
-           SELECT * from transporte.colaborador where rut = '{rut}'               
+           SELECT id from transporte.colaborador where rut = '{rut}'         
                          """)
             return cur.fetchone()
         
-    def buscar_colaboradores(self):
+    def buscar_colaboradores_por_nombre(self,nombre):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
            SELECT col.id, to_char(created_at,'dd/mm/yyyy'), id_user, ids_user, to_char(date_modified,'dd/mm/yyyy'), r.nombre as "tipo razon" , razon_social, rut, celular, telefono, region, comuna, direccion, representante_legal, rut_representante_legal, email_rep_legal, direccion_comercial, pdf_legal_contitution, pdf_registration_comerce, pdf_validity_of_powers, pdf_certificate_rrpp, chofer, peoneta, abogado, seguridad, activo
             FROM transporte.colaborador col
             left join hela.rol r 
-            ON col.tipo_razon  = r.id ;  
+            ON col.tipo_razon  = r.id  
+            where col.rut = '{nombre}' or col.razon_social like '%{nombre}%'        
+                         """)
+            return cur.fetchall()
+        
+    def buscar_colaboradores(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            SELECT col.id, to_char(col.created_at,'dd/mm/yyyy'), id_user, ids_user, to_char(col.date_modified,'dd/mm/yyyy'), r.nombre as "tipo razon" , razon_social, rut, celular, telefono, region, comuna, direccion, representante_legal, rut_representante_legal, email_rep_legal, direccion_comercial, pdf_legal_contitution, pdf_registration_comerce, pdf_validity_of_powers, pdf_certificate_rrpp, chofer, peoneta, abogado, seguridad, activo
+            FROM transporte.colaborador col
+            left join hela.rol r 
+            ON col.tipo_razon  = r.id 
+            order by col.created_at desc;  
                                   
                          """)
             return cur.fetchall()
