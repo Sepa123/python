@@ -25,7 +25,7 @@ def reemplazar_caracteres(texto,direccion_original):
     # Expresión regular para buscar caracteres no imprimibles
     patron = re.compile(r'[\x00-\x1F\x7F-\x9F]')
     
-	
+
     if(texto is None):
           return direccion_original
     
@@ -42,12 +42,6 @@ def reemplazar_caracteres(texto,direccion_original):
 
 
 def ruta_de_pendientes_con_ruta(ruta):
-     
-	print('codigo',ruta[1])
-     
-	print("texto",ruta[13])
-
-	print("texto",ruta[15])
      
 	texto = reemplazar_caracteres(ruta[13], ruta[15])
     
