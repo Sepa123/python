@@ -50,7 +50,7 @@ def ejecutar_api_defontana():
 
     print(ahora)
     # Verificar si la función ya se ejecutó hoy
-    if access_token is None or (ultima_ejecucion_token is None or ahora - ultima_ejecucion_token > timedelta(minutes=1)):
+    if access_token is None or (ultima_ejecucion_token is None or ahora - ultima_ejecucion_token > timedelta(minutes=360)):
         url_login = config('ACCESS_DEFONTA')
         # client = httpx.Client()
         print("necesito un token")
@@ -65,7 +65,7 @@ def ejecutar_api_defontana():
         print("ultima ejecucion auth:", ultima_ejecucion_token)
     fecha_formateada = ahora.strftime("%Y-%m-%d")
 
-    reqUrl = f"https://api.defontana.com/api/sale/GetSaleByDate?initialDate=2024-05-07&endingDate={fecha_formateada}&itemsPerPage=50&pageNumber=1"
+    reqUrl = f"https://api.defontana.com/api/sale/GetSaleByDate?initialDate={fecha_formateada}&endingDate={fecha_formateada}&itemsPerPage=50&pageNumber=1"
 
     if access_token is None:
         print("Por algun motivo no recupero token")
@@ -103,7 +103,6 @@ def ejecutar_api_defontana():
         lista_venta = body["saleList"]
         total_items = body["totalItems"]
         # print(lista_venta)
-        print(body)
         print('total',total_items)
         print("termino")
         count = count +1
