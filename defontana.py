@@ -103,6 +103,7 @@ def ejecutar_api_defontana():
         lista_venta = body["saleList"]
         total_items = body["totalItems"]
         # print(lista_venta)
+        print(body)
         print('total',total_items)
         print("termino")
         count = count +1
