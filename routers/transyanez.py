@@ -6,6 +6,7 @@ from datetime import datetime
 from database.models.colaboradores.colaborador import Colaboradores,DetallesPago
 from database.models.colaboradores.vehiculos import Vehiculos
 from database.schema.transporte.colaborador import colaboradores_schema, detalle_pagos_schema
+from database.schema.transporte.vehiculo import vehiculos_schema
 from lib.validar_rut import valida_rut
 from lib.password import hash_password
 import psycopg2.errors
@@ -134,9 +135,10 @@ async def agregar_detalle_banco(body : DetallesPago):
 
 @router.post("/agregar/vehiculos")
 async def agregar_detalle_banco(body : Vehiculos ):
-    razon_id = conn.buscar_id_colab_por_rut(body.Rut_colaborador)[0]
+    # razon_id = conn.buscar_id_colab_por_rut(body.Rut_colaborador)[0]
 
-    body.Razon_id = razon_id
+    body.Razon_id = 1
+    body.Estado = False
 
     data = body.dict()
 
@@ -145,6 +147,25 @@ async def agregar_detalle_banco(body : Vehiculos ):
     return {
         "message": "vehiculo agregado correctamente",
     }
+
+
+@router.put("/actualizar/datos/vehiculo")
+async def actualizar_datos_vehiculo(body : Vehiculos):
+    body.Razon_id= conn.buscar_id_colab_por_rut(body.Rut_colaborador)[0]
+    data = body.dict()
+    conn.update_datos_vehiculo(data)
+
+    return {
+        "message": "Vehiculo actualizado correctamente",
+    }
+
+@router.get("/buscar/vehiculos")
+async def get_lista_vehiculos():
+    
+    result = conn.buscar_vehiculos()
+
+    return vehiculos_schema(result)
+
 
 @router.get("/ver/colaboradores")
 async def get_lista_colaboradores():
@@ -160,12 +181,35 @@ async def get_lista_colaboradores(nombre : str):
 
     return colaboradores_schema(result)
 
+@router.get("/verificar/razon_social")
+async def verificar_razon_social(rut : str):
+    
+    result = conn.buscar_id_colab_por_rut(rut)
+
+    if result:
+        return {
+            'message': "el rut del colaborador existe",
+            'razon_id': result[0],
+            'razon_social' : result[1]
+        }
+    else:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"El rut no se encuentra registrado como colaborador")
+
+
 @router.get("/ver/detalles_pago")
 async def get_lista_colaboradores(id : str):
     
     result = conn.buscar_detalle_pago(id)
 
     return detalle_pagos_schema(result)
+
+
+@router.get("/buscar/vehiculo/{filtro}")
+async def get_lista_colaboradores(filtro : str):
+    
+    result = conn.buscar_vehiculos_por_filtro(filtro)
+
+    return vehiculos_schema(result)
 
 
 @router.post("/colaboradores/subir-archivo", status_code=status.HTTP_202_ACCEPTED)

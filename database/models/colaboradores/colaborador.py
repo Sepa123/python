@@ -19,6 +19,7 @@ class Colaboradores(BaseModel):
     Direccion_comercial :Optional[str]
     Fecha_nacimiento:  Optional[str]
     Activo : Optional[bool]
+    Giro : Optional[str]
 
 
 class DetallesPago(BaseModel):

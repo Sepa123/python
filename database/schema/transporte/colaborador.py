@@ -25,7 +25,8 @@ def colaborador(colab):
                 "Peoneta": colab[22],
                 "Abogado": colab[23],
                 "Seguridad": colab[24],
-                "Activo": colab[25]
+                "Activo": colab[25],
+                "Giro" : colab[26]
             }
 
 def colaboradores_schema(colaboradores):
