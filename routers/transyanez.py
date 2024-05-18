@@ -272,6 +272,22 @@ async def subir_archivo(tipo_archivo : str, nombre : str, file: UploadFile = Fil
         # print("pase por aqui")
         f.write(contents)
 
+    if tipo_archivo == 'cert_gases':
+        conn.agregar_pdf_vehiculo_cert_gases(f'pdfs/transporte/vehiculos/{tipo_archivo}/{nuevo_nombre}',nombre)
+
+    if tipo_archivo == 'padron':
+        conn.agregar_pdf_padron(f'pdfs/transporte/vehiculos/{tipo_archivo}/{nuevo_nombre}',nombre)
+
+    if tipo_archivo == 'permiso_circulacion':
+        conn.agregar_pdf_permiso_circulacion(f'pdfs/transporte/vehiculos/{tipo_archivo}/{nuevo_nombre}',nombre)
+
+    if tipo_archivo == 'revision_tecnica':
+        conn.agregar_pdf_revision_tecnica(f'pdfs/transporte/vehiculos/{tipo_archivo}/{nuevo_nombre}',nombre)
+
+    if tipo_archivo == 'soap':
+        conn.agregar_pdf_soap(f'pdfs/transporte/vehiculos/{tipo_archivo}/{nuevo_nombre}',nombre)
+
+
     return {
         "message" : "ok"
     }

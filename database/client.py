@@ -8942,6 +8942,66 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             """)
             self.conn.commit()
 
+    ##Agregar PDFS a Vehiculo
+
+    def agregar_pdf_vehiculo_cert_gases(self,pdf, patente):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            ---- update cert gases
+            UPDATE transporte.vehiculo
+            SET pdf_gases_certification = '{pdf}'
+            WHERE ppu= '{patente}'
+
+            """)
+            self.conn.commit()
+
+    def agregar_pdf_padron(self,pdf, patente):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            ---- update padron
+            UPDATE transporte.vehiculo
+            SET pdf_padron = '{pdf}'
+            WHERE ppu= '{patente}'
+
+            """)
+            self.conn.commit()
+    
+    def agregar_pdf_revision_tecnica(self,pdf, patente):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            ---- update revisión tecnica
+            UPDATE transporte.vehiculo
+            SET pdf_revision_tecnica  = '{pdf}'
+            WHERE ppu= '{patente}'
+
+            """)
+            self.conn.commit()
+
+    def agregar_pdf_permiso_circulacion(self,pdf, patente):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            ---- update permiso circulación
+            UPDATE transporte.vehiculo
+            SET registration_certificate  = '{pdf}'
+            WHERE ppu= '{patente}'
+
+
+            """)
+            self.conn.commit()
+
+    def agregar_pdf_soap(self,pdf, patente):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            ---- update SOAP
+            UPDATE transporte.vehiculo
+            SET pdf_soap  = '{pdf}'
+            WHERE ppu= '{patente}'
+
+
+
+            """)
+            self.conn.commit()
+
     def insert_detalle_pagos(self,data):
         with self.conn.cursor() as cur:
 
