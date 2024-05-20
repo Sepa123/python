@@ -9136,6 +9136,53 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             self.conn.commit()
 
 
+    ### conexion modalidades-operaciones (lo dejo aca porque no me dejo guardar como router)
+
+    def agregar_razon_social(self,data):
+        with self.conn.cursor() as cur:
+
+            cur.execute("""
+                INSERT INTO operacion.modalidad_operacion(id_user, ids_user, nombre, description, creation_date, update_date, estado ) 
+                VALUES (%(id_user)s, %(ids_user)s,%(nombre)s, %(description)s,%(creation_date)s,%(update_date)s,%(estado)s)
+
+                 """,data)
+            self.conn.commit()
+
+    def buscar_modalidad_operacion(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            select * from operacion.modalidad_operacion mo
+                                  
+                         """)
+            return cur.fetchall()
+
+    def filtrar_modalidad_operacion_por_nombre(self, nombre):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            select * from operacion.modalidad_operacion mo  where nombre = '{nombre}'
+                                  
+                         """)
+            return cur.fetchall()
+        
+    def delete_modalidad_operacion(self, id): 
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                DELETE FROM operacion.modalidad_operacion WHERE id = {id};
+                        """)
+            rows_delete = cur.rowcount
+        self.conn.commit() 
+        return rows_delete
+        
+
+    def actualizar_modalidad_operacion(self, estado, id): 
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                UPDATE operacion.modalidad_operacion SET estado={estado} WHERE id={id}
+                        """)
+            rows_delete = cur.rowcount
+        self.conn.commit() 
+        return rows_delete
+
 class transyanezConnection():
     conn = None
     def __init__(self) -> None:

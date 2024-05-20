@@ -11,7 +11,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 from datetime import datetime, timedelta
 from lib.password import verify_password, hash_password
 from database.models.token import TokenPayload
-from routers import inventario,areati, carga,panel, electrolux, transyanez, reportes_cargas, pedidos, productos, rutas, recepcion, comunas, clientes, toc , rsv, beetrack, easy,logistica_inversa,seguridad, meli
+from routers import inventario,areati, carga,panel, electrolux, transyanez, reportes_cargas, pedidos, productos, rutas, recepcion, comunas, clientes, toc , rsv, beetrack, easy,logistica_inversa,seguridad, meli , operaciones
 from database.schema.roles_list import roles_list_schema
 import time,re
 
@@ -58,6 +58,7 @@ app.include_router(logistica_inversa.router)
 app.include_router(inventario.router)
 app.include_router(seguridad.router)
 app.include_router(meli.router)
+app.include_router(operaciones.router)
 
 conn = UserConnection()
 hela_conn = HelaConnection()
