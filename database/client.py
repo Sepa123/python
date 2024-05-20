@@ -4158,24 +4158,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def bitacoras_rango_fecha(self, fecha_inicio : str, fecha_fin : str):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-             select 	to_char(tbm.created_at,'yyyy-mm-dd hh24:mi') as "Fec. Creación", 
-                        tbm.guia as "Guía", 
-                        tbm.cliente as "Cliente", 
-                        coalesce(tbm.comuna_correcta || '*',tbm.comuna) as "Comuna", 
-                        coalesce(tbm.direccion_correcta || '*',  (select "Calle y Número" from areati.busca_ruta_manual_base2(tbm.guia) limit 1)) as "Dirección",
-                        coalesce(to_char(tbm.fec_reprogramada,'yyyy-mm-dd') || '*', to_char(tbm.fec_compromiso,'yyyy-mm-dd')) as "Fec. Comp.", 
-                        tbm.observacion as "Observación", 
-                        tbm.ids_transyanez as "Código TY", 
-                        tbm.alerta as "Alerta",
-                        coalesce(trb.identificador,null) as en_ruta,
-                        (select "Estado Entrega" from areati.busca_ruta_manual_base2(tbm.guia) limit 1) as "Estado",
-                        tbm.ids_usuario as "Creado por"
-                from rutas.toc_bitacora_mae tbm
-                left join quadminds.ti_respuesta_beetrack trb on trb.guia = tbm.guia
-                --JOIN LATERAL areati.busca_ruta_manual_base2(trb.guia) AS fr ON true
-                where to_char(tbm.created_at,'yyyymmdd')>='{fecha_inicio}'
-                and to_char(tbm.created_at,'yyyymmdd')<='{fecha_fin}'
-                order by tbm.created_at desc 
+             select * from rutas.listar_bitacora_fechas('{fecha_inicio}','{fecha_fin}')
                         """)
             return cur.fetchall()
         
