@@ -3,10 +3,12 @@ from database.client import transyanezConnection , reportesConnection
 from fastapi.responses import FileResponse
 from openpyxl import Workbook
 from datetime import datetime
+from database.models.colaboradores.bitacora import BitacoraTransporte
 from database.models.colaboradores.colaborador import Colaboradores,DetallesPago
 from database.models.colaboradores.vehiculos import Vehiculos
 from database.schema.transporte.colaborador import colaboradores_schema, detalle_pagos_schema
 from database.schema.transporte.vehiculo import vehiculos_schema
+from database.schema.transporte.estado import estados_transporte_schema
 from lib.validar_rut import valida_rut
 from lib.password import hash_password
 import psycopg2.errors
@@ -291,3 +293,19 @@ async def subir_archivo(tipo_archivo : str, nombre : str, file: UploadFile = Fil
     return {
         "message" : "ok"
     }
+
+@router.post("/registrar/bitacora")
+async def registrar_bitacora_transporte(body : BitacoraTransporte ):
+    data = body.dict()
+    conn.insert_vehiculo_transporte(data)
+
+    return {
+        "message": "registro realizado correctamente",
+    }
+
+@router.get("/estados")
+async def get_estados_transporte():
+    result = conn.obtener_estados_transporte()
+    return estados_transporte_schema(result)
+
+

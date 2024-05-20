@@ -20,6 +20,14 @@ class Colaboradores(BaseModel):
     Fecha_nacimiento:  Optional[str]
     Activo : Optional[bool]
     Giro : Optional[str]
+    Chofer : Optional[bool]
+    Peoneta : Optional[bool]
+    Abogado : Optional[int]
+    Seguridad : Optional[int]
+    Modificacion: Optional[str]
+    Latitud: Optional[str]
+    Longitud: Optional[str]
+    Origen: Optional[str]
 
 
 class DetallesPago(BaseModel):

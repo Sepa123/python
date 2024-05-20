@@ -8891,13 +8891,20 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             UPDATE transporte.colaborador
             SET date_modified=CURRENT_TIMESTAMP,  celular= %(Celular)s, telefono=%(Telefono)s, region=%(Region)s, comuna= %(Comuna)s, direccion=%(Direccion)s, 
                 representante_legal=%(Representante_legal)s, rut_representante_legal=%(Rut_representante_legal)s, email_rep_legal=%(Email)s, 
-                activo=%(Activo)s , giro=%(Giro)s
+                activo=%(Activo)s , giro=%(Giro)s, abogado=%(Abogado)s , seguridad=%(Seguridad)s,chofer=%(Chofer)s, peoneta=%(Peoneta)s
             WHERE rut=%(Rut)s
               
-    
                  """,data)
             self.conn.commit()
 
+    def obtener_estados_transporte(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+             SELECT id, estado
+             FROM transporte.estado;                     
+                         """)
+            return cur.fetchall()
+        
     
 
     ##Agregar PDFS a colaborador
@@ -9132,6 +9139,19 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                                   
                          """)
             return cur.fetchall()
+
+    def registrar_bitacora_transporte(self,data):
+        with self.conn.cursor() as cur:
+
+            cur.execute("""
+                INSERT INTO transporte.bitacora_general
+                (id_usuario, ids_usuario, modificacion, latitud, longitud, origen)
+                VALUES(%(Id_user)s, %(Ids_user)s, %(Modificacion)s, %(Latitud)s, %(Longitud)s, 
+                       %(Origen)s);
+ 
+                 """,data)
+            self.conn.commit()
+
 
 class transyanezConnection():
     conn = None
