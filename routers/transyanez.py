@@ -337,7 +337,9 @@ async def subir_archivo(tipo_archivo : str, nombre : str, file: UploadFile = Fil
 
 @router.post("/agregar/usuario")
 async def agregar_detalle_banco(body : Usuario ):
-    # razon_id = conn.buscar_id_colab_por_rut(body.Rut_colaborador)[0]
+    razon_id = conn.buscar_id_colab_por_rut(body.Rut)[0]
+
+    body.Id_razon_social=razon_id
     data = body.dict()
 
     conn.agregar_usuario_transporte(data)
