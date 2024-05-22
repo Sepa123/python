@@ -9182,6 +9182,31 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             rows_delete = cur.rowcount
         self.conn.commit() 
         return rows_delete
+    
+
+    def agregar_usuario_transporte(self,data):
+        with self.conn.cursor() as cur:
+
+            cur.execute("""
+                INSERT INTO transporte.usuarios
+                ( id_ingreso_hela, id_user, ids_user, id_razon_social, nombre_completo, rut, nroseriecedula, email, telefono, birthday, region, comuna, domicilio, 
+                tipo_usuario, fec_venc_lic_conducir, activo, validacion_seguridad, validacion_transporte)
+                VALUES( 0, %(Id_user)s, %(Ids_user)s,%(Id_ingreso_hela)s, %(Nombre_completo)s, %(Rut)s,%(Nro_serie_cedula)s,  %(Email)s,%(Telefono)s,%(Birthday)s, 
+                        %(Region)s, %(Comuna)s,%(Domicilio)s, %(Tipo_usuario)s,%(Fec_venc_lic_conducir)s, %(Activo)s, %(Validacion_seguridad)s, %(Validacion_transporte)s);
+
+                 """,data)
+            self.conn.commit()
+
+    def lista_usuario_transporte(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            SELECT id, created_at, id_ingreso_hela, id_user, ids_user, id_razon_social, jpg_foto_perfil, nombre_completo, rut, nroseriecedula, email, telefono, birthday, 
+                   region, comuna, domicilio, tipo_usuario, pdf_antecedentes, pdf_licencia_conducir, fec_venc_lic_conducir, pdf_cedula_identidad, pdf_contrato, activo, 
+                   validacion_seguridad, validacion_transporte
+            FROM transporte.usuarios;
+                                  
+                         """)
+            return cur.fetchall()
 
 class transyanezConnection():
     conn = None

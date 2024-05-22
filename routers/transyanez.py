@@ -6,8 +6,10 @@ from datetime import datetime
 from database.models.colaboradores.bitacora import BitacoraTransporte
 from database.models.colaboradores.colaborador import Colaboradores,DetallesPago
 from database.models.colaboradores.vehiculos import Vehiculos
+from database.models.colaboradores.persona import Usuario
 from database.schema.transporte.colaborador import colaboradores_schema, detalle_pagos_schema
 from database.schema.transporte.vehiculo import vehiculos_schema
+from database.schema.transporte.usuario import usuarios_transporte_schema
 from database.schema.transporte.estado import estados_transporte_schema
 from lib.validar_rut import valida_rut
 from lib.password import hash_password
@@ -333,3 +335,18 @@ async def subir_archivo(tipo_archivo : str, nombre : str, file: UploadFile = Fil
     }
 
 
+@router.post("/agregar/usuario")
+async def agregar_detalle_banco(body : Usuario ):
+    # razon_id = conn.buscar_id_colab_por_rut(body.Rut_colaborador)[0]
+    data = body.dict()
+
+    conn.agregar_usuario_transporte(data)
+
+    return {
+        "message": "Usuario agregado correctamente",
+    }
+
+@router.get("/usuarios")
+async def get_usuarios_transporte():
+    result = conn.lista_usuario_transporte()
+    return usuarios_transporte_schema(result)
