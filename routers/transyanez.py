@@ -350,3 +350,19 @@ async def agregar_detalle_banco(body : Usuario ):
 async def get_usuarios_transporte():
     result = conn.lista_usuario_transporte()
     return usuarios_transporte_schema(result)
+
+
+@router.get("/tripulacion/tipo")
+async def get_tipo_tripulacion():
+    return [
+                {
+                "Id" : 1,
+                "Tripulacion" : "Chofer"
+                },
+                {
+                    "Id" : 2,
+                    "Tripulacion" : "Peoneta"
+                }
+            ]
+
+    
