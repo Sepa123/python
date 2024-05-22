@@ -308,4 +308,28 @@ async def get_estados_transporte():
     result = conn.obtener_estados_transporte()
     return estados_transporte_schema(result)
 
+@router.post("/usuario/subir-imagen", status_code=status.HTTP_202_ACCEPTED)
+async def subir_archivo(tipo_archivo : str, nombre : str, file: UploadFile = File(...)):
+
+    directorio  = os.path.abspath(f"pdfs/transporte/vehiculos/{tipo_archivo}")
+    print(directorio)
+    # nombre_hash = hash_password(tipo_archivo+nombre)
+
+    nuevo_nombre = nombre
+
+    ruta = os.path.join(directorio,nuevo_nombre)
+
+    with open(ruta, "wb") as f:
+        contents = await file.read()
+        # print("pase por aqui")
+        f.write(contents)
+
+
+    conn.agregar_pdf_vehiculo_cert_gases(f'pdfs/transporte/vehiculos/{tipo_archivo}/{nuevo_nombre}',nombre)
+
+
+    return {
+        "message" : "ok"
+    }
+
 

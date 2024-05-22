@@ -4110,7 +4110,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             select to_char(tbm.created_at,'yyyy-mm-dd') as "Fec. Creación", 
             tbm.guia as "Guía", 
             tbm.cliente as "Cliente", 
-            coalesce(tbm.comuna_correcta || '*',tbm.comuna) as "Comuna", 
+            coalesce(coalesce(tbm.comuna_correcta || '*',tbm.comuna), 'sin Info.') as "Comuna", 
             coalesce(tbm.direccion_correcta || '*',  (select "Calle y Número" from areati.busca_ruta_manual_base2(tbm.guia) limit 1)) as "Dirección",
             coalesce(to_char(tbm.fec_reprogramada,'yyyy-mm-dd') || '*', to_char(tbm.fec_compromiso,'yyyy-mm-dd')) as "Fec. Comp.", 
             tbm.observacion as "Observación", 
