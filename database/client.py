@@ -9073,6 +9073,33 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
            SELECT id, razon_social  from transporte.colaborador where rut = '{rut}'         
                          """)
             return cur.fetchone()
+    
+    ### esto es para mostrar los datos de los colab en formularios y rellenar
+    def buscar_colab_registrados(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+           select id, razon_social, region ,comuna ,telefono  from transporte.colaborador        
+                         """)
+            return cur.fetchone()
+        
+    ### Verificar que el colaborador no se encuentre registrado en una tabla 
+
+    def verificar_colab_registrado_tripulacion(self,rut):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+           SELECT *  from transporte.usuarios u  where rut = '{rut}' 
+       
+                         """)
+            return cur.fetchone()
+    
+    def verificar_colab_registrado_vehiculos(self,rut):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+           SELECT *  from transporte.vehiculos u  where rut = '{rut}' 
+       
+                         """)
+            return cur.fetchone()
+
         
     def buscar_colaboradores_por_nombre(self,nombre):
         with self.conn.cursor() as cur:
@@ -9184,6 +9211,9 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
         return rows_delete
     
 
+    ### ingresar usuarios de transporte (tripulacion)
+    
+
     def agregar_usuario_transporte(self,data):
         with self.conn.cursor() as cur:
 
@@ -9193,6 +9223,23 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 tipo_usuario, fec_venc_lic_conducir, activo, validacion_seguridad, validacion_transporte)
                 VALUES( %(Id_ingreso_hela)s, %(Id_user)s, %(Ids_user)s,%(Id_razon_social)s, %(Nombre_completo)s, %(Rut)s,%(Nro_serie_cedula)s,  %(Email)s,%(Telefono)s,%(Birthday)s, 
                         %(Region)s, %(Comuna)s,%(Domicilio)s, %(Tipo_usuario)s,%(Fec_venc_lic_conducir)s, %(Activo)s, %(Validacion_seguridad)s, %(Validacion_transporte)s);
+
+                 """,data)
+            self.conn.commit()
+    
+    def update_datos_usuario(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+
+                        
+            UPDATE transporte.usuarios
+            SET nombre_completo=%(Nombre_completo)s, nroseriecedula=%(Nro_serie_cedula)s, email=%(Email)s, telefono= %(Telefono)s, birthday=%(Birthday)s, 
+            region=%(Region)s, comuna= %(Comuna)s, domicilio=%(Domicilio)s, tipo_usuario=%(Tipo_usuario)s, fec_venc_lic_conducir=%(Fec_venc_lic_conducir)s, 
+            validacion_seguridad=%(Validacion_seguridad)s, validacion_transporte= %(Validacion_transporte)s
+            
+            WHERE  rut=%(Rut)s
+
+
 
                  """,data)
             self.conn.commit()
@@ -9207,6 +9254,63 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                                   
                          """)
             return cur.fetchall()
+        
+    
+
+    ### agregar ruta de documentos
+
+
+    def agregar_jpg_foto_perfil(self,jpg, rut):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            --- PDF RRPP
+            UPDATE transporte.usuarios
+            SET jpg_foto_perfil='{jpg}'
+            WHERE id_razon_social = (select id from transporte.colaborador where rut = '{rut}' limit 1)
+            """)
+            self.conn.commit()
+
+    def agregar_pdf_contrato(self,pdf, rut):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            --- PDF RRPP
+            UPDATE transporte.usuarios
+            SET pdf_contrato='{pdf}'
+            WHERE id_razon_social = (select id from transporte.colaborador where rut = '{rut}' limit 1)
+            """)
+            self.conn.commit()
+
+    def agregar_pdf_cedula_identidad(self,pdf, rut):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            --- PDF RRPP
+            UPDATE transporte.usuarios
+            SET pdf_cedula_identidad='{pdf}'
+            WHERE id_razon_social = (select id from transporte.colaborador where rut = '{rut}' limit 1)
+            """)
+            self.conn.commit()
+
+    def agregar_pdf_licencia_conducir(self,pdf, rut):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            --- PDF RRPP
+            UPDATE transporte.usuarios
+            SET pdf_licencia_conducir='{pdf}'
+            WHERE id_razon_social = (select id from transporte.colaborador where rut = '{rut}' limit 1)
+            """)
+            self.conn.commit()
+    
+    def agregar_pdf_antecedentes(self,pdf, rut):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            --- PDF RRPP
+            UPDATE transporte.usuarios
+            SET pdf_antecedentes='{pdf}'
+            WHERE id_razon_social = (select id from transporte.colaborador where rut = '{rut}' limit 1)
+            """)
+            self.conn.commit()
+
+
 
 class transyanezConnection():
     conn = None

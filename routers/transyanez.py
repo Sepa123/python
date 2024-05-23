@@ -253,12 +253,12 @@ async def subir_archivo(tipo_archivo : str, nombre : str, file: UploadFile = Fil
 
 @router.get("/descargar")
 def download_file(name_file: str):
-    nombre_file = name_file.split('/')[4]
+    # nombre_file = name_file.split('/')[4]
 
     print(name_file)
-    print(nombre_file)
+    # print(nombre_file)
     
-    return FileResponse(name_file, filename=nombre_file)
+    return FileResponse(name_file)
 
 @router.post("/vehiculos/subir-archivo", status_code=status.HTTP_202_ACCEPTED)
 async def subir_archivo(tipo_archivo : str, nombre : str, file: UploadFile = File(...)):
@@ -310,10 +310,10 @@ async def get_estados_transporte():
     result = conn.obtener_estados_transporte()
     return estados_transporte_schema(result)
 
-@router.post("/usuario/subir-imagen", status_code=status.HTTP_202_ACCEPTED)
-async def subir_archivo(tipo_archivo : str, nombre : str, file: UploadFile = File(...)):
+@router.post("/usuario/subir-archivo", status_code=status.HTTP_202_ACCEPTED)
+async def subir_archivo_usuario(tipo_archivo : str, nombre : str, file: UploadFile = File(...)):
 
-    directorio  = os.path.abspath(f"pdfs/transporte/vehiculos/{tipo_archivo}")
+    directorio  = os.path.abspath(f"pdfs/transporte/usuarios/{tipo_archivo}")
     print(directorio)
     # nombre_hash = hash_password(tipo_archivo+nombre)
 
@@ -327,7 +327,17 @@ async def subir_archivo(tipo_archivo : str, nombre : str, file: UploadFile = Fil
         f.write(contents)
 
 
-    conn.agregar_pdf_vehiculo_cert_gases(f'pdfs/transporte/vehiculos/{tipo_archivo}/{nuevo_nombre}',nombre)
+    if tipo_archivo == 'cedula_identidad':
+        conn.agregar_pdf_cedula_identidad(f'pdfs/transporte/usuarios/{tipo_archivo}/{nuevo_nombre}',nombre)
+
+    if tipo_archivo == 'cert_antecedentes':
+        conn.agregar_pdf_antecedentes(f'pdfs/transporte/usuarios/{tipo_archivo}/{nuevo_nombre}',nombre)
+
+    if tipo_archivo == 'contrato':
+        conn.agregar_pdf_contrato(f'pdfs/transporte/usuarios/{tipo_archivo}/{nuevo_nombre}',nombre)
+
+    if tipo_archivo == 'licencia_conducir':
+        conn.agregar_pdf_licencia_conducir(f'pdfs/transporte/usuarios/{tipo_archivo}/{nuevo_nombre}',nombre)
 
 
     return {
@@ -348,6 +358,16 @@ async def agregar_detalle_banco(body : Usuario ):
         "message": "Usuario agregado correctamente",
     }
 
+@router.put("/actualizar/datos/usuario")
+async def actualizar_datos_usuario(body : Usuario):
+    # body.Razon_id= conn.buscar_id_colab_por_rut(body.Rut_colaborador)[0]
+    data = body.dict()
+    conn.update_datos_usuario(data)
+
+    return {
+        "message": "Usuario actualizado correctamente",
+    }
+
 @router.get("/usuarios")
 async def get_usuarios_transporte():
     result = conn.lista_usuario_transporte()
@@ -358,8 +378,8 @@ async def get_usuarios_transporte():
 async def get_tipo_tripulacion():
     return [
                 {
-                "Id" : 1,
-                "Tripulacion" : "Chofer"
+                    "Id" : 1,
+                    "Tripulacion" : "Chofer"
                 },
                 {
                     "Id" : 2,
@@ -367,4 +387,52 @@ async def get_tipo_tripulacion():
                 }
             ]
 
-    
+
+@router.post("/subir/foto-perfil", status_code=status.HTTP_202_ACCEPTED)
+async def subir_archivo(nombre : str, file: UploadFile = File(...)):
+
+    directorio  = os.path.abspath(f"image/foto_perfil")
+    # print(directorio)
+    # nombre_hash = hash_password(tipo_archivo+nombre)
+
+    ruta = os.path.join(directorio,file.filename)
+
+    with open(ruta, "wb") as f:
+        contents = await file.read()
+        # print("pase por aqui")
+        f.write(contents)
+
+
+    conn.agregar_jpg_foto_perfil(f'image/foto_perfil/{file.filename}',nombre)
+
+
+    return {
+        "message" : "ok"
+    }
+
+
+# buscar_colab_registrados
+@router.get("/verificar/colab/vehiculo")
+async def verificar_colab_registrado_vehiculos(rut : str):
+    result = conn.verificar_colab_registrado_vehiculos(rut)
+    if len(result) == 0:
+        return {
+            "message": 'el colaborador no se encuentra registrado en vehiculos'
+        }
+    else:
+        return {
+            "message": 'el colaborador ya se encuentra registrado en vehiculos'
+        }
+
+# buscar_colab_registrados
+@router.get("/verificar/colab/tripulacion")
+async def verificar_colab_registrado_vehiculos(rut : str):
+    result = conn.verificar_colab_registrado_vehiculos(rut)
+    if len(result) == 0:
+        return {
+            "message": 'el colaborador no se encuentra registrado en tripulacion'
+        }
+    else:
+        return {
+            "message": 'el colaborador ya se encuentra registrado en tripulacion'
+        }
