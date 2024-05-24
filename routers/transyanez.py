@@ -128,7 +128,7 @@ async def agregar_detalle_banco(body : DetallesPago):
 
 
 @router.put("/actualizar/colaborador/datos/banco")
-async def agregar_detalle_banco(body : DetallesPago):
+async def actualizar_detalle_banco(body : DetallesPago):
     data = body.dict()
     conn.update_datos_detalle_pago(data)
 
@@ -138,10 +138,10 @@ async def agregar_detalle_banco(body : DetallesPago):
 
 
 @router.post("/agregar/vehiculos")
-async def agregar_detalle_banco(body : Vehiculos ):
-    # razon_id = conn.buscar_id_colab_por_rut(body.Rut_colaborador)[0]
+async def agregar_datos_vehiculos(body : Vehiculos ):
+    razon_id = conn.buscar_id_colab_por_rut(body.Rut_colaborador)[0]
 
-    body.Razon_id = 1
+    body.Razon_id = razon_id
     body.Estado = False
 
     data = body.dict()
