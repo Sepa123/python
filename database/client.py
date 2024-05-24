@@ -9192,7 +9192,8 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def filtrar_modalidad_operacion_por_nombre(self, nombre):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
-            select * from operacion.modalidad_operacion mo  where nombre = '{nombre}'
+            select * from operacion.modalidad_operacion mo  
+            where id = {nombre} or nombre like '%{nombre}%' 
                                   
                          """)
             return cur.fetchall()
