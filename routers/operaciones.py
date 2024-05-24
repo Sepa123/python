@@ -3,6 +3,8 @@ from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from database.client import reportesConnection
 from database.models.operaciones.modalidad_operacion import RazonSocial, updateApp
+from database.models.operaciones.centro_operacion import CentroOperacion
+from database.schema.operaciones.centro_operacion import centro_operacion_schema
 import psycopg2
 import uvicorn
 
@@ -95,3 +97,26 @@ async def actualizar_estado(ud: updateApp):
 
         return {"message": "Datos Ingresados Correctamente"}
     except Exception as e: raise HTTPException(status_code=500, detail=str(e))
+
+
+
+@router.post("/agregar/centro_operacion")
+async def Agregar_centro_operacion(body: CentroOperacion):
+    try:
+        data = body.dict()
+        conn.agregar_centro_operacion(data)
+
+        return {"message": "Datos Ingresados Correctamente"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+
+
+@router.get("/ver/centro_operacion")
+async def get_centro_operacion():
+     # Consulta SQL para obtener datos (por ejemplo)
+    results = conn.mostrar_centros_operacion()
+
+
+    return centro_operacion_schema(results)
+    

@@ -9316,6 +9316,28 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             """)
             self.conn.commit()
 
+    #### agregar Centro de operacion
+    def agregar_centro_operacion(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute(""" 
+            INSERT INTO operacion.centro_operacion
+            (id_user, ids_user, centro, descripcion, region)
+            VALUES(%(Id_user)s, %(Ids_user)s, %(Centro)s, %(Descripcion)s,%(Region)s);
+
+            """, data)
+            self.conn.commit()
+
+
+    def mostrar_centros_operacion(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            SELECT id, created_at, id_user, ids_user, id_op, centro, descripcion, region
+            FROM operacion.centro_operacion;
+
+                                  
+                         """)
+            return cur.fetchall()
+
 
 
 class transyanezConnection():
