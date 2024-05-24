@@ -9323,7 +9323,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             cur.execute(""" 
             INSERT INTO operacion.centro_operacion
             (id_user, ids_user, centro, descripcion, region, id_op)
-            VALUES(%(Id_user)s, %(Ids_user)s, %(Centro)s, %(Descripcion)s,%(Region)s, %(sId_op)s);
+            VALUES(%(Id_user)s, %(Ids_user)s, %(Centro)s, %(Descripcion)s,%(Region)s, %(Id_op)s);
 
             """, data)
             self.conn.commit()
