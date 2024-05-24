@@ -8043,7 +8043,13 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def revisar_nivel_servicio_fec_real(self,fecha : str):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-                select * from rutas.nivel_servicio_fec_real('{fecha}');
+                select 
+                    ns.cliente,
+                    coalesce(ns.compromiso_real, 0),
+                    coalesce(ns.entregados,0),
+                    coalesce(ns.anulados,0),
+                    coalesce(ns.nivel_servicio,0)
+                from rutas.nivel_servicio_fec_real('{fecha}') as ns;
                          """)
             return cur.fetchall()
         
