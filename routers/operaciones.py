@@ -113,9 +113,9 @@ async def Agregar_centro_operacion(body: CentroOperacion):
 
 
 @router.get("/ver/centro_operacion")
-async def get_centro_operacion():
+async def get_centro_operacion(id_op : int):
      # Consulta SQL para obtener datos (por ejemplo)
-    results = conn.mostrar_centros_operacion()
+    results = conn.mostrar_centros_operacion(id_op)
 
 
     return centro_operacion_schema(results)

@@ -9329,14 +9329,14 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             self.conn.commit()
 
 
-    def mostrar_centros_operacion(self):
+    def mostrar_centros_operacion(self,id_op):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
             
                 SELECT id, created_at, id_user, ids_user, id_op, centro, descripcion, r.region_name 
                 FROM operacion.centro_operacion co
                 left join public.op_regiones r on co.region::VARCHAR = r.id_region 
-
+                where id_op = {id_op}
 
                                   
                          """)
