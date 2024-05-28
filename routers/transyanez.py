@@ -144,9 +144,20 @@ async def agregar_datos_vehiculos(body : Vehiculos ):
     body.Razon_id = razon_id
     body.Estado = False
 
+    if body.Id_gps == True:
+        data_gps= body.dict()
+        conn.agregar_datos_gps(data_gps)
+        id_gps = conn.get_max_id_gps()[0]
+
+        body.Id_gps = id_gps
+    else:
+        body.Id_gps = None
+
     data = body.dict()
 
     conn.insert_vehiculo_transporte(data)
+
+    
 
     return {
         "message": "vehiculo agregado correctamente",
@@ -156,6 +167,27 @@ async def agregar_datos_vehiculos(body : Vehiculos ):
 @router.put("/actualizar/datos/vehiculo")
 async def actualizar_datos_vehiculo(body : Vehiculos):
     body.Razon_id= conn.buscar_id_colab_por_rut(body.Rut_colaborador)[0]
+    ### si se clickeo el gps
+    if body.Gps == True:
+        if body.Id_gps == None:
+            data_gps= body.dict()
+            conn.agregar_datos_gps(data_gps)
+            id_gps = conn.get_max_id_gps()[0]
+
+            body.Id_gps = id_gps
+        else:
+            data_gps= body.dict()
+            conn.actualizar_datos_gps(data_gps)
+    ### si no se clickeo el gps
+    elif body.Gps == False:
+        if body.Id_gps != None:
+            data_gps= body.dict()
+            conn.actualizar_datos_gps_si_se_desactiva_gps(data_gps)
+        else:
+            body.Id_gps = None
+    else:
+        body.Id_gps = None
+
     data = body.dict()
     conn.update_datos_vehiculo(data)
 

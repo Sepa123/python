@@ -9037,10 +9037,11 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
         with self.conn.cursor() as cur:
             cur.execute("""
                 INSERT INTO transporte.vehiculo
-                (razon_id, ppu, marca, tipo, modelo, ano, region, comuna, estado, activation_date, capacidad_carga_kg, capacidad_carga_m3, platform_load_capacity_kg, crane_load_capacity_kg, permiso_circulacion_fec_venc, soap_fec_venc, revision_tecnica_fec_venc, agency_id, validado_por_id, validado_por_ids)
+                (razon_id, ppu, marca, tipo, modelo, ano, region, comuna, estado, activation_date, capacidad_carga_kg, capacidad_carga_m3, platform_load_capacity_kg, 
+                crane_load_capacity_kg, permiso_circulacion_fec_venc, soap_fec_venc, revision_tecnica_fec_venc, agency_id, validado_por_id, validado_por_ids, gps, gps_id)
                 VALUES(%(Razon_id)s, %(Ppu)s, %(Marca)s, %(Tipo)s, %(Modelo)s, %(Ano)s, %(Region)s, %(Comuna)s, %(Estado)s, %(Activation_date)s, %(Capacidad_carga_kg)s, 
                         %(Capacidad_carga_m3)s, %(Platform_load_capacity_kg)s, %(Crane_load_capacity_kg)s, %(Permiso_circulacion_fec_venc)s, %(Soap_fec_venc)s, 
-                        %(Revision_tecnica_fec_venc)s, %(Agency_id)s, %(Id_user)s, %(Ids_user)s);               
+                        %(Revision_tecnica_fec_venc)s, %(Agency_id)s, %(Id_user)s, %(Ids_user)s,%(Gps)s,%(Id_gps)s);               
     
                  """,data)
             self.conn.commit()
@@ -9054,7 +9055,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             capacidad_carga_kg=%(Capacidad_carga_kg)s, capacidad_carga_m3=%(Capacidad_carga_m3)s, platform_load_capacity_kg=%(Platform_load_capacity_kg)s, 
             crane_load_capacity_kg=%(Crane_load_capacity_kg)s, permiso_circulacion_fec_venc=%(Permiso_circulacion_fec_venc)s, soap_fec_venc=%(Soap_fec_venc)s, 
             revision_tecnica_fec_venc=%(Revision_tecnica_fec_venc)s,
-            validado_por_id=%(Id_user)s, validado_por_ids=%(Ids_user)s
+            validado_por_id=%(Id_user)s, validado_por_ids=%(Ids_user)s, gps=%(Gps)s
             WHERE ppu=%(Ppu)s
                  """,data)
             self.conn.commit()
@@ -9341,6 +9342,52 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                                   
                          """)
             return cur.fetchall()
+
+
+    ####Agregar datos GPS Vehiculo
+
+    def agregar_datos_gps(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute(""" 
+            INSERT INTO transporte.gps
+            (imei, fec_instalacion, oc_instalacion, id_user, ids_user)
+            VALUES( %(Imei)s, %(Fecha_instalacion)s,%(Oc_instalacion)s,%(Id_user)s, %(Ids_user)s);
+
+            """, data)
+            self.conn.commit()
+
+    ### actualiza datos si se actualizan los datos del gps
+    def actualizar_datos_gps(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute(""" 
+                        
+            UPDATE transporte.gps
+            SET  imei= %(Imei)s, fec_instalacion=%(Fecha_instalacion)s, oc_instalacion=%(Oc_instalacion)s, 
+                id_user=%(Id_user)s, ids_user=%(Ids_user)s
+            WHERE id=%(Id_gps)s
+
+            """, data)
+            self.conn.commit()
+
+ ### actualiza datos si se desactivan los datos del gps
+    def actualizar_datos_gps_si_se_desactiva_gps(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute(""" 
+                        
+            UPDATE transporte.gps
+            SET imei= %(Imei)s, fec_baja=CURRENT_DATE, oc_baja=%(Oc_instalacion)s
+            WHERE id=%(Id_gps)s
+
+            """, data)
+            self.conn.commit()
+
+    def get_max_id_gps(self) :
+        with self.conn.cursor() as cur:
+            cur.execute("""
+              select coalesce (max(id)+1,1) from transporte.gps g
+            """)
+
+            return cur.fetchone()
 
 
 
