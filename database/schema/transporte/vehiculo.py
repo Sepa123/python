@@ -30,6 +30,13 @@ def vehiculo(vehiculo):
             "Validado_por_ids": vehiculo[27],
             "Razon_social": vehiculo[28],
             "Rut": vehiculo[29],
+            "Gps": vehiculo[30],
+            "Id_gps": vehiculo[31],
+            "Imei": vehiculo[32],
+            "Oc_instalacion": vehiculo[33],
+            "Fecha_instalacion": vehiculo[34],
+            "Hab_seguridad" : vehiculo[35],
+            "Hab_vehiculo" : vehiculo[36]
         }
 
 def vehiculos_schema(colaboradores):
