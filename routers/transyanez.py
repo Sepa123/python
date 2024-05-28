@@ -142,7 +142,6 @@ async def agregar_datos_vehiculos(body : Vehiculos ):
     razon_id = conn.buscar_id_colab_por_rut(body.Rut_colaborador)[0]
 
     body.Razon_id = razon_id
-    body.Estado = False
 
     if body.Id_gps == True:
         data_gps= body.dict()
