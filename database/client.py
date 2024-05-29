@@ -9375,12 +9375,12 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
         with self.conn.cursor() as cur:
             cur.execute(f"""   
             
-                SELECT co.id, co.created_at, co.id_user, co.ids_user, co.id_op, co.centro,
-		                co.descripcion, r.region_name, po.estado
+                SELECT co.id, co.created_at, co.id_user, co.ids_user, co.id_op, co.centro, 
+                    co.descripcion, r.region_name,
+                    (SELECT estado FROM transporte.ppu_operacion ppu WHERE ppu.id_operacion = co.id_op AND ppu.id_ppu = {id_vehiculo} LIMIT 1) AS estado
                 FROM operacion.centro_operacion co
-                left join public.op_regiones r on co.region::VARCHAR = r.id_region 
-                left join transporte.ppu_operacion po on co.id_op = po.id_operacion 
-                where co.id_op = {id_op} and po.id_ppu = {id_vehiculo}
+                LEFT JOIN public.op_regiones r ON co.region::VARCHAR = r.id_region 
+                WHERE co.id_op = {id_op};
             
                          """)
             return cur.fetchall()
