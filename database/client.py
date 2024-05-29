@@ -9055,7 +9055,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             capacidad_carga_kg=%(Capacidad_carga_kg)s, capacidad_carga_m3=%(Capacidad_carga_m3)s, platform_load_capacity_kg=%(Platform_load_capacity_kg)s, 
             crane_load_capacity_kg=%(Crane_load_capacity_kg)s, permiso_circulacion_fec_venc=%(Permiso_circulacion_fec_venc)s, soap_fec_venc=%(Soap_fec_venc)s, 
             revision_tecnica_fec_venc=%(Revision_tecnica_fec_venc)s,
-            validado_por_id=%(Id_user)s, validado_por_ids=%(Ids_user)s, gps=%(Gps)s
+            validado_por_id=%(Id_user)s, validado_por_ids=%(Ids_user)s, gps=%(Gps)s, gps_id=%(Id_gps)s
             WHERE ppu=%(Ppu)s
                  """,data)
             self.conn.commit()
