@@ -33,8 +33,8 @@ def vehiculo(vehiculo):
             "Gps": vehiculo[30],
             "Id_gps": vehiculo[31],
             "Imei": vehiculo[32],
-            "Oc_instalacion": vehiculo[33],
-            "Fecha_instalacion": vehiculo[34],
+            "Fecha_instalacion": vehiculo[33],
+            "Oc_instalacion": vehiculo[34],
             "Hab_seguridad" : vehiculo[35],
             "Hab_vehiculo" : vehiculo[36]
         }

@@ -140,13 +140,14 @@ async def actualizar_detalle_banco(body : DetallesPago):
 @router.post("/agregar/vehiculos")
 async def agregar_datos_vehiculos(body : Vehiculos ):
     razon_id = conn.buscar_id_colab_por_rut(body.Rut_colaborador)[0]
-
+    
     body.Razon_id = razon_id
-
-    if body.Id_gps == True:
+    print(body)
+    if body.Gps == True:
         data_gps= body.dict()
         conn.agregar_datos_gps(data_gps)
         id_gps = conn.get_max_id_gps()[0]
+        print(id_gps)
 
         body.Id_gps = id_gps
     else:

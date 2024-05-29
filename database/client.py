@@ -9385,7 +9385,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def get_max_id_gps(self) :
         with self.conn.cursor() as cur:
             cur.execute("""
-              select coalesce (max(id)+1,1) from transporte.gps g
+              select coalesce (max(id),1) from transporte.gps g
             """)
 
             return cur.fetchone()
