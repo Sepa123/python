@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union
 from pydantic import BaseModel
 
 class Vehiculos(BaseModel):
@@ -33,7 +33,7 @@ class Vehiculos(BaseModel):
     Ids_user: Optional[str]
     Hab_vehiculo : Optional[bool]
     Hab_seguridad : Optional[bool]
-    Id_gps : Optional[int]
+    Id_gps : Optional[Union[int, str]]
     Gps : Optional[bool]
     Imei :Optional[str]
     Oc_instalacion : Optional[str]
