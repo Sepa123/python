@@ -41,3 +41,19 @@ def vehiculo(vehiculo):
 
 def vehiculos_schema(colaboradores):
     return [vehiculo(colab) for colab in colaboradores]
+
+
+def operacion_vehiculo(ope):
+    return {
+                "Id" : ope[0],
+                "Created_at" : ope[1],
+                "Id_user" : ope[2],
+                "Ids_user" : ope[3],
+                "Id_ppu" : ope[4],
+                "Id_operacion" : ope[5],
+                "Id_centro_op" : ope[6],
+                "Estado" : ope[7]
+            }
+
+def operacion_vehiculo_schema(operacion):
+    return [operacion_vehiculo(ope) for ope in operacion]

@@ -9050,7 +9050,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
         with self.conn.cursor() as cur:
             cur.execute("""
             UPDATE transporte.vehiculo
-            SET update_date= CURRENT_TIMESTAMP, razon_id=%(Razon_id)s, marca=%(Marca)s, tipo= %(Tipo)s,
+            SET update_date= CURRENT_DATE, razon_id=%(Razon_id)s, marca=%(Marca)s, tipo= %(Tipo)s,
             modelo=%(Modelo)s, ano=%(Ano)s, region=%(Region)s, comuna=%(Comuna)s, estado=%(Estado)s, activation_date=%(Activation_date)s, 
             capacidad_carga_kg=%(Capacidad_carga_kg)s, capacidad_carga_m3=%(Capacidad_carga_m3)s, platform_load_capacity_kg=%(Platform_load_capacity_kg)s, 
             crane_load_capacity_kg=%(Crane_load_capacity_kg)s, permiso_circulacion_fec_venc=%(Permiso_circulacion_fec_venc)s, soap_fec_venc=%(Soap_fec_venc)s, 
@@ -9074,6 +9074,32 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             left join transporte.gps g on v.gps_id = g.id        
                          """)
             return cur.fetchall()
+        
+    def asignar_operacion_a_vehiculo(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+                        
+            INSERT INTO transporte.ppu_operacion
+            ( id_user, ids_user, id_ppu, id_operacion, id_centro_op, estado)
+            VALUES(%(Id_user)s, %(Ids_user)s,%(Id_ppu)s, %(Id_operacion)s,%(Id_centro)s,%(Estado)s);
+
+            --UPDATE transporte.vehiculo
+           -- SET agency_id=
+           -- WHERE id=
+                 """,data)
+            self.conn.commit()
+
+
+    def revisar_operacion_asignada_a_vehiculo(self,id_ppu):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+           SELECT id, created_at, id_user, ids_user, id_ppu, id_operacion, id_centro_op, estado
+            FROM transporte.ppu_operacion
+            WHERE id_ppu={id_ppu};      
+                         """)
+            return cur.fetchall()
+
+        
 
     def buscar_id_colab_por_rut(self,rut):
         with self.conn.cursor() as cur:
@@ -9342,6 +9368,20 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 where id_op = {id_op}
 
                                   
+                         """)
+            return cur.fetchall()
+        
+    def mostrar_centros_operacion_asignado_a_vehiculo(self,id_op,id_vehiculo):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            
+                SELECT co.id, co.created_at, co.id_user, co.ids_user, co.id_op, co.centro,
+		                co.descripcion, r.region_name, po.estado
+                FROM operacion.centro_operacion co
+                left join public.op_regiones r on co.region::VARCHAR = r.id_region 
+                left join transporte.ppu_operacion po on co.id_op = po.id_operacion 
+                where co.id_op = {id_op} and po.id_ppu = {id_vehiculo}
+            
                          """)
             return cur.fetchall()
 

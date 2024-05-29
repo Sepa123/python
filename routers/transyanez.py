@@ -5,10 +5,10 @@ from openpyxl import Workbook
 from datetime import datetime
 from database.models.colaboradores.bitacora import BitacoraTransporte
 from database.models.colaboradores.colaborador import Colaboradores,DetallesPago
-from database.models.colaboradores.vehiculos import Vehiculos
+from database.models.colaboradores.vehiculos import Vehiculos,AsignarOperacion
 from database.models.colaboradores.persona import Usuario
 from database.schema.transporte.colaborador import colaboradores_schema, detalle_pagos_schema
-from database.schema.transporte.vehiculo import vehiculos_schema
+from database.schema.transporte.vehiculo import vehiculos_schema ,operacion_vehiculo_schema
 from database.schema.transporte.usuario import usuarios_transporte_schema
 from database.schema.transporte.estado import estados_transporte_schema
 from lib.validar_rut import valida_rut
@@ -193,6 +193,24 @@ async def actualizar_datos_vehiculo(body : Vehiculos):
 
     return {
         "message": "Vehiculo actualizado correctamente",
+    }
+
+
+@router.get("/revisar/operacion/vehiculo")
+async def get_lista_vehiculos(vehiculo : int):
+    
+    result = conn.revisar_operacion_asignada_a_vehiculo(vehiculo)
+
+    return operacion_vehiculo_schema(result)
+
+@router.put("/asignar/operacion/vehiculo")
+async def actualizar_datos_vehiculo(body : AsignarOperacion):
+    data = body.dict()
+    conn.asignar_operacion_a_vehiculo(data)
+    
+
+    return {
+        "message": "Operación asignada correctamente",
     }
 
 @router.get("/buscar/vehiculos")

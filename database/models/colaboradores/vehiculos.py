@@ -38,3 +38,12 @@ class Vehiculos(BaseModel):
     Imei :Optional[str]
     Oc_instalacion : Optional[str]
     Fecha_instalacion : Optional[str]
+
+
+class AsignarOperacion(BaseModel):
+    Id_ppu : Optional[int]
+    Id_operacion : Optional[int]
+    Id_centro : Optional[int]
+    Id_user: Optional[int]
+    Ids_user: Optional[str]
+    Estado :  Optional[bool]

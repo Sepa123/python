@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from database.client import reportesConnection
 from database.models.operaciones.modalidad_operacion import RazonSocial, updateApp
 from database.models.operaciones.centro_operacion import CentroOperacion
-from database.schema.operaciones.centro_operacion import centro_operacion_schema
+from database.schema.operaciones.centro_operacion import centro_operacion_schema, centro_operacion_asignado_schema
 import psycopg2
 import uvicorn
 
@@ -119,4 +119,9 @@ async def get_centro_operacion(id_op : int):
 
 
     return centro_operacion_schema(results)
-    
+
+@router.get("/ver/centro_operacion/asignado")
+async def get_centro_operacion_asigando_a_vehiculo(id_op : int, id_ppu : int):
+     # Consulta SQL para obtener datos (por ejemplo)
+    results = conn.mostrar_centros_operacion_asignado_a_vehiculo(id_op,id_ppu)
+    return centro_operacion_asignado_schema(results)
