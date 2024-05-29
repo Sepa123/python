@@ -169,7 +169,7 @@ async def actualizar_datos_vehiculo(body : Vehiculos):
     body.Razon_id= conn.buscar_id_colab_por_rut(body.Rut_colaborador)[0]
     ### si se clickeo el gps
     if body.Gps == True:
-        if body.Id_gps == None:
+        if body.Id_gps == None or body.Id_gps == 'null':
             data_gps= body.dict()
             conn.agregar_datos_gps(data_gps)
             id_gps = conn.get_max_id_gps()[0]
