@@ -9063,7 +9063,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def buscar_vehiculos(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
-           SELECT v.id, v.created_at, v.update_date, v.razon_id, v.ppu, v.marca, v.tipo, v.modelo, 
+           SELECT v.id, to_char(v.created_at::date, 'YYYY-MM-DD')  , v.update_date, v.razon_id, v.ppu, v.marca, v.tipo, v.modelo, 
                  v.ano, v.region, v.comuna, v.estado, v.activation_date, v.capacidad_carga_kg, v.capacidad_carga_m3, 
                  v.platform_load_capacity_kg, v.crane_load_capacity_kg, v.permiso_circulacion_fec_venc, v.soap_fec_venc, 
                  v.revision_tecnica_fec_venc, v.agency_id, v.registration_certificate, v.pdf_revision_tecnica, 
@@ -9138,7 +9138,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def buscar_colaboradores_por_nombre(self,nombre):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
-           SELECT col.id, to_char(created_at,'dd/mm/yyyy'), id_user, ids_user, to_char(date_modified,'dd/mm/yyyy'), r.nombre as "tipo razon" , razon_social, rut, celular, telefono, region, comuna, direccion, representante_legal, rut_representante_legal, email_rep_legal, direccion_comercial, pdf_legal_contitution, pdf_registration_comerce, pdf_validity_of_powers, pdf_certificate_rrpp, chofer, peoneta, abogado, seguridad, activo, giro
+           SELECT col.id, to_char(created_at,'dd-mm-yyyy'), id_user, ids_user, to_char(date_modified,'dd/mm/yyyy'), r.nombre as "tipo razon" , razon_social, rut, celular, telefono, region, comuna, direccion, representante_legal, rut_representante_legal, email_rep_legal, direccion_comercial, pdf_legal_contitution, pdf_registration_comerce, pdf_validity_of_powers, pdf_certificate_rrpp, chofer, peoneta, abogado, seguridad, activo, giro
             FROM transporte.colaborador col
             left join hela.rol r 
             ON col.tipo_razon  = r.id  
@@ -9149,7 +9149,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def buscar_vehiculos_por_filtro(self,filtro):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
-           SELECT v.id, v.created_at, v.update_date, v.razon_id, v.ppu, v.marca, v.tipo, v.modelo, 
+           SELECT v.id, to_char(v.created_at::date, 'YYYY-MM-DD') , v.update_date, v.razon_id, v.ppu, v.marca, v.tipo, v.modelo, 
                  v.ano, v.region, v.comuna, v.estado, v.activation_date, v.capacidad_carga_kg, v.capacidad_carga_m3, 
                  v.platform_load_capacity_kg, v.crane_load_capacity_kg, v.permiso_circulacion_fec_venc, v.soap_fec_venc, 
                  v.revision_tecnica_fec_venc, v.agency_id, v.registration_certificate, v.pdf_revision_tecnica, 
@@ -9177,7 +9177,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def buscar_detalle_pago(self, id):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
-            SELECT id, created_at, id_user, ids_user, id_razon_social, rut_cuenta, titular_cuenta, numero_cuenta, banco, email, tipo_cuenta, forma_pago, pdf_documento, estado
+            SELECT id, to_char(created_at::date, 'YYYY-MM-DD'), id_user, ids_user, id_razon_social, rut_cuenta, titular_cuenta, numero_cuenta, banco, email, tipo_cuenta, forma_pago, pdf_documento, estado
             FROM transporte.detalle_pagos
             WHERE id_razon_social = {id} or rut_cuenta = '{id}';
 
@@ -9283,7 +9283,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def lista_usuario_transporte(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
-            SELECT id, created_at, id_ingreso_hela, id_user, ids_user, id_razon_social, jpg_foto_perfil, nombre_completo, rut, nroseriecedula, email, telefono, birthday, 
+            SELECT id, to_char(created_at::date, 'YYYY-MM-DD'), id_ingreso_hela, id_user, ids_user, id_razon_social, jpg_foto_perfil, nombre_completo, rut, nroseriecedula, email, telefono, birthday, 
                    region, comuna, domicilio, tipo_usuario, pdf_antecedentes, pdf_licencia_conducir, fec_venc_lic_conducir, pdf_cedula_identidad, pdf_contrato, activo, 
                    validacion_seguridad, validacion_transporte
             FROM transporte.usuarios;
@@ -9362,7 +9362,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
         with self.conn.cursor() as cur:
             cur.execute(f"""   
             
-                SELECT id, created_at, id_user, ids_user, id_op, centro, descripcion, r.region_name 
+                SELECT id, to_char(created_at::date, 'YYYY-MM-DD'), id_user, ids_user, id_op, centro, descripcion, r.region_name 
                 FROM operacion.centro_operacion co
                 left join public.op_regiones r on co.region::VARCHAR = r.id_region 
                 where id_op = {id_op}
