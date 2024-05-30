@@ -9413,7 +9413,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                     (SELECT estado FROM transporte.ppu_operacion ppu WHERE ppu.id_operacion = co.id_op AND ppu.id_ppu = {id_vehiculo} and ppu.id_centro_op = co.id LIMIT 1) AS estado
                 FROM operacion.centro_operacion co
                 LEFT JOIN public.op_regiones r ON co.region::VARCHAR = r.id_region 
-                WHERE co.id_op = {id_op};
+               --- WHERE co.id_op = {id_op};
             
                          """)
             return cur.fetchall()
