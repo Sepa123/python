@@ -26,7 +26,8 @@ def colaborador(colab):
                 "Abogado": colab[23],
                 "Seguridad": colab[24],
                 "Activo": colab[25],
-                "Giro" : colab[26]
+                "Giro" : colab[26],
+                "Pdf_contrato" : colab[27]
             }
 
 def colaboradores_schema(colaboradores):

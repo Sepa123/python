@@ -308,6 +308,9 @@ async def subir_archivo(tipo_archivo : str, nombre : str, file: UploadFile = Fil
     if tipo_archivo == 'documento_bancario':
         conn.agregar_pdf_detalle_venta(f'pdfs/transporte/colaboradores/{tipo_archivo}/{nuevo_nombre}',nombre)
 
+    if tipo_archivo == 'pdf_contrato':
+        conn.agregar_pdf_contrato_colaborador(f'pdfs/transporte/colaboradores/{tipo_archivo}/{nuevo_nombre}',nombre)
+
     return {
         "message" : "ok"
     }
