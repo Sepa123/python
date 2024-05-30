@@ -9060,6 +9060,17 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                  """,data)
             self.conn.commit()
 
+    
+
+    def update_estado_vehiculo(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            UPDATE transporte.vehiculo
+            SET estado=%(Estado)s
+            WHERE ppu=%(Ppu)s
+                 """,data)
+            self.conn.commit()
+
     def buscar_vehiculos(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
@@ -9377,7 +9388,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             
                 SELECT co.id, co.created_at, co.id_user, co.ids_user, co.id_op, co.centro, 
                     co.descripcion, r.region_name,
-                    (SELECT estado FROM transporte.ppu_operacion ppu WHERE ppu.id_operacion = co.id_op AND ppu.id_ppu = {id_vehiculo} LIMIT 1) AS estado
+                    (SELECT estado FROM transporte.ppu_operacion ppu WHERE ppu.id_operacion = co.id_op AND ppu.id_ppu = {id_vehiculo} and ppu.id_centro_op = co.id LIMIT 1) AS estado
                 FROM operacion.centro_operacion co
                 LEFT JOIN public.op_regiones r ON co.region::VARCHAR = r.id_region 
                 WHERE co.id_op = {id_op};

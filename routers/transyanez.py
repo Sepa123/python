@@ -196,6 +196,17 @@ async def actualizar_datos_vehiculo(body : Vehiculos):
     }
 
 
+@router.put("/actualizar/estado/vehiculo")
+async def actualizar_datos_vehiculo(body : AsignarOperacion):
+    data = body.dict()
+    conn.asignar_operacion_a_vehiculo(data)
+    
+
+    return {
+        "message": "Operación asignada correctamente",
+    }
+
+
 @router.get("/revisar/operacion/vehiculo")
 async def get_lista_vehiculos(vehiculo : int):
     
