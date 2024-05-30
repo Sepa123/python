@@ -120,6 +120,14 @@ async def get_centro_operacion(id_op : int):
 
     return centro_operacion_schema(results)
 
+
+@router.get("/ver/centros_operaciones")
+async def get_centros_operacion():
+     # Consulta SQL para obtener datos (por ejemplo)
+    results = conn.mostrar_todos_centros_operacion()
+    return centro_operacion_schema(results)
+
+
 @router.get("/ver/centro_operacion/asignado")
 async def get_centro_operacion_asigando_a_vehiculo(id_op : int, id_ppu : int):
      # Consulta SQL para obtener datos (por ejemplo)

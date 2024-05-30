@@ -9380,6 +9380,16 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             """, data)
             self.conn.commit()
 
+    def mostrar_todos_centros_operacion(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            
+                SELECT id, to_char(created_at::date, 'YYYY-MM-DD'), id_user, ids_user, id_op, centro, descripcion, r.region_name 
+                FROM operacion.centro_operacion co
+                left join public.op_regiones r on co.region::VARCHAR = r.id_region                
+                         """)
+            return cur.fetchall()
+
 
     def mostrar_centros_operacion(self,id_op):
         with self.conn.cursor() as cur:
