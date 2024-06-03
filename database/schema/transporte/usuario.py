@@ -24,7 +24,8 @@ def usuario_transporte(usuario):
         "Pdf_contrato": usuario[21],
         "Activo": usuario[22],
         "Validacion_seguridad": usuario[23],
-        "Validacion_transporte": usuario[24]
+        "Validacion_transporte": usuario[24],
+        "Razon_social": usuario[25]
     }
 
 def usuarios_transporte_schema(usuarios):

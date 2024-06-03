@@ -9306,10 +9306,11 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def lista_usuario_transporte(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
-            SELECT id, to_char(created_at::date, 'YYYY-MM-DD'), id_ingreso_hela, id_user, ids_user, id_razon_social, jpg_foto_perfil, nombre_completo, rut, nroseriecedula, email, telefono, birthday, 
-                   region, comuna, domicilio, tipo_usuario, pdf_antecedentes, pdf_licencia_conducir, fec_venc_lic_conducir, pdf_cedula_identidad, pdf_contrato, activo, 
-                   validacion_seguridad, validacion_transporte
-            FROM transporte.usuarios;
+            SELECT u.id, to_char(u.created_at::date, 'YYYY-MM-DD') AS created_at, u.id_ingreso_hela, u.id_user, u.ids_user, u.id_razon_social, u.jpg_foto_perfil, u.nombre_completo, u.rut, u.nroseriecedula, 
+                u.email, u.telefono, u.birthday, u.region, u.comuna, u.domicilio, u.tipo_usuario, u.pdf_antecedentes, u.pdf_licencia_conducir, u.fec_venc_lic_conducir, u.pdf_cedula_identidad, u.pdf_contrato,
+                u.activo, u.validacion_seguridad, u.validacion_transporte, c.razon_social 
+            FROM transporte.usuarios u
+            left join transporte.colaborador c on u.id_razon_social = c.id
                                   
                          """)
             return cur.fetchall()
