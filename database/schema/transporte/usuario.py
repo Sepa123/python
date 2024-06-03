@@ -25,7 +25,8 @@ def usuario_transporte(usuario):
         "Activo": usuario[22],
         "Validacion_seguridad": usuario[23],
         "Validacion_transporte": usuario[24],
-        "Razon_social": usuario[25]
+        "Razon_social": usuario[25],
+        "Rut_razon_social": usuario[26]
     }
 
 def usuarios_transporte_schema(usuarios):
