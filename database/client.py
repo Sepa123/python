@@ -9111,6 +9111,29 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                  """,data)
             self.conn.commit()
 
+    def cambiar_estado_a_vehiculo(self,id):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                        
+            UPDATE transporte.vehiculo
+            SET disponible = NOT disponible
+            WHERE id= {id}
+                 """)
+            self.conn.commit()
+
+    def cambiar_estado_a_usuario_tripulacion(self,id):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+                        
+            UPDATE transporte.usuarios 
+            SET activo = CASE 
+                            WHEN activo IS NULL THEN TRUE
+                            ELSE NOT activo 
+                        END
+            WHERE id= {id}
+                 """)
+            self.conn.commit()
+
 
     def revisar_operacion_asignada_a_vehiculo(self,id_ppu):
         with self.conn.cursor() as cur:

@@ -5,7 +5,7 @@ from openpyxl import Workbook
 from datetime import datetime
 from database.models.colaboradores.bitacora import BitacoraTransporte
 from database.models.colaboradores.colaborador import Colaboradores,DetallesPago
-from database.models.colaboradores.vehiculos import Vehiculos,AsignarOperacion
+from database.models.colaboradores.vehiculos import Vehiculos,AsignarOperacion,cambiarEstadoVehiculo
 from database.models.colaboradores.persona import Usuario
 from database.schema.transporte.colaborador import colaboradores_schema, detalle_pagos_schema
 from database.schema.transporte.vehiculo import vehiculos_schema ,operacion_vehiculo_schema
@@ -197,13 +197,14 @@ async def actualizar_datos_vehiculo(body : Vehiculos):
 
 
 @router.put("/actualizar/estado/vehiculo")
-async def actualizar_datos_vehiculo(body : AsignarOperacion):
-    data = body.dict()
-    conn.asignar_operacion_a_vehiculo(data)
+async def actualizar_datos_vehiculo(body : cambiarEstadoVehiculo):
+    # data = body.dict()
+    
+    conn.cambiar_estado_a_vehiculo(body.id)
     
 
     return {
-        "message": "Operación asignada correctamente",
+        "message": "Vehiculo actualizado correctamente",
     }
 
 
@@ -500,3 +501,14 @@ async def verificar_colab_registrado_vehiculos(rut : str):
         return {
             "message": 'el colaborador ya se encuentra registrado en tripulacion'
         }
+    
+@router.put("/actualizar/estado/tripulacion")
+async def actualizar_estado_a_usuario_tripulacion(body : cambiarEstadoVehiculo):
+    # data = body.dict()
+    
+    conn.cambiar_estado_a_usuario_tripulacion(body.id)
+    
+
+    return {
+        "message": "Vehiculo actualizado correctamente",
+    }
