@@ -25,7 +25,8 @@ def centro_operacion_asignado(operacion):
         "Centro" : operacion[5],
         "Descripcion" : operacion[6],
         "Region" : operacion[7],
-        "Estado": operacion[8]
+        "Estado": operacion[8],
+        "Id_ppu_op" : operacion[9]
     }
 
 def centro_operacion_asignado_schema(operaciones):

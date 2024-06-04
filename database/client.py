@@ -9444,12 +9444,23 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def mostrar_centros_operacion_asignado_a_vehiculo(self,id_op,id_vehiculo):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
-            
+                        
+                with estado_ppu AS
+                (SELECT ppu.id, ppu.estado,ppu.id_operacion, ppu.id_ppu, ppu.id_centro_op 
+                FROM transporte.ppu_operacion ppu 
+                WHERE ppu.id_ppu =  {id_vehiculo} )
+
                 SELECT co.id, co.created_at, co.id_user, co.ids_user, co.id_op, co.centro, 
-                    co.descripcion, r.region_name,
-                    (SELECT estado FROM transporte.ppu_operacion ppu WHERE ppu.id_operacion = co.id_op AND ppu.id_ppu = {id_vehiculo} and ppu.id_centro_op = co.id LIMIT 1) AS estado
+                    co.descripcion, r.region_name, ep.estado, ep.id
                 FROM operacion.centro_operacion co
                 LEFT JOIN public.op_regiones r ON co.region::VARCHAR = r.id_region 
+                left join estado_ppu ep on co.id_op = ep.id_operacion and co.id = ep.id_centro_op
+            
+               -- SELECT co.id, co.created_at, co.id_user, co.ids_user, co.id_op, co.centro, 
+                 --   co.descripcion, r.region_name,
+                 --   (SELECT estado FROM transporte.ppu_operacion ppu WHERE ppu.id_operacion = co.id_op AND ppu.id_ppu = {id_vehiculo} and ppu.id_centro_op = co.id LIMIT 1) AS estado
+               -- FROM operacion.centro_operacion co
+               -- LEFT JOIN public.op_regiones r ON co.region::VARCHAR = r.id_region 
                --- WHERE co.id_op = {id_op};
             
                          """)
