@@ -411,17 +411,28 @@ async def subir_archivo_usuario(tipo_archivo : str, nombre : str, file: UploadFi
 
 
 @router.post("/agregar/usuario")
-async def agregar_detalle_banco(body : Usuario ):
-    razon_id = conn.buscar_id_colab_por_rut(body.Rut)[0]
+async def agregar_tripulacion_usuario(body : Usuario ):
+    try:
+        razon_id = conn.buscar_id_colab_por_rut(body.Rut_razon_social)[0]
 
-    body.Id_razon_social=razon_id
-    data = body.dict()
+        body.Id_razon_social=razon_id
+        data = body.dict()
 
-    conn.agregar_usuario_transporte(data)
+        conn.agregar_usuario_transporte(data)
 
-    return {
-        "message": "Usuario agregado correctamente",
-    }
+        return {
+            "message": "Usuario agregado correctamente",
+        }
+    except psycopg2.errors.UniqueViolation as error:
+        # Manejar la excepción UniqueViolation específica
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error: El rut {body.Rut} ya se encuentra registrado")
+
+    except Exception as error:
+        print(error)
+        # Manejar otras excepciones
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error al agregar el detalle de pago.")
+    
+
 
 @router.put("/actualizar/datos/usuario")
 async def actualizar_datos_usuario(body : Usuario):

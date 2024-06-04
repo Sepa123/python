@@ -3,6 +3,8 @@ from typing import Optional
 
 
 class Usuario(BaseModel):
+    Rut_razon_social: Optional[str] = None
+    Nombre_completo_razon_social: Optional[str] = None
     Created_at: Optional[str] = None
     Id_ingreso_hela: Optional[int] = None
     Id_user: Optional[int] = None
