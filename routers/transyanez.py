@@ -525,3 +525,15 @@ async def actualizar_estado_a_usuario_tripulacion(body : cambiarEstadoVehiculo):
     return {
         "message": "Vehiculo actualizado correctamente",
     }
+
+
+@router.delete("/eliminar/operacion/vehiculo") 
+async def eliminar_operacion_vehiculo(id : str):
+     try:
+          results = conn.eliminar_operacion_vehiculo_asignado(id)
+          if (results == 0): print("La operaciona asignada no existe")
+          return { "message" : "Operacion eliminada correctamente"}
+     except:
+          print("error en /eliminar/operacion/vehiculo")
+          raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
+       
