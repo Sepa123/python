@@ -133,3 +133,15 @@ async def get_centro_operacion_asigando_a_vehiculo(id_op : int, id_ppu : int):
      # Consulta SQL para obtener datos (por ejemplo)
     results = conn.mostrar_centros_operacion_asignado_a_vehiculo(id_op,id_ppu)
     return centro_operacion_asignado_schema(results)
+
+
+@router.delete("/eliminar/centro_operacion") 
+async def eliminar_centro_operacion(id : str):
+     try:
+          results = conn.eliminar_centro_operacion(id)
+          if (results == 0): print("El centro operación asignada no existe")
+          return { "message" : "Centro operación eliminado correctamente"}
+     except:
+          print("error en /eliminar/operacion/vehiculo")
+          raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
+       

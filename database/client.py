@@ -9093,6 +9093,18 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
         self.conn.commit() 
         
         return rows_delete
+    
+
+    def eliminar_centro_operacion(self,id):
+        with self.conn.cursor() as cur: 
+            cur.execute(f"""
+            DELETE FROM operacion.centro_operacion
+            WHERE id = {id}
+                    """)
+            rows_delete = cur.rowcount
+        self.conn.commit() 
+        
+        return rows_delete
 
     def buscar_vehiculos(self):
         with self.conn.cursor() as cur:
