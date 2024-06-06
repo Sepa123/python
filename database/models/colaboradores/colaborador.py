@@ -43,3 +43,16 @@ class DetallesPago(BaseModel):
     Forma_pago: Optional[int]
     Pdf_documento: Optional[str]
     Estado : Optional[int]
+
+
+class DesvincularColaborador(BaseModel):
+    Id_user: Optional[int] = None
+    Ids_user: Optional[str] = None
+    Rut: Optional[str] = None
+    Id_razon_social: Optional[int] = None
+    Latitud: Optional[str] = None
+    Longitud: Optional[str] = None
+    Descripcion_desvinculacion: Optional[str] = None
+    Origen: Optional[str] = None
+    Fecha_desactivacion: Optional[str] = None
+    Motivo_desactivacion: Optional[str] = None

@@ -8886,6 +8886,18 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                  """,data)
             self.conn.commit()
 
+    def update_desactivar_colaborador(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            UPDATE transporte.colaborador
+            SET date_modified=CURRENT_TIMESTAMP,  activo=false,
+            fecha_desvinculacion=%(Fecha_desactivacion)s, motivo_desvinculacion=%(Motivo_desactivacion)s, 
+            descripcion_desvinculacion=%(Descripcion_desvinculacion)s
+            WHERE rut=%(Rut)s
+              
+                 """,data)
+            self.conn.commit()
+
     def obtener_estados_transporte(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""   

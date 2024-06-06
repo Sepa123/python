@@ -4,7 +4,7 @@ from fastapi.responses import FileResponse
 from openpyxl import Workbook
 from datetime import datetime
 from database.models.colaboradores.bitacora import BitacoraTransporte
-from database.models.colaboradores.colaborador import Colaboradores,DetallesPago
+from database.models.colaboradores.colaborador import Colaboradores,DetallesPago,DesvincularColaborador
 from database.models.colaboradores.vehiculos import Vehiculos,AsignarOperacion,cambiarEstadoVehiculo
 from database.models.colaboradores.persona import Usuario
 from database.schema.transporte.colaborador import colaboradores_schema, detalle_pagos_schema
@@ -537,3 +537,24 @@ async def eliminar_operacion_vehiculo(id : str):
           print("error en /eliminar/operacion/vehiculo")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
        
+@router.post("/desvincular/colaborador")
+async def desvincular_colaborador(body : DesvincularColaborador ):
+    try:
+        # razon_id = conn.buscar_id_colab_por_rut(body.Rut_razon_social)[0]
+
+        # body.Id_razon_social=razon_id
+        data = body.dict()
+
+        conn.update_desactivar_colaborador(data)
+
+        return {
+            "message": "Colaborador desvinculado correctamente",
+        }
+    except psycopg2.errors.UniqueViolation as error:
+        # Manejar la excepción UniqueViolation específica
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error: El rut {body.Rut} ya se encuentra registrado")
+
+    except Exception as error:
+        print(error)
+        # Manejar otras excepciones
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error al agregar el detalle de pago.")
