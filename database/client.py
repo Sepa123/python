@@ -9546,6 +9546,32 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
        
                          """)
             return cur.fetchall()
+        
+    ### Peso Volumetrico
+
+    def insert_peso_volumetrico_sku(self, body):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            INSERT INTO operacion.pv_sku (sku, descripcion, alto, ancho, profundidad, peso_kg, bultos, id_user, ids_user) 
+            VALUES ('{body.sku}','{body.descripcion}',{body.alto},{body.ancho},{body.profundidad},{body.peso_kg},{body.bultos},{body.id_user},'{body.ids_user}')          """)
+        self.conn.commit() 
+
+    def buscar_entrada_sku(self,sku_descripcion):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+           select * from operacion.busca_sku_entrada('{sku_descripcion}'); 
+       
+                         """)
+            return cur.fetchall()
+        
+    def buscar_sku_o_descripcion(self,sku):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+           select * from operacion.buscar_sku_o_descripcion('{sku}')
+       
+                         """)
+            return cur.fetchall()
+
 
 class transyanezConnection():
     conn = None

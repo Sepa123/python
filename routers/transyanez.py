@@ -8,6 +8,7 @@ from database.models.colaboradores.bitacora import BitacoraTransporte
 from database.models.colaboradores.colaborador import Colaboradores,DetallesPago,DesvincularColaborador
 from database.models.colaboradores.vehiculos import Vehiculos,AsignarOperacion, VehiculosExcel,cambiarEstadoVehiculo
 from database.models.colaboradores.persona import Usuario
+from database.models.operaciones.peso_volumetrico import PesoVolumetrico
 from database.schema.transporte.colaborador import colaboradores_schema, detalle_pagos_schema
 from database.schema.transporte.vehiculo import vehiculos_schema ,operacion_vehiculo_schema
 from database.schema.transporte.usuario import usuarios_transporte_schema
@@ -17,6 +18,7 @@ from lib.password import hash_password
 import psycopg2.errors
 import os
 import lib.excel_generico as excel
+
 
 router = APIRouter(tags=["transporte"],prefix="/api/transporte")
 
@@ -579,11 +581,6 @@ async def descargar_vehiculos_filtro(pendientes : List[VehiculosExcel]):
 
     print(pendientes)
 
-    # tupla = [( datos_envio.Origen, datos_envio.Cod_entrega, datos_envio.Fecha_ingreso, datos_envio.Fecha_compromiso, 
-    #            datos_envio.Region, datos_envio.Comuna, datos_envio.Descripcion, datos_envio.Bultos, datos_envio.Estado, datos_envio.Subestado,
-    #            cambiar_bool(datos_envio.Verificado), cambiar_bool(datos_envio.Recibido)) for datos_envio in pendientes]
-    
-    # tupla = excel.objetos_a_tuplas(pendientes, atributos)
     tupla = excel.objetos_a_tuplas(pendientes)
 
     nombre_filas = ( 'Patente', 'Razón Social', "Tipo Vehículo", "Región Disponible", 
@@ -591,3 +588,58 @@ async def descargar_vehiculos_filtro(pendientes : List[VehiculosExcel]):
     nombre_excel = f"Vehiculos_filtrados"
 
     return excel.generar_excel_generico(tupla,nombre_filas,nombre_excel)
+
+
+
+#### Peso volumetrico Rodrigo
+
+@router.post("/skuPesoVolumetrico")
+async def skuPesoVolumetrico(body: PesoVolumetrico):
+    try:
+        conn.insert_peso_volumetrico_sku(body)
+        return {"message": "Datos Ingresados Correctamente"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+
+@router.get("/buscar/sku_descripcion")
+async def Obtener_datos(sku_descripcion: str):
+     # Consulta SQL para obtener datos (por ejemplo)
+    # consulta = f"select * from operacion.busca_sku_entrada('{sku_descripcion}');"
+    # Ejecutar la consulta utilizando nuestra función
+    datos = conn.buscar_entrada_sku(sku_descripcion)
+    # Verificar si hay datos
+    if datos:
+        datos_formateados = [{
+                                "sku" : fila[0],
+                                "descripcion": fila[1],
+                                "bultos" : fila[2],
+                                "alto": fila [3],
+                                "ancho": fila[4],
+                                "profundidad" : fila[5],
+                                "peso_kg" : fila[6],
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+
+@router.get("/mostrarDatosTable")
+async def Obtener_datos(sku: str):
+    datos = conn.buscar_entrada_sku(sku)
+    # Verificar si hay datos
+    if datos:
+        datos_formateados = [{  
+                                "sku": fila[0],
+                                "descripcion": fila[1],
+                                "alto": fila [2],
+                                "ancho": fila[3],
+                                "profundidad" : fila[4],
+                                "peso_kg" : fila[5],
+                                "bultos" : fila[6],
+                                "pv": fila[7],
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
