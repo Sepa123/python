@@ -1,3 +1,4 @@
+from typing import Dict, List
 from fastapi import APIRouter,status,UploadFile, File,HTTPException
 from database.client import transyanezConnection , reportesConnection
 from fastapi.responses import FileResponse
@@ -15,6 +16,7 @@ from lib.validar_rut import valida_rut
 from lib.password import hash_password
 import psycopg2.errors
 import os
+import lib.excel_generico as excel
 
 router = APIRouter(tags=["transporte"],prefix="/api/transporte")
 
@@ -569,3 +571,21 @@ async def buscar_vehiculos_por_operacion(id_op : int, id_co : int):
     return {
         'Vehiculo' : datos
     } 
+
+
+
+@router.post("/vehiculos/descargar")
+async def descargar_vehiculos_filtro(pendientes : List[Dict]):
+
+    # tupla = [( datos_envio.Origen, datos_envio.Cod_entrega, datos_envio.Fecha_ingreso, datos_envio.Fecha_compromiso, 
+    #            datos_envio.Region, datos_envio.Comuna, datos_envio.Descripcion, datos_envio.Bultos, datos_envio.Estado, datos_envio.Subestado,
+    #            cambiar_bool(datos_envio.Verificado), cambiar_bool(datos_envio.Recibido)) for datos_envio in pendientes]
+    
+    # tupla = excel.objetos_a_tuplas(pendientes, atributos)
+    tupla = excel.objetos_a_tuplas(pendientes)
+
+    nombre_filas = ( 'Patente', 'Razón Social', "Tipo Vehículo", "Región Disponible", 
+                     "GPS", "Disponible","Habilitado","Fecha de registro")
+    nombre_excel = f"Vehiculos_filtrados"
+
+    return excel.generar_excel_generico(tupla,nombre_filas,nombre_excel)

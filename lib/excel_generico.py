@@ -1,7 +1,9 @@
 from fastapi.responses import FileResponse
 from openpyxl import Workbook
 from openpyxl.styles import Font , PatternFill, Border ,Side
-from openpyxl.worksheet.page import PageMargins 
+from openpyxl.worksheet.page import PageMargins
+
+from routers.logistica_inversa import cambiar_bool 
 
 # def cambiar_bool(mi_tupla):
 #     lista= []
@@ -87,4 +89,43 @@ def generar_excel_con_titulo(results, nombre_filas, nombre_excel,titulo ):
     return FileResponse(f"excel/{nombre_excel}.xlsx")
 
 
+
+
+# def objetos_a_tuplas(objetos, atributos):
+#     """
+#     Convierte un array de objetos en una lista de tuplas con los atributos especificados.
+
+#     :param objetos: Array de objetos a convertir.
+#     :param atributos: Lista de nombres de atributos a extraer.
+#     :return: Lista de tuplas con los valores de los atributos.
+#     """
+#     tuplas = []
+#     for obj in objetos:
+#         tupla = []
+#         for atributo in atributos:
+#             valor = getattr(obj, atributo, None)
+#             if atributo in ['Verificado', 'Recibido']:  # Asumiendo que 'Verificado' y 'Recibido' son booleanos
+#                 valor = cambiar_bool(valor)
+#             tupla.append(valor)
+#         tuplas.append(tuple(tupla))
+#     return tuplas
+
+
+def objetos_a_tuplas(objetos):
+    """
+    Convierte un array de objetos en una lista de tuplas con todos los atributos del objeto.
+
+    :param objetos: Array de objetos a convertir.
+    :return: Lista de tuplas con los valores de los atributos.
+    """
+    tuplas = []
+    for obj in objetos:
+        tupla = []
+        atributos = vars(obj)
+        for atributo, valor in atributos.items():
+            if isinstance(valor, bool):  # Asumiendo que 'Verificado' y 'Recibido' son booleanos
+                valor = cambiar_bool(valor)
+            tupla.append(valor)
+        tuplas.append(tuple(tupla))
+    return tuplas
 
