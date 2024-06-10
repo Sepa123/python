@@ -6,7 +6,7 @@ from openpyxl import Workbook
 from datetime import datetime
 from database.models.colaboradores.bitacora import BitacoraTransporte
 from database.models.colaboradores.colaborador import Colaboradores,DetallesPago,DesvincularColaborador
-from database.models.colaboradores.vehiculos import Vehiculos,AsignarOperacion,cambiarEstadoVehiculo
+from database.models.colaboradores.vehiculos import Vehiculos,AsignarOperacion, VehiculosExcel,cambiarEstadoVehiculo
 from database.models.colaboradores.persona import Usuario
 from database.schema.transporte.colaborador import colaboradores_schema, detalle_pagos_schema
 from database.schema.transporte.vehiculo import vehiculos_schema ,operacion_vehiculo_schema
@@ -575,7 +575,9 @@ async def buscar_vehiculos_por_operacion(id_op : int, id_co : int):
 
 
 @router.post("/vehiculos/descargar")
-async def descargar_vehiculos_filtro(pendientes : List[Dict]):
+async def descargar_vehiculos_filtro(pendientes : List[VehiculosExcel]):
+
+    print(pendientes)
 
     # tupla = [( datos_envio.Origen, datos_envio.Cod_entrega, datos_envio.Fecha_ingreso, datos_envio.Fecha_compromiso, 
     #            datos_envio.Region, datos_envio.Comuna, datos_envio.Descripcion, datos_envio.Bultos, datos_envio.Estado, datos_envio.Subestado,
