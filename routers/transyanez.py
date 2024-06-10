@@ -624,7 +624,7 @@ async def Obtener_datos(sku_descripcion: str):
 
 @router.get("/mostrarDatosTable")
 async def Obtener_datos(sku: str):
-    datos = conn.buscar_entrada_sku(sku)
+    datos = conn.buscar_sku_o_descripcion(sku)
     # Verificar si hay datos
     if datos:
         datos_formateados = [{  
