@@ -8,7 +8,7 @@ from database.models.colaboradores.bitacora import BitacoraTransporte
 from database.models.colaboradores.colaborador import Colaboradores,DetallesPago,DesvincularColaborador
 from database.models.colaboradores.vehiculos import Vehiculos,AsignarOperacion, VehiculosExcel,cambiarEstadoVehiculo
 from database.models.colaboradores.persona import Usuario
-from database.models.operaciones.peso_volumetrico import PesoVolumetrico
+# from database.models.operaciones.peso_volumetrico import PesoVolumetrico
 from database.schema.transporte.colaborador import colaboradores_schema, detalle_pagos_schema
 from database.schema.transporte.vehiculo import vehiculos_schema ,operacion_vehiculo_schema
 from database.schema.transporte.usuario import usuarios_transporte_schema
