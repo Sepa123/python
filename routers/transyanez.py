@@ -8,7 +8,7 @@ from database.models.colaboradores.bitacora import BitacoraTransporte
 from database.models.colaboradores.colaborador import Colaboradores,DetallesPago,DesvincularColaborador
 from database.models.colaboradores.vehiculos import Vehiculos,AsignarOperacion, VehiculosExcel,cambiarEstadoVehiculo
 from database.models.colaboradores.persona import Usuario
-# from database.models.operaciones.peso_volumetrico import PesoVolumetrico
+from database.models.operaciones.peso_volumetrico import PesoVolumetrico
 from database.schema.transporte.colaborador import colaboradores_schema, detalle_pagos_schema
 from database.schema.transporte.vehiculo import vehiculos_schema ,operacion_vehiculo_schema
 from database.schema.transporte.usuario import usuarios_transporte_schema
@@ -591,53 +591,53 @@ async def descargar_vehiculos_filtro(pendientes : List[VehiculosExcel]):
 
 #### Peso volumetrico Rodrigo
 
-# @router.post("/skuPesoVolumetrico")
-# async def skuPesoVolumetrico(body: PesoVolumetrico):
-#     try:
-#         conn.insert_peso_volumetrico_sku(body)
-#         return {"message": "Datos Ingresados Correctamente"}
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=str(e))
+@router.post("/skuPesoVolumetrico")
+async def skuPesoVolumetrico(body: PesoVolumetrico):
+    try:
+        conn.insert_peso_volumetrico_sku(body)
+        return {"message": "Datos Ingresados Correctamente"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
     
 
-# @router.get("/buscar/sku_descripcion")
-# async def Obtener_datos(sku_descripcion: str):
-#      # Consulta SQL para obtener datos (por ejemplo)
-#     # consulta = f"select * from operacion.busca_sku_entrada('{sku_descripcion}');"
-#     # Ejecutar la consulta utilizando nuestra función
-#     datos = conn.buscar_entrada_sku(sku_descripcion)
-#     # Verificar si hay datos
-#     if datos:
-#         datos_formateados = [{
-#                                 "sku" : fila[0],
-#                                 "descripcion": fila[1],
-#                                 "bultos" : fila[2],
-#                                 "alto": fila [3],
-#                                 "ancho": fila[4],
-#                                 "profundidad" : fila[5],
-#                                 "peso_kg" : fila[6],
-#                             } 
-#                             for fila in datos]
-#         return datos_formateados
-#     else:
-#         raise HTTPException(status_code=404, detail="No se encontraron datos")
+@router.get("/buscar/sku_descripcion")
+async def Obtener_datos(sku_descripcion: str):
+     # Consulta SQL para obtener datos (por ejemplo)
+    # consulta = f"select * from operacion.busca_sku_entrada('{sku_descripcion}');"
+    # Ejecutar la consulta utilizando nuestra función
+    datos = conn.buscar_entrada_sku(sku_descripcion)
+    # Verificar si hay datos
+    if datos:
+        datos_formateados = [{
+                                "sku" : fila[0],
+                                "descripcion": fila[1],
+                                "bultos" : fila[2],
+                                "alto": fila [3],
+                                "ancho": fila[4],
+                                "profundidad" : fila[5],
+                                "peso_kg" : fila[6],
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
 
-# @router.get("/mostrarDatosTable")
-# async def Obtener_datos(sku: str):
-#     datos = conn.buscar_entrada_sku(sku)
-#     # Verificar si hay datos
-#     if datos:
-#         datos_formateados = [{  
-#                                 "sku": fila[0],
-#                                 "descripcion": fila[1],
-#                                 "alto": fila [2],
-#                                 "ancho": fila[3],
-#                                 "profundidad" : fila[4],
-#                                 "peso_kg" : fila[5],
-#                                 "bultos" : fila[6],
-#                                 "pv": fila[7],
-#                             } 
-#                             for fila in datos]
-#         return datos_formateados
-#     else:
-#         raise HTTPException(status_code=404, detail="No se encontraron datos")
+@router.get("/mostrarDatosTable")
+async def Obtener_datos(sku: str):
+    datos = conn.buscar_entrada_sku(sku)
+    # Verificar si hay datos
+    if datos:
+        datos_formateados = [{  
+                                "sku": fila[0],
+                                "descripcion": fila[1],
+                                "alto": fila [2],
+                                "ancho": fila[3],
+                                "profundidad" : fila[4],
+                                "peso_kg" : fila[5],
+                                "bultos" : fila[6],
+                                "pv": fila[7],
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
