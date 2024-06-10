@@ -558,3 +558,14 @@ async def desvincular_colaborador(body : DesvincularColaborador ):
         print(error)
         # Manejar otras excepciones
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error al agregar el detalle de pago.")
+    
+    # buscador de vehiculos por operacion y centro peracion
+@router.get("/buscar/vehiculos/filtro")
+async def buscar_vehiculos_por_operacion(id_op : int, id_co : int):
+    result = conn.buscar_vehiculos_ppu_operacion(id_op,id_co)
+
+    datos = [vehiculo[0] for vehiculo in result]
+
+    return {
+        'Vehiculo' : datos
+    } 
