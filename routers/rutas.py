@@ -335,7 +335,6 @@ async def get_rutas_en_activo(nombre_ruta : str):
      print(nombre_ruta)
     #  results = conn.read_rutas_en_activo(nombre_ruta)
      results = conn.read_rutas_en_activo_para_armar_excel(nombre_ruta)
-     cant_productos_rutas_schema
 
      if results is None or results == []:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="la ruta no existe")
@@ -349,8 +348,6 @@ async def get_rutas_en_activo(nombre_ruta : str):
 async def get_rutas_en_activo(nombre_ruta : str):
     #  print(nombre_ruta)
      results = conn.read_cant_productos_ruta_activa(nombre_ruta)
-
-     cant_productos_rutas_schema
 
      if results is None or results == []:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="la ruta no existe")
