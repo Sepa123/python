@@ -2302,6 +2302,19 @@ class reportesConnection():
             return cur.fetchall()
         
 
+    def prueba_recupera_bulto_sku(self,cod_pedido,nombre_ruta):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select * from areati.recupera_sku_bultos('{cod_pedido}', '{nombre_ruta}')
+            """)
+            return cur.fetchone()
+        
+    
+        
+
+    
+        
+
     def get_fecha_asignacion_ruta(self,nombre_ruta):
         with self.conn.cursor() as cur:
             cur.execute(f"""

@@ -7,7 +7,7 @@ from openpyxl.worksheet.page import PageMargins , PrintPageSetup
 import lib.excel_generico as excel
 import time
 import re
-from typing import List
+from typing import Dict, List
 from database.schema.rutas.datos_rutas_tracking import datos_rutas_tracking_schema
 from geopy.geocoders import Nominatim
 
@@ -341,6 +341,30 @@ async def get_rutas_en_activo(nombre_ruta : str):
      
     #  return rutas_en_activo_schema(results)
      return ruta_en_activo_excel_schema(results)
+
+
+@router.post("/recuperar/bultos/sku",status_code=status.HTTP_200_OK)
+async def recuperar_sku_productos_ruta(body : Dict):
+     
+     datos= []
+     for code in body['codigos']:
+        results = conn.prueba_recupera_bulto_sku(code,body['nombre_ruta'])
+        # json =  {
+        #     "guia" : results[0],
+        #     "sku" : results[1],
+        #     "descripcion" : results[2],
+        #     "cant_producto" : results[3],
+        #     "cant_x_producto" : results[4],
+        #     "bultos" : results[5]
+        # }
+        # datos.append(json)
+
+        datos.append(results)
+
+     if results is None or results == []:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="la ruta no existe")
+
+     return datos
 
 ## cantidad de productos (relacionados a read_ruta_en_activo)
 
