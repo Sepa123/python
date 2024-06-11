@@ -10,7 +10,7 @@ from database.models.colaboradores.vehiculos import Vehiculos,AsignarOperacion, 
 from database.models.colaboradores.persona import Usuario
 from database.models.operaciones.peso_volumetrico import PesoVolumetrico
 from database.schema.transporte.colaborador import colaboradores_schema, detalle_pagos_schema
-from database.schema.transporte.vehiculo import vehiculos_schema ,operacion_vehiculo_schema
+from database.schema.transporte.vehiculo import vehiculos_schema ,operacion_vehiculo_schema, vehiculos_y_op_schema
 from database.schema.transporte.usuario import usuarios_transporte_schema
 from database.schema.transporte.estado import estados_transporte_schema
 from lib.validar_rut import valida_rut
@@ -235,6 +235,14 @@ async def get_lista_vehiculos():
     result = conn.buscar_vehiculos()
 
     return vehiculos_schema(result)
+
+
+@router.get("/buscar/vehiculos/operacion")
+async def get_lista_vehiculos_mas_operacion():
+    
+    result = conn.buscar_vehiculos_y_operacion_pta()
+
+    return vehiculos_y_op_schema(result)
 
 
 @router.get("/ver/colaboradores")

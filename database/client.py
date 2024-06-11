@@ -9257,6 +9257,27 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                          """)
             return cur.fetchall()
         
+    def buscar_vehiculos_y_operacion_pta(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+             SELECT v.id, to_char(v.created_at::date, 'YYYY-MM-DD')  , v.update_date, v.razon_id, v.ppu, v.marca, v.tipo, v.modelo, 
+                v.ano, v.region, v.comuna, v.disponible, v.activation_date, v.capacidad_carga_kg, v.capacidad_carga_m3, 
+                v.platform_load_capacity_kg, v.crane_load_capacity_kg, v.permiso_circulacion_fec_venc, v.soap_fec_venc, 
+                v.revision_tecnica_fec_venc, v.registration_certificate, v.pdf_revision_tecnica, 
+                v.pdf_soap, v.pdf_padron, v.pdf_gases_certification, v.validado_por_id, 
+                v.validado_por_ids , c.razon_social, c.rut , v.gps, g.id , g.imei, g.fec_instalacion , g.oc_instalacion , v.habilitado, v.disponible, 
+                array_agg(po.id_operacion), array_agg(po.id_centro_op)
+                FROM transporte.vehiculo v
+            left join transporte.colaborador c on v.razon_id = c.id    
+            left join transporte.gps g on v.gps_id = g.id   
+            left join transporte.ppu_operacion po  on v.id = po.id_ppu
+            group by v.id, c.razon_social,c.rut,
+            g.id , g.imei, g.fec_instalacion , g.oc_instalacion
+            order by 1 
+                                  
+                         """)
+            return cur.fetchall()
+        
     def buscar_colaboradores(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
