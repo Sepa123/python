@@ -574,7 +574,13 @@ async def desvincular_colaborador(body : DesvincularColaborador ):
     # buscador de vehiculos por operacion y centro peracion
 @router.get("/buscar/vehiculos/filtro")
 async def buscar_vehiculos_por_operacion(id_op : int, id_co : int):
-    result = conn.buscar_vehiculos_ppu_operacion(id_op,id_co)
+
+    if id_op == 0:
+        result = conn.buscar_vehiculos_ppu_operacion(id_op,id_co)
+    else:
+        result = conn.buscar_vehiculos_ppu_operacion_co(id_op,id_co)
+   
+    
 
     datos = [vehiculo[0] for vehiculo in result]
 

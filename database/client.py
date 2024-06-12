@@ -9581,6 +9581,14 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                          """)
             return cur.fetchall()
         
+    def buscar_vehiculos_ppu_operacion_co(self,id_operacion, id_co):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+           select id_ppu from transporte.ppu_operacion po 
+            where po.id_operacion = {id_operacion} and po.id_centro_op = {id_co} 
+       
+                         """)
+            return cur.fetchall()
     ### Peso Volumetrico
 
     def insert_peso_volumetrico_sku(self, body):
