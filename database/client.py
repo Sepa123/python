@@ -9236,7 +9236,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             FROM transporte.colaborador col
             left join hela.rol r 
             ON col.tipo_razon  = r.id  
-            where col.rut = '{nombre}' or col.razon_social like '%{nombre}%'        
+            where col.rut = '{nombre}' or lower(col.razon_social) like lower('%{nombre}%')        
                          """)
             return cur.fetchall()
 
