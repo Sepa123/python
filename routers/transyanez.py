@@ -577,6 +577,8 @@ async def buscar_vehiculos_por_operacion(id_op : int, id_co : int):
 
     if id_op == 0:
         result = conn.buscar_vehiculos_ppu_operacion(id_op,id_co)
+    elif id_co == 0:
+        result = conn.buscar_vehiculos_ppu_operacion(id_op,id_co)
     else:
         result = conn.buscar_vehiculos_ppu_operacion_co(id_op,id_co)
    
