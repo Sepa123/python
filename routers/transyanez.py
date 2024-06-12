@@ -587,9 +587,10 @@ async def descargar_vehiculos_filtro(pendientes : List[VehiculosExcel]):
 
     print(pendientes)
 
+
     tupla = excel.objetos_a_tuplas(pendientes)
 
-    nombre_filas = ( 'Patente', 'Razón Social', "Tipo Vehículo", "Región Disponible", 
+    nombre_filas = ( 'Patente', 'Razón Social', "Tipo Vehículo", 'Operación','Centro operación', "Región Disponible", 
                      "GPS", "Disponible","Habilitado","Fecha de registro")
     nombre_excel = f"Vehiculos_filtrados"
 

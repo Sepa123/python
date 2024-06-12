@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import List, Optional, Union
 from pydantic import BaseModel
 
 class Vehiculos(BaseModel):
@@ -59,6 +59,10 @@ class VehiculosExcel(BaseModel):
     Ppu: Optional[str]
     Razon_social: Optional[str]
     Tipo: Optional[str]
+    Operaciones : Optional[str]
+    Centro_operaciones : Optional[str]
+    # Operaciones : Optional[List[str]]
+    # Centro_operaciones : Optional[List[str]]
     # Caracteristica: Optional[int]
     # Marca: Optional[int]
     # Modelo: Optional[str]
@@ -87,6 +91,7 @@ class VehiculosExcel(BaseModel):
     # Hab_vehiculo : Optional[bool]
     Hab_seguridad : Optional[bool]
     Created_at: Optional[str]
+
     # Id_gps : Optional[Union[int, str]]
     # Gps : Optional[bool]
     # Imei :Optional[str]
