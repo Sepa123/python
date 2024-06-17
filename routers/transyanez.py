@@ -192,7 +192,7 @@ async def actualizar_datos_vehiculo(body : Vehiculos):
             conn.actualizar_datos_gps(data_gps)
     ### si no se clickeo el gps
     elif body.Gps == False:
-        if body.Id_gps != None:
+        if body.Id_gps != None or body.Id_gps == 'null':
             data_gps= body.dict()
             conn.actualizar_datos_gps_si_se_desactiva_gps(data_gps)
         else:
