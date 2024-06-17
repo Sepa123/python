@@ -9402,7 +9402,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             
             SELECT u.id, to_char(u.created_at::date, 'YYYY-MM-DD') AS created_at, u.id_ingreso_hela, u.id_user, u.ids_user, u.id_razon_social, u.jpg_foto_perfil, u.nombre_completo, u.rut, u.nroseriecedula, 
                 u.email, u.telefono, u.birthday, u.region, u.comuna, u.domicilio, u.tipo_usuario, u.pdf_antecedentes, u.pdf_licencia_conducir, u.fec_venc_lic_conducir, u.pdf_cedula_identidad, u.pdf_contrato,
-                u.activo, u.validacion_seguridad, u.validacion_transporte, c.razon_social, c.rut 
+                u.activo, u.validacion_seguridad, u.validacion_transporte, coalesce (c.razon_social, '') as razon_social, c.rut 
             FROM transporte.usuarios u
             left join transporte.colaborador c on u.id_razon_social = c.id
                                   
