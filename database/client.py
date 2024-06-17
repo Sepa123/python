@@ -9253,7 +9253,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             FROM transporte.vehiculo v
             left join transporte.colaborador c on v.razon_id = c.id    
             left join transporte.gps g on v.gps_id = g.id    
-            where v.ppu like '%{filtro}%' or c.razon_social like '%{filtro}%' or  c.rut = '{filtro}'     
+            where lower(v.ppu) like lower('%{filtro}%') or lower(c.razon_social) like lower('%{filtro}%') or  c.rut = '{filtro}'     
                          """)
             return cur.fetchall()
         
