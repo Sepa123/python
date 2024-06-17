@@ -46,3 +46,17 @@ async def cambiar_password(body : loginSchema):
         return {
             "message": "No se ha actualizado la contraseña"
         }
+    
+
+
+@router.get("/ver/datos", status_code=status.HTTP_201_CREATED)
+async def registrar_usuario(id : str, server : str):
+    
+    datos = connHela.mostrar_datos_usuario_hela(id)
+    print(datos)
+
+    return {
+        "Telefono" : datos[0],
+        "Fecha_nacimiento" : datos[1],
+        "Direccion" : datos[2]
+    }

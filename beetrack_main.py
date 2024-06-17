@@ -117,7 +117,6 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
             conn.insert_beetrack_data_ruta_transyanez(datos_insert_ruta_ty)
 
             if datos_groups_i["Cliente"] == "Electrolux":
-                print("Esta cosa si es de electrolux")
                 patron = r'\D+'
                 factura = re.sub(patron, '', datos_tags_i["FACTURA"])
                 ahora = datetime.now()
@@ -141,7 +140,6 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
             rows = conn.update_ruta_ty_event(dato_ruta_ty)
 
             if datos_groups["Cliente"] == "Electrolux":
-                print("Esta cosa si es de electrolux")
                 patron = r'\D+'
                 factura = re.sub(patron, '', datos_tags["FACTURA"])
 
@@ -161,7 +159,7 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
 @app.post("/api/v2/beetrack/route")
 async def post_route(body : Route , headers: tuple = Depends(validar_encabezados)):
     content_type, x_auth_token = headers
-    print("/beetrack/route")
+
     # print(body)
     return {
             "body" : body
@@ -170,7 +168,6 @@ async def post_route(body : Route , headers: tuple = Depends(validar_encabezados
 
 @app.post("/api/v2/beetrack/Enviar/loquesea")
 async def post_route(body : Union[Dict, List[Dict]] ):
-    print("/beetrack/route")
     # print(body)
     return {
             "body" : body

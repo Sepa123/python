@@ -143,3 +143,13 @@ class HelaConnection():
             WHERE id in ({lista_id})
             """)
             return cur.fetchall()
+        
+
+    def mostrar_datos_usuario_hela(self,id):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            SELECT  telefono, fecha_nacimiento, direccion
+            FROM hela.usuarios
+            where id = {id};
+            """)
+            return cur.fetchone()
