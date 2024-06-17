@@ -170,6 +170,14 @@ async def agregar_datos_vehiculos(body : Vehiculos ):
 
 @router.put("/actualizar/datos/vehiculo")
 async def actualizar_datos_vehiculo(body : Vehiculos):
+    if body.Ano == 'null' : body.Ano = None
+    if body.Marca == 'null' : body.Marca = None
+    if body.Capacidad_carga_kg == 'null' : body.Capacidad_carga_kg = None
+    if body.Capacidad_carga_m3 == 'null' : body.Capacidad_carga_m3 = None
+    if body.Platform_load_capacity_kg == 'null' : body.Platform_load_capacity_kg = None
+    if body.Crane_load_capacity_kg == 'null' : body.Crane_load_capacity_kg = None
+
+
     body.Razon_id= conn.buscar_id_colab_por_rut(body.Rut_colaborador)[0]
     ### si se clickeo el gps
     if body.Gps == True:
