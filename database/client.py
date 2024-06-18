@@ -4117,7 +4117,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                         """)
             return cur.fetchall()
         
-    def obtener_alertas_vigentes(self):
+    def obtener_alertas_vigentes_v1(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""
             select to_char(tbm.created_at,'yyyy-mm-dd') as "Fec. Creación", 
@@ -4142,6 +4142,154 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             END,
             tbm.fec_reprogramada asc, tbm.fec_compromiso asc;
  
+                        """)
+            return cur.fetchall()
+    
+    def obtener_alertas_vigentes(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            --select * from areati.busca_ruta_manual_base2('1374380901')
+            with direccion_pedido as (
+            select  distinct on (easy.carton)        
+                    coalesce(
+                    tbm.direccion,
+                    CASE 
+                        WHEN substring(easy.direccion from '^\d') ~ '\d' then substring(initcap(easy.direccion) from '\d+[\w\s]+\d+')
+                        WHEN lower(easy.direccion) ~ '^(pasaje|calle|avenida)\s+\d+\s+' THEN
+                        regexp_replace(REPLACE(regexp_replace(regexp_replace(initcap(split_part(easy.direccion,',',1)), ',.$', ''), '\s+(\d+\D+\d+).$', ' \1'), '\', ''), '', '') 
+                        else coalesce(substring(initcap(easy.direccion) from '^[^0-9]*[0-9]+'),initcap(easy.direccion))
+                    end) as "Calle y Número",
+                    coalesce(tbm.direccion,easy.direccion) as "Dirección Textual",
+                    CAST(easy.entrega AS varchar) AS "Código de Pedido"   -- Agrupar Por
+                        
+            from areati.ti_wms_carga_easy easy
+            LEFT JOIN (
+                SELECT DISTINCT ON (guia) guia as guia, 
+                direccion_correcta as direccion, 
+                comuna_correcta as comuna,
+                fec_reprogramada as fecha,
+                observacion,
+                alerta
+                FROM rutas.toc_bitacora_mae
+                WHERE alerta = true
+                ORDER BY guia, created_at desc
+            ) AS tbm ON easy.entrega=tbm.guia
+            -------------------------------------------------------------------------------------------------------------------------------------
+            -- ELECTROLUX
+            -- [22/09/2023] Se incorpora Alerta por sistema para productos que tienen condición de NO RETORNO A RUTA
+            -------------------------------------------------------------------------------------------------------------------------------------
+            union all
+                select 
+                    coalesce(tbm.direccion,
+                    CASE 
+                WHEN substring(initcap(split_part(eltx.direccion,',',1)) from '^\d') ~ '\d' then substring(initcap(split_part(eltx.direccion,',',1)) from '\d+[\w\s]+\d+')
+                WHEN lower(split_part(eltx.direccion,',',1)) ~ '^(pasaje|calle|avenida)\s+\d+\s+' THEN 
+                -- cast(regexp_replace(regexp_replace(initcap(split_part(eltx.direccion,',',1)), ',.*$', ''), '\s+(\d+\D+\d+).*$', ' \1') AS varchar)
+                -- REPLACE(regexp_replace(regexp_replace(initcap(split_part(eltx.direccion,',',1)), ',.$', ''), '\s+(\d+\D+\d+).$', ' \1'), '\', '')
+                regexp_replace(REPLACE(regexp_replace(regexp_replace(initcap(split_part(eltx.direccion,',',1)), ',.$', ''), '\s+(\d+\D+\d+).$', ' \1'), '\', ''), '', '')
+                else coalesce(substring(initcap(split_part(eltx.direccion,',',1)) from '^[^0-9]*[0-9]+'),eltx.direccion)
+                    end) as "Calle y Número",
+                    coalesce(tbm.direccion,eltx.direccion) as "Dirección Textual",
+                    CAST (eltx.numero_guia AS varchar) AS "Código de Pedido"                                      -- Alertado por el Sistema
+            from areati.ti_wms_carga_electrolux eltx
+            LEFT JOIN (
+                SELECT DISTINCT ON (guia) guia as guia, 
+                direccion_correcta as direccion, 
+                comuna_correcta as comuna,
+                fec_reprogramada as fecha,
+                observacion,
+                alerta
+                FROM rutas.toc_bitacora_mae
+                WHERE alerta = true
+                ORDER BY guia, created_at desc
+            ) AS tbm ON eltx.numero_guia=tbm.guia
+
+            -------------------------------------------------------------------------------------------------------------------------------------
+            -- SPORTEX
+            -- [22/09/2023] Se incorpora Alerta por sistema para productos que tienen condición de NO RETORNO A RUTA
+            -------------------------------------------------------------------------------------------------------------------------------------
+            -------------------------------------------------------------------------------------------------------------------------------------
+            -- Easy OPL
+            -- [22/09/2023] Se incorpora Alerta por sistema para productos que tienen condición de NO RETORNO A RUTA
+            -------------------------------------------------------------------------------------------------------------------------------------
+            union all  
+            select
+                    coalesce(tbm.direccion,
+                    CASE 
+                        WHEN substring(easygo.direc_despacho from '^\d') ~ '\d' then substring(initcap(easygo.direc_despacho) from '\d+[\w\s]+\d+')
+                        WHEN lower(easygo.direc_despacho) ~ '^(pasaje|calle|avenida)\s+\d+\s+' THEN
+                        regexp_replace(REPLACE(regexp_replace(regexp_replace(initcap(split_part(easygo.direc_despacho,',',1)), ',.$', ''), '\s+(\d+\D+\d+).$', ' \1'), '\', ''), '', '') 
+                        else coalesce(substring(initcap(easygo.direc_despacho) from '^[^0-9]*[0-9]+'),initcap(easygo.direc_despacho))
+                    end) as "Calle y Número",
+                    coalesce(tbm.direccion,easygo.direc_despacho) as "Dirección Textual",
+                    CAST (easygo.suborden AS varchar) AS "Código de Pedido"                                      -- Alertado por el Sistema
+            from areati.ti_carga_easy_go_opl easygo
+            LEFT JOIN (
+                SELECT DISTINCT ON (guia) guia as guia, 
+                direccion_correcta as direccion, 
+                comuna_correcta as comuna,
+                fec_reprogramada as fecha,
+                observacion,
+                alerta
+                FROM rutas.toc_bitacora_mae
+                WHERE alerta = true
+                ORDER BY guia, created_at desc
+            ) AS tbm ON easygo.suborden=tbm.guia
+
+            -------------------------------------------------------------------------------------------------------------------------------------
+            -- (5) Retiro Cliente [24/07/2023]
+            -- [22/09/2023] Se incorpora Alerta por sistema para productos que tienen condición de NO RETORNO A RUTA
+            -------------------------------------------------------------------------------------------------------------------------------------
+            union all
+            select  --retc.envio_asociado AS "Código de Cliente",
+                    coalesce(tbm.direccion,
+                    CASE 
+                        WHEN substring(retc.direccion from '^\d') ~ '\d' then substring(initcap(retc.direccion) from '\d+[\w\s]+\d+')
+                        WHEN lower(retc.direccion) ~ '^(pasaje|calle|avenida)\s+\d+\s+' THEN
+                        regexp_replace(REPLACE(regexp_replace(regexp_replace(initcap(split_part(retc.direccion,',',1)), ',.$', ''), '\s+(\d+\D+\d+).$', ' \1'), '\', ''), '', '') 
+                        else coalesce(substring(initcap(retc.direccion) from '^[^0-9]*[0-9]+'),initcap(retc.direccion))
+                    end) as "Calle y Número",
+                    coalesce(tbm.direccion,retc.direccion) as "Dirección Textual",
+                    CAST (retc.cod_pedido AS varchar) AS "Código de Pedido"
+                -- Alertado por el Sistema
+            from areati.ti_retiro_cliente retc
+            LEFT JOIN (
+                SELECT DISTINCT ON (guia) guia as guia, 
+                direccion_correcta as direccion, 
+                comuna_correcta as comuna,
+                fec_reprogramada as fecha,
+                observacion,
+                alerta
+                FROM rutas.toc_bitacora_mae
+                WHERE alerta = true
+                ORDER BY guia, created_at desc
+            ) AS tbm on retc.cod_pedido=tbm.guia
+            ) 
+
+            select distinct  on (tbm.guia)
+                    to_char(tbm.created_at,'yyyy-mm-dd') as "Fec. Creación", 
+                        tbm.guia as "Guía", 
+                        tbm.cliente as "Cliente", 
+                        coalesce(coalesce(tbm.comuna_correcta || '*',tbm.comuna), 'sin Info.') as "Comuna", 
+                        coalesce(tbm.direccion_correcta || '*',  dp."Calle y Número") as "Dirección",
+                        coalesce(to_char(tbm.fec_reprogramada,'yyyy-mm-dd') || '*', to_char(tbm.fec_compromiso,'yyyy-mm-dd')) as "Fec. Comp.", 
+                        tbm.observacion as "Observación", 
+                        tbm.ids_transyanez as "Código TY", 
+                        tbm.alerta as "Alerta",
+                        coalesce(trb.identificador,null) as en_ruta,
+                        tbm.id
+                        from rutas.toc_bitacora_mae tbm
+                        left join quadminds.ti_respuesta_beetrack trb on trb.guia = tbm.guia
+                        left join direccion_pedido dp on dp."Código de Pedido" = tbm.guia
+                        where tbm.alerta = true
+                        ORDER by 2,
+                        CASE
+                            WHEN tbm.fec_reprogramada < CURRENT_DATE THEN 0  -- Atrasadas
+                            WHEN tbm.fec_reprogramada = CURRENT_DATE THEN 1  -- Hoy
+                            ELSE 2                                           -- Adelantadas
+                        END,
+                        tbm.fec_reprogramada asc, tbm.fec_compromiso asc;
+            
                         """)
             return cur.fetchall()
         
