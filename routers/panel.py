@@ -2,7 +2,7 @@ from fastapi import APIRouter, status,HTTPException
 
 ##Modelos 
 
-from database.models.panel.usuario import Usuario
+from database.models.panel.usuario import Usuario, CambiarPassword
 from database.models.user import loginSchema
 
 ##Conexiones
@@ -60,3 +60,20 @@ async def registrar_usuario(id : str, server : str):
         "Fecha_nacimiento" : datos[1],
         "Direccion" : datos[2]
     }
+
+
+
+@router.post("/nueva/password")
+async def cambiar_password_nueva(body : CambiarPassword):
+    
+    row = connHela.cambiar_password_nueva(hash_password(body.Password_antigua),body.Mail,hash_password(body.Password_nueva))
+
+    if row == 1:
+        return {
+            "message": "Se ha actualizado la contraseña correctamente"
+        }
+    else:
+        return {
+            "message": "No se ha actualizado la contraseña"
+        }
+    

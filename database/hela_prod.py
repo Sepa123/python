@@ -66,6 +66,19 @@ class HelaConnection():
         self.conn.commit()
 
         return row
+    
+    def cambiar_password_nueva(self,password_antigua,mail,password_nueva):
+        with self.conn.cursor() as cur:
+                cur.execute(f"""        
+                UPDATE hela.usuarios
+                SET "password"='{password_antigua}'
+                WHERE mail='{mail}' and "password" = '{password_nueva}'
+                """)
+                row = cur.rowcount
+                
+        self.conn.commit()
+
+        return row
 
       ## Asignar rutas activas
    
