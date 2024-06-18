@@ -8584,9 +8584,11 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             return cur.fetchall()
     
 
-    def detalle_pendientes_easy_hoy(self):
+    def detalle_pendientes_easy_hoy_v2(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
+                        
+                ---- V1  select * from areati.detalle_pendientes_easy_hoy()
                 SELECT *
                 FROM (
                     SELECT DISTINCT ON (eefc.entrega)
@@ -8626,6 +8628,136 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 ) AS subquery
                 ORDER BY subquery.ruta_hela ASC;
             
+                         """)
+            return cur.fetchall()
+        
+    def detalle_pendientes_easy_hoy(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            ---v3 quitando la funcion de sku_lite, es innecesaria
+            with estatus_entregas_fec_compromiso_easy as (
+
+            SELECT *
+                FROM (
+                    -- Consulta para 'Easy CD'
+                    SELECT DISTINCT ON (twce.entrega)
+                        'Easy CD' as cliente,
+                        twce.entrega as entrega,
+                        case
+                                when unaccent(lower(twce.comuna)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                                (select oc.comuna_name from public.op_comunas oc 
+                                where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+                                                                        where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(twce.comuna))
+                                                                )
+                                )
+                                else (select initcap(oc2.comuna_name) from public.op_comunas oc2 
+                                        where unaccent(lower(twce.comuna)) = unaccent(lower(oc2.comuna_name))
+                                        )
+                            end as comuna,
+                            case
+                                when unaccent(lower(twce.comuna)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                                (select opr.region_name  from public.op_regiones opr 
+                                where opr.id_region = (select oc.id_region from public.op_comunas oc 
+                                    where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+                                    where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(twce.comuna))
+                                    )	
+                                ))
+                                else(select opr.region_name  from public.op_regiones opr 
+                                where opr.id_region =(select oc2.id_region from public.op_comunas oc2 
+                                where unaccent(lower(twce.comuna)) = unaccent(lower(oc2.comuna_name))
+                                ))
+                            end as region,
+                        --	rsb.cant_por_producto,
+                        --	rsb.bultos,
+                            twce.estado,
+                            twce.subestado
+                    FROM areati.ti_wms_carga_easy twce
+                    --LEFT JOIN LATERAL rutas.recupera_sku_lite(twce.entrega) AS rsb ON true
+                    WHERE twce.fecha_entrega = current_date::date
+                    AND twce.fecha_entrega > twce.created_at
+                    
+                    UNION ALL
+                    
+                    -- Consulta para 'Easy OPL'
+                    SELECT DISTINCT ON (tcego.suborden)
+                        'Easy OPL' as cliente,
+                        tcego.suborden as entrega,
+                        case
+                                when unaccent(lower(tcego.comuna_despacho)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                                (select oc.comuna_name from public.op_comunas oc 
+                                where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+                                where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(tcego.comuna_despacho))
+                                )
+                                    )
+                                    else (select initcap(oc2.comuna_name) from public.op_comunas oc2 
+                                where unaccent(lower(tcego.comuna_despacho)) = unaccent(lower(oc2.comuna_name))
+                                )
+                        end as comuna,
+                        case
+                                when unaccent(lower(tcego.comuna_despacho)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                                (select opr.region_name  from public.op_regiones opr 
+                                where opr.id_region = (select oc.id_region from public.op_comunas oc 
+                                    where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+                                    where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(tcego.comuna_despacho))
+                                    )	
+                                ))
+                                else(select opr.region_name  from public.op_regiones opr 
+                                where opr.id_region =(select oc2.id_region from public.op_comunas oc2 
+                                where unaccent(lower(tcego.comuna_despacho)) = unaccent(lower(oc2.comuna_name))
+                                ))
+                        end as region,
+                        --rsb.cant_por_producto ,
+                        --rsb.bultos,
+                        tcego.estado,
+                        tcego.subestado
+                    FROM areati.ti_carga_easy_go_opl tcego 
+                    --LEFT JOIN LATERAL rutas.recupera_sku_lite(tcego.suborden) AS rsb ON true
+                    WHERE tcego.fec_compromiso = current_date::date
+                    AND tcego.fec_compromiso > tcego.created_at
+                ) AS subquery
+
+            )
+
+
+            SELECT *
+                            FROM (
+                                SELECT DISTINCT ON (eefc.entrega)
+                                    eefc.cliente,
+                                    eefc.entrega AS guia,
+                                    drm.nombre_ruta AS ruta_hela,
+                                    initcap(drm.calle_numero) AS direccion,
+                                    drm.ciudad AS ciudad,
+                                    drm.provincia_estado AS region
+                                FROM estatus_entregas_fec_compromiso_easy AS eefc
+                                LEFT JOIN quadminds.datos_ruta_manual drm ON drm.cod_pedido = eefc.entrega
+                                WHERE eefc.entrega NOT IN (
+                                    SELECT rt.guia 
+                                    FROM beetrack.ruta_transyanez rt
+                                    WHERE rt.created_at::date = current_date
+                                )
+                                AND eefc.estado != 1 AND drm.nombre_ruta IS NOT NULL
+                                UNION ALL  
+                                SELECT DISTINCT ON (eefc.entrega)
+                                    eefc.cliente,
+                                    eefc.entrega AS guia,
+                                    drm.nombre_ruta AS ruta_hela,
+                                    initcap(brm."Dirección Textual") AS direccion,
+                                    brm."Ciudad" AS ciudad,
+                                    brm."Provincia/Estado" AS region
+                                FROM estatus_entregas_fec_compromiso_easy AS eefc
+                                LEFT JOIN quadminds.datos_ruta_manual drm ON drm.cod_pedido = eefc.entrega
+                                LEFT JOIN LATERAL (
+                                    SELECT * FROM areati.busca_ruta_manual_base2(eefc.entrega) LIMIT 1
+                                ) AS brm ON true
+                                WHERE eefc.entrega NOT IN (
+                                    SELECT rt.guia 
+                                    FROM beetrack.ruta_transyanez rt
+                                    WHERE rt.created_at::date = current_date
+                                )
+                                AND eefc.estado != 1 AND drm.nombre_ruta IS NULL
+                            ) AS subquery
+                            ORDER BY subquery.ruta_hela ASC;
+
                          """)
             return cur.fetchall()
 
