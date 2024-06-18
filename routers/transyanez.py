@@ -13,7 +13,7 @@ from database.schema.transporte.colaborador import colaboradores_schema, detalle
 from database.schema.transporte.vehiculo import vehiculos_schema ,operacion_vehiculo_schema, vehiculos_y_op_schema
 from database.schema.transporte.usuario import usuarios_transporte_schema
 from database.schema.transporte.estado import estados_transporte_schema
-from lib.validar_rut import valida_rut
+from lib.validar_rut import convertir_rut, detectar_rut, valida_rut
 from lib.password import hash_password
 import psycopg2.errors
 import os
@@ -260,8 +260,14 @@ async def get_lista_colaboradores():
 
     return colaboradores_schema(result)
 
+
+
 @router.get("/buscar/colaboradores")
 async def get_lista_colaboradores(nombre : str):
+    is_rut = len(detectar_rut(nombre))
+
+    if is_rut != 0:
+        nombre = convertir_rut(nombre)
     
     result = conn.buscar_colaboradores_por_nombre(nombre)
 
