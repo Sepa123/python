@@ -71,8 +71,8 @@ class HelaConnection():
         with self.conn.cursor() as cur:
                 cur.execute(f"""        
                 UPDATE hela.usuarios
-                SET "password"='{password_antigua}'
-                WHERE mail='{mail}' and "password" = '{password_nueva}'
+                SET "password"='{password_nueva}'
+                WHERE mail='{mail}' and "password" = '{password_antigua}'
                 """)
                 row = cur.rowcount
                 
