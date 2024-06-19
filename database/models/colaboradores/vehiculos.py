@@ -38,6 +38,7 @@ class Vehiculos(BaseModel):
     Imei :Optional[str]
     Oc_instalacion : Optional[str]
     Fecha_instalacion : Optional[str]
+    Desc_desabilitado: Optional[str]
 
 
 class AsignarOperacion(BaseModel):
