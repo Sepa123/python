@@ -9056,9 +9056,107 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def panel_regiones_ns_easy(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
-            select region, total_region, entregados,
-                CAST(ns_region AS float)
-            from areati.panel_regiones_ns_easy();
+            --select region, total_region, entregados,
+               -- CAST(ns_region AS float)
+            --from areati.panel_regiones_ns_easy();
+            with estatus_entregas_fec_compromiso_easy as (
+
+            SELECT *
+                FROM (
+                    -- Consulta para 'Easy CD'
+                    SELECT DISTINCT ON (twce.entrega)
+                        'Easy CD' as cliente,
+                        twce.entrega as entrega,
+                        case
+                                when unaccent(lower(twce.comuna)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                                (select oc.comuna_name from public.op_comunas oc 
+                                where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+                                                                        where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(twce.comuna))
+                                                                )
+                                )
+                                else (select initcap(oc2.comuna_name) from public.op_comunas oc2 
+                                        where unaccent(lower(twce.comuna)) = unaccent(lower(oc2.comuna_name))
+                                        )
+                            end as comuna,
+                            case
+                                when unaccent(lower(twce.comuna)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                                (select opr.region_name  from public.op_regiones opr 
+                                where opr.id_region = (select oc.id_region from public.op_comunas oc 
+                                    where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+                                    where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(twce.comuna))
+                                    )	
+                                ))
+                                else(select opr.region_name  from public.op_regiones opr 
+                                where opr.id_region =(select oc2.id_region from public.op_comunas oc2 
+                                where unaccent(lower(twce.comuna)) = unaccent(lower(oc2.comuna_name))
+                                ))
+                            end as region,
+                        --	rsb.cant_por_producto,
+                        --	rsb.bultos,
+                            twce.estado,
+                            twce.subestado
+                    FROM areati.ti_wms_carga_easy twce
+                    --LEFT JOIN LATERAL rutas.recupera_sku_lite(twce.entrega) AS rsb ON true
+                    WHERE twce.fecha_entrega = current_date::date
+                    AND twce.fecha_entrega > twce.created_at
+                    
+                    UNION ALL
+                    
+                    -- Consulta para 'Easy OPL'
+                    SELECT DISTINCT ON (tcego.suborden)
+                        'Easy OPL' as cliente,
+                        tcego.suborden as entrega,
+                        case
+                                when unaccent(lower(tcego.comuna_despacho)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                                (select oc.comuna_name from public.op_comunas oc 
+                                where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+                                where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(tcego.comuna_despacho))
+                                )
+                                    )
+                                    else (select initcap(oc2.comuna_name) from public.op_comunas oc2 
+                                where unaccent(lower(tcego.comuna_despacho)) = unaccent(lower(oc2.comuna_name))
+                                )
+                        end as comuna,
+                        case
+                                when unaccent(lower(tcego.comuna_despacho)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                                (select opr.region_name  from public.op_regiones opr 
+                                where opr.id_region = (select oc.id_region from public.op_comunas oc 
+                                    where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+                                    where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(tcego.comuna_despacho))
+                                    )	
+                                ))
+                                else(select opr.region_name  from public.op_regiones opr 
+                                where opr.id_region =(select oc2.id_region from public.op_comunas oc2 
+                                where unaccent(lower(tcego.comuna_despacho)) = unaccent(lower(oc2.comuna_name))
+                                ))
+                        end as region,
+                        --rsb.cant_por_producto ,
+                        --rsb.bultos,
+                        tcego.estado,
+                        tcego.subestado
+                    FROM areati.ti_carga_easy_go_opl tcego 
+                    --LEFT JOIN LATERAL rutas.recupera_sku_lite(tcego.suborden) AS rsb ON true
+                    WHERE tcego.fec_compromiso = current_date::date
+                    AND tcego.fec_compromiso > tcego.created_at
+                ) AS subquery
+
+            )
+                        
+                SELECT 
+                    subquery.region,
+                    subquery.total_region,
+                    subquery.entregados,
+                    CAST(ROUND(subquery.entregados * 100.00 / subquery.total_region, 2) as float) AS ns_region
+                FROM (
+                    SELECT 
+                        eefc.region,
+                        COUNT(*) AS total_region,
+                        COUNT(CASE WHEN eefc.estado = 1 THEN 1 END) AS entregados
+                    FROM estatus_entregas_fec_compromiso_easy as eefc
+                    GROUP BY eefc.region
+                ) AS subquery;
+                        
+            
 
                          """)
             return cur.fetchall()
