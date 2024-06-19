@@ -8224,33 +8224,44 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                     --    total_anulados as anulados,
                      --   porcentaje_entregas_real as nivel_servicio
                -- from rutas.calcular_ns_easy_fecha('{fecha}')
-               WITH conteo_easy AS (
-            SELECT
-                twce.entrega,
-                twce.fecha_entrega,
-                (SELECT rt.fecha_llegada::date
+               --------------
+                WITH fecha_llegada_ruta as  (
+                SELECT rt.fecha_llegada::date,
+                    rt.guia,
+                    rt.cliente 
                 FROM beetrack.ruta_transyanez rt
-                WHERE rt.guia = twce.entrega
+                --WHERE rt.guia = twce.entrega
+                where (rt.cliente = 'Easy' or rt.cliente = '')
                 AND LOWER(rt.estado) IN ('entregado', 'retirado')
-                AND rt.fecha_llegada::date <= twce.fecha_entrega::date
+                --AND rt.fecha_llegada::date <= twce.fecha_entrega::date
                 ORDER BY rt.created_at DESC
-                LIMIT 1) AS fec_entrega_real,
-                CASE
-                    WHEN ((twce.estado = 2 AND twce.subestado IN (7, 10, 12, 19, 43, 44, 50, 51, 70, 80)) OR twce.estado IN (3)) THEN 1
-                    ELSE 0
-                END AS anulado
-            FROM
-                areati.ti_wms_carga_easy twce
-            WHERE
-                twce.fecha_entrega::date = '{fecha}'::date -- Fecha Parametro
-        )
-        select 	'Easy CD' as cliente,
-            COUNT(*) AS total_registros,
-            COUNT(fec_entrega_real) AS registros_con_entrega_real,
-            SUM(anulado) AS total_anulados
-            --ROUND(COUNT(fec_entrega_real) * 100.0 / NULLIF((COUNT(*) - SUM(anulado)), 0), 2) AS porcentaje_entregas_real
-        FROM
-            conteo_easy;
+                --LIMIT 1
+                ),
+                conteo_easy AS (
+                            select
+                                twce.entrega,
+                                twce.fecha_entrega,
+                                flr.fecha_llegada::date AS fec_entrega_real,
+                                flr.cliente ,
+                                CASE
+                                    WHEN ((twce.estado = 2 AND twce.subestado IN (7, 10, 12, 19, 43, 44, 50, 51, 70, 80)) OR twce.estado IN (3)) THEN 1
+                                    ELSE 0
+                                END AS anulado
+                            FROM
+                                areati.ti_wms_carga_easy twce
+                            left join fecha_llegada_ruta flr on flr.guia = twce.entrega and 
+                            flr.fecha_llegada::date <= twce.fecha_entrega::date
+                            WHERE
+                                twce.fecha_entrega::date = '{fecha}'::date -- Fecha Parametro
+                        )
+
+                        select 	'Easy CD' as cliente,
+                            COUNT(*) AS total_registros,
+                            COUNT(fec_entrega_real) AS registros_con_entrega_real,
+                            SUM(anulado) AS total_anulados,
+                            ROUND(COUNT(fec_entrega_real) * 100.0 / NULLIF((COUNT(*) - SUM(anulado)), 0), 2) AS porcentaje_entregas_real
+                        FROM
+                            conteo_easy;
                          """)
             return cur.fetchall()
         
