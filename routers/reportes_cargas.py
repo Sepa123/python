@@ -733,7 +733,7 @@ async def get_panel_regiones_ns_electrolux():
         datos = panel_regiones_ns_easy_schema(results)
         datos_json.guardar_datos(datos,ahora,'panel_regiones_ns_electrolux')
     else:
-        time.sleep(9)
+        time.sleep(3)
     return datos
 
 
