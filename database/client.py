@@ -8226,16 +8226,13 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                -- from rutas.calcular_ns_easy_fecha('{fecha}')
                --------------
                 WITH fecha_llegada_ruta as  (
-                SELECT rt.fecha_llegada::date,
+                select distinct on(rt.guia) rt.fecha_llegada::date,
                     rt.guia,
                     rt.cliente 
                 FROM beetrack.ruta_transyanez rt
-                --WHERE rt.guia = twce.entrega
                 where (rt.cliente = 'Easy' or rt.cliente = '')
                 AND LOWER(rt.estado) IN ('entregado', 'retirado')
-                --AND rt.fecha_llegada::date <= twce.fecha_entrega::date
-                ORDER BY rt.created_at DESC
-                --LIMIT 1
+                ORDER BY rt.guia,rt.created_at DESC
                 ),
                 conteo_easy AS (
                             select
@@ -8258,8 +8255,9 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                         select 	'Easy CD' as cliente,
                             COUNT(*) AS total_registros,
                             COUNT(fec_entrega_real) AS registros_con_entrega_real,
-                            SUM(anulado) AS total_anulados,
-                            ROUND(COUNT(fec_entrega_real) * 100.0 / NULLIF((COUNT(*) - SUM(anulado)), 0), 2) AS porcentaje_entregas_real
+                            SUM(anulado) AS total_anulados
+                            --SUM(anulado) AS total_anulados,
+                            --ROUND(COUNT(fec_entrega_real) * 100.0 / NULLIF((COUNT(*) - SUM(anulado)), 0), 2) AS porcentaje_entregas_real
                         FROM
                             conteo_easy;
                          """)
