@@ -34,9 +34,12 @@ def vehiculo(vehiculo):
             "Imei": vehiculo[31],
             "Fecha_instalacion": vehiculo[32],
             "Oc_instalacion": vehiculo[33],
-            "Hab_seguridad" : vehiculo[34],
-            "Hab_vehiculo" : vehiculo[35]
+            "Habilitado" : vehiculo[34], ### Hab Seguridad
+            "Disponible" : vehiculo[35] ### Hab Vehiculo
         }
+
+# "Hab_seguridad" : vehiculo[34],
+#             "Hab_vehiculo" : vehiculo[35],
 
 def vehiculos_schema(colaboradores):
     return [vehiculo(colab) for colab in colaboradores]
@@ -96,8 +99,8 @@ def vehiculo_y_op(vehiculo):
             "Imei": vehiculo[31],
             "Fecha_instalacion": vehiculo[32],
             "Oc_instalacion": vehiculo[33],
-            "Hab_seguridad" : vehiculo[34],
-            "Hab_vehiculo" : vehiculo[35],
+            "Habilitado" : vehiculo[34], ### Hab Seguridad
+            "Disponible" : vehiculo[35], ### Hab Vehiculo
             "Operaciones": vehiculo[36],
             "Centro_operaciones": vehiculo[37],
         }

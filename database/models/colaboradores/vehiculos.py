@@ -39,6 +39,10 @@ class Vehiculos(BaseModel):
     Oc_instalacion : Optional[str]
     Fecha_instalacion : Optional[str]
     Desc_desabilitado: Optional[str]
+    Fecha_desinstalacion : Optional[str]
+    Oc_desinstalacion: Optional[str]
+    Disponible : Optional[bool]
+    Habilitado : Optional[bool]
 
 
 class AsignarOperacion(BaseModel):
@@ -72,7 +76,7 @@ class VehiculosExcel(BaseModel):
     Region: Optional[str]
     # Comuna: Optional[str]
     Gps : Optional[bool]
-    Estado: Optional[bool]
+    Disponible: Optional[bool]
     # Activation_date: Optional[str]
     # Capacidad_carga_kg: Optional[int]
     # Capacidad_carga_m3: Optional[int]
@@ -90,7 +94,7 @@ class VehiculosExcel(BaseModel):
     # Id_user: Optional[int]
     # Ids_user: Optional[str]
     # Hab_vehiculo : Optional[bool]
-    Hab_seguridad : Optional[bool]
+    Habilitado : Optional[bool]
     Created_at: Optional[str]
 
     # Id_gps : Optional[Union[int, str]]

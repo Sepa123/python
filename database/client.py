@@ -9474,11 +9474,11 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             cur.execute("""
             UPDATE transporte.vehiculo
             SET update_date= CURRENT_DATE, razon_id=%(Razon_id)s, marca=%(Marca)s, tipo= %(Tipo)s,
-            modelo=%(Modelo)s, ano=%(Ano)s, region=%(Region)s, comuna=%(Comuna)s, disponible=%(Estado)s, activation_date=%(Activation_date)s, 
+            modelo=%(Modelo)s, ano=%(Ano)s, region=%(Region)s, comuna=%(Comuna)s, disponible=%(Disponible)s, activation_date=%(Activation_date)s, 
             capacidad_carga_kg=%(Capacidad_carga_kg)s, capacidad_carga_m3=%(Capacidad_carga_m3)s, platform_load_capacity_kg=%(Platform_load_capacity_kg)s, 
             crane_load_capacity_kg=%(Crane_load_capacity_kg)s, permiso_circulacion_fec_venc=%(Permiso_circulacion_fec_venc)s, soap_fec_venc=%(Soap_fec_venc)s, 
             revision_tecnica_fec_venc=%(Revision_tecnica_fec_venc)s,
-            validado_por_id=%(Id_user)s, validado_por_ids=%(Ids_user)s, gps=%(Gps)s, gps_id=%(Id_gps)s
+            validado_por_id=%(Id_user)s, validado_por_ids=%(Ids_user)s, gps=%(Gps)s, gps_id=%(Id_gps)s, habilitado=%(Habilitado)s
             WHERE ppu=%(Ppu)s
                  """,data)
             self.conn.commit()
