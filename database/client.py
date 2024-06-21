@@ -9725,7 +9725,13 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def buscar_modalidad_operacion(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
-            select * from operacion.modalidad_operacion mo
+            --select * from operacion.modalidad_operacion mo
+            SELECT mo.id, mo.created_at, mo.id_user, mo.ids_user, mo.nombre,
+                    mo.description, mo.creation_date, mo.update_date, mo.estado, count(co.id) as cant_co
+            FROM operacion.modalidad_operacion mo
+            left join operacion.centro_operacion co on co.id_op = mo.id 
+            group by mo.id
+            order by cant_co desc,mo.nombre,mo.estado
                                   
                          """)
             return cur.fetchall()
