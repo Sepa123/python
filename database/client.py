@@ -9517,6 +9517,15 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
         self.conn.commit() 
         
         return rows_delete
+    
+    def motivo_desvinculacion_colaborador(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            SELECT id, motivo
+            FROM transporte.motivo_desvinculacion;
+                         """)
+            return cur.fetchall()
+        
 
     def buscar_vehiculos(self):
         with self.conn.cursor() as cur:

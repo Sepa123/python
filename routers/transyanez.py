@@ -9,7 +9,7 @@ from database.models.colaboradores.colaborador import Colaboradores,DetallesPago
 from database.models.colaboradores.vehiculos import Vehiculos,AsignarOperacion, VehiculosExcel,cambiarEstadoVehiculo
 from database.models.colaboradores.persona import Usuario
 from database.models.operaciones.peso_volumetrico import PesoVolumetrico
-from database.schema.transporte.colaborador import colaboradores_schema, detalle_pagos_schema
+from database.schema.transporte.colaborador import colaboradores_schema, detalle_pagos_schema,motivo_desvinculacion_schema
 from database.schema.transporte.vehiculo import vehiculos_schema ,operacion_vehiculo_schema, vehiculos_y_op_schema
 from database.schema.transporte.usuario import usuarios_transporte_schema
 from database.schema.transporte.estado import estados_transporte_schema
@@ -562,6 +562,12 @@ async def eliminar_operacion_vehiculo(id : str):
      except:
           print("error en /eliminar/operacion/vehiculo")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
+     
+
+@router.get("/colaborador/desvinculacion")
+async def motivos_desvinculacion():
+    result = conn.motivo_desvinculacion_colaborador()
+    return motivo_desvinculacion_schema(result)
        
 @router.post("/desvincular/colaborador")
 async def desvincular_colaborador(body : DesvincularColaborador ):

@@ -55,3 +55,16 @@ def detalle_pago(detalle):
 
 def detalle_pagos_schema(detalles):
     return [detalle_pago(detalle) for detalle in detalles]
+
+
+
+
+def motivo_desvinculacion(motivo):
+    return {
+        "id": motivo[0],
+        "motivo": motivo[1]
+
+    }
+
+def motivo_desvinculacion_schema(detalles):
+    return [motivo_desvinculacion(detalle) for detalle in detalles]
