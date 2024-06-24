@@ -91,8 +91,11 @@ app.add_middleware(
 app.add_middleware(GZipMiddleware, minimum_size=10000)
 
 @app.get("/api")
-async def root():
-    conn
+def root():
+    # time.sleep(10)
+    # print('hola')
+    # time.sleep(10)
+    # print('Sigo funcionando')
     return "hola"
 
 # @app.get("/api/cpu")
@@ -141,7 +144,7 @@ async def select():
 
 
 @app.post("/api/login", status_code=status.HTTP_202_ACCEPTED)
-async def login_user(user_data:loginSchema):
+def login_user(user_data:loginSchema):
     data = user_data.dict()
     user_db = conn.read_only_one(data)
     server = "portal"
@@ -180,7 +183,7 @@ async def login_user(user_data:loginSchema):
         "server": server
     }
 
-async def auth_user(token:str = Depends(oauth2)):
+def auth_user(token:str = Depends(oauth2)):
 
     exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="credenciales no corresponden",
                             headers={"WWW-Authenticate": "Bearer"})
@@ -193,7 +196,7 @@ async def auth_user(token:str = Depends(oauth2)):
 
     return username
 
-async def current_user(user = Depends(auth_user)):
+def current_user(user = Depends(auth_user)):
 
     if not user["active"]:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="usuario inactivo",
@@ -203,7 +206,7 @@ async def current_user(user = Depends(auth_user)):
 
     
 @app.get("/api/user")
-async def me (user:TokenPayload = Depends(current_user)):
+def me (user:TokenPayload = Depends(current_user)):
     print("Hola" )
     return user
 
