@@ -8791,8 +8791,10 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
     def detalle_pendientes_easy_hoy(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
-            ---v3 quitando la funcion de sku_lite, es innecesaria
-            with estatus_entregas_fec_compromiso_easy as (
+            ----- V4 (mejor que antes ) sin left join de busca_ruta_manual_base2 para los sin ruta
+               
+               
+with estatus_entregas_fec_compromiso_easy as (
 
             SELECT *
                 FROM (
@@ -8827,8 +8829,10 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                         --	rsb.cant_por_producto,
                         --	rsb.bultos,
                             twce.estado,
-                            twce.subestado
+                            twce.subestado,
+                            coalesce(tbm.direccion_correcta,twce.direccion) as "Dirección Textual"
                     FROM areati.ti_wms_carga_easy twce
+                    left join rutas.toc_bitacora_mae tbm on twce.entrega=tbm.guia and  alerta = true
                     --LEFT JOIN LATERAL rutas.recupera_sku_lite(twce.entrega) AS rsb ON true
                     WHERE twce.fecha_entrega = current_date::date
                     AND twce.fecha_entrega > twce.created_at
@@ -8866,54 +8870,55 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                         --rsb.cant_por_producto ,
                         --rsb.bultos,
                         tcego.estado,
-                        tcego.subestado
+                        tcego.subestado,
+                        coalesce(tbm.direccion_correcta,tcego.direc_despacho) as "Dirección Textual"
                     FROM areati.ti_carga_easy_go_opl tcego 
+                    left join rutas.toc_bitacora_mae tbm on tcego.suborden=tbm.guia and  alerta = true
                     --LEFT JOIN LATERAL rutas.recupera_sku_lite(tcego.suborden) AS rsb ON true
                     WHERE tcego.fec_compromiso = current_date::date
                     AND tcego.fec_compromiso > tcego.created_at
                 ) AS subquery
 
             )
-
-
-            SELECT *
-                            FROM (
-                                SELECT DISTINCT ON (eefc.entrega)
-                                    eefc.cliente,
-                                    eefc.entrega AS guia,
-                                    drm.nombre_ruta AS ruta_hela,
-                                    initcap(drm.calle_numero) AS direccion,
-                                    drm.ciudad AS ciudad,
-                                    drm.provincia_estado AS region
-                                FROM estatus_entregas_fec_compromiso_easy AS eefc
-                                LEFT JOIN quadminds.datos_ruta_manual drm ON drm.cod_pedido = eefc.entrega
-                                WHERE eefc.entrega NOT IN (
-                                    SELECT rt.guia 
-                                    FROM beetrack.ruta_transyanez rt
-                                    WHERE rt.created_at::date = current_date
-                                )
-                                AND eefc.estado != 1 AND drm.nombre_ruta IS NOT NULL
-                                UNION ALL  
-                                SELECT DISTINCT ON (eefc.entrega)
-                                    eefc.cliente,
-                                    eefc.entrega AS guia,
-                                    drm.nombre_ruta AS ruta_hela,
-                                    initcap(brm."Dirección Textual") AS direccion,
-                                    brm."Ciudad" AS ciudad,
-                                    brm."Provincia/Estado" AS region
-                                FROM estatus_entregas_fec_compromiso_easy AS eefc
-                                LEFT JOIN quadminds.datos_ruta_manual drm ON drm.cod_pedido = eefc.entrega
-                                LEFT JOIN LATERAL (
-                                    SELECT * FROM areati.busca_ruta_manual_base2(eefc.entrega) LIMIT 1
-                                ) AS brm ON true
-                                WHERE eefc.entrega NOT IN (
-                                    SELECT rt.guia 
-                                    FROM beetrack.ruta_transyanez rt
-                                    WHERE rt.created_at::date = current_date
-                                )
-                                AND eefc.estado != 1 AND drm.nombre_ruta IS NULL
-                            ) AS subquery
-                            ORDER BY subquery.ruta_hela ASC;
+            
+SELECT *
+                FROM (
+                    SELECT DISTINCT ON (eefc.entrega)
+                        eefc.cliente,
+                        eefc.entrega AS guia,
+                        drm.nombre_ruta AS ruta_hela,
+                        initcap(drm.calle_numero) AS direccion,
+                        drm.ciudad AS ciudad,
+                        drm.provincia_estado AS region
+                    FROM estatus_entregas_fec_compromiso_easy AS eefc
+                    LEFT JOIN quadminds.datos_ruta_manual drm ON drm.cod_pedido = eefc.entrega
+                    WHERE eefc.entrega NOT IN (
+                        SELECT rt.guia 
+                        FROM beetrack.ruta_transyanez rt
+                        WHERE rt.created_at::date = current_date
+                    )
+                    AND eefc.estado != 1 AND drm.nombre_ruta IS NOT NULL
+                    UNION ALL  
+                    SELECT DISTINCT ON (eefc.entrega)
+                        eefc.cliente,
+                        eefc.entrega AS guia,
+                        drm.nombre_ruta AS ruta_hela,
+                        initcap(eefc."Dirección Textual") AS direccion,
+                        eefc.comuna AS ciudad,
+                        eefc.region AS region
+                    FROM estatus_entregas_fec_compromiso_easy AS eefc
+                    LEFT JOIN quadminds.datos_ruta_manual drm ON drm.cod_pedido = eefc.entrega
+                    --LEFT JOIN LATERAL (
+                    --    SELECT * FROM areati.busca_ruta_manual_base2(eefc.entrega) LIMIT 1
+                    --) AS brm ON true
+                    WHERE eefc.entrega NOT IN (
+                        SELECT rt.guia 
+                        FROM beetrack.ruta_transyanez rt
+                        WHERE rt.created_at::date = current_date
+                    )
+                    AND eefc.estado != 1 AND drm.nombre_ruta IS NULL
+                ) AS subquery
+                ORDER BY subquery.ruta_hela ASC;
 
                          """)
             return cur.fetchall()
