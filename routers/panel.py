@@ -108,4 +108,16 @@ def download_file(name_file: str):
     return FileResponse(f"image/foto_perfil/{name_file}")
 
 
+
+# Ruta del directorio donde se almacenan las imágenes
+IMAGE_DIR = "image/foto_perfil"
+
+@router.get("/image/foto_perfil/{image_name}")
+async def get_image(image_name: str):
+    image_path = os.path.join(IMAGE_DIR, image_name)
+    if os.path.exists(image_path):
+        return FileResponse(image_path)
+    else:
+        raise HTTPException(status_code=404, detail="Image not found")
+
     
