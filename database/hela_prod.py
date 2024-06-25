@@ -161,8 +161,21 @@ class HelaConnection():
     def mostrar_datos_usuario_hela(self,id):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            SELECT  telefono, fecha_nacimiento, direccion
-            FROM hela.usuarios
-            where id = {id};
+            SELECT  u.telefono, u.fecha_nacimiento, u.direccion,u.imagen_perfil, r.nombre
+            FROM hela.usuarios u
+            left join hela.rol r on cast(r.id as varchar) = u.rol_id 
+            where u.id = {id};
             """)
             return cur.fetchone()
+        
+
+    ### actualiza datos si se desactivan los datos del gps
+    def actualizar_imagen_perfil(self,id,imagen):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+                        
+            UPDATE hela.usuarios
+            set imagen_perfil='{imagen}'
+            WHERE id={id}
+            """)
+            self.conn.commit()
