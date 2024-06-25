@@ -139,11 +139,11 @@ async def actualizar_datos_usuario(body : DatosUsuario):
 
     if row == 1:
         return {
-            "message": "Se ha actualizado la contraseña correctamente"
+            "message": "Se han actualizado los datos correctamente"
         }
     else:
         return {
-            "message": "No se ha actualizado la contraseña"
+            "message": "No se han actualizado los datos"
         }
     
     
