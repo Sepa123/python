@@ -123,7 +123,7 @@ class UserConnection():
 
         with self.conn.cursor() as cur:
             cur.execute("""
-            SELECT id, full_name ,mail,"password" ,active ,rol_id  FROM "user".users WHERE lower(mail) = lower(%(mail)s)
+            SELECT id, full_name ,mail,"password" ,active ,rol_id, null as foto_perfil  FROM "user".users WHERE lower(mail) = lower(%(mail)s)
             """, data)
             return cur.fetchone()
         

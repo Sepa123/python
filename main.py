@@ -171,7 +171,8 @@ def login_user(user_data:loginSchema):
                     "uid": user_db[0],
                     "email": user_db[2],
                     "active": user_db[4],
-                    "rol_id":user_db[5]
+                    "rol_id":user_db[5],
+                    "imagen_perfil" : user_db[6]
                     }
                     # "rol_id": "14"}
     # # return "Bienvenido {}".format(data["username"])
@@ -180,7 +181,8 @@ def login_user(user_data:loginSchema):
         "token_type":"bearer",
         "rol_id" : user_db[5],
         "sub": user_db[1],
-        "server": server
+        "server": server,
+        "imagen_perfil" : user_db[6]
     }
 
 def auth_user(token:str = Depends(oauth2)):
