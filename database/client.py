@@ -9601,7 +9601,7 @@ SELECT *
                 INSERT INTO transporte.vehiculo
                 (razon_id, ppu, marca, tipo, modelo, ano, region, comuna, disponible, activation_date, capacidad_carga_kg, capacidad_carga_m3, platform_load_capacity_kg, 
                 crane_load_capacity_kg, permiso_circulacion_fec_venc, soap_fec_venc, revision_tecnica_fec_venc, validado_por_id, validado_por_ids, gps, gps_id)
-                VALUES(%(Razon_id)s, %(Ppu)s, %(Marca)s, %(Tipo)s, %(Modelo)s, %(Ano)s, %(Region)s, %(Comuna)s, true, %(Activation_date)s, %(Capacidad_carga_kg)s, 
+                VALUES(%(Razon_id)s, %(Ppu)s, %(Marca)s, %(Tipo)s, %(Modelo)s, %(Ano)s, %(Region)s, %(Comuna)s, false, %(Activation_date)s, %(Capacidad_carga_kg)s, 
                         %(Capacidad_carga_m3)s, %(Platform_load_capacity_kg)s, %(Crane_load_capacity_kg)s, %(Permiso_circulacion_fec_venc)s, %(Soap_fec_venc)s, 
                         %(Revision_tecnica_fec_venc)s,  %(Id_user)s, %(Ids_user)s,%(Gps)s,%(Id_gps)s);               
     

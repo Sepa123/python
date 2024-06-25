@@ -307,9 +307,9 @@ async def subir_archivo(tipo_archivo : str, nombre : str, file: UploadFile = Fil
 
     directorio  = os.path.abspath(f"pdfs/transporte/colaboradores/{tipo_archivo}")
     print(directorio)
-    nombre_hash = hash_password(tipo_archivo+nombre)
+    nombre_hash = f'{nombre}_'+file.filename
 
-    nuevo_nombre = nombre_hash +'.pdf'
+    nuevo_nombre = nombre_hash 
 
     ruta = os.path.join(directorio,nuevo_nombre)
 
@@ -354,9 +354,9 @@ async def subir_archivo(tipo_archivo : str, nombre : str, file: UploadFile = Fil
 
     directorio  = os.path.abspath(f"pdfs/transporte/vehiculos/{tipo_archivo}")
     print(directorio)
-    nombre_hash = hash_password(tipo_archivo+nombre)
+    nombre_hash = f'{nombre}_'+file.filename
 
-    nuevo_nombre = nombre_hash +'.pdf'
+    nuevo_nombre = nombre_hash 
 
     ruta = os.path.join(directorio,nuevo_nombre)
 

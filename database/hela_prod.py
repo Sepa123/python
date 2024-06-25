@@ -191,4 +191,6 @@ class HelaConnection():
             WHERE id=%(Id_user)s
 
             """,data)
-            self.conn.commit()
+            row = cur.rowcount
+        self.conn.commit()
+        return row
