@@ -1,6 +1,6 @@
 from fastapi import APIRouter, File, UploadFile, status,HTTPException
 import os
-
+import glob
 from fastapi.responses import FileResponse
 ##Modelos 
 
@@ -81,9 +81,18 @@ async def cambiar_password_nueva(body : CambiarPassword):
             "message": "No se ha actualizado la contraseña"
         }
     
+
+# Ruta del directorio donde se almacenan las imágenes
+IMAGE_DIR = "image/foto_perfil"
     
 @router.post("/subir-imagen", status_code=status.HTTP_202_ACCEPTED)
 async def subir_archivo(id_user : str, ids_user : str, file: UploadFile = File(...)):
+
+    archivos = glob.glob(os.path.join(IMAGE_DIR, f'{id_user}_*'))
+
+    for archivo in archivos:
+        os.remove(archivo)
+        print(f'Eliminado: {archivo}')
 
     directorio  = os.path.abspath(f"image/foto_perfil")
 
@@ -109,8 +118,7 @@ def download_file(name_file: str):
 
 
 
-# Ruta del directorio donde se almacenan las imágenes
-IMAGE_DIR = "image/foto_perfil"
+
 
 @router.get("/image/foto_perfil/{image_name}")
 async def get_image(image_name: str):
