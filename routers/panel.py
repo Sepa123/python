@@ -4,7 +4,7 @@ import glob
 from fastapi.responses import FileResponse
 ##Modelos 
 
-from database.models.panel.usuario import Usuario, CambiarPassword
+from database.models.panel.usuario import Usuario, CambiarPassword, DatosUsuario
 from database.models.user import loginSchema
 
 ##Conexiones
@@ -128,4 +128,22 @@ async def get_image(image_name: str):
     else:
         raise HTTPException(status_code=404, detail="Image not found")
 
+
+@router.put("/actualizar/datos/usuario")
+async def actualizar_datos_usuario(body : DatosUsuario):
+
+
+    data = body.dict()
+    
+    row = connHela.actualizar_datos_usuario(data)
+
+    if row == 1:
+        return {
+            "message": "Se ha actualizado la contraseña correctamente"
+        }
+    else:
+        return {
+            "message": "No se ha actualizado la contraseña"
+        }
+    
     

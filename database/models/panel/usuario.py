@@ -14,3 +14,11 @@ class CambiarPassword(BaseModel):
     Password_nueva : Optional[str]
     Password_repetida: Optional[str]
     Mail: Optional[str]
+
+
+class DatosUsuario(BaseModel):
+    Id_user: Optional[int]
+    Server: Optional[str]
+    Telefono: Optional[str]
+    Direccion: Optional[str]
+    Fecha_nacimiento: Optional[str]

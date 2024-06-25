@@ -179,3 +179,16 @@ class HelaConnection():
             WHERE id={id}
             """)
             self.conn.commit()
+
+
+    ### actualiza datos de perfil
+    def actualizar_datos_usuario(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute(""" 
+                        
+            UPDATE hela.usuarios
+            set telefono=%(Telefono)s, fecha_nacimiento=%(Fecha_nacimiento)s, direccion=%(Direccion)s
+            WHERE id=%(Id_user)s
+
+            """,data)
+            self.conn.commit()
