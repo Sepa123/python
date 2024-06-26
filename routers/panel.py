@@ -54,6 +54,11 @@ async def cambiar_password(body : loginSchema):
 @router.get("/ver/datos", status_code=status.HTTP_201_CREATED)
 async def registrar_usuario(id : str, server : str):
     
+    if server == 'portal':
+        return{
+            'messsage' : 'No tiene datos que mostrar'
+        }
+
     datos = connHela.mostrar_datos_usuario_hela(id)
     print(datos)
 
