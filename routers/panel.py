@@ -88,6 +88,9 @@ IMAGE_DIR = "image/foto_perfil"
 @router.post("/subir-imagen", status_code=status.HTTP_202_ACCEPTED)
 async def subir_archivo(id_user : str, ids_user : str, file: UploadFile = File(...)):
 
+    if ids_user == 'portal':
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="No puede subir imagenes de perfil")
+
     archivos = glob.glob(os.path.join(IMAGE_DIR, f'{id_user}_*'))
 
     for archivo in archivos:
@@ -132,7 +135,11 @@ async def get_image(image_name: str):
 @router.put("/actualizar/datos/usuario")
 async def actualizar_datos_usuario(body : DatosUsuario):
 
-
+    if body.Server == 'portal':
+        return {
+            "message": "No se han actualizado los datos"
+        }
+    
     data = body.dict()
     
     row = connHela.actualizar_datos_usuario(data)
