@@ -56,8 +56,12 @@ async def registrar_usuario(id : str, server : str):
     
     if server == 'portal':
         return{
-            'messsage' : 'No tiene datos que mostrar'
-        }
+        "Telefono" :None,
+        "Fecha_nacimiento" : None,
+        "Direccion" : None,
+        "Imagen_perfil" : None,
+        "Rol" : None
+    }
 
     datos = connHela.mostrar_datos_usuario_hela(id)
     print(datos)
