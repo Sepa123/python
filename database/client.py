@@ -9669,8 +9669,8 @@ SELECT *
     def buscar_vehiculos(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
-           SELECT v.id, to_char(v.created_at::date, 'YYYY-MM-DD')  , v.update_date, v.razon_id, v.ppu, v.marca, coalesce (v.tipo, 0 ), v.modelo, 
-                v.ano, v.region, v.comuna, v.disponible, v.activation_date, v.capacidad_carga_kg, v.capacidad_carga_m3, 
+           SELECT v.id, to_char(v.created_at::date, 'YYYY-MM-DD')  , v.update_date, v.razon_id, v.ppu, coalesce (v.marca, 0), coalesce (v.tipo, 0 ), v.modelo, 
+                v.ano, coalesce (v.region, 0) , coalesce (v.comuna, 0), v.disponible, v.activation_date, v.capacidad_carga_kg, v.capacidad_carga_m3, 
                 v.platform_load_capacity_kg, v.crane_load_capacity_kg, v.permiso_circulacion_fec_venc, v.soap_fec_venc, 
                 v.revision_tecnica_fec_venc, v.registration_certificate, v.pdf_revision_tecnica, 
                 v.pdf_soap, v.pdf_padron, v.pdf_gases_certification, v.validado_por_id, 
@@ -9779,8 +9779,8 @@ SELECT *
         with self.conn.cursor() as cur:
             cur.execute(f"""   
            
-            SELECT v.id, to_char(v.created_at::date, 'YYYY-MM-DD')  , v.update_date, v.razon_id, v.ppu, v.marca, v.tipo, v.modelo, 
-                v.ano, v.region, v.comuna, v.disponible, v.activation_date, v.capacidad_carga_kg, v.capacidad_carga_m3, 
+            SELECT v.id, to_char(v.created_at::date, 'YYYY-MM-DD')  , v.update_date, v.razon_id, v.ppu, coalesce (v.marca, 0), coalesce (v.tipo, 0 ), v.modelo, 
+                v.ano, coalesce (v.region, 0) , coalesce (v.comuna, 0), v.disponible, v.activation_date, v.capacidad_carga_kg, v.capacidad_carga_m3, 
                 v.platform_load_capacity_kg, v.crane_load_capacity_kg, v.permiso_circulacion_fec_venc, v.soap_fec_venc, 
                 v.revision_tecnica_fec_venc, v.registration_certificate, v.pdf_revision_tecnica, 
                 v.pdf_soap, v.pdf_padron, v.pdf_gases_certification, v.validado_por_id, 
@@ -9795,8 +9795,8 @@ SELECT *
     def buscar_vehiculos_y_operacion_pta(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
-             SELECT v.id, to_char(v.created_at::date, 'YYYY-MM-DD')  , v.update_date, v.razon_id, v.ppu, v.marca, v.tipo, v.modelo, 
-                v.ano, v.region, v.comuna, v.disponible, v.activation_date, v.capacidad_carga_kg, v.capacidad_carga_m3, 
+             SELECT v.id, to_char(v.created_at::date, 'YYYY-MM-DD')  , v.update_date, v.razon_id, v.ppu, coalesce (v.marca, 0),coalesce (v.tipo, 0 ), v.modelo, 
+                v.ano, coalesce (v.region, 0),  coalesce (v.comuna, 0), v.disponible, v.activation_date, v.capacidad_carga_kg, v.capacidad_carga_m3, 
                 v.platform_load_capacity_kg, v.crane_load_capacity_kg, v.permiso_circulacion_fec_venc, v.soap_fec_venc, 
                 v.revision_tecnica_fec_venc, v.registration_certificate, v.pdf_revision_tecnica, 
                 v.pdf_soap, v.pdf_padron, v.pdf_gases_certification, v.validado_por_id, 
