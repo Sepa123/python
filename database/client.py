@@ -9669,7 +9669,7 @@ SELECT *
     def buscar_vehiculos(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
-           SELECT v.id, to_char(v.created_at::date, 'YYYY-MM-DD')  , v.update_date, v.razon_id, v.ppu, v.marca, v.tipo, v.modelo, 
+           SELECT v.id, to_char(v.created_at::date, 'YYYY-MM-DD')  , v.update_date, v.razon_id, v.ppu, v.marca, coalesce (v.tipo, 0 ), v.modelo, 
                 v.ano, v.region, v.comuna, v.disponible, v.activation_date, v.capacidad_carga_kg, v.capacidad_carga_m3, 
                 v.platform_load_capacity_kg, v.crane_load_capacity_kg, v.permiso_circulacion_fec_venc, v.soap_fec_venc, 
                 v.revision_tecnica_fec_venc, v.registration_certificate, v.pdf_revision_tecnica, 
