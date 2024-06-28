@@ -31,3 +31,17 @@ def centro_operacion_asignado(operacion):
 
 def centro_operacion_asignado_schema(operaciones):
     return [centro_operacion_asignado(operacion) for operacion in operaciones]
+
+
+
+
+def centro_operacion_usuario(operacion):
+    return {
+        "Id_co": operacion[0],
+        "Nombre_co" : operacion[1],
+        "Nombre_operacion": operacion[2]
+    }
+
+
+def centro_operacion_usuario_schema(operaciones):
+    return [centro_operacion_usuario(operacion) for operacion in operaciones]

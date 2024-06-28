@@ -10154,6 +10154,20 @@ SELECT *
        
                          """)
             return cur.fetchall()
+        
+
+    ####
+
+    def buscar_centro_operacion_usuario(self,id_usuario):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+           SELECT co.id, co.centro, mo.nombre 
+            FROM operacion.centro_operacion co 
+            left join operacion.modalidad_operacion mo on co.id_op = mo.id
+            WHERE '{id_usuario}' = ANY (co.ids_coordinador)
+       
+                         """)
+            return cur.fetchall()
 
 
 class transyanezConnection():

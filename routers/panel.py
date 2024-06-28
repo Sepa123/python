@@ -12,6 +12,7 @@ from database.models.user import loginSchema
 from database.client import reportesConnection
 from database.hela_prod import HelaConnection
 
+from database.schema.operaciones.centro_operacion import centro_operacion_usuario_schema
 from lib.password import hash_password
 
 router = APIRouter(tags=["panel"], prefix="/api/panel")
@@ -162,4 +163,12 @@ async def actualizar_datos_usuario(body : DatosUsuario):
             "message": "No se han actualizado los datos"
         }
     
+
+
+@router.get("/centro_operacion/usuario")
+async def get_image(id: str, server : str):
+    ids_usuario = server+'-'+id
     
+    data = conn.buscar_centro_operacion_usuario(ids_usuario)
+
+    return centro_operacion_usuario_schema(data)
