@@ -10161,10 +10161,24 @@ SELECT *
     def buscar_centro_operacion_usuario(self,id_usuario):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
-           SELECT co.id, co.centro, mo.nombre 
-            FROM operacion.centro_operacion co 
-            left join operacion.modalidad_operacion mo on co.id_op = mo.id
-            WHERE '{id_usuario}' = ANY (co.ids_coordinador)
+
+            SELECT 
+                mo.nombre as "Operacion", 
+                jsonb_agg(
+                    jsonb_build_object(
+                    'nombre', co.centro,
+                    'id', co.id
+                    )
+                ) AS centros
+            FROM 
+                operacion.centro_operacion co
+            LEFT JOIN 
+                operacion.modalidad_operacion mo 
+                ON co.id_op = mo.id
+                 WHERE '{id_usuario}' = ANY (co.ids_coordinador)
+            GROUP BY 
+                mo.nombre;
+          
        
                          """)
             return cur.fetchall()

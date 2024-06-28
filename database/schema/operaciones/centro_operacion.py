@@ -37,9 +37,8 @@ def centro_operacion_asignado_schema(operaciones):
 
 def centro_operacion_usuario(operacion):
     return {
-        "Id_co": operacion[0],
-        "Nombre_co" : operacion[1],
-        "Nombre_operacion": operacion[2]
+        "Operacion": operacion[0],
+        "Centro_operaciones" : operacion[1]
     }
 
 
