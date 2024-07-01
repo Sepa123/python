@@ -12,7 +12,7 @@ from database.models.user import loginSchema
 from database.client import reportesConnection
 from database.hela_prod import HelaConnection
 
-from database.schema.operaciones.centro_operacion import centro_operacion_usuario_schema
+from database.schema.operaciones.centro_operacion import centro_operacion_usuario_schema, co_lista_coordinador_schema
 from lib.password import hash_password
 
 router = APIRouter(tags=["panel"], prefix="/api/panel")
@@ -172,3 +172,12 @@ async def get_image(id: str, server : str):
     data = conn.buscar_centro_operacion_usuario(ids_usuario)
 
     return centro_operacion_usuario_schema(data)
+
+
+
+@router.get("/centro_operacion/lista")
+async def get_co_op_lista_coordinadores(id: str):
+### Centros de operacion, EXCLUYENDO id de usuario entregada
+    results = conn.buscar_centro_operacion_lista(id)
+
+    return co_lista_coordinador_schema(results)

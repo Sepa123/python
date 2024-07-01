@@ -10183,6 +10183,20 @@ SELECT *
                          """)
             return cur.fetchall()
 
+    def buscar_centro_operacion_lista(self,id_usuario):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+        ------CENTRO OPERACIONES EXCLUYENDO A LA ID ENTREGADA
+            SELECT co.id, co.id_op, co.centro, 
+                co.descripcion, r.region_name
+            FROM operacion.centro_operacion co
+            LEFT JOIN public.op_regiones r ON co.region::VARCHAR = r.id_region 
+            where  ({id_usuario} <> ALL(co.id_coordinador) or co.id_coordinador is null);
+
+          
+       
+                         """)
+            return cur.fetchall()
 
 class transyanezConnection():
     conn = None

@@ -44,3 +44,18 @@ def centro_operacion_usuario(operacion):
 
 def centro_operacion_usuario_schema(operaciones):
     return [centro_operacion_usuario(operacion) for operacion in operaciones]
+
+
+
+
+def centro_operacion_lista_coordinador(operacion):
+    return {
+        "Id": operacion[0],
+        "Id_op": operacion[1],
+        "Centro" : operacion[2],
+        "Descripcion" : operacion[3],
+        "Region" : operacion[4]
+    }
+
+def co_lista_coordinador_schema(operaciones):
+    return [centro_operacion_lista_coordinador(operacion) for operacion in operaciones]
