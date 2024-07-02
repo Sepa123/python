@@ -201,7 +201,7 @@ async def asignar_coordinador_a_co(body : UpdateCentroOperacion):
     
 
 
-@router.delete("/eliminar/coordinador/co")
+@router.post("/eliminar/coordinador/co")
 async def eliminar_coordinador_a_co(body : UpdateCentroOperacion):
     
     data = body.dict()
