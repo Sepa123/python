@@ -8,3 +8,13 @@ class CentroOperacion(BaseModel):
     Centro: Optional[str]
     Descripcion: Optional[str]
     Region: Optional[int]
+
+
+class UpdateCentroOperacion(BaseModel):
+    Id_usuario: Optional[int]
+    Ids_usuario: Optional[str]
+    Id_op: Optional[int]
+    Id_co: Optional[int]
+    Centro: Optional[str]
+    Descripcion: Optional[str]
+    Region: Optional[int]

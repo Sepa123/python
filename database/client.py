@@ -10198,6 +10198,30 @@ SELECT *
                          """)
             return cur.fetchall()
 
+    def asignar_coordinador_centro_operacion(self, data): 
+        with self.conn.cursor() as cur:
+            cur.execute("""
+                UPDATE operacion.centro_operacion as co
+                SET id_coordinador = array_append(COALESCE(id_coordinador, ARRAY[]::bigint[]), %(Id_usuario)s::bigint),
+                    ids_coordinador = array_append(COALESCE(ids_coordinador, ARRAY[]::varchar[]), %(Ids_usuario)s)
+                WHERE id = %(Id_co)s;
+                        """,data)
+            rows_delete = cur.rowcount
+        self.conn.commit() 
+        return rows_delete
+
+    def eliminar_coordinador_centro_operacion(self, data): 
+        with self.conn.cursor() as cur:
+            cur.execute("""
+                UPDATE operacion.centro_operacion as co
+                SET id_coordinador = array_remove(COALESCE(id_coordinador, ARRAY[]::bigint[]), %(Id_usuario)s::bigint),
+                    ids_coordinador = array_remove(COALESCE(ids_coordinador, ARRAY[]::varchar[]), %(Ids_usuario)s)
+                WHERE id = %(Id_co)s;
+                        """,data)
+            rows_delete = cur.rowcount
+        self.conn.commit() 
+        return rows_delete
+
 class transyanezConnection():
     conn = None
     def __init__(self) -> None:

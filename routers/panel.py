@@ -4,6 +4,7 @@ import glob
 from fastapi.responses import FileResponse
 ##Modelos 
 
+from database.models.operaciones.centro_operacion import UpdateCentroOperacion
 from database.models.panel.usuario import Usuario, CambiarPassword, DatosUsuario
 from database.models.user import loginSchema
 
@@ -181,3 +182,37 @@ async def get_co_op_lista_coordinadores(id: str):
     results = conn.buscar_centro_operacion_lista(id)
 
     return co_lista_coordinador_schema(results)
+
+@router.post("/asignar/coordinador/co")
+async def asignar_coordinador_a_co(body : UpdateCentroOperacion):
+    
+    data = body.dict()
+    
+    row = conn.asignar_coordinador_centro_operacion(data)
+
+    if row == 1:
+        return {
+            "message": "Se han actualizado los datos correctamente"
+        }
+    else:
+        return {
+            "message": "No se han actualizado los datos"
+        }
+    
+
+
+@router.delete("/eliminar/coordinador/co")
+async def eliminar_coordinador_a_co(body : UpdateCentroOperacion):
+    
+    data = body.dict()
+    
+    row = conn.eliminar_coordinador_centro_operacion(data)
+
+    if row == 1:
+        return {
+            "message": "Se han actualizado los datos correctamente"
+        }
+    else:
+        return {
+            "message": "No se han actualizado los datos"
+        }
