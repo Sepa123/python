@@ -461,9 +461,11 @@ async def agregar_tripulacion_usuario(body : Usuario ):
 @router.put("/actualizar/datos/usuario")
 async def actualizar_datos_usuario(body : Usuario):
     # body.Razon_id= conn.buscar_id_colab_por_rut(body.Rut_colaborador)[0]
-    data = body.dict()
+    
     if body.Fec_venc_lic_conducir == 'null':
         body.Fec_venc_lic_conducir == None
+
+    data = body.dict()
     conn.update_datos_usuario(data)
 
     return {
