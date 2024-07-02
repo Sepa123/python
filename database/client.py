@@ -9767,11 +9767,20 @@ SELECT *
     def buscar_colaboradores_por_nombre(self,nombre):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
-           SELECT col.id, to_char(created_at,'dd-mm-yyyy'), id_user, ids_user, to_char(date_modified,'dd/mm/yyyy'), r.nombre as "tipo razon" , razon_social, rut, celular, telefono, region, comuna, direccion, representante_legal, rut_representante_legal, email_rep_legal, direccion_comercial, pdf_legal_contitution, pdf_registration_comerce, pdf_validity_of_powers, pdf_certificate_rrpp, chofer, peoneta, abogado, seguridad, activo, giro, pdf_contrato
+           SELECT col.id, to_char(col.created_at,'dd/mm/yyyy'), col.id_user, col.ids_user, to_char(col.date_modified,'dd/mm/yyyy'), r.nombre as "tipo razon" , col.razon_social, col.rut, col.celular, col.telefono, col.region, col.comuna, col.direccion, representante_legal, rut_representante_legal, email_rep_legal, direccion_comercial, pdf_legal_contitution, pdf_registration_comerce, pdf_validity_of_powers, pdf_certificate_rrpp, chofer, peoneta, abogado, seguridad, activo, giro, 
+                pdf_contrato,
+                (SELECT count(*) FROM transporte.vehiculo v WHERE v.razon_id = col.id) AS vehiculos,
+                (SELECT count(*) FROM transporte.usuarios u WHERE u.id_razon_social = col.id) AS tripulacion,
+                (SELECT array_agg(json_build_object('patente', v.ppu, 'tipo', v.tipo))
+                    FROM transporte.vehiculo v
+                    WHERE v.razon_id = col.id) AS patentes
+                    --array_agg(v.ppu) AS patentes -- Agregamos el campo de patentes como arreglo
             FROM transporte.colaborador col
-            left join hela.rol r 
-            ON col.tipo_razon  = r.id  
-            where col.rut = '{nombre}' or lower(col.razon_social) like lower('%{nombre}%')        
+            left join hela.rol r ON col.tipo_razon  = r.id 
+            left join transporte.vehiculo v ON v.razon_id = col.id
+            where col.rut = '{nombre}' or lower(col.razon_social) like lower('%{nombre}%') 
+            group by col.id, col.razon_social, col.tipo_razon, col.rut, col.created_at, col.activo, r.nombre
+            ORDER by col.id;       
                          """)
             return cur.fetchall()
 
@@ -9816,11 +9825,18 @@ SELECT *
     def buscar_colaboradores(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
-            SELECT col.id, to_char(col.created_at,'dd/mm/yyyy'), id_user, ids_user, to_char(col.date_modified,'dd/mm/yyyy'), r.nombre as "tipo razon" , razon_social, rut, celular, telefono, region, comuna, direccion, representante_legal, rut_representante_legal, email_rep_legal, direccion_comercial, pdf_legal_contitution, pdf_registration_comerce, pdf_validity_of_powers, pdf_certificate_rrpp, chofer, peoneta, abogado, seguridad, activo, giro, pdf_contrato
-            FROM transporte.colaborador col
-            left join hela.rol r 
-            ON col.tipo_razon  = r.id 
-            order by col.created_at desc;  
+            SELECT col.id, to_char(col.created_at,'dd/mm/yyyy'), col.id_user, col.ids_user, to_char(col.date_modified,'dd/mm/yyyy'), r.nombre as "tipo razon" , col.razon_social, col.rut, col.celular, col.telefono, col.region, col.comuna, col.direccion, representante_legal, rut_representante_legal, email_rep_legal, direccion_comercial, pdf_legal_contitution, pdf_registration_comerce, pdf_validity_of_powers, pdf_certificate_rrpp, chofer, peoneta, abogado, seguridad, activo, giro, 
+                pdf_contrato,
+                (SELECT count(*) FROM transporte.vehiculo v WHERE v.razon_id = col.id) AS vehiculos,
+                (SELECT count(*) FROM transporte.usuarios u WHERE u.id_razon_social = col.id) AS tripulacion,
+                (SELECT array_agg(json_build_object('patente', v.ppu, 'tipo', v.tipo))
+                    FROM transporte.vehiculo v
+                    WHERE v.razon_id = col.id) AS patentes
+                    FROM transporte.colaborador col
+            left join hela.rol r ON col.tipo_razon  = r.id 
+            left join transporte.vehiculo v ON v.razon_id = col.id
+            group by col.id, col.razon_social, col.tipo_razon, col.rut, col.created_at, col.activo, r.nombre
+            ORDER by col.id;
                                   
                          """)
             return cur.fetchall()
