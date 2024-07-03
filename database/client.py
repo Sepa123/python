@@ -9384,13 +9384,7 @@ SELECT *
             return cur.fetchall()
 
 
-    def datos_excel_meli_base(self):
-        with self.conn.cursor() as cur:
-            cur.execute(f"""   
-           SELECT * from mercadolibre.datos_excel_base deb                        
-                         """)
-            return cur.fetchall()
-
+    
     def insert_colaborador(self,data):
         with self.conn.cursor() as cur:
             cur.execute("""
@@ -10237,6 +10231,98 @@ SELECT *
             rows_delete = cur.rowcount
         self.conn.commit() 
         return rows_delete
+    
+
+    ##### MELI
+
+    def datos_excel_meli_base(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+           SELECT * from mercadolibre.datos_excel_base deb                        
+                         """)
+            return cur.fetchall()
+        
+    def lista_conductores(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+           select * from transporte.usuarios u where tipo_usuario = '1'                        
+                         """)
+            return cur.fetchall()
+        
+    def lista_peonetas(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+          select * from transporte.usuarios u where tipo_usuario = '2'                   
+                         """)
+            return cur.fetchall()
+        
+    def citacion_operacion_fecha(self,fecha: str, id : int):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+          select * from mercadolibre.citacion_operacion_fecha('{fecha}', {id});                 
+                         """)
+            return cur.fetchall()
+        
+    def lista_estado_citaciones(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+          select * from mercadolibre.estados_citacion ec                  
+                         """)
+            return cur.fetchall()
+        
+    def lista_estado_citaciones(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+          select * from mercadolibre.estados_citacion ec                  
+                         """)
+            return cur.fetchall()
+        
+    
+    def recupera_citacion_cop(self,fecha: str, op : int, cop : int):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+          select * from mercadolibre.recupera_citacion_cop('{fecha}',{op},{cop})              
+                         """)
+            return cur.fetchall()
+    
+    def estado_citaciones_por_id(self,id_estado):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+         select estado from mercadolibre.estados_citacion ec where id = {id_estado};                 
+                         """)
+            return cur.fetchall()
+        
+    def insert_patente_citacion(self, body):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            INSERT INTO mercadolibre.citacion (id_user, ids_user, fecha, ruta_meli, id_ppu, id_operacion, id_centro_op, estado) 
+            VALUES ({body.id_user},'{body.ids_user}','{body.fecha}','{body.ruta_meli}',{body.id_ppu},{body.id_operacion},{body.id_centro_op},{body.estado})
+                        """)
+        self.conn.commit() 
+
+    def update_estado_patente_citacion(self, estado: int, id : int):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            UPDATE mercadolibre.citacion SET estado={estado} WHERE id_ppu={id}
+                        """)
+        self.conn.commit() 
+
+    def borrar_patente_citacion(self, id_ppu: str):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            DELETE FROM mercadolibre.citacion WHERE id_ppu ='{id_ppu}'
+                        """)
+        self.conn.commit() 
+
+    def update_estado_ruta_meli_citacion(self, ruta_meli: int, id : int):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            UPDATE mercadolibre.citacion SET ruta_meli ={ruta_meli} WHERE id_ppu={id}
+                        """)
+        self.conn.commit() 
+        
+        
+
 
 class transyanezConnection():
     conn = None

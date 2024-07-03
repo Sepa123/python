@@ -1,12 +1,13 @@
 from fastapi import APIRouter, status,HTTPException, UploadFile, File
-from typing import List
+# from typing import List
 import pandas as pd
 import os 
-import time
-from datetime import datetime
+# import time
+# from datetime import datetime
 ##Modelos 
 
-from database.models.retiro_cliente import RetiroCliente
+# from database.models.retiro_cliente import RetiroCliente
+from database.models.meli.meli import agregarPatente,pv
 
 ##Conexiones
 from database.client import reportesConnection
@@ -114,3 +115,189 @@ async def estados_entregas():
     else:
         raise HTTPException(status_code=404, detail="No se encontraron datos")
 
+
+
+@router.get("/modalidad_operacion")
+async def Obtener_datos():
+    # Ejecutar la consulta utilizando nuestra función
+    datos = conn.buscar_modalidad_operacion()
+    # Verificar si hay datos
+    if datos:
+        datos_formateados = [{
+                                "nombre": fila [4]
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+
+@router.get("/conductoresList")
+async def Obtener_datos():
+    datos = conn.lista_conductores()
+    # Verificar si hay datos
+    if datos:
+        datos_formateados = [{
+                                "nombre_completo": fila [8]
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+
+@router.get("/peonetaList")
+async def Obtener_datos():
+    # Ejecutar la consulta utilizando nuestra función
+    datos = conn.lista_peonetas()
+    # Verificar si hay datos
+    if datos:
+        datos_formateados = [{
+                                "nombre_completo": fila [8]
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+    
+@router.get("/citacionOperacionFecha")
+async def Obtener_datos(fecha: str, id : int):
+    # Ejecutar la consulta utilizando nuestra función
+    datos = conn.citacion_operacion_fecha(fecha,id)
+    # Verificar si hay datos 
+    if datos:
+        datos_formateados = [{
+                                "Id_operacion": fila [0],
+                                "operacion": fila[1],
+                                "id_cop": fila[2],
+                                "nombre_cop": fila [3],
+                                "region": fila[4],
+                                "region_name": fila[5],
+                                "citacion": fila[6],
+                                "confirmados": fila[7]
+
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+     
+    
+@router.delete("/borrar")
+async def eliminar_modalidad(id_ppu: str):
+    # Llamar a la función para ejecutar la sentencia SQL de eliminación
+    conn.borrar_patente_citacion(id_ppu)
+    return {"message": f"Entrada con ID {id_ppu} eliminada correctamente"}
+
+
+@router.get("/estadoList")
+async def Obtener_datos():
+    # # Verificar si hay datos
+    datos = conn.lista_estado_citaciones()
+    # Verificar si hay datos
+    if datos:
+        datos_formateados = [{
+                                "id": fila [0],
+                                "estado": fila[1]
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+### Esto esta repetido
+# @router.get("/citacionOperacionFecha")
+# async def Obtener_datos(fecha: str, id : int):
+#      # Consulta SQL para obtener datos (por ejemplo)
+#     consulta = f"select * from mercadolibre.citacion_operacion_fecha('{fecha}', {id});"
+#     # Ejecutar la consulta utilizando nuestra función
+#     datos = ejecutar_consulta(consulta)
+#     # Verificar si hay datos 
+#     if datos:
+#         datos_formateados = [{
+#                                 "Id_operacion": fila [0],
+#                                 "operacion": fila[1],
+#                                 "id_cop": fila[2],
+#                                 "nombre_cop": fila [3],
+#                                 "region": fila[4],
+#                                 "region_name": fila[5],
+#                                 "citacion": fila[6],
+#                                 "confirmados": fila[7]
+
+#                             } 
+#                             for fila in datos]
+#         return datos_formateados
+#     else:
+#         raise HTTPException(status_code=404, detail="No se encontraron datos")
+
+#### Esto esta repetiod pero lo dejare por ahora
+@router.get("/estadoCitacion")
+async def Obtener_datos():
+
+    # Ejecutar la consulta utilizando nuestra función
+    datos = conn.lista_estado_citaciones()
+    #  Verificar si hay datos 
+    if datos:
+        datos_formateados = [{
+                                "id": fila [0],
+                                "estado": fila[1]
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+    
+@router.get("/citacion_cop")
+async def Obtener_datos(fecha: str, op : int, cop : int):
+    datos = conn.recupera_citacion_cop(fecha,op,cop)
+    if datos:
+        datos_formateados = [{
+                                "id_ppu": fila [0],
+                                "ppu": fila[1],
+                                "ruta_meli": fila[2],
+                                "estado": fila [3],
+
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+    
+    
+    
+@router.post("/agregarpatente")
+async def agregarPatenteCitacion(body: agregarPatente):
+    try:
+        
+        conn.insert_patente_citacion(body)
+        return {"message": "Datos Ingresados Correctamente"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/actualizar_estadoPpu")
+async def actualizar_estado(estado: int, id : int):
+    try:
+        conn.update_estado_patente_citacion(estado,id)
+        print()
+        return {"message": "Datos Ingresados Correctamente"}
+    except Exception as e: raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/nombreCitacion")
+async def Obtener_datos(id_estado: int):
+
+    datos = conn.estado_citaciones_por_id(id_estado)
+    if datos:
+        datos_formateados = [{
+                                "estado": fila[0]
+
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+    
+
+@router.post("/actualizar_rutaMeli")
+
+async def actualizar_estado(ruta_meli: int, id : int):
+    try:
+        conn.update_estado_ruta_meli_citacion(ruta_meli,id)
+        return {"message": "Datos Ingresados Correctamente"}
+    except Exception as e: raise HTTPException(status_code=500, detail=str(e))
