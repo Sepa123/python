@@ -30,7 +30,8 @@ def colaborador(colab):
                 "Pdf_contrato" : colab[27],
                 "Vehiculos": colab[28],
                 "Tripulacion": colab[29],
-                "Patentes": colab[30]
+                "Patentes": colab[30],
+                "Usuarios" : colab[31]
             }
 
 def colaboradores_schema(colaboradores):

@@ -9768,7 +9768,9 @@ SELECT *
                 (SELECT array_agg(json_build_object('patente', v.ppu, 'tipo', v.tipo, 'gps', v.gps, 'disponible', v.disponible, 'habilitado', v.habilitado))
                     FROM transporte.vehiculo v
                     WHERE v.razon_id = col.id) AS patentes
-                    --array_agg(v.ppu) AS patentes -- Agregamos el campo de patentes como arreglo
+                (SELECT array_agg(json_build_object('nombre', u.nombre_completo, 'tipo', u.tipo_usuario, 'activo', u.activo ))
+                    FROM transporte.usuarios u
+                    WHERE u.id_razon_social = c.id) AS usuarios
             FROM transporte.colaborador col
             left join hela.rol r ON col.tipo_razon  = r.id 
             left join transporte.vehiculo v ON v.razon_id = col.id
@@ -9823,10 +9825,13 @@ SELECT *
                 pdf_contrato,
                 (SELECT count(*) FROM transporte.vehiculo v WHERE v.razon_id = col.id) AS vehiculos,
                 (SELECT count(*) FROM transporte.usuarios u WHERE u.id_razon_social = col.id) AS tripulacion,
-                (SELECT array_agg(json_build_object('patente', v.ppu, 'tipo', v.tipo, 'gps', v.gps, 'disponible', v.disponible, 'habilitado', v.habilitado))
-                    FROM transporte.vehiculo v
-                    WHERE v.razon_id = col.id) AS patentes
-                    FROM transporte.colaborador col
+                (SELECT array_agg(json_build_object('patente', v.ppu, 'tipo', v.tipo, 'gps', v.gps, 'disponible', v.disponible, 'habilitado', v.habilitado)),
+                (SELECT array_agg(json_build_object('nombre', u.nombre_completo, 'tipo', u.tipo_usuario, 'activo', u.activo ))
+                        FROM transporte.usuarios u
+                        WHERE u.id_razon_social = c.id) AS usuarios
+            FROM transporte.vehiculo v
+            WHERE v.razon_id = col.id) AS patentes
+            FROM transporte.colaborador col
             left join hela.rol r ON col.tipo_razon  = r.id 
             left join transporte.vehiculo v ON v.razon_id = col.id
             group by col.id, col.razon_social, col.tipo_razon, col.rut, col.created_at, col.activo, r.nombre
