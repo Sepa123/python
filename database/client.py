@@ -9876,7 +9876,7 @@ SELECT *
             cur.execute(f"""   
             --select * from operacion.modalidad_operacion mo
             SELECT mo.id, mo.created_at, mo.id_user, mo.ids_user, mo.nombre,
-                    mo.description, mo.creation_date, mo.update_date, mo.estado, count(co.id) as cant_co
+                    mo.description, mo.creation_date, mo.update_date, mo.estado, count(co.id) as cant_co, color_hex
             FROM operacion.modalidad_operacion mo
             left join operacion.centro_operacion co on co.id_op = mo.id 
             group by mo.id
