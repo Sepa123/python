@@ -10190,11 +10190,10 @@ SELECT *
             LEFT JOIN 
                 operacion.modalidad_operacion mo 
                 ON co.id_op = mo.id
-                -- WHERE '{id_usuario}' = ANY (co.ids_coordinador)
+                 WHERE '{id_usuario}' = ANY (co.ids_coordinador)
             GROUP BY 
                 mo.nombre;
           
-       
                          """)
             return cur.fetchall()
 
