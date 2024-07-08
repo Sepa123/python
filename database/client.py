@@ -10184,8 +10184,7 @@ SELECT *
                     'nombre', co.centro,
                     'id', co.id
                     )
-                ) AS centros,
-                co.ids_coordinador
+                ) AS centros
             FROM 
                 operacion.centro_operacion co
             LEFT JOIN 
@@ -10193,7 +10192,7 @@ SELECT *
                 ON co.id_op = mo.id
                 -- WHERE '{id_usuario}' = ANY (co.ids_coordinador)
             GROUP BY 
-                mo.nombre, co.ids_coordinador ;
+                mo.nombre;
           
        
                          """)
