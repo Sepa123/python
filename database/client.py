@@ -10300,15 +10300,14 @@ SELECT *
     def insert_patente_citacion(self, body):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            INSERT INTO mercadolibre.citacion (id_user, ids_user, fecha, ruta_meli, id_ppu, id_operacion, id_centro_op, estado) 
-            VALUES ({body.id_user},'{body.ids_user}','{body.fecha}','{body.ruta_meli}',{body.id_ppu},{body.id_operacion},{body.id_centro_op},{body.estado})
+            INSERT INTO mercadolibre.citacion (id_user, ids_user, fecha, id_ppu, id_operacion, id_centro_op, tipo_ruta, estado) VALUES ({body.id_user},'{body.ids_user}','{body.fecha}',{body.id_ppu},{body.id_operacion},{body.id_centro_op},{body.tipo_ruta},{body.estado})
                         """)
         self.conn.commit() 
 
-    def update_estado_patente_citacion(self, estado: int, id : int):
+    def update_estado_patente_citacion(self, estado: int, id_ppu : int, fecha:str):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            UPDATE mercadolibre.citacion SET estado={estado} WHERE id_ppu={id}
+UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_ppu={id_ppu}            
                         """)
         self.conn.commit() 
 
@@ -10319,15 +10318,52 @@ SELECT *
                         """)
         self.conn.commit() 
 
-    def update_estado_ruta_meli_citacion(self, ruta_meli: int, id : int):
+    def update_estado_ruta_meli_citacion(self, ruta_meli: int, id_ppu : int, fecha: str):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            UPDATE mercadolibre.citacion SET ruta_meli ={ruta_meli} WHERE id_ppu={id}
+            UPDATE mercadolibre.citacion SET ruta_meli ={ruta_meli} WHERE id_ppu={id_ppu} and fecha='{fecha}'
                         """)
         self.conn.commit() 
-        
+
+    
+    def recuperar_patentes_citacion(self,op : int, cop : int, fecha: str):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+         select * from mercadolibre.recuperar_patentes_citacion({op},{cop},'{fecha}');              
+                         """)
+            return cur.fetchall()
+
+
+    def filtrar_centro_op_por_id_op(self,op : int):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+         select id, centro from  operacion.centro_operacion co where id_op = {op};              
+                         """)
+            return cur.fetchall()
         
 
+    def filtrar_citacion_por_op_y_cop(self,id_operacion: str, id_centro_op : int):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+         select * from mercadolibre.citacion c  where id_operacion = {id_operacion} and id_centro_op = {id_centro_op}
+              
+                         """)
+            return cur.fetchall()
+        
+        
+    def obtener_tipo_ruta_meli(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+                   select * from mercadolibre.tipo_ruta tr  
+                         """)
+            return cur.fetchall()
+        
+    def update_tipo_ruta_citacion(self, tipo_ruta: int, id_ppu : int, fecha: str):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            UPDATE mercadolibre.citacion SET tipo_ruta ={tipo_ruta} WHERE id_ppu={id_ppu} and fecha='{fecha}'
+                      """)
+        self.conn.commit() 
 
 class transyanezConnection():
     conn = None

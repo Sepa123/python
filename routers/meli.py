@@ -272,9 +272,9 @@ async def agregarPatenteCitacion(body: agregarPatente):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/actualizar_estadoPpu")
-async def actualizar_estado(estado: int, id : int):
+async def actualizar_estado(estado: int, id_ppu : int, fecha:str):
     try:
-        conn.update_estado_patente_citacion(estado,id)
+        conn.update_estado_patente_citacion(estado,id_ppu,fecha)
         print()
         return {"message": "Datos Ingresados Correctamente"}
     except Exception as e: raise HTTPException(status_code=500, detail=str(e))
@@ -296,8 +296,92 @@ async def Obtener_datos(id_estado: int):
 
 @router.post("/actualizar_rutaMeli")
 
-async def actualizar_estado(ruta_meli: int, id : int):
+async def actualizar_estado(ruta_meli: int, id_ppu : int, fecha: str):
     try:
-        conn.update_estado_ruta_meli_citacion(ruta_meli,id)
+        conn.update_estado_ruta_meli_citacion(ruta_meli,id_ppu,fecha)
+        return {"message": "Datos Ingresados Correctamente"}
+    except Exception as e: raise HTTPException(status_code=500, detail=str(e))
+
+########## update 
+
+@router.get("/patentesPorCitacion")
+async def Obtener_datos( op : int, cop : int, fecha: str):
+     # Consulta SQL para obtener datos (por ejemplo)
+    datos = conn.recuperar_patentes_citacion(op,cop,fecha)
+    # Verificar si hay datos 
+    if datos:
+        datos_formateados = [{
+                                "id_ppu": fila [0],
+                                "ppu": fila[1],
+                                "tipo": fila[2],
+                                "razon_social": fila [3],
+                                "colaborador_id": fila [4],
+                                "tripulacion": fila[5]
+
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+
+@router.get("/filtro/Cop")
+async def Obtener_datos( op : int):
+    datos = conn.filtrar_centro_op_por_id_op(op)
+    # Verificar si hay datos 
+    if datos:
+        datos_formateados = [{
+                                "id": fila[0],
+                                "centro": fila [1]
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+    
+@router.get("/filtroPatentesPorIdOp_y_IdCop")
+async def Obtener_datos(id_operacion: str, id_centro_op : int):
+
+    datos = conn.filtrar_citacion_por_op_y_cop(id_operacion,id_centro_op)
+    # Verificar si hay datos 
+    if datos:
+        datos_formateados = [{  
+                                "id": fila[0],
+                                "fecha": fila [4],
+                                "ruta_meli": fila[5],
+                                "id_ppu": fila[6],
+                                "id_centro_op": fila[8],
+                                "tipo_ruta": fila [9],
+                                "id_ppu_amb": fila[10],
+                                "ruta_meli_amb": fila[11],
+                                "ruta_amb_interna": fila[12],
+                                "estado": fila[13]
+                                
+
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+
+
+@router.get("/tipoRuta")
+async def Obtener_datos():
+    datos = conn.obtener_tipo_ruta_meli()
+    # Verificar si hay datos 
+    if datos:
+        datos_formateados = [{  
+                                "id": fila[0],
+                                "tipo": fila [1]
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+    
+@router.post("/actualizar_tipoRuta")
+
+async def actualizar_estado(tipo_ruta: int, id_ppu : int, fecha: str):
+    try:
+        conn.update_tipo_ruta_citacion(tipo_ruta,id_ppu,fecha)
         return {"message": "Datos Ingresados Correctamente"}
     except Exception as e: raise HTTPException(status_code=500, detail=str(e))
