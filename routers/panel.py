@@ -14,6 +14,7 @@ from database.client import reportesConnection
 from database.hela_prod import HelaConnection
 
 from database.schema.operaciones.centro_operacion import centro_operacion_usuario_schema, co_lista_coordinador_schema
+from database.schema.operaciones.supervisores import datos_supervisores_schema
 from lib.password import hash_password
 
 router = APIRouter(tags=["panel"], prefix="/api/panel")
@@ -216,3 +217,10 @@ async def eliminar_coordinador_a_co(body : UpdateCentroOperacion):
         return {
             "message": "No se han actualizado los datos"
         }
+    
+
+@router.get("/ver/supervisores")
+async def get_datos_supervisores_hela():
+     # Consulta SQL para obtener datos (por ejemplo)
+    results = conn.buscar_datos_supervisores_hela()
+    return datos_supervisores_schema(results)

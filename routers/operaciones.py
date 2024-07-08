@@ -5,6 +5,7 @@ from database.client import reportesConnection
 from database.models.operaciones.modalidad_operacion import RazonSocial, updateApp
 from database.models.operaciones.centro_operacion import CentroOperacion
 from database.schema.operaciones.centro_operacion import centro_operacion_schema, centro_operacion_asignado_schema
+from database.schema.operaciones.supervisores import datos_supervisores_schema
 import psycopg2
 import uvicorn
 
@@ -146,4 +147,13 @@ async def eliminar_centro_operacion(id : str):
      except:
           print("error en /eliminar/operacion/vehiculo")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
+     
+
+
+@router.get("/ver/supervisores")
+async def get_datos_supervisores_hela():
+     # Consulta SQL para obtener datos (por ejemplo)
+    results = conn.buscar_datos_supervisores_hela()
+    return datos_supervisores_schema(results)
+
        

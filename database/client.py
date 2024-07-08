@@ -10211,6 +10211,17 @@ SELECT *
        
                          """)
             return cur.fetchall()
+        
+
+    def buscar_datos_supervisores_hela(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+        SELECT u.id, u.nombre ,mail, imagen_perfil ,
+            operacion.obtener_centros_por_portal('hela-' || u.id) AS centros
+        FROM hela.usuarios u
+        where rol_id in ('5','15','13','12')
+                         """)
+            return cur.fetchall()
 
     def asignar_coordinador_centro_operacion(self, data): 
         with self.conn.cursor() as cur:
