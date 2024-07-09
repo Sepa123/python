@@ -1,5 +1,6 @@
 def datos_supervisor(operacion):
     return {
+        "Server": 'hela',
         "Id": operacion[0],
         "Nombre": operacion[1],
         "Mail" : operacion[2],
