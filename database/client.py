@@ -10219,7 +10219,7 @@ SELECT *
         SELECT u.id, u.nombre ,mail, imagen_perfil ,
             operacion.obtener_centros_por_portal('hela-' || u.id) AS centros
         FROM hela.usuarios u
-        where rol_id in ('5','15','13','12')
+        where rol_id in ('80','81')
                          """)
             return cur.fetchall()
 
