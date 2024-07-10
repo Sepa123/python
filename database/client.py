@@ -10373,7 +10373,16 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
             cur.execute(f"""
             UPDATE mercadolibre.citacion SET tipo_ruta ={tipo_ruta} WHERE id_ppu={id_ppu} and fecha='{fecha}'
                       """)
-        self.conn.commit() 
+        self.conn.commit()
+
+    def obtener_veh_disp_operaciones(self,fecha):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+                          
+           SELECT * FROM transporte.obtener_veh_disp_operaciones(ARRAY[38, 39], '{fecha}')
+       
+                         """)
+            return cur.fetchall() 
 
 class transyanezConnection():
     conn = None

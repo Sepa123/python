@@ -4,6 +4,7 @@ from openpyxl import Workbook
 from openpyxl.styles import Font , PatternFill, Border ,Side, Alignment
 from datetime import datetime, timedelta
 from openpyxl.worksheet.page import PageMargins , PrintPageSetup
+from database.schema.operaciones.lista_vehiculos import vehiculos_disponibles_op_schema
 import lib.excel_generico as excel
 import time
 import re
@@ -1422,3 +1423,11 @@ async def get_codigo_obligatorios_dia(fecha : str):
     nombre_excel = f"lista_codigo_obligatorios"
 
     return excel.generar_excel_generico(result,nombre_filas,nombre_excel)
+
+
+## Vehiculos disponibles en ruta
+@router.get("/vehiculos/disponibles/en_ruta")
+async def get_veh_disp_operaciones(fecha : str):
+
+    result = conn.obtener_veh_disp_operaciones(fecha)
+    return vehiculos_disponibles_op_schema(result)
