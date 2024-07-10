@@ -6,7 +6,7 @@ def vehiculos_disponibles_op(vehiculo):
 		"Colaborador_id" : vehiculo[3],
 		"Razon_social" : vehiculo[4],
 		"Tripulacion" : vehiculo[5]
-	},
+	}
 
 def vehiculos_disponibles_op_schema(vehiculos):
     return [vehiculos_disponibles_op(vehiculo) for vehiculo in vehiculos]
