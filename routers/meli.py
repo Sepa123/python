@@ -11,6 +11,7 @@ from database.models.meli.meli import agregarPatente,pv
 
 ##Conexiones
 from database.client import reportesConnection
+from database.schema.meli.prefacturas import prefactura_meli_schema
 
 router = APIRouter(tags=["Clientes"], prefix="/api/meli")
 
@@ -385,3 +386,90 @@ async def actualizar_estado(tipo_ruta: int, id_ppu : int, fecha: str):
         conn.update_tipo_ruta_citacion(tipo_ruta,id_ppu,fecha)
         return {"message": "Datos Ingresados Correctamente"}
     except Exception as e: raise HTTPException(status_code=500, detail=str(e))
+
+
+
+
+@router.post("/subir/billing-meli", status_code=status.HTTP_202_ACCEPTED)
+async def subir_archivo_billing_meli(file: UploadFile = File(...)):
+
+    # select quadminds.convierte_en_ruta_manual(1,'202308021040');
+
+    directorio  = os.path.abspath("excel")
+
+    ruta = os.path.join(directorio,file.filename)
+
+    with open(ruta, "wb") as f:
+        contents = await file.read()
+        # print("pase por aqui")
+        f.write(contents)
+
+    df = pd.read_excel(ruta  )
+
+    print(df)
+
+    lista = df.to_dict(orient='records')
+
+    # print(lista)
+
+    # for i, data in enumerate(lista):
+        # cantidad_encontrada = conn.get_pedido_planificados_quadmind_by_cod_pedido()
+        # if cantidad_encontrada[0] >= 1:
+        #     print("Producto ya esta registrado") 
+        # else:
+        # print(data)
+
+        # conn.write_pedidos_planificados(data ,posicion, direccion)
+        # print(posicion)
+   
+
+    return {
+        "message" : len(lista)
+    }
+
+
+@router.post("/subir/prefactura", status_code=status.HTTP_202_ACCEPTED)
+async def subir_archivo_prefactura_meli(id_usuario : str,ids_usuario : str,file: UploadFile = File(...)):
+
+    # select quadminds.convierte_en_ruta_manual(1,'202308021040');
+
+    directorio  = os.path.abspath("excel")
+
+    ruta = os.path.join(directorio,file.filename)
+
+    with open(ruta, "wb") as f:
+        contents = await file.read()
+        # print("pase por aqui")
+        f.write(contents)
+
+    df = pd.read_excel(ruta,nrows=1)
+
+    desc = pd.read_excel(ruta, skiprows=4)
+    desc = desc.dropna(subset=['DescripciÃ³n'])
+    desc = desc[desc['DescripciÃ³n'] != 'Total prefactura:']
+
+
+    lista = df.to_dict(orient='records')
+    lista_desc = desc.to_dict(orient='records')
+
+    id_prefect =lista[0]['ID prefactura']
+    periodo = lista[0]['Periodo']
+
+    conn.insert_datos_excel_prefactura_meli(id_usuario,ids_usuario,id_prefect,periodo,lista_desc)
+
+    return {
+        "message" : len(lista_desc)
+    }
+
+@router.get("/prefacturas")
+async def Obtener_datos():
+
+    datos = conn.obtener_veh_disp_operaciones()
+    # Verificar si hay datos 
+    if datos:
+
+        return prefactura_meli_schema(datos)
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+
+    

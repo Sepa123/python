@@ -1,4 +1,6 @@
 import psycopg2
+from psycopg2.extras import execute_values
+
 import codecs
 from decouple import config
 import os, sys, codecs
@@ -10383,7 +10385,43 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
        
                          """)
             return cur.fetchall() 
+        
+    def insert_datos_excel_prefactura_meli(self, id_usuario : int,ids_usuario : str,id_prefact :int,periodo : str,body):
 
+        with self.conn.cursor() as cur:
+            # cur.execute(f"""
+            # INSERT INTO mercadolibre.prefactura_paso
+            # (id_usuario, ids_usuario, id_prefactura, periodo, descripcion, id_de_ruta, fecha_de_inicio, fecha_de_fin, patente, conductor, cantidad, precio_unitario, total)
+            # VALUES({id_usuario}, '{ids_usuario}',{id_prefact}, '{periodo}', '{body['DescripciÃ³n']}', '{body['ID de ruta']}', '{body['Fecha de inicio']}',
+            #   '{body['Fecha de fin']}', '{body['Patente']}', '{body['Conductor']}', '{body['Cantidad']}', '{body['Precio unitario']}', '{body['Total']}')
+
+            #           """)
+
+            query = """
+            INSERT INTO mercadolibre.prefactura_paso
+            (id_usuario, ids_usuario, id_prefactura, periodo, descripcion, id_de_ruta, fecha_de_inicio, fecha_de_fin, patente, conductor, cantidad, precio_unitario, total)
+            VALUES %s
+            """
+            values = [
+                (id_usuario, ids_usuario, id_prefact, periodo, item['DescripciÃ³n'], item['ID de ruta'], item['Fecha de inicio'], item['Fecha de fin'], item['Patente'], item['Conductor'], item['Cantidad'], item['Precio unitario'], item['Total'])
+                for item in body
+            ]
+            execute_values(cur, query, values)
+
+        self.conn.commit()
+    
+    def obtener_veh_disp_operaciones(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+                          
+           select * from mercadolibre.prefactura_paso
+       
+                         """)
+            return cur.fetchall()
+
+        
+        
+        
 class transyanezConnection():
     conn = None
     def __init__(self) -> None:

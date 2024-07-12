@@ -1,7 +1,7 @@
 from fastapi import APIRouter, status,HTTPException, UploadFile, File
 from typing import List
 import pandas as pd
-import os 
+import os
 import time
 
 from datetime import datetime
@@ -114,24 +114,30 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
         # print("pase por aqui")
         f.write(contents)
 
-    df = pd.read_excel(ruta  )
+    df = pd.read_excel(ruta,nrows=1)
 
-    print(df)
+    desc = pd.read_excel(ruta, skiprows=4)
+
+    desc = desc.dropna(subset=['DescripciÃ³n'])
+
+    desc = desc[desc['DescripciÃ³n'] != 'Total prefactura:']
+
+    # print(df)
 
     lista = df.to_dict(orient='records')
+    lista_desc = desc.to_dict(orient='records')
 
-    # print(lista)
+    id_prefect =lista[0]['ID prefactura']
+    periodo = lista[0]['Periodo']
 
-    # for i, data in enumerate(lista):
-        # cantidad_encontrada = conn.get_pedido_planificados_quadmind_by_cod_pedido()
-        # if cantidad_encontrada[0] >= 1:
-        #     print("Producto ya esta registrado") 
-        # else:
-        # print(data)
+    conn.insert_datos_excel_prefactura_meli(id_usuario,id_usuario,id_prefect,periodo,lista_desc)
 
-        # conn.write_pedidos_planificados(data ,posicion, direccion)
-        # print(posicion)
-   
+    # for i, data in enumerate(lista_desc):
+
+    #         print(i)
+    #         print(data)
+        # conn.insert_datos_excel_prefactura_meli(id_usuario,id_usuario,id_prefect,periodo,data)
+
     # error = conn.asignar_ruta_quadmind_manual(id_usuario, fecha_hora_formateada)
 
     # diferencia = conn.calcular_diferencia_tiempo(fecha_dia)
@@ -139,21 +145,21 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
     # error 1 : codigos inexistentes
 
     return {
-        "message" : len(lista)
+        "message" : len(lista_desc)
     }
 
     # if error[0][0] == 1:
     #     return {
-    #             "filename": file.filename, 
-    #             "message": "Error al subir el archivo", 
+    #             "filename": file.filename,
+    #             "message": "Error al subir el archivo",
     #             "codigos": f"{error[0][1]}",
     #             "tiempo": diferencia[0][0],
     #             "termino" : True ,
     #             "error" : 1,
     #             }
-    # else:   
-    #     return {"filename": file.filename, 
-    #             "message": error[0][1], 
+    # else:
+    #     return {"filename": file.filename,
+    #             "message": error[0][1],
     #             "codigos": "",
     #             "tiempo": diferencia[0][0],
     #             "termino" : True,
