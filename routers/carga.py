@@ -114,13 +114,13 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
         # print("pase por aqui")
         f.write(contents)
 
-    df = pd.read_excel(ruta,sheet_name=1,skiprows=1)
+    df = pd.read_excel(ruta  )
 
     print(df)
 
     lista = df.to_dict(orient='records')
 
-    print(lista[0])
+    # print(lista)
 
     # for i, data in enumerate(lista):
         # cantidad_encontrada = conn.get_pedido_planificados_quadmind_by_cod_pedido()
