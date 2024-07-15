@@ -10410,7 +10410,7 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
 
         self.conn.commit()
     
-    def obtener_veh_disp_operaciones(self):
+    def obtener_datos_excel_prefactura_meli(self):
         with self.conn.cursor() as cur:
             cur.execute(f""" 
                           

@@ -427,6 +427,11 @@ async def subir_archivo_billing_meli(file: UploadFile = File(...)):
         "message" : len(lista)
     }
 
+def corregir_utf8(texto):
+    # Decodificar el texto usando la codificación incorrecta (latin-1)
+    texto_decodificado = texto.encode('latin-1').decode('utf-8')
+    return texto_decodificado
+
 
 @router.post("/subir/prefactura", status_code=status.HTTP_202_ACCEPTED)
 async def subir_archivo_prefactura_meli(id_usuario : str,ids_usuario : str,file: UploadFile = File(...)):
@@ -448,6 +453,9 @@ async def subir_archivo_prefactura_meli(id_usuario : str,ids_usuario : str,file:
     desc = desc.dropna(subset=['DescripciÃ³n'])
     desc = desc[desc['DescripciÃ³n'] != 'Total prefactura:']
 
+    desc["DescripciÃ³n"] = desc["DescripciÃ³n"].apply(corregir_utf8)
+    desc["Conductor"] = desc["Conductor"].apply(corregir_utf8)
+
 
     lista = df.to_dict(orient='records')
     lista_desc = desc.to_dict(orient='records')
@@ -464,7 +472,7 @@ async def subir_archivo_prefactura_meli(id_usuario : str,ids_usuario : str,file:
 @router.get("/prefacturas")
 async def Obtener_datos():
 
-    datos = conn.obtener_veh_disp_operaciones()
+    datos = conn.obtener_datos_excel_prefactura_meli()
     # Verificar si hay datos 
     if datos:
 
