@@ -133,12 +133,13 @@ async def Obtener_datos():
         raise HTTPException(status_code=404, detail="No se encontraron datos")
 
 @router.get("/conductoresList")
-async def Obtener_datos():
-    datos = conn.lista_conductores()
+async def Obtener_datos(fecha:str):
+    datos = conn.lista_conductores(fecha)
     # Verificar si hay datos
     if datos:
         datos_formateados = [{
-                                "nombre_completo": fila [8]
+                                "id": fila[0],
+ 	                            "nombre_completo": fila [1]
                             } 
                             for fila in datos]
         return datos_formateados
@@ -146,13 +147,14 @@ async def Obtener_datos():
         raise HTTPException(status_code=404, detail="No se encontraron datos")
 
 @router.get("/peonetaList")
-async def Obtener_datos():
+async def Obtener_datos(fecha:str):
     # Ejecutar la consulta utilizando nuestra función
-    datos = conn.lista_peonetas()
+    datos = conn.lista_peonetas(fecha)
     # Verificar si hay datos
     if datos:
         datos_formateados = [{
-                                "nombre_completo": fila [8]
+                                "id": fila[0],
+ 	                            "nombre_completo": fila [1]
                             } 
                             for fila in datos]
         return datos_formateados
@@ -173,7 +175,10 @@ async def Obtener_datos(fecha: str, id : int):
                                 "region": fila[4],
                                 "region_name": fila[5],
                                 "citacion": fila[6],
-                                "confirmados": fila[7]
+                                "confirmados": fila[7],
+	                            "pendientes": fila[8],
+	                            "rechazadas": fila[9],
+                                "ambulancia": fila[10]
 
                             } 
                             for fila in datos]
@@ -254,6 +259,10 @@ async def Obtener_datos(fecha: str, op : int, cop : int):
                                 "ppu": fila[1],
                                 "ruta_meli": fila[2],
                                 "estado": fila [3],
+                                "id_driver":fila[4],
+                                "nombre_driver": fila[5],
+                                "id_peoneta": fila [6],
+                                "nombre_peoneta":fila[7]
 
                             } 
                             for fila in datos]
@@ -302,6 +311,16 @@ async def actualizar_estado(ruta_meli: int, id_ppu : int, fecha: str):
         conn.update_estado_ruta_meli_citacion(ruta_meli,id_ppu,fecha)
         return {"message": "Datos Ingresados Correctamente"}
     except Exception as e: raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/api/ingresarDriversPeoneta")
+async def actualizar_estado(id_driver: int, id_peoneta : int, fecha: str, id_ppu:int):
+    try:
+        conn.update_ingresar_driver_peoneta(id_driver, id_peoneta,fecha,id_ppu)
+        return {"message": "Datos Ingresados Correctamente"}
+    except Exception as e: raise HTTPException(status_code=500, detail=str(e))
+
+
+
 
 ########## update 
 
@@ -387,11 +406,55 @@ async def actualizar_estado(tipo_ruta: int, id_ppu : int, fecha: str):
         return {"message": "Datos Ingresados Correctamente"}
     except Exception as e: raise HTTPException(status_code=500, detail=str(e))
 
+def corregir_utf8(texto):
+    # Decodificar el texto usando la codificación incorrecta (latin-1)
+    texto_decodificado = texto.encode('latin-1').decode('utf-8')
+    return texto_decodificado
+
+##### update 2 15-07-2024
+
+@router.get("/api/countCitaciones")
+async def Obtener_datos(fecha:str, id_cop:int):
+        # Consulta SQL para obtener datos (por ejemplo)
+    datos = conn.contar_citaciones_co_por_fecha(fecha,id_cop)
+    # Verificar si hay datos 
+    if datos:
+        datos_formateados = [{  
+                                "ingresados": fila[0]
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+    
+
+@router.get("/api/countCitacionesConfirmadas")
+async def Obtener_datos(fecha:str, id_cop:int, estado: int):
+     # Consulta SQL para obtener datos (por ejemplo)
+    datos = conn.contar_citaciones_co_confirmadas_por_fecha(fecha,id_cop,estado)
+    # Verificar si hay datos 
+    if datos:
+        datos_formateados = [{  
+                                "ingresados": fila[0]
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+    
+
+@router.post("/api/Ambulancia")
+async def actualizar_estado(id_ppu_amb: int, ruta_meli_amb:int, ruta_amb_interna:int, id_ppu : int, fecha: str):
+    try:
+        conn.update_citacion_ambulancia(id_ppu_amb,ruta_meli_amb,ruta_amb_interna,id_ppu,fecha)
+        return {"message": "Datos Ingresados Correctamente"}
+    
+    except Exception as e: raise HTTPException(status_code=500, detail=str(e))
 
 
 
 @router.post("/subir/billing-meli", status_code=status.HTTP_202_ACCEPTED)
-async def subir_archivo_billing_meli(file: UploadFile = File(...)):
+async def subir_archivo_billing_meli(id_usuario : str,ids_usuario : str,file: UploadFile = File(...)):
 
     # select quadminds.convierte_en_ruta_manual(1,'202308021040');
 
@@ -404,11 +467,24 @@ async def subir_archivo_billing_meli(file: UploadFile = File(...)):
         # print("pase por aqui")
         f.write(contents)
 
-    df = pd.read_excel(ruta  )
+    df = pd.read_excel(ruta)
+
+    # df['Descripci√≥n'] = df['Descripci√≥n'].apply(corregir_utf8)
 
     print(df)
 
     lista = df.to_dict(orient='records')
+
+
+    # conn.insert_datos_excel_prefactura_mensual_meli(id_usuario,ids_usuario,lista)
+
+
+    # print(lista)
+
+    # for datos in lista:
+    #     print(datos)
+
+
 
     # print(lista)
 
@@ -427,10 +503,7 @@ async def subir_archivo_billing_meli(file: UploadFile = File(...)):
         "message" : len(lista)
     }
 
-def corregir_utf8(texto):
-    # Decodificar el texto usando la codificación incorrecta (latin-1)
-    texto_decodificado = texto.encode('latin-1').decode('utf-8')
-    return texto_decodificado
+
 
 
 @router.post("/subir/prefactura", status_code=status.HTTP_202_ACCEPTED)

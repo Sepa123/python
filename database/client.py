@@ -10259,17 +10259,21 @@ SELECT *
                          """)
             return cur.fetchall()
         
-    def lista_conductores(self):
+    def lista_conductores(self, fecha):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
-           select * from transporte.usuarios u where tipo_usuario = '1'                        
+           select u.id, u.nombre_completo from transporte.usuarios u 
+           where u.tipo_usuario = 1 AND u.id NOT IN 
+           (select id_driver FROM mercadolibre.citacion c WHERE fecha = '{fecha}'::date and c.id_driver notnull);                       
                          """)
             return cur.fetchall()
         
-    def lista_peonetas(self):
+    def lista_peonetas(self,fecha):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
-          select * from transporte.usuarios u where tipo_usuario = '2'                   
+          select u.id, u.nombre_completo from transporte.usuarios u 
+          where u.tipo_usuario = 2 AND u.id NOT in 
+          (select id_peoneta FROM mercadolibre.citacion c WHERE fecha = '{fecha}'::date and c.id_peoneta notnull);                  
                          """)
             return cur.fetchall()
         
@@ -10370,6 +10374,15 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
                          """)
             return cur.fetchall()
         
+    
+
+    def update_ingresar_driver_peoneta(self, id_driver: int, id_peoneta : int, fecha: str, id_ppu:int):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            UPDATE mercadolibre.citacion SET id_driver ={id_driver}, id_peoneta = {id_peoneta} WHERE fecha='{fecha}' AND id_ppu={id_ppu}
+                      """)
+        self.conn.commit()
+        
     def update_tipo_ruta_citacion(self, tipo_ruta: int, id_ppu : int, fecha: str):
         with self.conn.cursor() as cur:
             cur.execute(f"""
@@ -10385,6 +10398,37 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
        
                          """)
             return cur.fetchall() 
+        
+
+    def contar_citaciones_co_por_fecha(self,fecha:str, id_cop:int):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+                          
+            SELECT COUNT(*) FROM mercadolibre.citacion c WHERE c.fecha = '{fecha}'  AND c.id_centro_op ={id_cop} 
+       
+                         """)
+            return cur.fetchall()    
+        
+    def contar_citaciones_co_confirmadas_por_fecha(self,fecha:str, id_cop:int, estado: int):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+                          
+            SELECT COUNT(*) FROM mercadolibre.citacion c WHERE c.fecha = '{fecha}'  AND c.id_centro_op ={id_cop} AND c.estado = {estado}
+       
+                         """)
+            return cur.fetchall()   
+
+
+    def update_citacion_ambulancia(self,id_ppu_amb: int, ruta_meli_amb:int, ruta_amb_interna:int, id_ppu : int, fecha: str):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            UPDATE mercadolibre.citacion SET id_ppu_amb = {id_ppu_amb},ruta_meli_amb =  {ruta_meli_amb}, ruta_amb_interna = {ruta_amb_interna} WHERE id_ppu={id_ppu} and fecha='{fecha}'
+                      """)
+        self.conn.commit()
+        
+
+
+    
         
     def insert_datos_excel_prefactura_meli(self, id_usuario : int,ids_usuario : str,id_prefact :int,periodo : str,body):
 
@@ -10404,6 +10448,31 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
             """
             values = [
                 (id_usuario, ids_usuario, id_prefact, periodo, item['DescripciÃ³n'], item['ID de ruta'], item['Fecha de inicio'], item['Fecha de fin'], item['Patente'], item['Conductor'], item['Cantidad'], item['Precio unitario'], item['Total'])
+                for item in body
+            ]
+            execute_values(cur, query, values)
+
+        self.conn.commit()
+
+
+    def insert_datos_excel_prefactura_mensual_meli(self, id_usuario : int,ids_usuario : str,body):
+
+        with self.conn.cursor() as cur:
+            # cur.execute(f"""
+            # INSERT INTO mercadolibre.prefactura_paso
+            # (id_usuario, ids_usuario, id_prefactura, periodo, descripcion, id_de_ruta, fecha_de_inicio, fecha_de_fin, patente, conductor, cantidad, precio_unitario, total)
+            # VALUES({id_usuario}, '{ids_usuario}',{id_prefact}, '{periodo}', '{body['DescripciÃ³n']}', '{body['ID de ruta']}', '{body['Fecha de inicio']}',
+            #   '{body['Fecha de fin']}', '{body['Patente']}', '{body['Conductor']}', '{body['Cantidad']}', '{body['Precio unitario']}', '{body['Total']}')
+
+            #           """)
+
+            query = """
+            INSERT INTO mercadolibre.prefactura_paso
+            (id_usuario, ids_usuario, id_prefactura, periodo, descripcion, id_de_ruta, fecha_de_inicio, fecha_de_fin, patente, conductor, cantidad, precio_unitario, total)
+            VALUES %s
+            """
+            values = [
+                (id_usuario, ids_usuario, item['DescripciÃ³n'], item['ID de ruta'], item['Fecha de inicio'], item['Fecha de fin'], item['Patente'], item['Conductor'], item['Cantidad'], item['Precio unitario'], item['Total'])
                 for item in body
             ]
             execute_values(cur, query, values)
