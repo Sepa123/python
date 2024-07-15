@@ -10414,7 +10414,10 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
         with self.conn.cursor() as cur:
             cur.execute(f""" 
                           
-           select * from mercadolibre.prefactura_paso
+           SELECT id, created_at, id_usuario, ids_usuario, id_prefactura, periodo, descripcion, id_de_ruta, 
+            TO_CHAR(TO_TIMESTAMP(fecha_de_fin, 'YYYY-MM-DD HH24:MI:SS'), 'YYYY-MM-DD') AS fecha_inicio, TO_CHAR(TO_TIMESTAMP(fecha_de_fin, 'YYYY-MM-DD HH24:MI:SS'), 'YYYY-MM-DD') AS fecha_fin,
+            patente, conductor, cantidad, precio_unitario, total
+            FROM mercadolibre.prefactura_paso;
        
                          """)
             return cur.fetchall()
