@@ -31,3 +31,6 @@ json/estado_notificaciones.json
 file1.json
 file2.json
 /json
+/__pycache__
+/__pycache__
+*.xlsx

@@ -1,3 +1,4 @@
+from datetime import datetime
 from fastapi import APIRouter, status,HTTPException, UploadFile, File
 # from typing import List
 import pandas as pd
@@ -451,10 +452,13 @@ async def actualizar_estado(id_ppu_amb: int, ruta_meli_amb:int, ruta_amb_interna
     
     except Exception as e: raise HTTPException(status_code=500, detail=str(e))
 
+def chunk_list(data, chunk_size):
+    for i in range(0, len(data), chunk_size):
+        yield data[i:i + chunk_size]
 
 
 @router.post("/subir/billing-meli", status_code=status.HTTP_202_ACCEPTED)
-async def subir_archivo_billing_meli(id_usuario : str,ids_usuario : str,file: UploadFile = File(...)):
+async def subir_archivo_billing_meli(id_usuario : int,ids_usuario : str,file: UploadFile = File(...)):
 
     # select quadminds.convierte_en_ruta_manual(1,'202308021040');
 
@@ -469,35 +473,22 @@ async def subir_archivo_billing_meli(id_usuario : str,ids_usuario : str,file: Up
 
     df = pd.read_excel(ruta)
 
-    # df['Descripci√≥n'] = df['Descripci√≥n'].apply(corregir_utf8)
-
-    print(df)
-
     lista = df.to_dict(orient='records')
+
+    chunk_size = 10000
+    chunks = chunk_list(lista, chunk_size)
+
+    # for chunk in chunks:
+    #     # hora_actual = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    #     # # Imprimir la hora actual
+    #     # print(f"La hora actual es: {hora_actual}")
+    #     conn.insert_datos_excel_prefactura_mensual_meli(id_usuario,ids_usuario,chunk)
 
 
     # conn.insert_datos_excel_prefactura_mensual_meli(id_usuario,ids_usuario,lista)
 
 
-    # print(lista)
-
-    # for datos in lista:
-    #     print(datos)
-
-
-
-    # print(lista)
-
-    # for i, data in enumerate(lista):
-        # cantidad_encontrada = conn.get_pedido_planificados_quadmind_by_cod_pedido()
-        # if cantidad_encontrada[0] >= 1:
-        #     print("Producto ya esta registrado") 
-        # else:
-        # print(data)
-
-        # conn.write_pedidos_planificados(data ,posicion, direccion)
-        # print(posicion)
-   
 
     return {
         "message" : len(lista)
