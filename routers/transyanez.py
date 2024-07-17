@@ -66,6 +66,12 @@ async def download_resumen_vehiculos_portal():
 async def agregar_nuevo_colaborador(body : Colaboradores):
     try:
         body.Email_representante_legal = body.Email
+
+        if(body.Tipo_razon == 7):
+            body.Tipo_razon = 11
+        else:
+            body.Tipo_razon = 7
+
         data = body.dict()
         conn.insert_colaborador(data)
 
