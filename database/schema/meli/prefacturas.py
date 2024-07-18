@@ -1,20 +1,20 @@
 def prefactura_meli(prefactura):
     return {
-		"Id" : prefactura[0],
-		"Created_at" : prefactura[1],
-		"Id_usuario" : prefactura[2],
-		"Ids_usuario" : prefactura[3],
-		"Id_prefactura" : prefactura[4],
-		"Periodo" : prefactura[5],
-		"Descripcion" : prefactura[6],
-		"Id_de_ruta" : prefactura[7],
-		"Fecha_de_inicio" : prefactura[8],
-		"Fecha_de_fin" : prefactura[9],
-		"Patente" : prefactura[10],
-		"Conductor" : prefactura[11],
-		"Cantidad" : prefactura[12],
-		"Precio_unitario" : prefactura[13],
-		"Total" :prefactura[14]
+		"Id_usuario" : prefactura[0],
+		"Ids_usuario" : prefactura[1],
+		"Id_prefactura" : prefactura[2],
+		"Periodo" : prefactura[3],
+		"Descripcion" : prefactura[4],
+		"Id_de_ruta" : prefactura[5],
+		"Fecha_inicio" : prefactura[6],
+		"Fecha_fin" : prefactura[7],
+		"Patente" : prefactura[8],
+		"Id_patente" : prefactura[9],
+		"Conductor" : prefactura[10],
+		"Cantidad" : prefactura[11],
+		"Precio_unitario" : prefactura[12],
+		"Descuento" : prefactura[13],
+		"Total" : prefactura[14]
 	}
 
 def prefactura_meli_schema(prefacturas):

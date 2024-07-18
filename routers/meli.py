@@ -462,9 +462,9 @@ async def subir_archivo_billing_meli(id_usuario : int,ids_usuario : str,file: Up
 
     # select quadminds.convierte_en_ruta_manual(1,'202308021040');
 
-    directorio  = os.path.abspath("excel")
+    directorio  = os.path.abspath("excel/prefactura_mensual")
 
-    ruta = os.path.join(directorio,file.filename)
+    ruta = os.path.join(directorio,f"{ids_usuario}_"+file.filename)
 
     with open(ruta, "wb") as f:
         contents = await file.read()
@@ -534,7 +534,7 @@ async def subir_archivo_prefactura_meli(id_usuario : str,ids_usuario : str,file:
     }
 
 @router.get("/prefacturas")
-async def Obtener_datos():
+async def Obtener_datos_excel_prefactura_meli():
 
     datos = conn.obtener_datos_excel_prefactura_meli()
     # Verificar si hay datos 
