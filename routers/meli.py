@@ -6,7 +6,7 @@ import os
 # import time
 # from datetime import datetime
 ##Modelos 
-
+import lib.excel_generico as excel
 # from database.models.retiro_cliente import RetiroCliente
 from database.models.meli.meli import agregarPatente,pv
 
@@ -534,14 +534,30 @@ async def subir_archivo_prefactura_meli(id_usuario : str,ids_usuario : str,file:
     }
 
 @router.get("/prefacturas")
-async def Obtener_datos_excel_prefactura_meli():
+async def Obtener_datos_excel_prefactura_meli(ano : str, mes : str):
 
-    datos = conn.obtener_datos_excel_prefactura_meli()
+    datos = conn.obtener_datos_excel_prefactura_meli(ano,mes)
     # Verificar si hay datos 
     if datos:
 
         return prefactura_meli_schema(datos)
     else:
         raise HTTPException(status_code=404, detail="No se encontraron datos")
+    
+
+
+@router.get("/descargar/prefacturas")
+async def Obtener_datos_excel_prefactura_meli(ano : str, mes : str):
+
+    results = conn.obtener_datos_excel_prefactura_meli_descargar(ano,mes)
 
     
+
+    nombre_filas = ( "Id Usuario", "Ids Usuario" ,"Id Prefactura", "Periodo", "Descripción", "Id de Ruta", "Fecha Inicio", "Fecha Fin","Patente",
+                     "Id Patente", "Conductor", "Cantidad", "Precio Unitario","Descuento" ,"Total")
+    nombre_excel = f"detalle {ano}-{mes}"
+
+
+    return excel.generar_excel_generico(results,nombre_filas,nombre_excel)
+
+
