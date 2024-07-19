@@ -529,6 +529,8 @@ async def subir_archivo_prefactura_meli(id_usuario : str,ids_usuario : str,file:
 
     conn.insert_datos_excel_prefactura_meli(id_usuario,ids_usuario,id_prefect,periodo,lista_desc)
 
+    conn.ejecutar_funcion_tabla_paso_prefactura()
+
     return {
         "message" : len(lista_desc)
     }

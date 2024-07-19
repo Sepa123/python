@@ -10503,6 +10503,14 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
        
                          """)
             return cur.fetchall()
+        
+
+    def ejecutar_funcion_tabla_paso_prefactura(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            select * from mercadolibre.insertar_pedidos_mae_prefactura();
+                         """)
+            return cur.fetchall()
 
         
         
