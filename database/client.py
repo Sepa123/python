@@ -10512,6 +10512,14 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
                          """)
             return cur.fetchall()
 
+
+    def resumen_subida_archivo_prefactura(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            select * from mercadolibre.resumen_proforma_manual();
+                         """)
+            return cur.fetchone()
+
         
         
         

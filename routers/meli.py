@@ -563,3 +563,20 @@ async def Obtener_datos_excel_prefactura_meli(ano : str, mes : str):
     return excel.generar_excel_generico(results,nombre_filas,nombre_excel)
 
 
+@router.get("/resumen/prefacturas")
+async def Obtener_resumen_prefactura_meli():
+
+    datos = conn.resumen_subida_archivo_prefactura()
+    # Verificar si hay datos 
+    if datos:
+
+        return {
+                    "Total_registros" : datos[0],
+                    "Fecha_ultimo_ingreso" : datos[1],
+                    "Ultimos_ingresados" : datos[2],
+                    "Nombre_ultima_proforma" : datos[3],
+                    "Ultimo_segmento_fecha" : datos[4]
+                }
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+
