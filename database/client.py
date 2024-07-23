@@ -10510,7 +10510,7 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
             cur.execute(f""" 
             select * from mercadolibre.insertar_pedidos_mae_prefactura();
                          """)
-            return cur.fetchall()
+            return cur.fetchone()
 
 
     def resumen_subida_archivo_prefactura(self):
