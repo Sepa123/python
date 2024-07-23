@@ -149,21 +149,34 @@ async def actualizar_detalle_banco(body : DetallesPago):
 
 @router.post("/agregar/vehiculos")
 async def agregar_datos_vehiculos(body : Vehiculos ):
-    razon_id = conn.buscar_id_colab_por_rut(body.Rut_colaborador)[0]
-    
-    body.Razon_id = razon_id
-    if body.Gps == True:
-        data_gps= body.dict()
-        conn.agregar_datos_gps(data_gps)
-        id_gps = conn.get_max_id_gps()[0]
 
-        body.Id_gps = id_gps
-    else:
-        body.Id_gps = None
 
-    data = body.dict()
+    try:
+        razon_id = conn.buscar_id_colab_por_rut(body.Rut_colaborador)[0]
+        
+        body.Razon_id = razon_id
+        if body.Gps == True:
+            data_gps= body.dict()
+            conn.agregar_datos_gps(data_gps)
+            id_gps = conn.get_max_id_gps()[0]
 
-    conn.insert_vehiculo_transporte(data)
+            body.Id_gps = id_gps
+        else:
+            body.Id_gps = None
+
+        data = body.dict()
+
+        conn.insert_vehiculo_transporte(data)
+
+    except psycopg2.errors.UniqueViolation as error:
+        # Manejar la excepción UniqueViolation específica
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error: La patente {body.Ppu} ya se encuentra registrado")
+
+    except Exception as error:
+        print(error)
+        # Manejar otras excepciones
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error al agregar la patente.")
+
 
     
 
