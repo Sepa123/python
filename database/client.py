@@ -10120,6 +10120,17 @@ SELECT *
             """, data)
             self.conn.commit()
 
+    ### eliminar gps creado  en caso de que no se agregue correctamente la patente 
+    def eliminar_gps(self,imei):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+                        
+            DELETE FROM transporte.gps
+            WHERE imei= '{imei}'
+
+            """)
+            self.conn.commit()
+
     def get_max_id_gps(self) :
         with self.conn.cursor() as cur:
             cur.execute("""

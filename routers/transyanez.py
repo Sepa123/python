@@ -149,17 +149,13 @@ async def actualizar_detalle_banco(body : DetallesPago):
 
 @router.post("/agregar/vehiculos")
 async def agregar_datos_vehiculos(body : Vehiculos ):
-
-
     try:
         razon_id = conn.buscar_id_colab_por_rut(body.Rut_colaborador)[0]
-        
         body.Razon_id = razon_id
         if body.Gps == True:
             data_gps= body.dict()
             conn.agregar_datos_gps(data_gps)
             id_gps = conn.get_max_id_gps()[0]
-
             body.Id_gps = id_gps
         else:
             body.Id_gps = None
@@ -168,21 +164,27 @@ async def agregar_datos_vehiculos(body : Vehiculos ):
 
         conn.insert_vehiculo_transporte(data)
 
-    except psycopg2.errors.UniqueViolation as error:
-        # Manejar la excepción UniqueViolation específica
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error: La patente {body.Ppu} ya se encuentra registrado")
+        return {
+        "message": "vehiculo agregado correctamente",
+         }   
 
+    except psycopg2.errors.UniqueViolation as error:
+
+        unique = error.pgerror.split('"')[1].split('"')[0]
+
+        if unique == 'transporte_vehiculo_rut_unique':
+            conn.eliminar_gps(body.Imei)
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error: La patente {body.Ppu} ya se encuentra registrado")
+        
+        if unique == 'transporte_gps_imei_unique' :
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error: El IMEI {body.Imei} ya se encuentra registrado")
+        
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error: se encuentran datos duplicados")
+        
     except Exception as error:
         print(error)
         # Manejar otras excepciones
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error al agregar la patente.")
-
-
-    
-
-    return {
-        "message": "vehiculo agregado correctamente",
-    }
 
 
 @router.put("/actualizar/datos/vehiculo")
@@ -196,33 +198,51 @@ async def actualizar_datos_vehiculo(body : Vehiculos):
     if body.Id_gps == 'null' : body.Id_gps = None
 
     body.Razon_id= conn.buscar_id_colab_por_rut(body.Rut_colaborador)[0]
-    ### si se clickeo el gps
-    if body.Gps == True:
-        if body.Id_gps == None or body.Id_gps == 'null':
-            data_gps= body.dict()
-            conn.agregar_datos_gps(data_gps)
-            id_gps = conn.get_max_id_gps()[0]
 
-            body.Id_gps = id_gps
-        else:
-            data_gps= body.dict()
-            conn.actualizar_datos_gps(data_gps)
-    ### si no se clickeo el gps
-    elif body.Gps == False:
-        if body.Id_gps != None:
-            data_gps= body.dict()
-            conn.actualizar_datos_gps_si_se_desactiva_gps(data_gps)
+    try:
+        ### si se clickeo el gps
+        if body.Gps == True:
+            if body.Id_gps == None or body.Id_gps == 'null':
+                data_gps= body.dict()
+                conn.agregar_datos_gps(data_gps)
+                id_gps = conn.get_max_id_gps()[0]
+
+                body.Id_gps = id_gps
+            else:
+                data_gps= body.dict()
+                conn.actualizar_datos_gps(data_gps)
+        ### si no se clickeo el gps
+        elif body.Gps == False:
+            if body.Id_gps != None:
+                data_gps= body.dict()
+                conn.actualizar_datos_gps_si_se_desactiva_gps(data_gps)
+            else:
+                body.Id_gps = None
         else:
             body.Id_gps = None
-    else:
-        body.Id_gps = None
 
-    data = body.dict()
-    conn.update_datos_vehiculo(data)
+        data = body.dict()
+        conn.update_datos_vehiculo(data)
 
-    return {
-        "message": "Vehiculo actualizado correctamente",
-    }
+        return {
+            "message": "Vehiculo actualizado correctamente",
+        }
+    except psycopg2.errors.UniqueViolation as error:
+
+        unique = error.pgerror.split('"')[1].split('"')[0]
+
+        if unique == 'transporte_vehiculo_rut_unique':
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error: La patente {body.Ppu} ya se encuentra registrado")
+        
+        if unique == 'transporte_gps_imei_unique' :
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error: El IMEI {body.Imei} ya se encuentra registrado")
+        
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error: se encuentran datos duplicados")
+           
+    except Exception as error:
+        print(error)
+        # Manejar otras excepciones
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error al agregar la patente.")
 
 
 @router.put("/actualizar/estado/vehiculo")
