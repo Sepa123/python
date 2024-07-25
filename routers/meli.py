@@ -495,8 +495,6 @@ async def subir_archivo_billing_meli(id_usuario : int,ids_usuario : str,file: Up
     }
 
 
-
-
 @router.post("/subir/prefactura", status_code=status.HTTP_202_ACCEPTED)
 async def subir_archivo_prefactura_meli(id_usuario : str,ids_usuario : str,file: UploadFile = File(...)):
 
@@ -532,7 +530,48 @@ async def subir_archivo_prefactura_meli(id_usuario : str,ids_usuario : str,file:
     mensaje = conn.ejecutar_funcion_tabla_paso_prefactura()
 
     return {
-        "message" : f'insertados: {mensaje[0]} duplicados : {mensaje[1]}'
+        "message" : f'insertados: {mensaje[0]} duplicados : {mensaje[1]} no numericos : {mensaje[3]}'
+    }
+
+
+@router.post("/subir/prefactura/diario", status_code=status.HTTP_202_ACCEPTED)
+async def subir_archivo_prefactura_meli_diario(id_usuario : str,ids_usuario : str,file: UploadFile = File(...)):
+
+    # Obtener la fecha actual
+    fecha_actual = datetime.now()
+
+    # Formatear la fecha en el formato 'yyyy-mm-dd'
+    fecha_formateada = fecha_actual.strftime('%Y-%m-%d')
+
+    directorio  = os.path.abspath("excel")
+
+    ruta = os.path.join(directorio,file.filename)
+
+    with open(ruta, "wb") as f:
+        contents = await file.read()
+        # print("pase por aqui")
+        f.write(contents)
+
+    df = pd.read_excel(ruta)
+
+    lista = df.to_dict(orient='records')
+
+    fkey = list(lista[0].keys())[0]
+
+    if fkey == 'monitoring-row__bold':
+        print('es un LM')
+        conn.insert_datos_excel_prefactura_meli_diario_lm(id_usuario,ids_usuario,fecha_formateada,lista)
+
+    elif fkey == 'monitoring-row-higher-details__text':
+        print('es un FM')
+
+        conn.insert_datos_excel_prefactura_meli_diario_fm(id_usuario,ids_usuario,fecha_formateada,lista)
+
+    else:
+        print('no es ninguno')
+
+    return {
+        "message" : ''
     }
 
 @router.get("/prefacturas")

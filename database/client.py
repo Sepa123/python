@@ -10438,27 +10438,65 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
         self.conn.commit()
         
 
+    def insert_datos_excel_prefactura_meli_diario_fm(self, id_usuario : int,ids_usuario : str,fecha :int,body):
 
+        with self.conn.cursor() as cur:
+            query = """
+            INSERT INTO mercadolibre.ingreso_diario_textual_fm
+            (id_usuario, ids_usuario, fecha_ingreso, monitoring_row_higher_details__text, monitoring_row_higher_details__text_2, button_copy__text, sc_progress_wheel__percentage, monitoring_row_higher_details__text_3, monitoring_row_higher_details__text_4, monitoring_row_higher_details__text_7, bold, gray, monitoring_row_higher_details__text_pipe_2, gray_2, monitoring_row_higher_details, monitoring_row_higher_details__text_9, monitoring_row_lower_details, andes_tooltip__trigger, andes_visually_hidden, monitoring_row_higher_details__text_pipe_3, andes_tooltip__trigger_2, performance_tooltip, performance_tooltip_2, monitoring_row_lower_details_2, third_item, monitoring_row_lower_details_4, monitoring_row_higher_details__text_10)
+            VALUES %s
+            """
+            values = [
+            (id_usuario,ids_usuario,fecha,
+                    item['monitoring-row-higher-details__text'],item['monitoring-row-higher-details__text 2'],item['button-copy__text'],item['sc-progress-wheel__percentage'],
+                    item['monitoring-row-higher-details__text 3'],item['monitoring-row-higher-details__text 4'],item['monitoring-row-higher-details__text 7'],
+                    item['bold'],item['gray'],item['monitoring-row-higher-details__text-pipe 2'],item['gray 2'],
+                    item['monitoring-row-higher-details'],item['monitoring-row-higher-details__text 9'],item['monitoring-row-lower-details'],item['andes-tooltip__trigger'],
+                    item['andes-visually-hidden'],item['monitoring-row-higher-details__text-pipe 3'],item['andes-tooltip__trigger 2'],item['performance-tooltip'],
+                    item['performance-tooltip 2'],item['monitoring-row-lower-details 2'],item['third-item'],item['monitoring-row-lower-details 4'],item['monitoring-row-higher-details__text 10']
+                )                
+            for item in body
+                    ]
+            execute_values(cur, query, values)
+
+        self.conn.commit()
+
+    def insert_datos_excel_prefactura_meli_diario_lm(self, id_usuario : int,ids_usuario : str,fecha :int,body):
+
+        with self.conn.cursor() as cur:
+            query = """
+            INSERT INTO mercadolibre.ingreso_diario_textual_lm
+            (id_usuario, ids_usuario, fecha_ingreso, monitoring_row__bold, monitoring_row_details__driver_name, sc_progress_wheel__percentage, monitoring_row_shipments__delivered_packages_text_2, monitoring_row_shipments__delivered_packages_text_3, monitoring_row_shipments__delivered_packages_text_4, monitoring_row_shipments__packages_2, andes_visually_hidden_2, metric_box__value_principal, metric_box__value_principal_2, metric_box__value_principal_3, metric_box__value_principal_4, metric_box__value_principal_5, metric_box__value_principal_6, andes_visually_hidden_4, metric_box__value_principal_7, monitoring_row_details__name, monitoring_row_details__untracked, monitoring_row__chevron_open_src, monitoring_row_details__license, pipe, monitoring_row_details, andes_badge__content, monitoring_row_details__driver_tooltip__title, monitoring_row_details__driver_tooltip__metrics_stat, monitoring_row_details__driver_tooltip__metrics_stat_2, andes_badge__content_2, monitoring_row_details__untracked_2, menu__button_src, monitoring_row_details__license_3, pipe_3)
+            VALUES %s
+            """
+            values = [
+                (id_usuario,ids_usuario,fecha,
+                item['monitoring-row__bold'],item['monitoring-row-details__driver-name'],item['sc-progress-wheel__percentage'],item['monitoring-row-shipments__delivered-packages-text 2'],
+                item['monitoring-row-shipments__delivered-packages-text 3'],item['monitoring-row-shipments__delivered-packages-text 4'],item['monitoring-row-shipments__packages 2'],
+                item['andes-visually-hidden 2'],item['metric-box__value-principal'],item['metric-box__value-principal 2'],item['metric-box__value-principal 3'],
+                item['metric-box__value-principal 4'],item['metric-box__value-principal 5'],item['metric-box__value-principal 6'],item['andes-visually-hidden 4'],item['metric-box__value-principal 7'],item['monitoring-row-details__name'],
+                item['monitoring-row-details__untracked'], item['monitoring-row__chevron--open src'], item['monitoring-row-details__license'], item['pipe'],
+                item['monitoring-row-details'],item['andes-badge__content'], item['monitoring-row-details__driver-tooltip__title'], item['monitoring-row-details__driver-tooltip__metrics-stat'],
+                item['monitoring-row-details__driver-tooltip__metrics-stat 2'], item['andes-badge__content 2'], item['monitoring-row-details__untracked 2'], item['menu__button src'],
+                item['monitoring-row-details__license 3'], item['pipe 3'],
+                )
+                for item in body
+            ]
+            execute_values(cur, query, values)
+
+        self.conn.commit()
     
         
     def insert_datos_excel_prefactura_meli(self, id_usuario : int,ids_usuario : str,id_prefact :int,periodo : str,body):
 
         with self.conn.cursor() as cur:
-            # cur.execute(f"""
-            # INSERT INTO mercadolibre.prefactura_paso
-            # (id_usuario, ids_usuario, id_prefactura, periodo, descripcion, id_de_ruta, fecha_de_inicio, fecha_de_fin, patente, conductor, cantidad, precio_unitario, total)
-            # VALUES({id_usuario}, '{ids_usuario}',{id_prefact}, '{periodo}', '{body['DescripciÃ³n']}', '{body['ID de ruta']}', '{body['Fecha de inicio']}',
-            #   '{body['Fecha de fin']}', '{body['Patente']}', '{body['Conductor']}', '{body['Cantidad']}', '{body['Precio unitario']}', '{body['Total']}')
-
-            #           """)
-
             query = """
             INSERT INTO mercadolibre.prefactura_paso
-            (id_usuario, ids_usuario, id_prefactura, periodo, descripcion, id_de_ruta, fecha_de_inicio, fecha_de_fin, patente, conductor, cantidad, precio_unitario, total)
+            (id_usuario, ids_usuario, id_prefactura, periodo, descripcion, id_de_ruta, fecha_de_inicio, fecha_de_fin, patente, conductor, cantidad, precio_unitario)
             VALUES %s
             """
             values = [
-                (id_usuario, ids_usuario, id_prefact, periodo, item['DescripciÃ³n'], item['ID de ruta'], item['Fecha de inicio'], item['Fecha de fin'], item['Patente'], item['Conductor'], item['Cantidad'], item['Precio unitario'], item['Total'])
+                (id_usuario, ids_usuario, id_prefact, periodo, item['DescripciÃ³n'], item['ID de ruta'], item['Fecha de inicio'], item['Fecha de fin'], item['Patente'], item['Conductor'], item['Cantidad'], item['Precio unitario'])
                 for item in body
             ]
             execute_values(cur, query, values)
