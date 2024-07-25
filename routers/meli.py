@@ -530,7 +530,7 @@ async def subir_archivo_prefactura_meli(id_usuario : str,ids_usuario : str,file:
     mensaje = conn.ejecutar_funcion_tabla_paso_prefactura()
 
     return {
-        "message" : f'insertados: {mensaje[0]} duplicados : {mensaje[1]} no numericos : {mensaje[3]}'
+        "message" : f'insertados: {mensaje[0]} duplicados : {mensaje[1]} no numericos : {mensaje[2]}'
     }
 
 
