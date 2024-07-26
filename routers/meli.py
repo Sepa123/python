@@ -259,12 +259,12 @@ async def Obtener_datos(fecha: str, op : int, cop : int):
                                 "id_ppu": fila [0],
                                 "ppu": fila[1],
                                 "ruta_meli": fila[2],
-                                "estado": fila [3],
-                                "id_driver":fila[4],
-                                "nombre_driver": fila[5],
-                                "id_peoneta": fila [6],
-                                "nombre_peoneta":fila[7]
-
+                                "tipo_ruta":fila[3],
+                                "estado": fila [4],
+                                "id_driver":fila[5],
+                                "nombre_driver": fila[6],
+                                "id_peoneta": fila [7],
+                                "nombre_peoneta":fila[8]
                             } 
                             for fila in datos]
         return datos_formateados
@@ -403,8 +403,8 @@ async def Obtener_datos():
 
 async def actualizar_estado(tipo_ruta: int, id_ppu : int, fecha: str):
     try:
-        conn.update_tipo_ruta_citacion(tipo_ruta,id_ppu,fecha)
-        return {"message": "Datos Ingresados Correctamente"}
+        rows = conn.update_tipo_ruta_citacion(tipo_ruta,id_ppu,fecha)
+        return {"message": f"Datos Ingresados Correctamente : {rows}"}
     except Exception as e: raise HTTPException(status_code=500, detail=str(e))
 
 def corregir_utf8(texto):

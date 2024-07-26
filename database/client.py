@@ -10399,7 +10399,9 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
             cur.execute(f"""
             UPDATE mercadolibre.citacion SET tipo_ruta ={tipo_ruta} WHERE id_ppu={id_ppu} and fecha='{fecha}'
                       """)
+            rows_delete = cur.rowcount
         self.conn.commit()
+        return rows_delete
 
     def obtener_veh_disp_operaciones(self,fecha):
         with self.conn.cursor() as cur:
