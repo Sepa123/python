@@ -525,9 +525,19 @@ async def subir_archivo_prefactura_meli(id_usuario : str,ids_usuario : str,file:
     id_prefect =lista[0]['ID prefactura']
     periodo = lista[0]['Periodo']
 
-    conn.insert_datos_excel_prefactura_meli(id_usuario,ids_usuario,id_prefect,periodo,lista_desc)
+    if len(desc.columns) == 9:
+        conn.insert_datos_excel_prefactura_meli(id_usuario,ids_usuario,id_prefect,periodo,lista_desc)
+    else:
+        ###en caso de que falte un campo ( total) uso este para insertar los datos
+        conn.insert_datos_excel_prefactura_meli_minus(id_usuario,ids_usuario,id_prefect,periodo,lista_desc)
 
     mensaje = conn.ejecutar_funcion_tabla_paso_prefactura()
+
+    # print(len(desc.columns))
+
+    # return {
+    #     'message': '0'
+    # }
 
     return {
         "message" : f'insertados: {mensaje[0]} duplicados : {mensaje[1]}'
@@ -568,6 +578,11 @@ async def subir_archivo_prefactura_meli_diario(id_usuario : str,ids_usuario : st
         conn.insert_datos_excel_prefactura_meli_diario_fm(id_usuario,ids_usuario,fecha_formateada,lista)
 
     else:
+
+        # print(df.columns)
+        # df.columns = ['sos', 'sas', 'lel', 'mello', 'trizo','Periodo', 'Tipo de prefactura', 'Estado prefactura', 'Unnamed: 8','9','10','11','12']
+        # print(df.columns)
+        # print(df)
         print('no es ninguno')
 
     return {
