@@ -10578,6 +10578,22 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
             select * from mercadolibre.insertar_pedidos_mae_prefactura();
                          """)
             return cur.fetchone()
+        
+
+    ### Obtener Codigo de ambulancia
+    def obtener_codigo_ambulancia(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            select * from mercadolibre.genera_codigo_ambulancia();
+                         """)
+            return cur.fetchall()
+    
+    def obtener_estado_citacion_por_fecha_y_patente(self,id_ppu: int, fecha: str):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            select tipo_ruta from mercadolibre.citacion c where fecha ='{fecha}' and id_ppu ='{id_ppu}
+                         """)
+            return cur.fetchall()
 
 
     def resumen_subida_archivo_prefactura(self):

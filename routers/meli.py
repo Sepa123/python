@@ -445,12 +445,43 @@ async def Obtener_datos(fecha:str, id_cop:int, estado: int):
     
 
 @router.post("/api/Ambulancia")
-async def actualizar_estado(id_ppu_amb: int, ruta_meli_amb:int, ruta_amb_interna:int, id_ppu : int, fecha: str):
+async def actualizar_estado(id_ppu_amb: int, ruta_meli_amb:str, ruta_amb_interna:str, id_ppu : int, fecha: str):
     try:
         conn.update_citacion_ambulancia(id_ppu_amb,ruta_meli_amb,ruta_amb_interna,id_ppu,fecha)
         return {"message": "Datos Ingresados Correctamente"}
     
     except Exception as e: raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/api/AmbulanceCode")
+async def Obtener_dato_ambulanceCode():
+    # Ejecutar la consulta utilizando nuestra función
+    datos = conn.obtener_codigo_ambulancia()
+    # Verificar si hay datos 
+    if datos:
+        datos_formateados = [{
+                                "genera_codigo_ambulancia": fila[0],
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+    
+
+
+@router.get("/api/getEstados")
+async def Obtener_datos( id_ppu: int, fecha: str):
+    # Ejecutar la consulta utilizando nuestra función
+    datos = conn.obtener_estado_citacion_por_fecha_y_patente(id_ppu,fecha)
+    # Verificar si hay datos 
+    if datos:
+        datos_formateados = [{
+                                "tipo_ruta": fila [0],
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
 
 def chunk_list(data, chunk_size):
     for i in range(0, len(data), chunk_size):
