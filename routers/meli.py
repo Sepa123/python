@@ -313,7 +313,7 @@ async def actualizar_estado(ruta_meli: int, id_ppu : int, fecha: str):
         return {"message": "Datos Ingresados Correctamente"}
     except Exception as e: raise HTTPException(status_code=500, detail=str(e))
 
-@router.post("/api/ingresarDriversPeoneta")
+@router.post("ingresarDriversPeoneta")
 async def actualizar_estado(id_driver: int, id_peoneta : int, fecha: str, id_ppu:int):
     try:
         conn.update_ingresar_driver_peoneta(id_driver, id_peoneta,fecha,id_ppu)
@@ -414,7 +414,7 @@ def corregir_utf8(texto):
 
 ##### update 2 15-07-2024
 
-@router.get("/api/countCitaciones")
+@router.get("countCitaciones")
 async def Obtener_datos(fecha:str, id_cop:int):
         # Consulta SQL para obtener datos (por ejemplo)
     datos = conn.contar_citaciones_co_por_fecha(fecha,id_cop)
@@ -429,7 +429,7 @@ async def Obtener_datos(fecha:str, id_cop:int):
         raise HTTPException(status_code=404, detail="No se encontraron datos")
     
 
-@router.get("/api/countCitacionesConfirmadas")
+@router.get("/countCitacionesConfirmadas")
 async def Obtener_datos(fecha:str, id_cop:int, estado: int):
      # Consulta SQL para obtener datos (por ejemplo)
     datos = conn.contar_citaciones_co_confirmadas_por_fecha(fecha,id_cop,estado)
@@ -444,7 +444,7 @@ async def Obtener_datos(fecha:str, id_cop:int, estado: int):
         raise HTTPException(status_code=404, detail="No se encontraron datos")
     
 
-@router.post("/api/Ambulancia")
+@router.post("/Ambulancia")
 async def actualizar_estado(id_ppu_amb: int, ruta_meli_amb:str, ruta_amb_interna:str, id_ppu : int, fecha: str):
     try:
         conn.update_citacion_ambulancia(id_ppu_amb,ruta_meli_amb,ruta_amb_interna,id_ppu,fecha)
@@ -453,7 +453,7 @@ async def actualizar_estado(id_ppu_amb: int, ruta_meli_amb:str, ruta_amb_interna
     except Exception as e: raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/api/AmbulanceCode")
+@router.get("AmbulanceCode")
 async def Obtener_dato_ambulanceCode():
     # Ejecutar la consulta utilizando nuestra función
     datos = conn.obtener_codigo_ambulancia()
@@ -469,7 +469,7 @@ async def Obtener_dato_ambulanceCode():
     
 
 
-@router.get("/api/getEstados")
+@router.get("getEstados")
 async def Obtener_datos( id_ppu: int, fecha: str):
     # Ejecutar la consulta utilizando nuestra función
     datos = conn.obtener_estado_citacion_por_fecha_y_patente(id_ppu,fecha)
