@@ -525,11 +525,14 @@ async def subir_archivo_prefactura_meli(id_usuario : str,ids_usuario : str,file:
     id_prefect =lista[0]['ID prefactura']
     periodo = lista[0]['Periodo']
 
-    if len(desc.columns) == 9:
-        conn.insert_datos_excel_prefactura_meli(id_usuario,ids_usuario,id_prefect,periodo,lista_desc)
-    else:
-        ###en caso de que falte un campo ( total) uso este para insertar los datos
-        conn.insert_datos_excel_prefactura_meli_minus(id_usuario,ids_usuario,id_prefect,periodo,lista_desc)
+    # if len(desc.columns) == 9:
+    #     conn.insert_datos_excel_prefactura_meli(id_usuario,ids_usuario,id_prefect,periodo,lista_desc)
+    # else:
+    #     ###en caso de que falte un campo ( total) uso este para insertar los datos
+    #     conn.insert_datos_excel_prefactura_meli_minus(id_usuario,ids_usuario,id_prefect,periodo,lista_desc)
+
+    
+    conn.insert_datos_excel_prefactura_meli(id_usuario,ids_usuario,id_prefect,periodo,lista_desc)
 
     mensaje = conn.ejecutar_funcion_tabla_paso_prefactura()
 
