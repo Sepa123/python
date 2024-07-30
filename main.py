@@ -146,12 +146,12 @@ async def select():
 @app.post("/api/login", status_code=status.HTTP_202_ACCEPTED)
 def login_user(user_data:loginSchema):
     data = user_data.dict()
-    user_db = conn.read_only_one(data)
-    server = "portal"
+    user_db = hela_conn.read_only_one(user_data.mail.lower())
+    server = "hela"
 
     if user_db is None:
-        user_db = hela_conn.read_only_one(user_data.mail.lower())
-        server = "hela"
+        user_db = conn.read_only_one(data)
+        server = "portal"
         if user_db is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="El usuario no existe")
     
