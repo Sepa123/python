@@ -57,14 +57,14 @@ async def cambiar_password(body : loginSchema):
 @router.get("/ver/datos", status_code=status.HTTP_201_CREATED)
 async def registrar_usuario(id : str, server : str):
     
-    if server == 'portal':
-        return{
-        "Telefono" :None,
-        "Fecha_nacimiento" : None,
-        "Direccion" : None,
-        "Imagen_perfil" : None,
-        "Rol" : None
-    }
+    # if server == 'portal':
+    #     return{
+    #     "Telefono" :None,
+    #     "Fecha_nacimiento" : None,
+    #     "Direccion" : None,
+    #     "Imagen_perfil" : None,
+    #     "Rol" : None
+    # }
 
     datos = connHela.mostrar_datos_usuario_hela(id)
     print(datos)
@@ -100,8 +100,8 @@ IMAGE_DIR = "image/foto_perfil"
 @router.post("/subir-imagen", status_code=status.HTTP_202_ACCEPTED)
 async def subir_archivo(id_user : str, ids_user : str, file: UploadFile = File(...)):
 
-    if ids_user == 'portal':
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="No puede subir imagenes de perfil")
+    # if ids_user == 'portal':
+    #     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="No puede subir imagenes de perfil")
 
     archivos = glob.glob(os.path.join(IMAGE_DIR, f'{id_user}_*'))
 
@@ -147,10 +147,10 @@ async def get_image(image_name: str):
 @router.put("/actualizar/datos/usuario")
 async def actualizar_datos_usuario(body : DatosUsuario):
 
-    if body.Server == 'portal':
-        return {
-            "message": "No se han actualizado los datos"
-        }
+    # if body.Server == 'portal':
+    #     return {
+    #         "message": "No se han actualizado los datos"
+    #     }
     
     data = body.dict()
     
