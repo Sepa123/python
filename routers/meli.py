@@ -579,7 +579,7 @@ async def subir_archivo_prefactura_meli(id_usuario : str,ids_usuario : str,file:
 
 
 @router.post("/subir/prefactura/diario", status_code=status.HTTP_202_ACCEPTED)
-async def subir_archivo_prefactura_meli_diario(id_usuario : str,ids_usuario : str,file: UploadFile = File(...)):
+async def subir_archivo_prefactura_meli_diario(id_usuario : str,ids_usuario : str,latitud : str,longitud : str,file: UploadFile = File(...)):
 
     # Obtener la fecha actual
     fecha_actual = datetime.now()
@@ -604,12 +604,12 @@ async def subir_archivo_prefactura_meli_diario(id_usuario : str,ids_usuario : st
 
     if fkey == 'monitoring-row__bold':
         print('es un LM')
-        conn.insert_datos_excel_prefactura_meli_diario_lm(id_usuario,ids_usuario,fecha_formateada,lista)
+        conn.insert_datos_excel_prefactura_meli_diario_lm(id_usuario,ids_usuario,fecha_formateada,latitud,longitud,lista)
 
     elif fkey == 'monitoring-row-higher-details__text':
         print('es un FM')
 
-        conn.insert_datos_excel_prefactura_meli_diario_fm(id_usuario,ids_usuario,fecha_formateada,lista)
+        conn.insert_datos_excel_prefactura_meli_diario_fm(id_usuario,ids_usuario,fecha_formateada,latitud,longitud,lista)
 
     else:
 

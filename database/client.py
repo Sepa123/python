@@ -10440,12 +10440,14 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
         self.conn.commit()
         
 
-    def insert_datos_excel_prefactura_meli_diario_fm(self, id_usuario : int,ids_usuario : str,fecha :int,body):
+    def insert_datos_excel_prefactura_meli_diario_fm(self, id_usuario : int,ids_usuario : str,fecha :int,latitud : str,longitud : str,body):
 
         with self.conn.cursor() as cur:
             query = """
             INSERT INTO mercadolibre.ingreso_diario_textual_fm
-            (id_usuario, ids_usuario, fecha_ingreso, monitoring_row_higher_details__text, monitoring_row_higher_details__text_2, button_copy__text, sc_progress_wheel__percentage, monitoring_row_higher_details__text_3, monitoring_row_higher_details__text_4, monitoring_row_higher_details__text_7, bold, gray, monitoring_row_higher_details__text_pipe_2, gray_2, monitoring_row_higher_details, monitoring_row_higher_details__text_9, monitoring_row_lower_details, andes_tooltip__trigger, andes_visually_hidden, monitoring_row_higher_details__text_pipe_3, andes_tooltip__trigger_2, performance_tooltip, performance_tooltip_2, monitoring_row_lower_details_2, third_item, monitoring_row_lower_details_4, monitoring_row_higher_details__text_10)
+            (id_usuario, ids_usuario, fecha_ingreso, monitoring_row_higher_details__text, monitoring_row_higher_details__text_2, button_copy__text, sc_progress_wheel__percentage, 
+             monitoring_row_higher_details__text_3, monitoring_row_higher_details__text_4, monitoring_row_higher_details__text_7, bold, gray, monitoring_row_higher_details__text_pipe_2, gray_2, monitoring_row_higher_details, monitoring_row_higher_details__text_9, monitoring_row_lower_details, andes_tooltip__trigger, andes_visually_hidden, monitoring_row_higher_details__text_pipe_3, andes_tooltip__trigger_2, performance_tooltip, performance_tooltip_2, monitoring_row_lower_details_2,
+             third_item, monitoring_row_lower_details_4, monitoring_row_higher_details__text_10,latitud,longitud)
             VALUES %s
             """
             values = [
@@ -10455,7 +10457,8 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
                     item['bold'],item['gray'],item['monitoring-row-higher-details__text-pipe 2'],item['gray 2'],
                     item['monitoring-row-higher-details'],item['monitoring-row-higher-details__text 9'],item['monitoring-row-lower-details'],item['andes-tooltip__trigger'],
                     item['andes-visually-hidden'],item['monitoring-row-higher-details__text-pipe 3'],item['andes-tooltip__trigger 2'],item['performance-tooltip'],
-                    item['performance-tooltip 2'],item['monitoring-row-lower-details 2'],item['third-item'],item['monitoring-row-lower-details 4'],item['monitoring-row-higher-details__text 10']
+                    item['performance-tooltip 2'],item['monitoring-row-lower-details 2'],item['third-item'],item['monitoring-row-lower-details 4'],
+                    item['monitoring-row-higher-details__text 10'],latitud, longitud
                 )                
             for item in body
                     ]
@@ -10463,7 +10466,7 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
 
         self.conn.commit()
 
-    def insert_datos_excel_prefactura_meli_diario_lm(self, id_usuario : int,ids_usuario : str,fecha :int,body):
+    def insert_datos_excel_prefactura_meli_diario_lm(self, id_usuario : int,ids_usuario : str,fecha :int,latitud : str,longitud : str,body):
 
         with self.conn.cursor() as cur:
             query = """
@@ -10480,7 +10483,7 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
                 item['monitoring-row-details__untracked'], item['monitoring-row__chevron--open src'], item['monitoring-row-details__license'], item['pipe'],
                 item['monitoring-row-details'],item['andes-badge__content'], item['monitoring-row-details__driver-tooltip__title'], item['monitoring-row-details__driver-tooltip__metrics-stat'],
                 item['monitoring-row-details__driver-tooltip__metrics-stat 2'], item['andes-badge__content 2'], item['monitoring-row-details__untracked 2'], item['menu__button src'],
-                item['monitoring-row-details__license 3'], item['pipe 3'],
+                item['monitoring-row-details__license 3'], item['pipe 3'],latitud,longitud
                 )
                 for item in body
             ]
