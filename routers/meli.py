@@ -6,6 +6,7 @@ import os
 # import time
 # from datetime import datetime
 ##Modelos 
+from database.schema.meli.citacion_activa import citacion_activa_schema
 import lib.excel_generico as excel
 # from database.models.retiro_cliente import RetiroCliente
 from database.models.meli.meli import agregarPatente,pv
@@ -668,3 +669,26 @@ async def Obtener_resumen_prefactura_meli():
     else:
         raise HTTPException(status_code=404, detail="No se encontraron datos")
 
+@router.get("/citacion_activa")
+async def get_citacion_activa(op: int,cop : int, fecha : str):
+    # Ejecutar la consulta utilizando nuestra función
+    datos = conn.recupera_data_por_citacion_activa(op,cop, fecha)
+    # Verificar si hay datos 
+    if datos:
+        datos_formateados = citacion_activa_schema(datos)
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+    
+
+
+@router.get("/citacion_supervisor")
+async def get_citacion_activa(id_usuario: int, fecha : str):
+    # Ejecutar la consulta utilizando nuestra función
+    datos = conn.recupera_data_por_citacion_supervisor(id_usuario, fecha)
+    # Verificar si hay datos 
+    if datos:
+        datos_formateados = datos[0]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")

@@ -10607,6 +10607,37 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
             select * from mercadolibre.resumen_proforma_manual();
                          """)
             return cur.fetchone()
+        
+
+    #### obtener datos citacion activa
+
+    def recupera_data_por_citacion_activa(self,op: int,cop : int, fecha : str):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            select * from mercadolibre.recupera_data_por_citacion_activa({op},{cop},'{fecha}');
+                         """)
+            return cur.fetchall()
+        
+    def recupera_data_por_citacion_supervisor(self,id_usuario: int, fecha : str):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            --select id_operacion as "Id_operacion", nombre as "Nombre", id_centro_op as "Id_centro_op",
+	        --       centro as  "Centro", region_name as "Region", detalles as "Detalles"     
+            --from mercadolibre.pantalla_inicial_supervisores('{fecha}', {id_usuario});
+            SELECT json_agg(
+                json_build_object(
+                    'Id_operacion', id_operacion,
+                    'Nombre', nombre,
+                    'Id_centro_op', id_centro_op,
+                    'Centro', centro,
+                    'Region', region_name,
+                    'Detalles', detalles
+                )
+            ) AS result
+            FROM mercadolibre.pantalla_inicial_supervisores('{fecha}', {id_usuario});
+                         """)
+            return cur.fetchone()
+
 
         
         
