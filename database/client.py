@@ -9978,7 +9978,7 @@ SELECT *
             --- PDF RRPP
             UPDATE transporte.usuarios
             SET jpg_foto_perfil='{jpg}'
-            WHERE id_razon_social = (select id from transporte.colaborador where rut = '{rut}' limit 1)
+            WHERE rut = '{rut}' 
             """)
             self.conn.commit()
 
@@ -9988,7 +9988,7 @@ SELECT *
             --- PDF RRPP
             UPDATE transporte.usuarios
             SET pdf_contrato='{pdf}'
-            WHERE id_razon_social = (select id from transporte.colaborador where rut = '{rut}' limit 1)
+            WHERE rut = '{rut}' 
             """)
             self.conn.commit()
 
@@ -9998,7 +9998,7 @@ SELECT *
             --- PDF RRPP
             UPDATE transporte.usuarios
             SET pdf_cedula_identidad='{pdf}'
-            WHERE id_razon_social = (select id from transporte.colaborador where rut = '{rut}' limit 1)
+            WHERE rut = '{rut}' 
             """)
             self.conn.commit()
 
@@ -10008,7 +10008,7 @@ SELECT *
             --- PDF RRPP
             UPDATE transporte.usuarios
             SET pdf_licencia_conducir='{pdf}'
-            WHERE id_razon_social = (select id from transporte.colaborador where rut = '{rut}' limit 1)
+            WHERE rut = '{rut}' 
             """)
             self.conn.commit()
     
@@ -10018,7 +10018,7 @@ SELECT *
             --- PDF RRPP
             UPDATE transporte.usuarios
             SET pdf_antecedentes='{pdf}'
-            WHERE id_razon_social = (select id from transporte.colaborador where rut = '{rut}' limit 1)
+            WHERE rut = '{rut}' 
             """)
             self.conn.commit()
 
@@ -10637,11 +10637,16 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
             FROM mercadolibre.pantalla_inicial_supervisores('{fecha}', {id_usuario});
                          """)
             return cur.fetchone()
+        
+
+    def insert_bitacora_meli(self,id_usuario: int, ids_usuario:str, modificación: str, latitud : int, longitud: str, origen):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            INSERT INTO mercadolibre.bitacora_general(id_usuario,ids_usuario, modificacion, latitud, longitud, origen)VALUES('{id_usuario}', '{ids_usuario}', '{modificación}', '{latitud}', '{longitud}, '{origen}');                     
+              """)
+        self.conn.commit()
 
 
-        
-        
-        
 class transyanezConnection():
     conn = None
     def __init__(self) -> None:

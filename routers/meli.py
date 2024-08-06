@@ -692,3 +692,12 @@ async def get_citacion_activa(id_usuario: int, fecha : str):
         return datos_formateados
     else:
         raise HTTPException(status_code=404, detail="No se encontraron datos")
+    
+
+@router.post("/BitacoraGeneral")
+
+async def actualizar_estado(id_usuario: int, ids_usuario:str, modificación: str, latitud : int, longitud: str, origen : str):
+    try:
+        conn.insert_bitacora_meli(id_usuario, ids_usuario, modificación, latitud, longitud, origen)
+        return {"message": "Datos Ingresados Correctamente"}
+    except Exception as e: raise HTTPException(status_code=500, detail=str(e))

@@ -445,7 +445,9 @@ async def subir_archivo_usuario(tipo_archivo : str, nombre : str, file: UploadFi
     print(directorio)
     # nombre_hash = hash_password(tipo_archivo+nombre)
 
-    nuevo_nombre = nombre
+    nombre_hash = f'{nombre}_'+file.filename
+
+    nuevo_nombre = nombre_hash 
 
     ruta = os.path.join(directorio,nuevo_nombre)
 
