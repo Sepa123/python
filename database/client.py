@@ -10625,7 +10625,7 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
 
             from mercadolibre.recupera_data_por_citacion_activa({op},{cop},'{fecha}');
                          """)
-            return cur.fetchall()
+            return cur.fetchone()
         
     def recupera_data_por_citacion_supervisor(self,id_usuario: int, fecha : str):
         with self.conn.cursor() as cur:
