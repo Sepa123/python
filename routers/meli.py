@@ -675,7 +675,8 @@ async def get_citacion_activa(op: int,cop : int, fecha : str):
     datos = conn.recupera_data_por_citacion_activa(op,cop, fecha)
     # Verificar si hay datos 
     if datos:
-        datos_formateados = citacion_activa_schema(datos)
+        # datos_formateados = citacion_activa_schema(datos)
+        datos_formateados = datos[0]
         return datos_formateados
     else:
         raise HTTPException(status_code=404, detail="No se encontraron datos")

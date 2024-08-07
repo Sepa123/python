@@ -10614,7 +10614,16 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
     def recupera_data_por_citacion_activa(self,op: int,cop : int, fecha : str):
         with self.conn.cursor() as cur:
             cur.execute(f""" 
-            select * from mercadolibre.recupera_data_por_citacion_activa({op},{cop},'{fecha}');
+            -- select * from mercadolibre.recupera_data_por_citacion_activa({op},{cop},'{fecha}');
+            SELECT 
+            json_agg(
+                json_build_object(
+                    'id_ty', id_ty, 'operacion', operacion, 'estado', estado, 'estado_correcto', estado_correcto,'ruta_meli', ruta_meli, 'id_ppu', id_ppu,'razon_id', razon_id,
+                    'ppu', ppu,'patente_igual', patente_igual,'driver', driver,'driver_ok', driver_ok, 'p_avance', p_avance,'avance', avance,'campos_por_operacion', campos_por_operacion,
+                    'tipo_vehiculo', tipo_vehiculo,'valor_ruta', valor_ruta, 'ruta_cerrada', ruta_cerrada
+              )) AS result
+
+            from mercadolibre.recupera_data_por_citacion_activa({op},{cop},'{fecha}');
                          """)
             return cur.fetchall()
         
