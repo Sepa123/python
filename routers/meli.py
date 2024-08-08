@@ -695,11 +695,11 @@ async def get_citacion_activa(id_usuario: int, fecha : str):
     # Ejecutar la consulta utilizando nuestra función
     datos = conn.recupera_data_por_citacion_supervisor(id_usuario, fecha)
     # Verificar si hay datos 
-    if datos:
+    if datos == None:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+    else:
         datos_formateados = datos[0]
         return datos_formateados
-    else:
-        raise HTTPException(status_code=404, detail="No se encontraron datos")
     
 
 @router.post("/BitacoraGeneral")
