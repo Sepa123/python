@@ -10439,10 +10439,10 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
                       """)
         self.conn.commit()
 
-    def update_citacion_ruta_meli_amb(self,ruta_meli_amb:int, id_ppu : int, fecha: str):
+    def update_citacion_ruta_meli_amb(self,ruta_amb_interna: str, id_ppu: int, fecha: str, id_ppu_amb: int, ruta_meli_amb:str):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-           UPDATE mercadolibre.citacion SET ruta_meli_amb = '{ruta_meli_amb}' where id_ppu = {id_ppu} and fecha ='{fecha}'                      
+           UPDATE mercadolibre.citacion SET ruta_amb_interna = '{ruta_amb_interna}', id_ppu_amb = {id_ppu_amb}, ruta_meli_amb = '{ruta_meli_amb}' where id_ppu = {id_ppu} and fecha ='{fecha}'                    
            """)
         self.conn.commit()
         
@@ -10592,6 +10592,9 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
             return cur.fetchone()
         
 
+    
+        
+
     ### Obtener Codigo de ambulancia
     def obtener_codigo_ambulancia(self):
         with self.conn.cursor() as cur:
@@ -10599,6 +10602,16 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
             select * from mercadolibre.genera_codigo_ambulancia();
                          """)
             return cur.fetchall()
+        
+    
+    def retorno_ambulancia(self,op: int, cop: int,id_ppu: int, fecha: str):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+                          
+            select * from mercadolibre.retorno_ambulancia('{fecha}',{op},{cop},{id_ppu});
+       
+                         """)
+            return cur.fetchall()  
     
     def obtener_estado_citacion_por_fecha_y_patente(self,id_ppu: int, fecha: str):
         with self.conn.cursor() as cur:

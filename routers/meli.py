@@ -323,9 +323,9 @@ async def actualizar_estado(id_driver: int, id_peoneta : int, fecha: str, id_ppu
 
 
 @router.post("/SaveData")
-async def guardar_datos_ruta_ambulancia(ruta_meli_amb: str, id_ppu: int, fecha: str):
+async def guardar_datos_ruta_ambulancia(ruta_amb_interna: str, id_ppu: int, fecha: str, id_ppu_amb: int, ruta_meli_amb:str):
     try:
-        conn.update_citacion_ruta_meli_amb(ruta_meli_amb, id_ppu,fecha)
+        conn.update_citacion_ruta_meli_amb(ruta_amb_interna, id_ppu, fecha, id_ppu_amb, ruta_meli_amb)
         return {"message": "Datos Ingresados Correctamente"}
     except Exception as e: raise HTTPException(status_code=500, detail=str(e))
 
@@ -484,6 +484,26 @@ async def Obtener_datos( id_ppu: int, fecha: str):
     if datos:
         datos_formateados = [{
                                 "tipo_ruta": fila [0],
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+
+
+
+@router.get("/infoAMB")
+async def retorno_ambulancia( op: int, cop: int,id_ppu: int, fecha: str):
+     # Consulta SQL para obtener datos (por ejemplo)
+
+    # Ejecutar la consulta utilizando nuestra función
+    datos = conn.retorno_ambulancia(op,cop,id_ppu, fecha)
+    # Verificar si hay datos 
+    if datos:
+        datos_formateados = [{
+                                "id_ppu": fila [0],
+                                "ppu": fila[1],
+                                "ruta_meli": fila[2],
                             } 
                             for fila in datos]
         return datos_formateados
@@ -680,7 +700,7 @@ async def get_citacion_activa(op: int,cop : int, fecha : str):
     # Ejecutar la consulta utilizando nuestra función
     datos = conn.recupera_data_por_citacion_activa(op,cop, fecha)
     # Verificar si hay datos 
-    if datos == None:
+    if datos[0] is None:
         # datos_formateados = citacion_activa_schema(datos)
         raise HTTPException(status_code=404, detail="No se encontraron datos")
     else:
@@ -695,7 +715,7 @@ async def get_citacion_activa(id_usuario: int, fecha : str):
     # Ejecutar la consulta utilizando nuestra función
     datos = conn.recupera_data_por_citacion_supervisor(id_usuario, fecha)
     # Verificar si hay datos 
-    if datos == None:
+    if datos[0] is None:
         raise HTTPException(status_code=404, detail="No se encontraron datos")
     else:
         datos_formateados = datos[0]
