@@ -10438,6 +10438,13 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
             UPDATE mercadolibre.citacion SET id_ppu_amb = {id_ppu_amb},ruta_meli_amb =  {ruta_meli_amb}, ruta_amb_interna = {ruta_amb_interna} WHERE id_ppu={id_ppu} and fecha='{fecha}'
                       """)
         self.conn.commit()
+
+    def update_citacion_ruta_meli_amb(self,ruta_meli_amb:int, id_ppu : int, fecha: str):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+           UPDATE mercadolibre.citacion SET ruta_meli_amb = '{ruta_meli_amb}' where id_ppu = {id_ppu} and fecha ='{fecha}'                      
+           """)
+        self.conn.commit()
         
 
     def insert_datos_excel_prefactura_meli_diario_fm(self, id_usuario : int,ids_usuario : str,fecha :int,latitud : str,longitud : str,body):

@@ -322,6 +322,12 @@ async def actualizar_estado(id_driver: int, id_peoneta : int, fecha: str, id_ppu
     except Exception as e: raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.post("/SaveData")
+async def guardar_datos_ruta_ambulancia(ruta_meli_amb: str, id_ppu: int, fecha: str):
+    try:
+        conn.update_citacion_ruta_meli_amb(ruta_meli_amb, id_ppu,fecha)
+        return {"message": "Datos Ingresados Correctamente"}
+    except Exception as e: raise HTTPException(status_code=500, detail=str(e))
 
 
 ########## update 
@@ -674,12 +680,13 @@ async def get_citacion_activa(op: int,cop : int, fecha : str):
     # Ejecutar la consulta utilizando nuestra función
     datos = conn.recupera_data_por_citacion_activa(op,cop, fecha)
     # Verificar si hay datos 
-    if datos:
+    if datos == None:
         # datos_formateados = citacion_activa_schema(datos)
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+    else:
         datos_formateados = datos[0]
         return datos_formateados
-    else:
-        raise HTTPException(status_code=404, detail="No se encontraron datos")
+        
     
 
 
