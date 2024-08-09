@@ -719,7 +719,28 @@ async def get_citacion_activa(id_usuario: int, fecha : str):
         raise HTTPException(status_code=404, detail="No se encontraron datos")
     else:
         datos_formateados = datos[0]
-        return datos_formateados
+
+        for info in datos_formateados:
+            # for detalle in info['Detalles']:
+                # Extraer el valor de 'p_avance'
+                avance = info['Detalles'][0]['avance']
+
+                # Estructura deseada
+                chart_data = {
+                    "labels": [
+                        "Avance",
+                        "Faltante"
+                    ],
+                    "datasets": [{
+                        "data": [avance, 100 - avance],
+                        "backgroundColor": ['#FF6384', '#4BC0C0', '#FFCE56', '#E7E9ED', '#36A2EB'],
+                        "hoverOffset": 4
+                    }],
+                }
+
+                info['chart_data'] = chart_data
+
+    return datos_formateados
     
 
 @router.post("/BitacoraGeneral")
