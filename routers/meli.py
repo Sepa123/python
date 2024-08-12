@@ -733,7 +733,7 @@ async def get_citacion_activa(id_usuario: int, fecha : str):
                     ],
                     "datasets": [{
                         "data": [avance, 100 - avance],
-                        "backgroundColor": ['#FF6384', '#4BC0C0', '#FFCE56', '#E7E9ED', '#36A2EB'],
+                        "backgroundColor": ['#4CAF50', '#e0e0e0'],
                         "hoverOffset": 4
                     }],
                 }
