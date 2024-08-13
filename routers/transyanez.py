@@ -77,7 +77,8 @@ async def agregar_nuevo_colaborador(body : Colaboradores):
 
         id_razon_social = conn.buscar_id_colab_por_rut(body.Rut)
 
-        print(body)
+        conn.insert_bitacora_transporte(data)
+
         return {
             "message": "Colaborador agregado correctamente",
             "razon" : id_razon_social[0]
@@ -102,6 +103,8 @@ async def actualizar_datos_colaborador(body : Colaboradores):
         conn.update_datos_colaborador(data)
 
         id_razon_social = conn.buscar_id_colab_por_rut(body.Rut)
+
+        conn.insert_bitacora_transporte(data)
 
         print(body)
         return {
@@ -164,6 +167,8 @@ async def agregar_datos_vehiculos(body : Vehiculos ):
 
         conn.insert_vehiculo_transporte(data)
 
+        conn.insert_bitacora_transporte(data)
+
         return {
         "message": "vehiculo agregado correctamente",
          }   
@@ -223,6 +228,8 @@ async def actualizar_datos_vehiculo(body : Vehiculos):
 
         data = body.dict()
         conn.update_datos_vehiculo(data)
+
+        conn.insert_bitacora_transporte(data)
 
         return {
             "message": "Vehiculo actualizado correctamente",
@@ -427,7 +434,7 @@ async def subir_archivo(tipo_archivo : str, nombre : str, file: UploadFile = Fil
 @router.post("/registrar/bitacora")
 async def registrar_bitacora_transporte(body : BitacoraTransporte ):
     data = body.dict()
-    conn.insert_vehiculo_transporte(data)
+    conn.insert_bitacora_transporte(data)
 
     return {
         "message": "registro realizado correctamente",
@@ -485,6 +492,8 @@ async def agregar_tripulacion_usuario(body : Usuario ):
 
         conn.agregar_usuario_transporte(data)
 
+        conn.insert_bitacora_transporte(data)
+
         return {
             "message": "Usuario agregado correctamente",
         }
@@ -508,6 +517,8 @@ async def actualizar_datos_usuario(body : Usuario):
 
     data = body.dict()
     conn.update_datos_usuario(data)
+
+    conn.insert_bitacora_transporte(data)
 
     return {
         "message": "Usuario actualizado correctamente",

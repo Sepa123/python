@@ -9853,7 +9853,7 @@ SELECT *
                          """)
             return cur.fetchall()
 
-    def registrar_bitacora_transporte(self,data):
+    def insert_bitacora_transporte(self,data):
         with self.conn.cursor() as cur:
 
             cur.execute("""
@@ -10674,6 +10674,13 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
             INSERT INTO mercadolibre.bitacora_general(id_usuario,ids_usuario, modificacion, latitud, longitud, origen)VALUES('{id_usuario}', '{ids_usuario}', '{modificacion}', '{latitud}', '{longitud}, '{origen}');                     
               """)
         self.conn.commit()
+
+    # def insert_bitacora_transporte(self,id_usuario: int, ids_usuario:str, modificacion: str, latitud : float , longitud: float , origen):
+    #     with self.conn.cursor() as cur:
+    #         cur.execute(f"""
+    #         INSERT INTO mercadolibre.bitacora_general(id_usuario,ids_usuario, modificacion, latitud, longitud, origen)VALUES('{id_usuario}', '{ids_usuario}', '{modificacion}', '{latitud}', '{longitud}, '{origen}');                     
+    #           """)
+    #     self.conn.commit()
 
 
 class transyanezConnection():
