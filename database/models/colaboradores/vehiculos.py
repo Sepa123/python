@@ -43,6 +43,11 @@ class Vehiculos(BaseModel):
     Oc_desinstalacion: Optional[str]
     Disponible : Optional[bool]
     Habilitado : Optional[bool]
+    Modificacion: Optional[str]
+    Latitud: Optional[str]
+    Longitud: Optional[str]
+    Origen: Optional[str]
+
 
 
 class AsignarOperacion(BaseModel):

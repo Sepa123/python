@@ -29,3 +29,7 @@ class Usuario(BaseModel):
     Activo: Optional[bool] = None
     Validacion_seguridad: Optional[int] = None
     Validacion_transporte: Optional[int] = None
+    Modificacion: Optional[str]
+    Latitud: Optional[str]
+    Longitud: Optional[str]
+    Origen: Optional[str]
