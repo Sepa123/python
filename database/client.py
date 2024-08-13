@@ -9596,10 +9596,10 @@ SELECT *
             cur.execute("""
                 INSERT INTO transporte.vehiculo
                 (razon_id, ppu, marca, tipo, modelo, ano, region, comuna, disponible, activation_date, capacidad_carga_kg, capacidad_carga_m3, platform_load_capacity_kg, 
-                crane_load_capacity_kg, permiso_circulacion_fec_venc, soap_fec_venc, revision_tecnica_fec_venc, validado_por_id, validado_por_ids, gps, gps_id)
+                crane_load_capacity_kg, permiso_circulacion_fec_venc, soap_fec_venc, revision_tecnica_fec_venc, validado_por_id, validado_por_ids, gps, gps_id, motivo_desvinculacion)
                 VALUES(%(Razon_id)s, %(Ppu)s, %(Marca)s, %(Tipo)s, %(Modelo)s, %(Ano)s, %(Region)s, %(Comuna)s, false, %(Activation_date)s, %(Capacidad_carga_kg)s, 
                         %(Capacidad_carga_m3)s, %(Platform_load_capacity_kg)s, %(Crane_load_capacity_kg)s, %(Permiso_circulacion_fec_venc)s, %(Soap_fec_venc)s, 
-                        %(Revision_tecnica_fec_venc)s,  %(Id_user)s, %(Ids_user)s,%(Gps)s,%(Id_gps)s);               
+                        %(Revision_tecnica_fec_venc)s,  %(Id_user)s, %(Ids_user)s,%(Gps)s,%(Id_gps)s,%(Desc_desabilitado)s);               
     
                  """,data)
             self.conn.commit()
@@ -9614,6 +9614,7 @@ SELECT *
             crane_load_capacity_kg=%(Crane_load_capacity_kg)s, permiso_circulacion_fec_venc=%(Permiso_circulacion_fec_venc)s, soap_fec_venc=%(Soap_fec_venc)s, 
             revision_tecnica_fec_venc=%(Revision_tecnica_fec_venc)s,
             validado_por_id=%(Id_user)s, validado_por_ids=%(Ids_user)s, gps=%(Gps)s, gps_id=%(Id_gps)s, habilitado=%(Habilitado)s
+            , motivo_desvinculacion =%(Desc_desabilitado)s
             WHERE ppu=%(Ppu)s
                  """,data)
             self.conn.commit()
@@ -9670,7 +9671,7 @@ SELECT *
                 v.platform_load_capacity_kg, v.crane_load_capacity_kg, v.permiso_circulacion_fec_venc, v.soap_fec_venc, 
                 v.revision_tecnica_fec_venc, v.registration_certificate, v.pdf_revision_tecnica, 
                 v.pdf_soap, v.pdf_padron, v.pdf_gases_certification, v.validado_por_id, 
-                v.validado_por_ids , c.razon_social, c.rut , v.gps, g.id , g.imei, g.fec_instalacion , g.oc_instalacion , v.habilitado, v.disponible 
+                v.validado_por_ids , c.razon_social, c.rut , v.gps, g.id , g.imei, g.fec_instalacion , g.oc_instalacion , v.habilitado, v.disponible, v.motivo_desvinculacion
             FROM transporte.vehiculo v
             left join transporte.colaborador c on v.razon_id = c.id    
             left join transporte.gps g on v.gps_id = g.id           
@@ -9791,7 +9792,7 @@ SELECT *
                 v.platform_load_capacity_kg, v.crane_load_capacity_kg, v.permiso_circulacion_fec_venc, v.soap_fec_venc, 
                 v.revision_tecnica_fec_venc, v.registration_certificate, v.pdf_revision_tecnica, 
                 v.pdf_soap, v.pdf_padron, v.pdf_gases_certification, v.validado_por_id, 
-                v.validado_por_ids , c.razon_social, c.rut , v.gps, g.id , g.imei, g.fec_instalacion , g.oc_instalacion , v.habilitado, v.disponible 
+                v.validado_por_ids , c.razon_social, c.rut , v.gps, g.id , g.imei, g.fec_instalacion , g.oc_instalacion , v.habilitado, v.disponible, v.motivo_desvinculacion
             FROM transporte.vehiculo v
             left join transporte.colaborador c on v.razon_id = c.id    
             left join transporte.gps g on v.gps_id = g.id    
@@ -10114,7 +10115,7 @@ SELECT *
             cur.execute(""" 
                         
             UPDATE transporte.gps
-            SET imei= %(Imei)s, fec_baja=CURRENT_DATE, oc_baja=%(Oc_instalacion)s
+            SET imei= %(Imei)s, fec_baja=%(Fecha_desinstalacion)s, oc_baja=%(Oc_desinstalacion)s
             WHERE id=%(Id_gps)s
 
             """, data)

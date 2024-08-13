@@ -35,7 +35,8 @@ def vehiculo(vehiculo):
             "Fecha_instalacion": vehiculo[32],
             "Oc_instalacion": vehiculo[33],
             "Habilitado" : vehiculo[34], ### Hab Seguridad
-            "Disponible" : vehiculo[35] ### Hab Vehiculo
+            "Disponible" : vehiculo[35], ### Hab Vehiculo
+            "Desc_desabilitado": vehiculo[36]
         }
 
 # "Hab_seguridad" : vehiculo[34],
