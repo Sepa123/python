@@ -10629,6 +10629,22 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
                          """)
             return cur.fetchone()
         
+    #### obtener datos DE MARCAS vehiculos
+
+    def obtener_marcas_vehiculos(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            select 
+                json_agg(
+                    json_build_object(
+                        'id', id,
+                        'name', marca
+                    )
+                ) AS result
+            from transporte.marca_vehiculo mv 
+                         """)
+            return cur.fetchone()
+        
 
     #### obtener datos citacion activa
 
@@ -10731,6 +10747,9 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
             ]
             execute_values(cur, query, values)
         self.conn.commit()
+
+
+
     
 
 class transyanezConnection():

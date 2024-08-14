@@ -677,6 +677,13 @@ async def descargar_vehiculos_filtro(pendientes : List[VehiculosExcel]):
     return excel.generar_excel_generico(tupla,nombre_filas,nombre_excel)
 
 
+@router.get("/marcas/vehiculos")
+async def buscar_marcas_vehiculos():
+    datos = conn.obtener_marcas_vehiculos()
+    return datos[0]
+
+
+
 @router.post("/vehiculos/descargar/resumen")
 async def descargar_vehiculos_filtro(pendientes : List[VehiculosExcelResumen]):
 
