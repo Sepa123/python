@@ -6,6 +6,7 @@ import os
 # import time
 # from datetime import datetime
 ##Modelos 
+from database.models.meli.datos_supervisor import DataSupervisor
 from database.schema.meli.citacion_activa import citacion_activa_schema
 import lib.excel_generico as excel
 # from database.models.retiro_cliente import RetiroCliente
@@ -749,4 +750,19 @@ async def actualizar_estado(id_usuario: int, ids_usuario:str, modificacion: str,
     try:
         conn.insert_bitacora_meli(id_usuario, ids_usuario, modificacion, latitud, longitud, origen)
         return {"message": "Datos Ingresados Correctamente"}
+    except Exception as e: raise HTTPException(status_code=500, detail=str(e))
+
+
+
+@router.post("/citacion_supervisores/guardar")
+async def guardar_dato_citacion_supervisores(data_supervisor : DataSupervisor):
+
+    
+    try:
+
+        conn.insert_datos_de_citacion_activa_FM(data_supervisor)
+        # for datos in data_supervisor.datos:
+        #     print(datos)
+        return {"message": "Datos Ingresados Correctamente"}
+    
     except Exception as e: raise HTTPException(status_code=500, detail=str(e))

@@ -6,7 +6,7 @@ from openpyxl import Workbook
 from datetime import datetime
 from database.models.colaboradores.bitacora import BitacoraTransporte
 from database.models.colaboradores.colaborador import Colaboradores,DetallesPago,DesvincularColaborador
-from database.models.colaboradores.vehiculos import Vehiculos,AsignarOperacion, VehiculosExcel,cambiarEstadoVehiculo
+from database.models.colaboradores.vehiculos import Vehiculos,AsignarOperacion, VehiculosExcel,cambiarEstadoVehiculo,VehiculosExcelResumen
 from database.models.colaboradores.persona import Usuario
 from database.models.operaciones.peso_volumetrico import PesoVolumetrico
 from database.schema.transporte.colaborador import colaboradores_schema, detalle_pagos_schema,motivo_desvinculacion_schema
@@ -671,6 +671,21 @@ async def descargar_vehiculos_filtro(pendientes : List[VehiculosExcel]):
     tupla = excel.objetos_a_tuplas(pendientes)
 
     nombre_filas = ( 'Patente', 'Razón Social', "Tipo Vehículo", 'Operación','Centro operación', "Región Disponible", 
+                     "GPS", "Disponible","Habilitado","Fecha de registro")
+    nombre_excel = f"Vehiculos_filtrados"
+
+    return excel.generar_excel_generico(tupla,nombre_filas,nombre_excel)
+
+
+@router.post("/vehiculos/descargar/resumen")
+async def descargar_vehiculos_filtro(pendientes : List[VehiculosExcelResumen]):
+
+    print(pendientes)
+
+
+    tupla = excel.objetos_a_tuplas(pendientes)
+
+    nombre_filas = ( 'Patente', 'Razón Social', "Tipo Vehículo", "Región Disponible", 
                      "GPS", "Disponible","Habilitado","Fecha de registro")
     nombre_excel = f"Vehiculos_filtrados"
 

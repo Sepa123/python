@@ -10676,13 +10676,62 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
               """)
         self.conn.commit()
 
-    # def insert_bitacora_transporte(self,id_usuario: int, ids_usuario:str, modificacion: str, latitud : float , longitud: float , origen):
-    #     with self.conn.cursor() as cur:
-    #         cur.execute(f"""
-    #         INSERT INTO mercadolibre.bitacora_general(id_usuario,ids_usuario, modificacion, latitud, longitud, origen)VALUES('{id_usuario}', '{ids_usuario}', '{modificacion}', '{latitud}', '{longitud}, '{origen}');                     
-    #           """)
-    #     self.conn.commit()
 
+    def insert_datos_de_citacion_activa_FM(self,body):
+
+        with self.conn.cursor() as cur:
+            query = """
+            INSERT INTO mercadolibre.mae_data_supervisores
+            ( id_usuario, ids_usuario, latitud, longitud, operacion, id_operacion, id_centro_operacion, estado, fecha, nombre_ruta, tipo_ruta, id_ruta, p_avance, avance, fm_total_paradas, fm_paqueteria_colectada, fm_estimados, fm_preparados, lm_fallido, lm_pendiente, lm_spr, lm_entregas, driver, fm_p_colectas_a_tiempo, fm_p_no_colectadas, lm_tiempo_ruta, lm_estado, ppu, id_ppu, tipo_vehiculo, razon_id, valor_ruta, ruta_cerrada, estado_correcto, patente_igual, driver_ok)
+            VALUES %s
+            """
+            values = [
+                # (
+                #     body['id_usuario'], body['ids_usuario'], body['latitud'], body['longitud'], body['operacion'], body['id_operacion'], body['id_centro_operacion'],
+                #     item['estado'], item['fecha'], item['nombre_ruta'], item['tipo_ruta'], item['id_ruta'], item['p_avance'], item['avance'], item['fm_total_paradas'], 
+                #     item['fm_paqueteria_colectada'], item['fm_estimados'], item['fm_preparados'], item['lm_fallido'], item['lm_pendiente'], item['lm_spr'], 
+                #     item['lm_entregas'], item['driver'], item['fm_p_colectas_a_tiempo'], item['fm_p_no_colectadas'], item['lm_tiempo_ruta'], item['lm_estado'], 
+                #     item['ppu'], item['id_ppu'], item['tipo_vehiculo'], item['razon_id'], item['valor_ruta'], item['ruta_cerrada'], item['estado_correcto'], 
+                #     item['patente_igual'], item['driver_ok']
+                # )
+                (
+                    body.id_usuario, body.ids_usuario, body.latitud, body.longitud, body.operacion, body.id_operacion, body.id_centro_operacion,
+                    item.estado, item.fecha, item.nombre_ruta, item.tipo_ruta, item.id_ruta, item.p_avance, item.avance, item.fm_total_paradas, item.fm_paqueteria_colectada,
+                    item.fm_estimados, item.fm_preparados, item.lm_fallido, item.lm_pendiente, item.lm_spr, item.lm_entregas, item.driver, item.fm_p_colectas_a_tiempo, 
+                    item.fm_p_no_colectadas, item.lm_tiempo_ruta, item.lm_estado, item.ppu, item.id_ppu, item.tipo_vehiculo, item.razon_id, item.valor_ruta, item.ruta_cerrada, 
+                    item.estado_correcto, item.patente_igual, item.driver_ok
+                )
+                for item in body.datos
+            ]
+            execute_values(cur, query, values)
+
+            print(values)
+
+        self.conn.commit()
+
+
+    def update_datos_de_citacion_activa_FM(self,body):
+
+        with self.conn.cursor() as cur:
+            query = """
+            INSERT INTO mercadolibre.mae_data_supervisores
+            ( id_usuario, ids_usuario, latitud, longitud, operacion, id_operacion, id_centro_operacion, estado, fecha, nombre_ruta, tipo_ruta, id_ruta, p_avance, avance, fm_total_paradas, fm_paqueteria_colectada, fm_estimados, fm_preparados, lm_fallido, lm_pendiente, lm_spr, lm_entregas, driver, fm_p_colectas_a_tiempo, fm_p_no_colectadas, lm_tiempo_ruta, lm_estado, ppu, id_ppu, tipo_vehiculo, razon_id, valor_ruta, ruta_cerrada, estado_correcto, patente_igual, driver_ok)
+            VALUES %s
+            """
+            values = [
+                (
+                    body['id_usuario'], body['ids_usuario'], body['latitud'], body['longitud'], body['operacion'], body['id_operacion'], body['id_centro_operacion'],
+                    item['estado'], item['fecha'], item['nombre_ruta'], item['tipo_ruta'], item['id_ruta'], item['p_avance'], item['avance'], item['fm_total_paradas'], 
+                    item['fm_paqueteria_colectada'], item['fm_estimados'], item['fm_preparados'], item['lm_fallido'], item['lm_pendiente'], item['lm_spr'], 
+                    item['lm_entregas'], item['driver'], item['fm_p_colectas_a_tiempo'], item['fm_p_no_colectadas'], item['lm_tiempo_ruta'], item['lm_estado'], 
+                    item['ppu'], item['id_ppu'], item['tipo_vehiculo'], item['razon_id'], item['valor_ruta'], item['ruta_cerrada'], item['estado_correcto'], 
+                    item['patente_igual'], item['driver_ok']
+                )
+                for item in body['datos']
+            ]
+            execute_values(cur, query, values)
+        self.conn.commit()
+    
 
 class transyanezConnection():
     conn = None
