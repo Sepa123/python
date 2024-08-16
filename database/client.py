@@ -10777,7 +10777,8 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
                 ruta_cerrada = {to_sql_value(item.ruta_cerrada)},
                 estado_correcto = {to_sql_value(item.estado_correcto)},
                 patente_igual = {to_sql_value(item.patente_igual)},
-                driver_ok = {to_sql_value(item.driver_ok)}
+                driver_ok = {to_sql_value(item.driver_ok)},
+                ultima_actualizacion = CURRENT_DATE
             WHERE
                 id_ruta = {to_sql_value(item.ruta_meli)};
             """)
