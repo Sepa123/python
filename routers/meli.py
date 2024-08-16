@@ -760,9 +760,18 @@ async def guardar_dato_citacion_supervisores(data_supervisor : DataSupervisor):
     
     try:
 
-        conn.insert_datos_de_citacion_activa_FM(data_supervisor)
-        # for datos in data_supervisor.datos:
-        #     print(datos)
+        # conn.insert_datos_de_citacion_activa_FM(data_supervisor)
+        for datos in data_supervisor.datos:
+
+            existe_id_ruta = conn.verificar_id_ruta_existe(datos.ruta_meli)[0]
+
+            if existe_id_ruta == 0:
+                conn.insert_datos_de_citacion_activa_FM(data_supervisor,datos)
+
+            else:
+                conn.update_datos_de_citacion_activa_FM(data_supervisor,datos)
+                
+            
         return {"message": "Datos Ingresados Correctamente"}
     
     except Exception as e: raise HTTPException(status_code=500, detail=str(e))

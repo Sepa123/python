@@ -10693,7 +10693,7 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
         self.conn.commit()
 
 
-    def insert_datos_de_citacion_activa_FM(self,body):
+    def insert_datos_de_citacion_activa_FM(self,body,item):
 
         with self.conn.cursor() as cur:
             query = """
@@ -10712,7 +10712,110 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
                 # )
                 (
                     body.id_usuario, body.ids_usuario, body.latitud, body.longitud, body.operacion, body.id_operacion, body.id_centro_operacion,
-                    item.estado, item.fecha, item.nombre_ruta, item.tipo_ruta, item.id_ruta, item.p_avance, item.avance, item.fm_total_paradas, item.fm_paqueteria_colectada,
+                    item.estado, item.fecha, item.nombre_ruta, item.tipo_ruta, item.ruta_meli, item.p_avance, item.avance, item.fm_total_paradas, item.fm_paqueteria_colectada,
+                    item.fm_estimados, item.fm_preparados, item.lm_fallido, item.lm_pendiente, item.lm_spr, item.lm_entregas, item.driver, item.fm_p_colectas_a_tiempo, 
+                    item.fm_p_no_colectadas, item.lm_tiempo_ruta, item.lm_estado, item.ppu, item.id_ppu, item.tipo_vehiculo, item.razon_id, item.valor_ruta, item.ruta_cerrada, 
+                    item.estado_correcto, item.patente_igual, item.driver_ok
+                )
+                # for item in body.datos
+            ]
+            execute_values(cur, query, values)
+
+            print(values)
+
+        self.conn.commit()
+
+    
+
+    def update_datos_de_citacion_activa_FM(self,body,item):
+
+        def to_sql_value(value):
+            if value is None:
+                return "NULL"
+            elif isinstance(value, str):
+                return f"'{value}'"
+            else:
+                return str(value)
+
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            UPDATE mercadolibre.mae_data_supervisores
+            SET
+                id_usuario = {to_sql_value(body.id_usuario)},
+                ids_usuario = {to_sql_value(body.ids_usuario)},
+                latitud = {to_sql_value(body.latitud)},
+                longitud = {to_sql_value(body.longitud)},
+                operacion = {to_sql_value(body.operacion)},
+                id_operacion = {to_sql_value(body.id_operacion)},
+                id_centro_operacion = {to_sql_value(body.id_centro_operacion)},
+                estado = {to_sql_value(item.estado)},
+                fecha = {to_sql_value(item.fecha)},
+                nombre_ruta = {to_sql_value(item.nombre_ruta)},
+                tipo_ruta = {to_sql_value(item.tipo_ruta)},
+                p_avance = {to_sql_value(item.p_avance)},
+                avance = {to_sql_value(item.avance)},
+                fm_total_paradas = {to_sql_value(item.fm_total_paradas)},
+                fm_paqueteria_colectada = {to_sql_value(item.fm_paqueteria_colectada)},
+                fm_estimados = {to_sql_value(item.fm_estimados)},
+                fm_preparados = {to_sql_value(item.fm_preparados)},
+                lm_fallido = {to_sql_value(item.lm_fallido)},
+                lm_pendiente = {to_sql_value(item.lm_pendiente)},
+                lm_spr = {to_sql_value(item.lm_spr)},
+                lm_entregas = {to_sql_value(item.lm_entregas)},
+                driver = {to_sql_value(item.driver)},
+                fm_p_colectas_a_tiempo = {to_sql_value(item.fm_p_colectas_a_tiempo)},
+                fm_p_no_colectadas = {to_sql_value(item.fm_p_no_colectadas)},
+                lm_tiempo_ruta = {to_sql_value(item.lm_tiempo_ruta)},
+                lm_estado = {to_sql_value(item.lm_estado)},
+                ppu = {to_sql_value(item.ppu)},
+                id_ppu = {to_sql_value(item.id_ppu)},
+                tipo_vehiculo = {to_sql_value(item.tipo_vehiculo)},
+                razon_id = {to_sql_value(item.razon_id)},
+                valor_ruta = {to_sql_value(item.valor_ruta)},
+                ruta_cerrada = {to_sql_value(item.ruta_cerrada)},
+                estado_correcto = {to_sql_value(item.estado_correcto)},
+                patente_igual = {to_sql_value(item.patente_igual)},
+                driver_ok = {to_sql_value(item.driver_ok)}
+            WHERE
+                id_ruta = {to_sql_value(item.ruta_meli)};
+            """)
+
+
+        self.conn.commit()
+
+
+
+    def verificar_id_ruta_existe(self,id_ruta):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            select count(*) from mercadolibre.mae_data_supervisores mds where id_ruta = {id_ruta} 
+                         """)
+            return cur.fetchone()
+
+
+        
+
+
+    def insert_datos_de_citacion_activa_FM_all(self,body):
+
+        with self.conn.cursor() as cur:
+            query = """
+            INSERT INTO mercadolibre.mae_data_supervisores
+            ( id_usuario, ids_usuario, latitud, longitud, operacion, id_operacion, id_centro_operacion, estado, fecha, nombre_ruta, tipo_ruta, id_ruta, p_avance, avance, fm_total_paradas, fm_paqueteria_colectada, fm_estimados, fm_preparados, lm_fallido, lm_pendiente, lm_spr, lm_entregas, driver, fm_p_colectas_a_tiempo, fm_p_no_colectadas, lm_tiempo_ruta, lm_estado, ppu, id_ppu, tipo_vehiculo, razon_id, valor_ruta, ruta_cerrada, estado_correcto, patente_igual, driver_ok)
+            VALUES %s
+            """
+            values = [
+                # (
+                #     body['id_usuario'], body['ids_usuario'], body['latitud'], body['longitud'], body['operacion'], body['id_operacion'], body['id_centro_operacion'],
+                #     item['estado'], item['fecha'], item['nombre_ruta'], item['tipo_ruta'], item['id_ruta'], item['p_avance'], item['avance'], item['fm_total_paradas'], 
+                #     item['fm_paqueteria_colectada'], item['fm_estimados'], item['fm_preparados'], item['lm_fallido'], item['lm_pendiente'], item['lm_spr'], 
+                #     item['lm_entregas'], item['driver'], item['fm_p_colectas_a_tiempo'], item['fm_p_no_colectadas'], item['lm_tiempo_ruta'], item['lm_estado'], 
+                #     item['ppu'], item['id_ppu'], item['tipo_vehiculo'], item['razon_id'], item['valor_ruta'], item['ruta_cerrada'], item['estado_correcto'], 
+                #     item['patente_igual'], item['driver_ok']
+                # )
+                (
+                    body.id_usuario, body.ids_usuario, body.latitud, body.longitud, body.operacion, body.id_operacion, body.id_centro_operacion,
+                    item.estado, item.fecha, item.nombre_ruta, item.tipo_ruta, item.ruta_meli, item.p_avance, item.avance, item.fm_total_paradas, item.fm_paqueteria_colectada,
                     item.fm_estimados, item.fm_preparados, item.lm_fallido, item.lm_pendiente, item.lm_spr, item.lm_entregas, item.driver, item.fm_p_colectas_a_tiempo, 
                     item.fm_p_no_colectadas, item.lm_tiempo_ruta, item.lm_estado, item.ppu, item.id_ppu, item.tipo_vehiculo, item.razon_id, item.valor_ruta, item.ruta_cerrada, 
                     item.estado_correcto, item.patente_igual, item.driver_ok
@@ -10724,33 +10827,7 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
             print(values)
 
         self.conn.commit()
-
-
-    def update_datos_de_citacion_activa_FM(self,body):
-
-        with self.conn.cursor() as cur:
-            query = """
-            INSERT INTO mercadolibre.mae_data_supervisores
-            ( id_usuario, ids_usuario, latitud, longitud, operacion, id_operacion, id_centro_operacion, estado, fecha, nombre_ruta, tipo_ruta, id_ruta, p_avance, avance, fm_total_paradas, fm_paqueteria_colectada, fm_estimados, fm_preparados, lm_fallido, lm_pendiente, lm_spr, lm_entregas, driver, fm_p_colectas_a_tiempo, fm_p_no_colectadas, lm_tiempo_ruta, lm_estado, ppu, id_ppu, tipo_vehiculo, razon_id, valor_ruta, ruta_cerrada, estado_correcto, patente_igual, driver_ok)
-            VALUES %s
-            """
-            values = [
-                (
-                    body['id_usuario'], body['ids_usuario'], body['latitud'], body['longitud'], body['operacion'], body['id_operacion'], body['id_centro_operacion'],
-                    item['estado'], item['fecha'], item['nombre_ruta'], item['tipo_ruta'], item['id_ruta'], item['p_avance'], item['avance'], item['fm_total_paradas'], 
-                    item['fm_paqueteria_colectada'], item['fm_estimados'], item['fm_preparados'], item['lm_fallido'], item['lm_pendiente'], item['lm_spr'], 
-                    item['lm_entregas'], item['driver'], item['fm_p_colectas_a_tiempo'], item['fm_p_no_colectadas'], item['lm_tiempo_ruta'], item['lm_estado'], 
-                    item['ppu'], item['id_ppu'], item['tipo_vehiculo'], item['razon_id'], item['valor_ruta'], item['ruta_cerrada'], item['estado_correcto'], 
-                    item['patente_igual'], item['driver_ok']
-                )
-                for item in body['datos']
-            ]
-            execute_values(cur, query, values)
-        self.conn.commit()
-
-
-
-    
+        
 
 class transyanezConnection():
     conn = None

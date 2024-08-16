@@ -31,6 +31,7 @@ class Dato(BaseModel):
     estado_correcto: Optional[bool]
     patente_igual: Optional[bool]
     driver_ok: Optional[bool]
+    ruta_meli : Optional[str]
 
 
 class DataSupervisor(BaseModel):
