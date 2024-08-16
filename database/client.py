@@ -9671,7 +9671,8 @@ SELECT *
                 v.platform_load_capacity_kg, v.crane_load_capacity_kg, v.permiso_circulacion_fec_venc, v.soap_fec_venc, 
                 v.revision_tecnica_fec_venc, v.registration_certificate, v.pdf_revision_tecnica, 
                 v.pdf_soap, v.pdf_padron, v.pdf_gases_certification, v.validado_por_id, 
-                v.validado_por_ids , c.razon_social, c.rut , v.gps, g.id , g.imei, g.fec_instalacion , g.oc_instalacion , v.habilitado, v.disponible, v.motivo_desvinculacion
+                v.validado_por_ids , c.razon_social, c.rut , v.gps, g.id , g.imei, g.fec_instalacion , g.oc_instalacion , v.habilitado, v.disponible, v.motivo_desvinculacion,
+                g.fec_baja, g.oc_baja
             FROM transporte.vehiculo v
             left join transporte.colaborador c on v.razon_id = c.id    
             left join transporte.gps g on v.gps_id = g.id           
@@ -9792,7 +9793,8 @@ SELECT *
                 v.platform_load_capacity_kg, v.crane_load_capacity_kg, v.permiso_circulacion_fec_venc, v.soap_fec_venc, 
                 v.revision_tecnica_fec_venc, v.registration_certificate, v.pdf_revision_tecnica, 
                 v.pdf_soap, v.pdf_padron, v.pdf_gases_certification, v.validado_por_id, 
-                v.validado_por_ids , c.razon_social, c.rut , v.gps, g.id , g.imei, g.fec_instalacion , g.oc_instalacion , v.habilitado, v.disponible, v.motivo_desvinculacion
+                v.validado_por_ids , c.razon_social, c.rut , v.gps, g.id , g.imei, g.fec_instalacion , g.oc_instalacion , v.habilitado, v.disponible, v.motivo_desvinculacion,
+                g.fec_baja, g.oc_baja
             FROM transporte.vehiculo v
             left join transporte.colaborador c on v.razon_id = c.id    
             left join transporte.gps g on v.gps_id = g.id    
