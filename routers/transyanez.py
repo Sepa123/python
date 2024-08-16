@@ -211,26 +211,33 @@ async def actualizar_datos_vehiculo(body : Vehiculos):
                 data_gps= body.dict()
                 conn.agregar_datos_gps(data_gps)
                 id_gps = conn.get_max_id_gps()[0]
-
+                print('pase por aca')
                 body.Id_gps = id_gps
             else:
+                print('qhe es eesos')
                 data_gps= body.dict()
                 conn.actualizar_datos_gps(data_gps)
         ### si no se clickeo el gps
         elif body.Gps == False:
-            if body.Id_gps != None:
+            if body.Id_gps != None or body.Id_gps != 'null':
                 data_gps= body.dict()
                 conn.actualizar_datos_gps_si_se_desactiva_gps(data_gps)
+                print('paseee por acasss')
             else:
                 # body.Id_gps = None
-
+                print('pase por acasss')
                 data_gps= body.dict()
                 conn.agregar_datos_gps(data_gps)
                 id_gps = conn.get_max_id_gps()[0]
                 body.Id_gps = id_gps
-        # else:
+        else:
             # body.Id_gps = None
-
+            print('asddadadada')
+            data_gps= body.dict()
+            conn.agregar_datos_gps(data_gps)
+            id_gps = conn.get_max_id_gps()[0]
+            body.Id_gps = id_gps
+        print('ptm')
         data = body.dict()
         conn.update_datos_vehiculo(data)
 
@@ -250,7 +257,11 @@ async def actualizar_datos_vehiculo(body : Vehiculos):
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error: El IMEI {body.Imei} ya se encuentra registrado")
         
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error: se encuentran datos duplicados")
-           
+    
+    except psycopg2.errors.NotNullViolation as error:
+
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error: Se debe agregar un IMEI ")
+        
     except Exception as error:
         print(error)
         # Manejar otras excepciones

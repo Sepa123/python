@@ -10091,7 +10091,7 @@ SELECT *
             cur.execute(""" 
             INSERT INTO transporte.gps
             (imei, fec_instalacion, oc_instalacion, id_user, ids_user, fec_baja,oc_baja)
-            VALUES( %(Imei)s, %(Fecha_instalacion)s,%(Oc_instalacion)s,%(Id_user)s, %(Ids_user)s, %(Fecha_desinstalacion)s, %(Oc_desinstalacion)s));
+            VALUES( %(Imei)s, %(Fecha_instalacion)s,%(Oc_instalacion)s,%(Id_user)s, %(Ids_user)s, %(Fecha_desinstalacion)s, %(Oc_desinstalacion)s);
 
             """, data)
             self.conn.commit()
