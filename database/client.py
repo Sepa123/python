@@ -10090,8 +10090,8 @@ SELECT *
         with self.conn.cursor() as cur:
             cur.execute(""" 
             INSERT INTO transporte.gps
-            (imei, fec_instalacion, oc_instalacion, id_user, ids_user)
-            VALUES( %(Imei)s, %(Fecha_instalacion)s,%(Oc_instalacion)s,%(Id_user)s, %(Ids_user)s);
+            (imei, fec_instalacion, oc_instalacion, id_user, ids_user, fec_baja,oc_baja)
+            VALUES( %(Imei)s, %(Fecha_instalacion)s,%(Oc_instalacion)s,%(Id_user)s, %(Ids_user)s, %(Fecha_desinstalacion)s, %(Oc_desinstalacion)s));
 
             """, data)
             self.conn.commit()
@@ -10103,7 +10103,7 @@ SELECT *
                         
             UPDATE transporte.gps
             SET  imei= %(Imei)s, fec_instalacion=%(Fecha_instalacion)s, oc_instalacion=%(Oc_instalacion)s, 
-                id_user=%(Id_user)s, ids_user=%(Ids_user)s
+                id_user=%(Id_user)s, ids_user=%(Ids_user)s ,fec_baja=%(Fecha_desinstalacion)s ,oc_baja=%(Oc_desinstalacion)s
             WHERE id=%(Id_gps)s
 
             """, data)

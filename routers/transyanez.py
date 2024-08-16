@@ -155,13 +155,13 @@ async def agregar_datos_vehiculos(body : Vehiculos ):
     try:
         razon_id = conn.buscar_id_colab_por_rut(body.Rut_colaborador)[0]
         body.Razon_id = razon_id
-        if body.Gps == True:
-            data_gps= body.dict()
-            conn.agregar_datos_gps(data_gps)
-            id_gps = conn.get_max_id_gps()[0]
-            body.Id_gps = id_gps
-        else:
-            body.Id_gps = None
+        
+        data_gps= body.dict()
+        conn.agregar_datos_gps(data_gps)
+        id_gps = conn.get_max_id_gps()[0]
+        body.Id_gps = id_gps
+        # else:
+        #     body.Id_gps = None
 
         data = body.dict()
 
@@ -222,9 +222,14 @@ async def actualizar_datos_vehiculo(body : Vehiculos):
                 data_gps= body.dict()
                 conn.actualizar_datos_gps_si_se_desactiva_gps(data_gps)
             else:
-                body.Id_gps = None
-        else:
-            body.Id_gps = None
+                # body.Id_gps = None
+
+                data_gps= body.dict()
+                conn.agregar_datos_gps(data_gps)
+                id_gps = conn.get_max_id_gps()[0]
+                body.Id_gps = id_gps
+        # else:
+            # body.Id_gps = None
 
         data = body.dict()
         conn.update_datos_vehiculo(data)
