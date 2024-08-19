@@ -212,10 +212,10 @@ async def actualizar_datos_vehiculo(body : Vehiculos):
                 data_gps= body.dict()
                 conn.agregar_datos_gps(data_gps)
                 id_gps = conn.get_max_id_gps()[0]
-                print('pase por aca')
+                # print('pase por aca')
                 body.Id_gps = id_gps
             else:
-                print('qhe es eesos')
+                # print('qhe es eesos')
                 data_gps= body.dict()
                 conn.actualizar_datos_gps(data_gps)
         ### si no se clickeo el gps
@@ -223,22 +223,22 @@ async def actualizar_datos_vehiculo(body : Vehiculos):
             if body.Id_gps != None or body.Id_gps != 'null':
                 data_gps= body.dict()
                 conn.actualizar_datos_gps_si_se_desactiva_gps(data_gps)
-                print('paseee por acasss')
+                # print('paseee por acasss')
             else:
                 # body.Id_gps = None
-                print('pase por acasss')
+                # print('pase por acasss')
                 data_gps= body.dict()
                 conn.agregar_datos_gps(data_gps)
                 id_gps = conn.get_max_id_gps()[0]
                 body.Id_gps = id_gps
         else:
             # body.Id_gps = None
-            print('asddadadada')
+            # print('asddadadada')
             data_gps= body.dict()
             conn.agregar_datos_gps(data_gps)
             id_gps = conn.get_max_id_gps()[0]
             body.Id_gps = id_gps
-        print('ptm')
+        # print('ptm')
         data = body.dict()
         conn.update_datos_vehiculo(data)
 
@@ -769,3 +769,77 @@ async def Obtener_datos(sku: str):
         return datos_formateados
     else:
         raise HTTPException(status_code=404, detail="No se encontraron datos")
+    
+
+
+    ##### Gestión GPS
+
+
+@router.get("/getInfoTable")
+async def Obtener_datos():
+
+    # Ejecutar la consulta utilizando nuestra función
+    datos = conn.obtener_informacion_gps()
+    # Verificar si hay datos
+    if datos:
+        datos_formateados = [{
+                                "id_gps" : fila[0],
+                                "ppu": fila[1],
+                                "razon_social": fila [2],
+                                "rut": fila[3],
+                                "region" : fila[4],
+                                "gps" : fila[5],
+                                "fec_instalacion":fila[6],
+                                "oc_instalacion":fila[7],
+                                "fec_baja": fila[8],
+                                "oc_baja" : fila[9],
+                                "monto": fila[10],
+                                "descontado": fila[11],
+                                "devuelto": fila[12],
+                                "datos_varios": fila[13]
+
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+
+@router.post("/oc_instalación")
+async def actualizar_estado(oc_instalacion:str, id: int):
+    try:
+        conn.update_oc_instalacion_gps(oc_instalacion,id)
+        print()
+        return {"message": "Datos Ingresados Correctamente"}
+    except Exception as e: raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/oc_baja")
+async def actualizar_estado(oc_baja:str, id: int):
+    try:
+        conn.update_oc_baja_gps(oc_baja,id)
+        print()
+        return {"message": "Datos Ingresados Correctamente"}
+    except Exception as e: raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/monto")
+async def actualizar_estado(monto:str, id: int):
+    try:
+        conn.update_monto_gps(monto,id)
+        print()
+        return {"message": "Datos Ingresados Correctamente"}
+    except Exception as e: raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/descontado")
+async def actualizar_estado(descontado:bool, id: int):
+    try:
+        conn.update_descontado_gps(descontado,id)
+        print()
+        return {"message": "Datos Ingresados Correctamente"}
+    except Exception as e: raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/devuelto")
+async def actualizar_estado(devuelto:bool, id: int):
+    try:
+        conn.update_devuelto_gps(devuelto,id)
+        print()
+        return {"message": "Datos Ingresados Correctamente"}
+    except Exception as e: raise HTTPException(status_code=500, detail=str(e))

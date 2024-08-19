@@ -10830,6 +10830,57 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
             print(values)
 
         self.conn.commit()
+
+
+
+        #### Gestión GPS
+
+    
+    def obtener_informacion_gps(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            select * from transporte.obtener_informacion_gps()
+                        """)
+            return cur.fetchall()
+        
+    def update_oc_instalacion_gps(self, oc_instalacion:str, id: int):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            UPDATE transporte.gps SET  oc_instalacion='{oc_instalacion}' WHERE id='{id}'
+                          """)
+        self.conn.commit()
+
+    def update_oc_baja_gps(self, oc_baja:str, id: int):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+           UPDATE transporte.gps SET  oc_baja='{oc_baja}' WHERE id='{id}'
+                          """)
+        self.conn.commit()
+
+    def update_monto_gps(self, monto:str, id: int):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+           UPDATE transporte.gps SET  monto='{monto}' WHERE id='{id}'
+                          """)
+        self.conn.commit()
+
+
+    def update_descontado_gps(self, descontado:bool, id: int):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+          UPDATE transporte.gps SET  descontado={descontado} WHERE id='{id}'
+                          """)
+        self.conn.commit()
+
+    def update_devuelto_gps(self, devuelto:bool, id: int):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+           UPDATE transporte.gps SET  devuelto={devuelto} WHERE id='{id}'
+                          """)
+        self.conn.commit()
+    
+
+
         
 
 class transyanezConnection():
