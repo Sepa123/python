@@ -161,7 +161,7 @@ class HelaConnection():
     def mostrar_datos_usuario_hela(self,id):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            SELECT  u.telefono, u.fecha_nacimiento, u.direccion,u.imagen_perfil, r.nombre
+            SELECT  coalesce(u.telefono,''), u.fecha_nacimiento,coalesce(u.direccion,''),coalesce (u.imagen_perfil,''), r.nombre
             FROM hela.usuarios u
             left join hela.rol r on cast(r.id as varchar) = u.rol_id 
             where u.id = {id};
