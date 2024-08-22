@@ -772,6 +772,6 @@ async def guardar_dato_citacion_supervisores(data_supervisor : DataSupervisor):
                 conn.update_datos_de_citacion_activa_FM(data_supervisor,datos)
                 
             
-        return {"message": "Datos Ingresados Correctamente"}
+        return {"message": "Datos guardados con éxito"}
     
     except Exception as e: raise HTTPException(status_code=500, detail=str(e))
