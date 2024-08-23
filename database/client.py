@@ -12,6 +12,15 @@ from database.queries import recuperar_query
 
 comando = ["pm2", "restart", "0"]
 
+### funcion que convierte los valores None en NULL para la insercion o update a la bd
+def to_sql_value(value):
+            if value is None:
+                return "NULL"
+            elif isinstance(value, str):
+                return f"'{value}'"
+            else:
+                return str(value)
+
 ## decorador para en caso de que la base de datos de ty se desconecte
 def reconnect_if_closed(func):
     
@@ -10731,14 +10740,7 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
 
     def update_datos_de_citacion_activa_FM(self,body,item):
 
-        def to_sql_value(value):
-            if value is None:
-                return "NULL"
-            elif isinstance(value, str):
-                return f"'{value}'"
-            else:
-                return str(value)
-
+    
         with self.conn.cursor() as cur:
             cur.execute(f"""
             UPDATE mercadolibre.mae_data_supervisores
@@ -10789,6 +10791,10 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
 
 
     def verificar_id_ruta_existe(self,id_ruta):
+
+        if id_ruta is None:
+            return [0]
+
         with self.conn.cursor() as cur:
             cur.execute(f""" 
             select count(*) from mercadolibre.mae_data_supervisores mds where id_ruta = {id_ruta} 
