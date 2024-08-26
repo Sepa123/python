@@ -786,4 +786,10 @@ async def guardar_dato_citacion_supervisores(data_supervisor : DataSupervisor):
         else:
             return {"message": f"Datos guardados pero con {len(contador_fallas)} intento(s) fallidos"}
     
-    except Exception as e: raise HTTPException(status_code=500, detail=str(e))
+    except Exception as e: 
+        print(e)
+        raise HTTPException(status_code=500, detail=str(e))
+    
+    # except ValueError as e: 
+    #     print(e)
+    #     raise HTTPException(status_code=500, detail=str(e))
