@@ -10517,11 +10517,11 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
         with self.conn.cursor() as cur:
             query = """
             INSERT INTO mercadolibre.prefactura_paso
-            (id_usuario, ids_usuario, id_prefactura, periodo, descripcion, id_de_ruta, fecha_de_inicio, fecha_de_fin, patente, conductor, cantidad, precio_unitario, total)
+            (id_usuario, ids_usuario, id_prefactura, periodo, descripcion, id_de_ruta, fecha_de_inicio, fecha_de_fin, patente, conductor, cantidad, precio_unitario)
             VALUES %s
             """
             values = [
-                (id_usuario, ids_usuario, id_prefact, periodo, item['DescripciÃ³n'], item['ID de ruta'], item['Fecha de inicio'], item['Fecha de fin'], item['Patente'], item['Conductor'], item['Cantidad'], item['Precio unitario'], item['Total'])
+                (id_usuario, ids_usuario, id_prefact, periodo, item['DescripciÃ³n'], item['ID de ruta'], item['Fecha de inicio'], item['Fecha de fin'], item['Patente'], item['Conductor'], item['Cantidad'], item['Precio unitario'])
                 for item in body
             ]
             execute_values(cur, query, values)
