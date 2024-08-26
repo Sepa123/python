@@ -758,22 +758,22 @@ async def actualizar_estado(id_usuario: int, ids_usuario:str, modificacion: str,
 async def guardar_dato_citacion_supervisores(data_supervisor : DataSupervisor):
 
     
-    # try:
+    try:
 
-        contador_fallas = 0
+        contador_fallas = []
         # conn.insert_datos_de_citacion_activa_FM(data_supervisor)
         for datos in data_supervisor.datos:
 
             ### en caso de tener una id como None, ignorarla y pasar a la siguiente
             if datos.ruta_meli is None:
-                contador_fallas = contador_fallas + 1
+                contador_fallas.append(datos.ppu)
                 pass
 
             else:
 
                 existe_id_ruta = conn.verificar_id_ruta_existe(datos.ruta_meli)[0]
 
-                print(existe_id_ruta)
+                # print(existe_id_ruta)
 
                 if existe_id_ruta == 0:
                     conn.insert_datos_de_citacion_activa_FM(data_supervisor,datos)
@@ -781,9 +781,9 @@ async def guardar_dato_citacion_supervisores(data_supervisor : DataSupervisor):
                 else:
                     conn.update_datos_de_citacion_activa_FM(data_supervisor,datos)
         
-        if contador_fallas == 0:        
+        if len(contador_fallas) == 0:        
             return {"message": "Datos guardados con éxito"}
         else:
-            return {"message": f"Datos guardados pero con {contador_fallas} intento(s) fallidos"}
+            return {"message": f"Datos guardados pero con {len(contador_fallas)} intento(s) fallidos"}
     
-    # except Exception as e: raise HTTPException(status_code=500, detail=str(e))
+    except Exception as e: raise HTTPException(status_code=500, detail=str(e))
