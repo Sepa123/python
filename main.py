@@ -59,6 +59,7 @@ app.include_router(inventario.router)
 app.include_router(seguridad.router)
 app.include_router(meli.router)
 app.include_router(operaciones.router)
+app.include_router(tarifario.router)
 
 conn = UserConnection()
 hela_conn = HelaConnection()
