@@ -12,13 +12,13 @@ from datetime import datetime
 
 
 
-router = APIRouter(tags=["Tarifario"], prefix="/api/tarifario")
+router = APIRouter(tags=["Finanzas"], prefix="/api/finanzas")
 
 conn = reportesConnection()
 
 
 
-router.get("/infoTarifas")
+@router.get("/infoTarifas")
 async def Obtener_datos():
     # Ejecutar la consulta utilizando nuestra función
     datos = conn.obtener_info_tarifario()
