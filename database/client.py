@@ -10922,6 +10922,36 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
                 from transporte.listar_vehiculos_con_observaciones();
                         """)
             return cur.fetchall()
+        
+
+
+    ##### Tarifario
+
+
+    def obtener_info_tarifario(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+                select nombre, valor_inferior, valor_superior, unidad from finanzas.caracteristica_tarifa ct 
+                        """)
+            return cur.fetchall()
+
+
+    def obtener_tipo_unidad(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+                select * from finanzas.tipo_unidad tu 
+                        """)
+            return cur.fetchall()
+        
+
+    def agregar_nueva_tarifa(self, id_usuario:str, ids_usuario: str, nombre:str, valor_inferior:int, valor_superior:int, unidad:int):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+           INSERT INTO finanzas.caracteristica_tarifa 
+           (id_usuario, ids_usuario, nombre, valor_inferior, valor_superior, unidad) 
+           VALUES('{id_usuario}','{ids_usuario}','{nombre}',{valor_inferior},{valor_superior},{unidad}
+                          """)
+        self.conn.commit()
 
 
         
