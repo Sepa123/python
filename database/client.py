@@ -10905,6 +10905,23 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
             from transporte.listar_vehiculos_con_observaciones();
                         """)
             return cur.fetchone()
+        
+    def listar_vehiculos_con_observaciones_descarga(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+                select 
+                    ppu,
+                    razon_social,
+                    rut,
+                    celular,
+                    permiso_circulacion_fec_venc,
+                    soap_fec_venc,
+                    revision_tecnica_fec_venc,
+                    case when gps = true then '✓'
+                    else 'x' end as gps
+                from transporte.listar_vehiculos_con_observaciones();
+                        """)
+            return cur.fetchall()
 
 
         

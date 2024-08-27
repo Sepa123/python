@@ -850,3 +850,15 @@ async def actualizar_estado(devuelto:bool, id: int):
 async def get_lista_vehiculo_observacion():
     datos = conn.listar_vehiculos_con_observaciones()
     return datos[0]
+
+
+@router.get("/vehiculos/observaciones/descargar")
+async def descargar_vehiculos_filtro():
+
+    tupla = conn.listar_vehiculos_con_observaciones_descarga()
+
+    nombre_filas = ( 'Patente', 'Razón Social', "Rut", 'Celular','Permiso Circulación', "SOAP", 
+                     "Revisión Técnica","GPS")
+    nombre_excel = f"Observacion_vehiculos"
+
+    return excel.generar_excel_generico(tupla,nombre_filas,nombre_excel)
