@@ -843,3 +843,10 @@ async def actualizar_estado(devuelto:bool, id: int):
         print()
         return {"message": "Datos Ingresados Correctamente"}
     except Exception as e: raise HTTPException(status_code=500, detail=str(e))
+
+
+
+@router.get("/vehiculos/observaciones")
+async def get_lista_vehiculo_observacion():
+    datos = conn.listar_vehiculos_con_observaciones()
+    return datos[0]

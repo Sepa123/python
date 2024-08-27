@@ -10886,6 +10886,26 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
         self.conn.commit()
     
 
+    def listar_vehiculos_con_observaciones(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+                select json_agg(
+                    json_build_object(
+                        'Codigo_retorno', codigo_retorno,
+                        'Ppu', ppu,
+                        'Razon_social', razon_social,
+                        'Rut', rut,
+                        'Celular', celular,
+                        'Permiso_circulacion_fvenc', permiso_circulacion_fec_venc,
+                        'Soap_fvenc', soap_fec_venc,
+                        'Revision_tecnica_fvenc', revision_tecnica_fec_venc,
+                        'Gps', gps
+                    )
+                ) AS result
+            from transporte.listar_vehiculos_con_observaciones();
+                        """)
+            return cur.fetchone()
+
 
         
 
