@@ -10949,7 +10949,7 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
             cur.execute(f"""
            INSERT INTO finanzas.caracteristica_tarifa 
            (id_usuario, ids_usuario, nombre, valor_inferior, valor_superior, unidad) 
-           VALUES('{id_usuario}','{ids_usuario}','{nombre}',{valor_inferior},{valor_superior},{unidad}
+           VALUES('{id_usuario}','{ids_usuario}','{nombre}',{valor_inferior},{valor_superior},{unidad})
                           """)
         self.conn.commit()
 
