@@ -10668,10 +10668,10 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
                 json_build_object(
                     'id_ty', id_ty, 'operacion', operacion, 'estado', estado, 'estado_correcto', estado_correcto,'ruta_meli', ruta_meli, 'id_ppu', id_ppu,'razon_id', razon_id,
                     'ppu', ppu,'patente_igual', patente_igual,'driver', driver,'driver_ok', driver_ok, 'p_avance', p_avance,'avance', avance,'campos_por_operacion', campos_por_operacion,
-                    'tipo_vehiculo', tipo_vehiculo,'valor_ruta', valor_ruta, 'ruta_cerrada', ruta_cerrada
+                    'tipo_vehiculo', tipo_vehiculo,'valor_ruta', valor_ruta, 'ruta_cerrada', ruta_cerrada, 'observacion', observacion
               )) AS result
 
-            from mercadolibre.recupera_data_por_citacion_activa({op},{cop},'{fecha}');
+            from mercadolibre.recupera_data_por_citacion_activa_v2({op},{cop},'{fecha}');
                          """)
             return cur.fetchone()
         
@@ -10708,8 +10708,11 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
 
         with self.conn.cursor() as cur:
             query = """
-            INSERT INTO mercadolibre.mae_data_supervisores
-            ( id_usuario, ids_usuario, latitud, longitud, operacion, id_operacion, id_centro_operacion, estado, fecha, nombre_ruta, tipo_ruta, id_ruta, p_avance, avance, fm_total_paradas, fm_paqueteria_colectada, fm_estimados, fm_preparados, lm_fallido, lm_pendiente, lm_spr, lm_entregas, driver, fm_p_colectas_a_tiempo, fm_p_no_colectadas, lm_tiempo_ruta, lm_estado, ppu, id_ppu, tipo_vehiculo, razon_id, valor_ruta, ruta_cerrada, estado_correcto, patente_igual, driver_ok)
+            INSERT INTO 
+            ( id_usuario, ids_usuario, latitud, longitud, operacion, id_operacion, id_centro_operacion, estado, fecha, nombre_ruta, tipo_ruta, id_ruta, p_avance, avance, 
+            fm_total_paradas, fm_paqueteria_colectada, fm_estimados, fm_preparados, lm_fallido, lm_pendiente, lm_spr, lm_entregas, driver, fm_p_colectas_a_tiempo, 
+            fm_p_no_colectadas, lm_tiempo_ruta, lm_estado, ppu, id_ppu, tipo_vehiculo, razon_id, valor_ruta, ruta_cerrada, estado_correcto, patente_igual, driver_ok,
+            kilometro,observacion)
             VALUES %s
             """
             values = [
@@ -10726,7 +10729,7 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
                     item.estado, item.fecha, item.nombre_ruta, item.tipo_ruta, item.ruta_meli, item.p_avance, item.avance, item.fm_total_paradas, item.fm_paqueteria_colectada,
                     item.fm_estimados, item.fm_preparados, item.lm_fallido, item.lm_pendiente, item.lm_spr, item.lm_entregas, item.driver, item.fm_p_colectas_a_tiempo, 
                     item.fm_p_no_colectadas, item.lm_tiempo_ruta, item.lm_estado, item.ppu, item.id_ppu, item.tipo_vehiculo, item.razon_id, item.valor_ruta, item.ruta_cerrada, 
-                    item.estado_correcto, item.patente_igual, item.driver_ok
+                    item.estado_correcto, item.patente_igual, item.driver_ok, item.kilometro, item.observacion
                 )
                 # for item in body.datos
             ]
@@ -10780,6 +10783,8 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
                 estado_correcto = {to_sql_value(item.estado_correcto)},
                 patente_igual = {to_sql_value(item.patente_igual)},
                 driver_ok = {to_sql_value(item.driver_ok)},
+                kilometro = {to_sql_value(item.kilometro)},
+                observacion = {to_sql_value(item.kilometro)},
                 ultima_actualizacion = CURRENT_DATE
             WHERE
                 id_ruta = {to_sql_value(item.ruta_meli)};

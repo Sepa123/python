@@ -33,6 +33,8 @@ class Dato(BaseModel):
     patente_igual: Optional[bool]
     driver_ok: Optional[bool]
     ruta_meli : Optional[str]
+    kilometro: Optional[Decimal]
+    observacion: Optional[str]
 
     @validator('p_avance', 'fm_p_colectas_a_tiempo','fm_p_no_colectadas','valor_ruta')  # Aplicar la misma validación a ambos campos
     def validate_numeric_fields(cls, v):
@@ -41,6 +43,15 @@ class Dato(BaseModel):
                 raise ValueError('El valor debe estar entre 0.00 y 999.99')
             if v.as_tuple().exponent < -2:  # Asegura que solo haya dos decimales
                 raise ValueError('El valor puede tener un máximo de 2 decimales')
+        return v
+    
+    @validator('kilometro')
+    def validate_numeric_fields_kilometro(cls, v):
+        if v is not None:
+            if v < Decimal('0.0') or v > Decimal('999999999.9'):
+                raise ValueError('El valor debe estar entre 0.0 y 999999999.9')
+            if v.as_tuple().exponent < -1:  # Asegura que solo haya un decimal
+                raise ValueError('El valor puede tener un máximo de 1 decimal')
         return v
 
 
