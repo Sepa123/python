@@ -780,6 +780,9 @@ async def guardar_dato_citacion_supervisores(data_supervisor : DataSupervisor):
 
                 else:
                     conn.update_datos_de_citacion_activa_FM(data_supervisor,datos)
+
+            
+
         
         if len(contador_fallas) == 0:        
             return {"message": "Datos guardados con éxito"}
