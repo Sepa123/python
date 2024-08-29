@@ -10960,6 +10960,29 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
         self.conn.commit()
 
 
+    ### Datos patentes + estrellas
+
+    def obtener_patentes_disponibles_crv_crm(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+                SELECT json_agg(
+                        json_build_object(
+                            'Patentes', patentes_out,
+                            'Tipo', tipo_out,
+                            'Razon_social', razon_social_out,
+                            'Rutas', rutas_out,
+                            'Porcentaje', porcentaje_out,
+                            'Estrellas', estrellas_out,
+                            'Habilitado', habilitado_out
+                        )
+                    ) AS result
+                    from rutas.obtener_patentes_disponibles_crv_crm();
+                        """)
+            return cur.fetchone()
+
+
+
+
         
 
 class transyanezConnection():

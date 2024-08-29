@@ -1431,3 +1431,9 @@ async def get_veh_disp_operaciones(fecha : str):
 
     result = conn.obtener_veh_disp_operaciones(fecha)
     return vehiculos_disponibles_op_schema(result)
+
+
+@router.get("/patentes/disponibles")
+async def get_lista_patentes_disponibles():
+    datos = conn.obtener_patentes_disponibles_crv_crm()
+    return datos[0]
