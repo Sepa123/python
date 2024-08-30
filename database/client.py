@@ -10704,7 +10704,7 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
 
         with self.conn.cursor() as cur:
             query = """
-            INSERT INTO 
+            INSERT INTO mercadolibre.mae_data_supervisores
             ( id_usuario, ids_usuario, latitud, longitud, operacion, id_operacion, id_centro_operacion, estado, fecha, nombre_ruta, tipo_ruta, id_ruta, p_avance, avance, 
             fm_total_paradas, fm_paqueteria_colectada, fm_estimados, fm_preparados, lm_fallido, lm_pendiente, lm_spr, lm_entregas, driver, fm_p_colectas_a_tiempo, 
             fm_p_no_colectadas, lm_tiempo_ruta, lm_estado, ppu, id_ppu, tipo_vehiculo, razon_id, valor_ruta, ruta_cerrada, estado_correcto, patente_igual, driver_ok,
@@ -10731,7 +10731,7 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
             ]
             execute_values(cur, query, values)
 
-            print(values)
+            # print(values)
 
         self.conn.commit()
 
