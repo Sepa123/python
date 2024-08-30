@@ -648,7 +648,7 @@ async def subir_archivo_prefactura_meli_diario(id_usuario : str,ids_usuario : st
         print('no es ninguno')
 
     return {
-        "message" : ''
+        "message" : 'El archivo no tiene el formato ni de FM ni de LM'
     }
 
 @router.get("/prefacturas")

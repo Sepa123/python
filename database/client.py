@@ -10470,14 +10470,12 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
             VALUES %s
             """
             values = [
-            (id_usuario,ids_usuario,fecha,
-                    item['monitoring-row-higher-details__text'],item['monitoring-row-higher-details__text 2'],item['button-copy__text'],item['sc-progress-wheel__percentage'],
-                    item['monitoring-row-higher-details__text 3'],item['monitoring-row-higher-details__text 4'],item['monitoring-row-higher-details__text 7'],
-                    item['bold'],item['gray'],item['monitoring-row-higher-details__text-pipe 2'],item['gray 2'],
-                    item['monitoring-row-higher-details'],item['monitoring-row-higher-details__text 9'],item['monitoring-row-lower-details'],item['andes-tooltip__trigger'],
-                    item['andes-visually-hidden'],item['monitoring-row-higher-details__text-pipe 3'],item['andes-tooltip__trigger 2'],item['performance-tooltip'],
-                    item['performance-tooltip 2'],item['monitoring-row-lower-details 2'],item['third-item'],item['monitoring-row-lower-details 4'],
-                    item['monitoring-row-higher-details__text 10'],latitud, longitud
+            (id_usuario, ids_usuario, fecha,item.get('monitoring-row-higher-details__text', None),item.get('monitoring-row-higher-details__text 2', None),item.get('button-copy__text', None),item.get('sc-progress-wheel__percentage', None),
+            item.get('monitoring-row-higher-details__text 3', None),item.get('monitoring-row-higher-details__text 4', None),item.get('monitoring-row-higher-details__text 7', None), item.get('bold', None),item.get('gray', None),
+            item.get('monitoring-row-higher-details__text-pipe 2', None),item.get('gray 2', None),item.get('monitoring-row-higher-details', None),item.get('monitoring-row-higher-details__text 9', None),item.get('monitoring-row-lower-details', None),item.get('andes-tooltip__trigger', None),
+            item.get('andes-visually-hidden', None),item.get('monitoring-row-higher-details__text-pipe 3', None),item.get('andes-tooltip__trigger 2', None),item.get('performance-tooltip', None),
+            item.get('performance-tooltip 2', None),item.get('monitoring-row-lower-details 2', None),item.get('third-item', None),item.get('monitoring-row-lower-details 4', None),
+            item.get('monitoring-row-higher-details__text 10', None),latitud, longitud
                 )                
             for item in body
                     ]
@@ -10490,19 +10488,17 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
         with self.conn.cursor() as cur:
             query = """
             INSERT INTO mercadolibre.ingreso_diario_textual_lm
-            (id_usuario, ids_usuario, fecha_ingreso, monitoring_row__bold, monitoring_row_details__driver_name, sc_progress_wheel__percentage, monitoring_row_shipments__delivered_packages_text_2, monitoring_row_shipments__delivered_packages_text_3, monitoring_row_shipments__delivered_packages_text_4, monitoring_row_shipments__packages_2, andes_visually_hidden_2, metric_box__value_principal, metric_box__value_principal_2, metric_box__value_principal_3, metric_box__value_principal_4, metric_box__value_principal_5, metric_box__value_principal_6, andes_visually_hidden_4, metric_box__value_principal_7, monitoring_row_details__name, monitoring_row_details__untracked, monitoring_row__chevron_open_src, monitoring_row_details__license, pipe, monitoring_row_details, andes_badge__content, monitoring_row_details__driver_tooltip__title, monitoring_row_details__driver_tooltip__metrics_stat, monitoring_row_details__driver_tooltip__metrics_stat_2, andes_badge__content_2, monitoring_row_details__untracked_2, menu__button_src, monitoring_row_details__license_3, pipe_3)
+            (id_usuario, ids_usuario, fecha_ingreso, monitoring_row__bold, monitoring_row_details__driver_name, sc_progress_wheel__percentage, monitoring_row_shipments__delivered_packages_text_2, monitoring_row_shipments__delivered_packages_text_3, monitoring_row_shipments__delivered_packages_text_4, monitoring_row_shipments__packages_2, andes_visually_hidden_2, metric_box__value_principal, metric_box__value_principal_2, metric_box__value_principal_3, metric_box__value_principal_4, metric_box__value_principal_5, metric_box__value_principal_6, andes_visually_hidden_4, metric_box__value_principal_7, monitoring_row_details__name, monitoring_row_details__untracked, monitoring_row__chevron_open_src, monitoring_row_details__license, pipe, monitoring_row_details, andes_badge__content, monitoring_row_details__driver_tooltip__title, monitoring_row_details__driver_tooltip__metrics_stat, monitoring_row_details__driver_tooltip__metrics_stat_2, andes_badge__content_2, monitoring_row_details__untracked_2, menu__button_src, monitoring_row_details__license_3, pipe_3,latitud,longitud)
             VALUES %s
             """
             values = [
-                (id_usuario,ids_usuario,fecha,
-                item['monitoring-row__bold'],item['monitoring-row-details__driver-name'],item['sc-progress-wheel__percentage'],item['monitoring-row-shipments__delivered-packages-text 2'],
-                item['monitoring-row-shipments__delivered-packages-text 3'],item['monitoring-row-shipments__delivered-packages-text 4'],item['monitoring-row-shipments__packages 2'],
-                item['andes-visually-hidden 2'],item['metric-box__value-principal'],item['metric-box__value-principal 2'],item['metric-box__value-principal 3'],
-                item['metric-box__value-principal 4'],item['metric-box__value-principal 5'],item['metric-box__value-principal 6'],item['andes-visually-hidden 4'],item['metric-box__value-principal 7'],item['monitoring-row-details__name'],
-                item['monitoring-row-details__untracked'], item['monitoring-row__chevron--open src'], item['monitoring-row-details__license'], item['pipe'],
-                item['monitoring-row-details'],item['andes-badge__content'], item['monitoring-row-details__driver-tooltip__title'], item['monitoring-row-details__driver-tooltip__metrics-stat'],
-                item['monitoring-row-details__driver-tooltip__metrics-stat 2'], item['andes-badge__content 2'], item['monitoring-row-details__untracked 2'], item['menu__button src'],
-                item['monitoring-row-details__license 3'], item['pipe 3'],latitud,longitud
+                (id_usuario, ids_usuario, fecha,item.get('monitoring-row__bold', None),item.get('monitoring-row-details__driver-name', None),item.get('sc-progress-wheel__percentage', None), item.get('monitoring-row-shipments__delivered-packages-text 2', None),
+                item.get('monitoring-row-shipments__delivered-packages-text 3', None),item.get('monitoring-row-shipments__delivered-packages-text 4', None),item.get('monitoring-row-shipments__packages 2', None),item.get('andes-visually-hidden 2', None),
+                item.get('metric-box__value-principal', None),item.get('metric-box__value-principal 2', None),item.get('metric-box__value-principal 3', None),item.get('metric-box__value-principal 4', None),item.get('metric-box__value-principal 5', None), item.get('metric-box__value-principal 6', None),
+                item.get('andes-visually-hidden 4', None),item.get('metric-box__value-principal 7', None),item.get('monitoring-row-details__name', None),item.get('monitoring-row-details__untracked', None),item.get('monitoring-row__chevron--open src', None),
+                item.get('monitoring-row-details__license', None),item.get('pipe', None),item.get('monitoring-row-details', None),item.get('andes-badge__content', None),item.get('monitoring-row-details__driver-tooltip__title', None),item.get('monitoring-row-details__driver-tooltip__metrics-stat', None),
+                item.get('monitoring-row-details__driver-tooltip__metrics-stat 2', None),item.get('andes-badge__content 2', None),item.get('monitoring-row-details__untracked 2', None),
+                item.get('menu__button src', None),item.get('monitoring-row-details__license 3', None),item.get('pipe 3', None),latitud, longitud
                 )
                 for item in body
             ]
