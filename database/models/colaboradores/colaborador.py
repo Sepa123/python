@@ -1,5 +1,6 @@
 from typing import Optional
 from pydantic import BaseModel
+from decimal import Decimal
 
 class Colaboradores(BaseModel):
     Id_user: Optional[int]

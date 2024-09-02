@@ -9400,10 +9400,10 @@ SELECT *
         with self.conn.cursor() as cur:
             cur.execute("""
                 INSERT INTO transporte.colaborador
-                (id_user, ids_user, tipo_razon, razon_social, rut, celular,telefono, region, comuna, direccion, representante_legal, rut_representante_legal, email_rep_legal,chofer, peoneta, giro)
+                (id_user, ids_user, tipo_razon, razon_social, rut, celular,telefono, region, comuna, direccion, representante_legal, rut_representante_legal, email_rep_legal,chofer, peoneta, giro,fecha_nacimiento_representante)
                 VALUES(%(Id_user)s, %(Ids_user)s, %(Tipo_razon)s, %(Razon_social)s, %(Rut)s, %(Celular)s,
                         %(Telefono)s, %(Region)s, %(Comuna)s, %(Direccion)s, %(Representante_legal)s,
-                         %(Rut_representante_legal)s, %(Email)s,false,false,%(Giro)s);                
+                         %(Rut_representante_legal)s, %(Email)s,false,false,%(Giro)s,%(Fecha_nacimiento)s);                
     
                  """,data)
             self.conn.commit()
@@ -9424,7 +9424,7 @@ SELECT *
             UPDATE transporte.colaborador
             SET date_modified=CURRENT_TIMESTAMP,  celular= %(Celular)s, telefono=%(Telefono)s, region=%(Region)s, comuna= %(Comuna)s, direccion=%(Direccion)s, 
                 representante_legal=%(Representante_legal)s, rut_representante_legal=%(Rut_representante_legal)s, email_rep_legal=%(Email)s, 
-                activo=%(Activo)s , giro=%(Giro)s, abogado=%(Abogado)s , seguridad=%(Seguridad)s,chofer=%(Chofer)s, peoneta=%(Peoneta)s
+                activo=%(Activo)s , giro=%(Giro)s, abogado=%(Abogado)s , seguridad=%(Seguridad)s,chofer=%(Chofer)s, peoneta=%(Peoneta)s, fecha_nacimiento_representante=%(Fecha_nacimiento)s
             WHERE rut=%(Rut)s
               
                  """,data)
@@ -9783,7 +9783,8 @@ SELECT *
                     WHERE v.razon_id = col.id) AS patentes,
                 (SELECT array_agg(json_build_object('nombre', u.nombre_completo, 'tipo', u.tipo_usuario, 'activo', u.activo ))
                     FROM transporte.usuarios u
-                    WHERE u.id_razon_social = col.id) AS usuarios
+                    WHERE u.id_razon_social = col.id) AS usuarios,
+                fecha_nacimiento_representante  
             FROM transporte.colaborador col
             left join hela.rol r ON col.tipo_razon  = r.id 
             left join transporte.vehiculo v ON v.razon_id = col.id
@@ -9844,7 +9845,8 @@ SELECT *
                     WHERE v.razon_id = col.id) AS patentes,
                 (SELECT array_agg(json_build_object('nombre', u.nombre_completo, 'tipo', u.tipo_usuario, 'activo', u.activo ))
                     FROM transporte.usuarios u
-                    WHERE u.id_razon_social = col.id) AS usuarios    
+                    WHERE u.id_razon_social = col.id) AS usuarios,
+                fecha_nacimiento_representante    
             FROM transporte.colaborador col
             left join hela.rol r ON col.tipo_razon  = r.id 
             left join transporte.vehiculo v ON v.razon_id = col.id

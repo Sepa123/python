@@ -31,7 +31,8 @@ def colaborador(colab):
                 "Vehiculos": colab[28],
                 "Tripulacion": colab[29],
                 "Patentes": colab[30],
-                "Usuarios" : colab[31]
+                "Usuarios" : colab[31],
+                "Fecha_nacimiento": colab[32]
             }
 
 def colaboradores_schema(colaboradores):
