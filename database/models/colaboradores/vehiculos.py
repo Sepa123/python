@@ -1,5 +1,7 @@
 from typing import List, Optional, Union
-from pydantic import BaseModel
+from pydantic import BaseModel , validator
+from decimal import Decimal
+
 
 class Vehiculos(BaseModel):
     Razon_id: Optional[int]
@@ -17,7 +19,7 @@ class Vehiculos(BaseModel):
     Estado: Optional[bool]
     Activation_date: Optional[str]
     Capacidad_carga_kg: Optional[Union[int, str]]
-    Capacidad_carga_m3: Optional[Union[int, str]]
+    Capacidad_carga_m3: Optional[Decimal]
     Platform_load_capacity_kg: Optional[Union[int, str]]
     Crane_load_capacity_kg: Optional[Union[int, str]]
     Permiso_circulacion_fec_venc: Optional[str]
@@ -47,6 +49,15 @@ class Vehiculos(BaseModel):
     Latitud: Optional[str]
     Longitud: Optional[str]
     Origen: Optional[str]
+
+    @validator('Capacidad_carga_m3')
+    def validate_numeric_fields(cls, v):
+        if v is not None:
+            if v < Decimal('0.00') or v > Decimal('99999999.99'):
+                raise ValueError('El valor debe estar entre 0.00 y 99999999.99')
+            if v.as_tuple().exponent < -2:  # Asegura que solo haya dos decimales
+                raise ValueError('El valor puede tener un máximo de 2 decimales')
+        return v
 
 
 
