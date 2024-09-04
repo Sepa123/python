@@ -867,7 +867,7 @@ async def descargar_vehiculos_filtro():
 @router.get("/razon_social/at/descargar")
 async def reporte_razon_soc_at():
 
-    tupla = conn.listar_vehiculos_con_observaciones_descarga()
+    tupla = conn.reporte_razon_soc_at()
 
     nombre_filas = ( 'Razón Social', 'Rut Razón Social', "Estado", 'Documento Tributario','Giro', "Dirección", 
                      "Titular Cuenta","Tipo Cuenta","Rut Cta. Bancaria","N° Cta Bancaria","Banco",

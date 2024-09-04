@@ -10999,6 +10999,17 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
                 from rutas.recupera_productos_adelanto();         
                             """)
                 return cur.fetchone()
+            
+
+
+    def reporte_razon_soc_at(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            select * from transporte.reporte_razon_soc_at();
+
+                                  
+                         """)
+            return cur.fetchall()
 
 
         
