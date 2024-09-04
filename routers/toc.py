@@ -381,6 +381,7 @@ async def descargar_reporte_telefonos_easy(body :ProductoIngresado):
     return excel.generar_excel_generico(tupla,nombre_filas,nombre_excel)
 
 
-
-
-
+@router.get("/productos/adelanto")
+async def get_productos_adelanto():
+    result = conn.recupera_productos_adelanto()
+    return result[0]

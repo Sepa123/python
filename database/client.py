@@ -10979,6 +10979,26 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
             return cur.fetchone()
 
 
+### TOC
+
+    def recupera_productos_adelanto(self):
+            with self.conn.cursor() as cur:
+                cur.execute(f"""   
+            SELECT 
+                    json_agg(
+                        json_build_object(
+                            'Nombre', nombre,
+                            'Direccion', direccion,
+                            'Ciudad', ciudad,
+                            'Telefono', telefono,
+                            'entrega', entrega,
+                            'Descripcion', descripcion,
+                            'Fecha_comp_original', fecha_comp_original,
+                            'Fecha_reprogramada', fecha_reprogramada
+                )) AS result
+                from rutas.recupera_productos_adelanto();         
+                            """)
+                return cur.fetchone()
 
 
         
