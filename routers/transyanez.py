@@ -862,3 +862,16 @@ async def descargar_vehiculos_filtro():
     nombre_excel = f"Observacion_vehiculos"
 
     return excel.generar_excel_generico(tupla,nombre_filas,nombre_excel)
+
+
+@router.get("/razon_social/at/descargar")
+async def reporte_razon_soc_at():
+
+    tupla = conn.listar_vehiculos_con_observaciones_descarga()
+
+    nombre_filas = ( 'Razón Social', 'Rut Razón Social', "Estado", 'Documento Tributario','Giro', "Dirección", 
+                     "Titular Cuenta","Tipo Cuenta","Rut Cta. Bancaria","N° Cta Bancaria","Banco",
+                     "Mail","Representante Legal","Rut Representante Legal","Celular","Contrato","Id Hela")
+    nombre_excel = f"Actualizacion AT - HELA"
+
+    return excel.generar_excel_generico(tupla,nombre_filas,nombre_excel)
