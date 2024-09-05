@@ -875,3 +875,36 @@ async def reporte_razon_soc_at():
     nombre_excel = f"Actualizacion AT - HELA"
 
     return excel.generar_excel_generico(tupla,nombre_filas,nombre_excel)
+
+
+@router.get("/vehiculos/at/descargar")
+async def reporte_vehiculos_at():
+
+    tupla = conn.reporte_vehiculos_at()
+
+    nombre_filas = ( "Patente", "Razón Social", "Estado", "Operación", "Región", "Comuna", 
+    "Tipo Vehículo", "Marca", "Modelo", "Año", "Capcidad kg", "Capacidad m3",  "Fecha Venc. permiso", "Fecha Venc. Revisión", "Fecha Venc. SOAP", 
+    "GPS", "Disponible", "Fecha Desvinculación",  "Fecha Inst. GPS", 
+    "Fecha Desint. GPS", "Operación cop", "Id Hela")
+    nombre_excel = f"Actualizacion AT - HELA"
+
+    return excel.generar_excel_generico(tupla,nombre_filas,nombre_excel)
+
+
+
+@router.get("/panel/vehiculos")
+async def get_panel_vehiculos():
+    datos = conn.panel_vehiculos()
+
+    resultado_dict = {titulo.replace(' ','_') : cant for titulo, cant in datos}
+
+    return resultado_dict
+
+
+@router.get("/panel/colaboradores")
+async def get_panel_colaboradores():
+    datos = conn.panel_colaboradores()
+
+    resultado_dict = {titulo.replace(' ','_') : cant for titulo, cant in datos}
+
+    return resultado_dict

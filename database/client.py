@@ -10994,7 +10994,9 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
                             'entrega', entrega,
                             'Descripcion', descripcion,
                             'Fecha_comp_original', fecha_comp_original,
-                            'Fecha_reprogramada', fecha_reprogramada
+                            'Fecha_reprogramada', fecha_reprogramada,
+                            'Region', region,
+                            'Observacion', observacion_out
                 )) AS result
                 from rutas.recupera_productos_adelanto();         
                             """)
@@ -11008,6 +11010,29 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
             select * from transporte.reporte_razon_soc_at();
 
                                   
+                         """)
+            return cur.fetchall()
+
+
+    def reporte_vehiculos_at(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            select * from transporte.reporte_vehiculo_at();         
+                         """)
+            return cur.fetchall()
+
+
+    def panel_colaboradores(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            select titulo,cant from transporte.panel_colaboradores();        
+                         """)
+            return cur.fetchall()
+        
+    def panel_vehiculos(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            select * from transporte.panel_vehiculos();        
                          """)
             return cur.fetchall()
 
