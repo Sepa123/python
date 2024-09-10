@@ -11035,6 +11035,48 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
             select * from transporte.panel_vehiculos();        
                          """)
             return cur.fetchall()
+        
+    
+    def panel_vehiculos_observados(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            select * from transporte.panel_vehiculos_observados();      
+                         """)
+            return cur.fetchall()
+        
+    def datos_seleccionables_reclutamiento(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            select 'Operacion' as nombre,
+                json_agg(json_build_object('Id',id,'Operacion', nombre)) as campo
+                from operacion.modalidad_operacion
+                union all
+                select 'Origen' as nombre,
+                json_agg(json_build_object('Id',id,'Origen', origen)) as campo
+                from transporte.origen_contacto
+                union all
+                select  'Estado_contacto' as nombre,
+                json_agg(json_build_object('Id',id,'Estado_contacto', estado )) as campo
+                from transporte.estados_contacto
+                union all
+                select 'Motivo_subestado' as nombre,
+                json_agg(json_build_object('Id',id,'Motivo_subestado', motivo  )) as campo
+                from transporte.motivo_subestado  
+                union all 
+                select 'Contacto_ejecutivo' as nombre,
+                json_agg(json_build_object('Id',id,'Ejecutivo', nombre  )) as campo
+                from hela.usuarios u 
+                where rol_id  in ('70','71','72','73')
+                union all 
+                select 'Tipo_vehiculo' as nombre, json_agg(json_build_object('Id',id,'Tipo_vehiculo', tipo )) as campo
+                from transporte.tipo_vehiculo
+                union all
+                select 'Region' as nombre, json_agg(json_build_object('Id_region',id_region,'Nombre_region', region_name )) as campo
+                from public.op_regiones
+                         """)
+            return cur.fetchall()
+
+
 
 
         

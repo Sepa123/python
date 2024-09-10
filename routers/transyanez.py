@@ -908,3 +908,19 @@ async def get_panel_colaboradores():
     resultado_dict = {titulo.replace(' ','_') : cant for titulo, cant in datos}
 
     return resultado_dict
+
+
+@router.get("/panel/vehiculos/observados")
+async def get_panel_vehiculos_observados():
+    datos = conn.panel_vehiculos_observados()
+
+    resultado_dict = {titulo.replace(' ','_') : cant for titulo, cant in datos}
+
+    return resultado_dict
+
+@router.get("/selecciones/reclutamiento")
+async def get_panel_colaboradores():
+    datos = conn.datos_seleccionables_reclutamiento()
+    resultado_dict = {titulo : cant for titulo, cant in datos}
+
+    return resultado_dict
