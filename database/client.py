@@ -11110,6 +11110,29 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
             return cur.fetchall()
 
 
+    def datos_razon_social(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            SELECT 'Motivo' as nombre, json_agg(json_build_object('Id',id,'Motivo', motivo)order by id) as campo
+                FROM transporte.motivo_desvinculacion
+                union all
+                SELECT 'Estado' as nombre, json_agg(json_build_object('Id',id,'Estado', estado)order by id) as campo
+                FROM transporte.estado  
+                union all    
+                select 'Comuna' as nombre, json_agg(json_build_object('Nombre_comuna',comuna_name,'Id_region', id_region,'Id_comuna', id_comuna  )order by id_comuna) as campo
+                from public.op_comunas oc 
+                union all
+                select 'Marca_vehiculo' as nombre, json_agg(json_build_object('id', id,'name', marca) ORDER BY id ) AS campo
+                from transporte.marca_vehiculo mv 
+                union all 
+                select 'Tipo_vehiculo' as nombre, json_agg(json_build_object('id',id,'name', tipo ) ORDER BY id) as campo
+                from transporte.tipo_vehiculo
+                union all
+                select 'Region' as nombre, json_agg(json_build_object('Id_region',id_region,'Nombre_region', region_name ) ORDER BY id_region) as campo
+                from public.op_regiones
+                         """)
+            return cur.fetchall()
+
 
 
         

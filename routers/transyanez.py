@@ -940,3 +940,10 @@ async def datos_vehiculos():
     resultado_dict = {titulo : cant for titulo, cant in datos}
 
     return resultado_dict
+
+@router.get("/datos/razon_social")
+async def datos_vehiculos():
+    datos = conn.datos_razon_social()
+    resultado_dict = {titulo : cant for titulo, cant in datos}
+
+    return resultado_dict
