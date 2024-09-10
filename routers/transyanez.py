@@ -894,11 +894,18 @@ async def reporte_vehiculos_at():
 
 @router.get("/panel/vehiculos")
 async def get_panel_vehiculos():
-    datos = conn.panel_vehiculos()
+    datos_vehiculos = conn.panel_vehiculos()
 
-    resultado_dict = {titulo.replace(' ','_') : cant for titulo, cant in datos}
+    resultado_pv = {titulo.replace(' ','_') : cant for titulo, cant in datos_vehiculos}
 
-    return resultado_dict
+    datos_observados = conn.panel_vehiculos_observados()
+
+    resultado_obs = {titulo.replace(' ','_') : cant for titulo, cant in datos_observados}
+
+    return {
+        'Panel_vehiculos':resultado_pv,
+        'Panel_vehiculos_obs': resultado_obs
+    }
 
 
 @router.get("/panel/colaboradores")
@@ -921,6 +928,15 @@ async def get_panel_vehiculos_observados():
 @router.get("/selecciones/reclutamiento")
 async def get_panel_colaboradores():
     datos = conn.datos_seleccionables_reclutamiento()
+    resultado_dict = {titulo : cant for titulo, cant in datos}
+
+    return resultado_dict
+
+
+
+@router.get("/datos/vehiculos")
+async def datos_vehiculos():
+    datos = conn.datos_vehiculos()
     resultado_dict = {titulo : cant for titulo, cant in datos}
 
     return resultado_dict

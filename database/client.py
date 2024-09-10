@@ -11075,6 +11075,39 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
                 from public.op_regiones
                          """)
             return cur.fetchall()
+        
+
+    def datos_vehiculos(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            select 'Comuna' as nombre, json_agg(json_build_object('Nombre_comuna',comuna_name,'Id_region', id_region,'Id_comuna', id_comuna  )order by id_comuna) as campo
+                from public.op_comunas oc 
+            union all
+            select 'Marca_vehiculo' as nombre, json_agg(json_build_object('id', id,'name', marca) ORDER BY id ) AS campo
+            from transporte.marca_vehiculo mv 
+            union all 
+            select 'Tipo_vehiculo' as nombre, json_agg(json_build_object('id',id,'name', tipo ) ORDER BY id) as campo
+            from transporte.tipo_vehiculo
+            union all
+            select 'Region' as nombre, json_agg(json_build_object('Id_region',id_region,'Nombre_region', region_name ) ORDER BY id_region) as campo
+            from public.op_regiones
+            union all
+            select 'Vehiculos_observaciones' as nombre, json_agg(
+                json_build_object(
+                    'Codigo_retorno', codigo_retorno,
+                    'Ppu', ppu,
+                    'Razon_social', razon_social,
+                    'Rut', rut,
+                    'Celular', celular,
+                    'Permiso_circulacion_fvenc', permiso_circulacion_fec_venc,
+                    'Soap_fvenc', soap_fec_venc,
+                    'Revision_tecnica_fvenc', revision_tecnica_fec_venc,
+                    'Gps', gps
+                )
+            ) AS result
+            from transporte.listar_vehiculos_con_observaciones();
+                         """)
+            return cur.fetchall()
 
 
 
