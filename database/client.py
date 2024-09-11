@@ -11132,6 +11132,24 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
                 from public.op_regiones
                          """)
             return cur.fetchall()
+        
+    
+    def listar_drivers_con_observaciones(self):
+        with self.conn.cursor() as cur:
+                cur.execute(f"""   
+                select 
+                json_agg(json_build_object(
+                    'Codigo_retorno',codigo_retorno,
+                    'Nombre', nombre_completo,
+                    'Rut', rut,
+                    'Razon_social', razon_social,
+                    'Telefono',telefono,
+                    'Fec_venc_licencia',fec_venc_lic_conducir,
+                    'Rut_valido',rut_valido) ) as campo
+            
+                from transporte.listar_drivers_con_observaciones();
+                            """)
+                return cur.fetchone()
 
 
 

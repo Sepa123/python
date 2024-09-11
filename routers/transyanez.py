@@ -947,3 +947,10 @@ async def datos_vehiculos():
     resultado_dict = {titulo : cant for titulo, cant in datos}
 
     return resultado_dict
+
+
+@router.get("/drivers/observaciones")
+async def get_listar_drivers_con_observaciones():
+    datos = conn.listar_drivers_con_observaciones()
+
+    return datos[0]
