@@ -11076,6 +11076,23 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
                          """)
             return cur.fetchall()
         
+    def datos_seleccionables_tripulacion(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            select 'Comuna' as nombre, json_agg(json_build_object('Nombre_comuna',comuna_name,'Id_region', id_region,'Id_comuna', id_comuna  )order by id_comuna) as campo
+            from public.op_comunas oc 
+            union all
+            select 'Marca_vehiculo' as nombre, json_agg(json_build_object('id', id,'name', marca) ORDER BY id ) AS campo
+            from transporte.marca_vehiculo mv 
+            union all 
+            select 'Tipo_tripulacion' as nombre, json_agg(json_build_object('Id',id,'Tripulacion',tripulacion  ) ORDER BY id) as campo
+            from transporte.tipo_tipulacion tt 
+            union all
+            select 'Region' as nombre, json_agg(json_build_object('Id_region',id_region,'Nombre_region', region_name ) ORDER BY id_region) as campo
+            from public.op_regiones
+                         """)
+            return cur.fetchall()
+        
 
     def datos_vehiculos(self):
         with self.conn.cursor() as cur:

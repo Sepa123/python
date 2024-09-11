@@ -933,6 +933,14 @@ async def get_panel_colaboradores():
     return resultado_dict
 
 
+@router.get("/selecciones/tripulacion")
+async def get_datos_seleccionables_tripulacion():
+    datos = conn.datos_seleccionables_tripulacion()
+    resultado_dict = {titulo : cant for titulo, cant in datos}
+
+    return resultado_dict
+
+
 
 @router.get("/datos/vehiculos")
 async def datos_vehiculos():
