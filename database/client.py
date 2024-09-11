@@ -11167,9 +11167,93 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
                 from transporte.listar_drivers_con_observaciones();
                             """)
                 return cur.fetchone()
+        
+    def insert_nuevo_candidato(self,data):
+        with self.conn.cursor() as cur:
+
+            cur.execute("""
+                        
+                INSERT INTO transporte.reclutamiento
+                (id_user, ids_user, region, operacion_postula, nombre_contacto, telefono, tipo_vehiculo, origen_contacto, estado_contacto, motivo_subestado, contacto_ejecutivo, razon_social, rut_empresa, internalizado)
+                VALUES(%(Id_user)s, %(Ids_user)s, %(Region)s, %(Operacion_postula)s, %(Telefono)s, %(Tipo_vehiculo)s, %(Origen_contacto)s, %(Estado_contacto)s
+                       %(Contacto_ejecutivo)s,%(Razon_social)s,%(Rut_empresa)s,%(Internalizado)s);
+ 
+                 """,data)
+            self.conn.commit()
+
+    def obtener_modalidad_operaciones(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            select id, nombre from operacion.modalidad_operacion mo    
+                         """)
+            return cur.fetchall()
+        
+    def obtener_info_tarifario_general_null(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            SELECT id,operacion, centro_operacion, tipo_vehiculo, capacidad, periodicidad, tarifa, fecha_de_caducidad FROM finanzas.tarifario_general tg WHERE fecha_de_caducidad IS NULL;
+                         """)
+            return cur.fetchall() 
+
+    def obtener_centro_operacion(self,id_op):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            select id,centro from operacion.centro_operacion co where id_op = {id_op}                      
+              """)
+            return cur.fetchall()
+        
+    
+    def obtener_tipo_vehiculo(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            select * from transporte.tipo_vehiculo tv                   
+              """)
+            return cur.fetchall()
+        
+    def obtener_caract_finanzas(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            select id,nombre,valor_inferior,valor_superior,unidad from finanzas.caracteristica_tarifa ct                   
+              """)
+            return cur.fetchall()
+    
+    def obtener_periodicidad(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            select * from finanzas.periodicidad p                   
+              """)
+            return cur.fetchall()
+        
+
+    def obtener_info_tarifario_general(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            select id,operacion, centro_operacion, tipo_vehiculo, capacidad, periodicidad, tarifa, fecha_de_caducidad from finanzas.tarifario_general tg                              
+                      """)
+            return cur.fetchall() 
+        
+    
+    def obtener_centro_operacion_filter(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            select id, centro, descripcion from operacion.centro_operacion co                        
+                      """)
+            return cur.fetchall() 
+
+    def actualizar_fecha_tarifario_general(self, id:str, fecha_de_caducidad:str):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+           UPDATE finanzas.tarifario_general SET fecha_de_caducidad='{fecha_de_caducidad}' WHERE id={id};
+                          """)
+        self.conn.commit()
 
 
-
+    def agregar_nuevo_tarifario_general(self, id_usuario, ids_usuario, latitud, longitud, operacion, centro_operacion, tipo_vehiculo, capacidad, periodicidad, tarifa):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+           INSERT INTO finanzas.tarifario_general(id_usuario, ids_usuario, latitud, longitud, operacion, centro_operacion, tipo_vehiculo, capacidad, periodicidad, tarifa) VALUES('{id_usuario}','{ids_usuario}','{latitud}','{longitud}',{operacion},{centro_operacion},{tipo_vehiculo},{capacidad},{periodicidad},{tarifa})
+                          """)
+        self.conn.commit()
         
 
 class transyanezConnection():

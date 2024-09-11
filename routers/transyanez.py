@@ -9,6 +9,7 @@ from database.models.colaboradores.colaborador import Colaboradores,DetallesPago
 from database.models.colaboradores.vehiculos import Vehiculos,AsignarOperacion, VehiculosExcel,cambiarEstadoVehiculo,VehiculosExcelResumen
 from database.models.colaboradores.persona import Usuario
 from database.models.operaciones.peso_volumetrico import PesoVolumetrico
+from database.models.colaboradores.reclutamiento import Reclutamiento
 from database.schema.transporte.colaborador import colaboradores_schema, detalle_pagos_schema,motivo_desvinculacion_schema
 from database.schema.transporte.vehiculo import vehiculos_schema ,operacion_vehiculo_schema, vehiculos_y_op_schema
 from database.schema.transporte.usuario import usuarios_transporte_schema
@@ -962,3 +963,24 @@ async def get_listar_drivers_con_observaciones():
     datos = conn.listar_drivers_con_observaciones()
 
     return datos[0]
+
+
+@router.post("/agregar/recluta")
+async def agregar_nuevo_colaborador(body : Reclutamiento):
+    try:
+        data = body.dict()
+        conn.insert_bitacora_transporte(data)
+
+        return {
+            "message": "Candidato agregado correctamente",
+            "razon" : "id_razon_social[0]"
+
+        }
+    except psycopg2.errors.UniqueViolation as error:
+        # Manejar la excepción UniqueViolation específica
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error: El rut {body.Rut} ya se encuentra registrado")
+
+    except Exception as error:
+        print(error)
+        # Manejar otras excepciones
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error al agregar el detalle de pago.")
