@@ -11066,7 +11066,7 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
                 select 'Contacto_ejecutivo' as nombre,
                 json_agg(json_build_object('Id',id,'Ejecutivo', nombre  )) as campo
                 from hela.usuarios u 
-                where rol_id  in ('70','71','72','73')
+                where rol_id  in ('70','71','72','73') and activate = true
                 union all 
                 select 'Tipo_vehiculo' as nombre, json_agg(json_build_object('Id',id,'Tipo_vehiculo', tipo )) as campo
                 from transporte.tipo_vehiculo
@@ -11174,9 +11174,9 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
             cur.execute("""
                         
                 INSERT INTO transporte.reclutamiento
-                (id_user, ids_user, region, operacion_postula, nombre_contacto, telefono, tipo_vehiculo, origen_contacto, estado_contacto, motivo_subestado, contacto_ejecutivo, razon_social, rut_empresa, internalizado)
+                (id_user, ids_user, region, operacion_postula, nombre_contacto, telefono, tipo_vehiculo, origen_contacto, estado_contacto, motivo_subestado, contacto_ejecutivo, razon_social, rut_empresa)
                 VALUES(%(Id_user)s, %(Ids_user)s, %(Region)s, %(Operacion_postula)s, %(Telefono)s, %(Tipo_vehiculo)s, %(Origen_contacto)s, %(Estado_contacto)s
-                       %(Contacto_ejecutivo)s,%(Razon_social)s,%(Rut_empresa)s,%(Internalizado)s);
+                       %(Contacto_ejecutivo)s,%(Razon_social)s,%(Rut_empresa)s);
  
                  """,data)
             self.conn.commit()

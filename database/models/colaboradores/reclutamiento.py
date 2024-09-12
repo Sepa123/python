@@ -20,4 +20,4 @@ class Reclutamiento(BaseModel):
     Contacto_ejecutivo : Optional[int]
     Razon_social : Optional[str]
     Rut_empresa : Optional[str]
-    Internalizado : Optional[bool]
+    # Internalizado : Optional[bool]
