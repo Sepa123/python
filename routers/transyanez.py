@@ -965,11 +965,18 @@ async def get_listar_drivers_con_observaciones():
     return datos[0]
 
 
+@router.get("/datos/reclutamiento")
+async def get_datos_reclutamiento():
+    datos = conn.obtener_datos_reclutamiento()
+
+    return datos[0]
+
+
 @router.post("/agregar/recluta")
-async def agregar_nuevo_colaborador(body : Reclutamiento):
+async def agregar_nuevo_recluta(body : Reclutamiento):
     try:
         data = body.dict()
-        conn.insert_bitacora_transporte(data)
+        conn.insert_nuevo_candidato(data)
 
         return {
             "message": "Candidato agregado correctamente",
@@ -978,9 +985,37 @@ async def agregar_nuevo_colaborador(body : Reclutamiento):
         }
     except psycopg2.errors.UniqueViolation as error:
         # Manejar la excepción UniqueViolation específica
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error: El rut {body.Rut} ya se encuentra registrado")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error: El rut de empresa {body.Rut_empresa} ya se encuentra registrado")
 
     except Exception as error:
         print(error)
         # Manejar otras excepciones
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error al agregar el detalle de pago.")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error al agregar al nuevo recluta.")
+    
+
+
+@router.put("/actualizar/recluta")
+async def actualizar_datos_colaborador(body : Reclutamiento):
+    try:
+        data = body.dict()
+        conn.update_candidato(data)
+        return {
+            "message": "Recluta actualizado correctamente",
+
+        }
+    except psycopg2.errors.UniqueViolation as error:
+        # Manejar la excepción UniqueViolation específica
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error: El rut de empresa {body.Rut_empresa} ya se encuentra registrado")
+
+    except Exception as error:
+        print(error)
+        # Manejar otras excepciones
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error al agregar al nuevo recluta.")
+    
+
+
+@router.get("/experiencia/comentario")
+async def get_experiencia_comentario():
+    datos = conn.datos_experiencia_comentario()
+
+    return datos[0]

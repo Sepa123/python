@@ -3,6 +3,7 @@ from typing import Optional
 from datetime import date
 
 class Reclutamiento(BaseModel):
+    Id_reclutamiento : int
     Id_user: int
     Ids_user: Optional[str]
     Modificacion: Optional[str]

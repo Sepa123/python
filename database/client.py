@@ -11073,6 +11073,9 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
                 union all
                 select 'Region' as nombre, json_agg(json_build_object('Id_region',id_region,'Nombre_region', region_name )) as campo
                 from public.op_regiones
+                union all
+                select 'Comentarios' as nombre, json_agg(json_build_object('Id',id ,'Calificacion',calificacion ,'Icono', icono ,'Color', color,'Latitud', '','Longitud', '','Comentario', '')) as campo 
+				from transporte.experiencia_comentario;
                          """)
             return cur.fetchall()
         
@@ -11175,8 +11178,36 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
                         
                 INSERT INTO transporte.reclutamiento
                 (id_user, ids_user, region, operacion_postula, nombre_contacto, telefono, tipo_vehiculo, origen_contacto, estado_contacto, motivo_subestado, contacto_ejecutivo, razon_social, rut_empresa)
-                VALUES(%(Id_user)s, %(Ids_user)s, %(Region)s, %(Operacion_postula)s, %(Telefono)s, %(Tipo_vehiculo)s, %(Origen_contacto)s, %(Estado_contacto)s
+                VALUES(%(Id_user)s, %(Ids_user)s, %(Region)s, %(Operacion_postula)s,%(Nombre_contacto)s, %(Telefono)s, %(Tipo_vehiculo)s, %(Origen_contacto)s, %(Estado_contacto)s,%(Motivo_subestado)s,
                        %(Contacto_ejecutivo)s,%(Razon_social)s,%(Rut_empresa)s);
+ 
+                 """,data)
+            self.conn.commit()
+
+    def update_candidato(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+              
+                UPDATE transporte.reclutamiento
+                SET last_update=CURRENT_TIMESTAMP, region=%(Region)s, operacion_postula=%(Operacion_postula)s, nombre_contacto=%(Nombre_contacto)s,
+                telefono=%(Telefono)s, tipo_vehiculo=%(Tipo_vehiculo)s, 
+                origen_contacto=%(Origen_contacto)s, estado_contacto=%(Estado_contacto)s, motivo_subestado=%(Motivo_subestado)s, 
+                contacto_ejecutivo=%(Contacto_ejecutivo)s, razon_social=%(Razon_social)s, rut_empresa=%(Rut_empresa)s
+                WHERE id=%(Id_reclutamiento)s
+
+                 """,data)
+            self.conn.commit()
+
+            
+    def insert_comentario_reclutamiento(self,data):
+        with self.conn.cursor() as cur:
+
+            cur.execute("""
+                        
+                INSERT INTO transporte.reclutamiento_comentarios
+                (id_user, ids_user, id_reclutamiento, latitud, longitud, comentario, estatus_comentario)
+                VALUES(%(Id_user)s, %(Ids_user)s, %(Id_reclutamiento)s, 
+                %(Latitud)s,%(Longitud)s,%(Comentario)s,%(Estatus_comentario)s);
  
                  """,data)
             self.conn.commit()
@@ -11254,7 +11285,57 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
            INSERT INTO finanzas.tarifario_general(id_usuario, ids_usuario, latitud, longitud, operacion, centro_operacion, tipo_vehiculo, capacidad, periodicidad, tarifa) VALUES('{id_usuario}','{ids_usuario}','{latitud}','{longitud}',{operacion},{centro_operacion},{tipo_vehiculo},{capacidad},{periodicidad},{tarifa})
                           """)
         self.conn.commit()
-        
+
+
+    def obtener_datos_reclutamiento(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            SELECT json_agg(json_build_object
+                    ('Id_reclutamiento',r.id ,
+                    'Region',r.region,
+                    'Operacion_postula', r.operacion_postula,
+                    'Nombre', r.nombre_contacto,
+                    'Telefono', r.telefono,
+                    'Tipo_vehiculo', r.tipo_vehiculo,
+                    'Origen_contacto', r.origen_contacto,
+                    'Estado_contacto', r.estado_contacto,
+                    'Motivo_subestado', r.motivo_subestado,
+                    'Contacto_ejecutivo', r.contacto_ejecutivo,
+                    'Razon_social', r.razon_social,
+                    'Rut_empresa',r.rut_empresa,
+                    'Internalizado', r.internalizado,
+                    'Region_nombre', re.region_name, 
+                    'Operacion_nombre', mo.nombre, 
+                    'Nombre_origen', oc.origen,
+                    'Nombre_estados', ec.estado,
+                    'Nombre_motivo', mv.motivo 
+                    ) ) as campo
+                FROM transporte.reclutamiento r
+                LEFT JOIN public.op_regiones re ON cast(r.region as varchar) = re.id_region 
+                LEFT JOIN transporte.origen_contacto oc ON r.origen_contacto  = oc.id  
+                LEFT JOIN transporte.estados_contacto ec ON r.estado_contacto  = ec.id  
+                LEFT JOIN transporte.motivo_subestado mv ON r.motivo_subestado  = mv.id  
+                LEFT JOIN operacion.modalidad_operacion mo ON r.operacion_postula = mo.id ;                      
+                      """)
+            return cur.fetchone()
+
+
+    def datos_experiencia_comentario(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            select json_agg(json_build_object
+                ('Id',id  ,
+                'Calificacion',calificacion ,
+                'Icono', icono ,
+                'Color', color,
+                'Latitud', '',
+                'Longitud', '',
+                'Comentario', ''
+                ) ) as campo 
+            from transporte.experiencia_comentario;   
+                      """)
+            return cur.fetchone()
+ 
 
 class transyanezConnection():
     conn = None
