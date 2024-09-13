@@ -725,15 +725,21 @@ async def get_citacion_activa(id_usuario: int, fecha : str):
             # for detalle in info['Detalles']:
                 # Extraer el valor de 'p_avance'
                 avance = info['Detalles'][0]['avance']
+                sum_avance = 0
+                for detalle in info['Detalles']:
+                    sum_avance = detalle['p_avance'] + sum_avance
 
-                # Estructura deseada
+          # Estructura deseada
+
+                prom_avance = sum_avance /len(info['Detalles'])
+
                 chart_data = {
                     "labels": [
                         "Avance",
                         "Faltante"
                     ],
                     "datasets": [{
-                        "data": [avance, 100 - avance],
+                        "data": [prom_avance, 100 - prom_avance],
                         "backgroundColor": ['#4CAF50', '#e0e0e0'],
                         "hoverOffset": 4
                     }],
