@@ -10784,7 +10784,7 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
                 kilometros = {to_sql_value(item.kilometro)},
                 observacion = {to_sql_value(item.observacion
                 )},
-                ultima_actualizacion = CURRENT_TIMESTAMP
+                ultima_actualizacion = CURRENT_DATE
             WHERE
                 id_ruta = {to_sql_value(item.ruta_meli)};
             """)
@@ -11222,8 +11222,8 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
     def obtener_info_tarifario_general_null(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
-                    select * from finanzas.listar_tarifario_general();
-                                     """)
+            SELECT id,operacion, centro_operacion, tipo_vehiculo, capacidad, periodicidad, tarifa, fecha_de_caducidad FROM finanzas.tarifario_general tg WHERE fecha_de_caducidad IS NULL;
+                         """)
             return cur.fetchall() 
 
     def obtener_centro_operacion(self,id_op):
@@ -11259,7 +11259,7 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
     def obtener_info_tarifario_general(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
-            select id,operacion, centro_operacion, tipo_vehiculo, capacidad, periodicidad, tarifa, fecha_de_caducidad from finanzas.tarifario_general tg                              
+            select * from finanzas.listar_tarifario_general();                            
                       """)
             return cur.fetchall() 
         
