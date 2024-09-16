@@ -181,11 +181,11 @@ async def Obtener_datos():
     if datos:
         datos_formateados = [{  
                                 "id": fila [0],
-                                "operacion" : fila[1],
-                                "centro_operacion": fila[2],
-                                "tipo_vehiculo":fila[3],
-                                "capacidad":fila[4],
-                                "periodicidad":fila[5],
+                                "nombre" : fila[1],
+                                "centro": fila[2],
+                                "tipo":fila[3],
+                                "caracteristica_tarifa":fila[4],
+                                "periodo":fila[5],
                                 "tarifa":fila[6],
                                 "fecha_de_caducidad":fila[7]
 
