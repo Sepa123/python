@@ -10784,7 +10784,7 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
                 kilometros = {to_sql_value(item.kilometro)},
                 observacion = {to_sql_value(item.observacion
                 )},
-                ultima_actualizacion = CURRENT_DATE
+                ultima_actualizacion = CURRENT_TIMESTAMP
             WHERE
                 id_ruta = {to_sql_value(item.ruta_meli)};
             """)
@@ -11206,8 +11206,8 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
                         
                 INSERT INTO transporte.reclutamiento_comentarios
                 (id_user, ids_user, id_reclutamiento, latitud, longitud, comentario, estatus_comentario)
-                VALUES(%(Id_user)s, %(Ids_user)s, %(Id_reclutamiento)s, 
-                %(Latitud)s,%(Longitud)s,%(Comentario)s,%(Estatus_comentario)s);
+                VALUES(%(Id_user)s, %(Ids_user)s, %(Id_recluta)s, 
+                %(Latitud)s,%(Longitud)s,%(Comentario)s,%(Id)s);
  
                  """,data)
             self.conn.commit()
@@ -11335,7 +11335,67 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
             from transporte.experiencia_comentario;   
                       """)
             return cur.fetchone()
- 
+
+    ##############
+
+    def resumen_rutas_fecha_sup(self,fecha_ini,fecha_fin,usuario):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            with resumen_sup as (
+            SELECT  mo.modalidad,mo.nombre AS operacion,co.centro AS centro_operacion,r.region_name AS region,
+                    mds.fecha,mds.id_ruta,mds.ppu,mds.driver,
+                    mds.kilometros,mds.p_avance,mds.avance,
+                    CASE 
+                        WHEN (SELECT maux.modalidad FROM operacion.modalidad_operacion maux WHERE maux.id = mo.id) = 'FM' THEN
+                            (SELECT array_agg(json_build_object('fm_total_paradas', daux.fm_total_paradas, 'fm_paqueteria_colectada', daux.fm_paqueteria_colectada, 'fm_estimados', daux.fm_estimados, 'fm_preparados', daux.fm_preparados,'fm_p_colectas_a_tiempo', daux.fm_p_colectas_a_tiempo,'fm_p_no_colectadas', daux.fm_p_no_colectadas))
+                            FROM mercadolibre.mae_data_supervisores daux
+                            WHERE daux.id = mds.id)
+                        WHEN (SELECT maux.modalidad FROM operacion.modalidad_operacion maux WHERE maux.id = mo.id) = 'LM' THEN 
+                            (SELECT array_agg(json_build_object('lm_fallido',  daux.lm_fallido, 'lm_pendiente', daux.lm_pendiente, 'lm_spr', daux.lm_spr, 'lm_entregas', daux.lm_entregas,'lm_tiempo_ruta', daux.lm_tiempo_ruta,'lm_estado', daux.lm_estado))
+                            FROM mercadolibre.mae_data_supervisores daux
+                            WHERE daux.id = mds.id)
+                    END AS campos_por_operacion,
+                    mds.valor_ruta,
+                    mds.ruta_cerrada 
+                FROM mercadolibre.mae_data_supervisores mds 
+                LEFT JOIN operacion.centro_operacion co ON (co.id = mds.id_centro_operacion AND co.id_op = mds.id_operacion)
+                LEFT JOIN operacion.modalidad_operacion mo ON mo.id = mds.id_operacion
+                LEFT JOIN public.op_regiones r ON r.id_region::INT8 = co.region
+                LEFT JOIN mercadolibre.citacion c ON c.ruta_meli::INTEGER = mds.id_ruta
+                WHERE mds.fecha BETWEEN '{fecha_ini}'::DATE AND '{fecha_fin}'::DATE
+                and ({usuario} = ANY(co.id_coordinador) or {usuario} in (select u.id from hela.usuarios u where u.rol_id in ('5','90')))
+                ORDER BY 1 DESC, 5 asc
+
+            )
+
+
+            
+        ---select * from mercadolibre.resumen_rutas_fecha_sup('20240901','20240930',158,0);   
+            
+        
+
+
+        select json_agg(
+                json_build_object(
+                'Modalidad',modalidad,
+                'Operacion', operacion,
+                'Centro_operacion', centro_operacion,
+                'Region', region,
+                'Fecha', fecha,
+                'Id_ruta', id_ruta,
+                'Ppu', ppu,
+                'Driver', driver,
+                'Kilometros', kilometros,
+                'P_avance', p_avance,
+                'Avance', avance,
+                'Campos_por_operacion', campos_por_operacion,
+                'Valor_ruta', valor_ruta,
+                'Ruta_cerrada', ruta_cerrada
+                )
+        ) as campo
+            from resumen_sup                              
+                      """)
+            return cur.fetchone() 
 
 class transyanezConnection():
     conn = None

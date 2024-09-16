@@ -22,3 +22,17 @@ class Reclutamiento(BaseModel):
     Razon_social : Optional[str]
     Rut_empresa : Optional[str]
     # Internalizado : Optional[bool]
+
+
+
+class ComentarioRecluta(BaseModel):
+    Id : int ## estatus_comentario
+    Id_recluta: int ## id_recluta
+    Id_user: int
+    Ids_user: Optional[str]
+    Latitud: Optional[str]
+    Longitud: Optional[str]
+    Comentario : Optional[str]
+
+
+

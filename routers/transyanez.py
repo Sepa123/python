@@ -9,7 +9,7 @@ from database.models.colaboradores.colaborador import Colaboradores,DetallesPago
 from database.models.colaboradores.vehiculos import Vehiculos,AsignarOperacion, VehiculosExcel,cambiarEstadoVehiculo,VehiculosExcelResumen
 from database.models.colaboradores.persona import Usuario
 from database.models.operaciones.peso_volumetrico import PesoVolumetrico
-from database.models.colaboradores.reclutamiento import Reclutamiento
+from database.models.colaboradores.reclutamiento import ComentarioRecluta, Reclutamiento
 from database.schema.transporte.colaborador import colaboradores_schema, detalle_pagos_schema,motivo_desvinculacion_schema
 from database.schema.transporte.vehiculo import vehiculos_schema ,operacion_vehiculo_schema, vehiculos_y_op_schema
 from database.schema.transporte.usuario import usuarios_transporte_schema
@@ -1017,5 +1017,33 @@ async def actualizar_datos_colaborador(body : Reclutamiento):
 @router.get("/experiencia/comentario")
 async def get_experiencia_comentario():
     datos = conn.datos_experiencia_comentario()
+
+    return datos[0]
+
+
+@router.post("/agregar/comentario")
+async def agregar_comentario(body : ComentarioRecluta):
+    try:
+        data = body.dict()
+        conn.insert_comentario_reclutamiento(data)
+
+        return {
+            "message": "Comentario agregado correctamente"
+
+        }
+    except psycopg2.errors.UniqueViolation as error:
+        # Manejar la excepción UniqueViolation específica
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error: El rut de empresa {body.Rut_empresa} ya se encuentra registrado")
+
+    except Exception as error:
+        print(error)
+        # Manejar otras excepciones
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error al agregar al nuevo recluta.")
+    
+
+
+@router.get("/resumen/rutas/supervisor")
+async def get_experiencia_comentario(fecha_ini: str, fecha_fin: str, usuario: int):
+    datos = conn.resumen_rutas_fecha_sup(fecha_ini, fecha_fin,usuario)
 
     return datos[0]
