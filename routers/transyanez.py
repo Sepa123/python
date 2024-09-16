@@ -207,38 +207,44 @@ async def actualizar_datos_vehiculo(body : Vehiculos):
     body.Razon_id= conn.buscar_id_colab_por_rut(body.Rut_colaborador)[0]
 
     try:
-        ### si se clickeo el gps
-        if body.Gps == True:
-            if body.Id_gps == None or body.Id_gps == 'null':
-                data_gps= body.dict()
-                conn.agregar_datos_gps(data_gps)
-                id_gps = conn.get_max_id_gps()[0]
-                # print('pase por aca')
-                body.Id_gps = id_gps
-            else:
-                # print('qhe es eesos')
-                data_gps= body.dict()
-                conn.actualizar_datos_gps(data_gps)
-        ### si no se clickeo el gps
-        elif body.Gps == False:
-            if body.Id_gps != None or body.Id_gps != 'null':
-                data_gps= body.dict()
-                conn.actualizar_datos_gps_si_se_desactiva_gps(data_gps)
-                # print('paseee por acasss')
+
+        ### si el imei es null,ignorar el agregar gps
+
+        if body.Imei == 'null' or body.Imei == None:
+            pass
+        else:
+            ### si se clickeo el gps
+            if body.Gps == True:
+                if body.Id_gps == None or body.Id_gps == 'null':
+                    data_gps= body.dict()
+                    conn.agregar_datos_gps(data_gps)
+                    id_gps = conn.get_max_id_gps()[0]
+                    # print('pase por aca')
+                    body.Id_gps = id_gps
+                else:
+                    # print('qhe es eesos')
+                    data_gps= body.dict()
+                    conn.actualizar_datos_gps(data_gps)
+            ### si no se clickeo el gps
+            elif body.Gps == False:
+                if body.Id_gps != None or body.Id_gps != 'null':
+                    data_gps= body.dict()
+                    conn.actualizar_datos_gps_si_se_desactiva_gps(data_gps)
+                    # print('paseee por acasss')
+                else:
+                    # body.Id_gps = None
+                    # print('pase por acasss')
+                    data_gps= body.dict()
+                    conn.agregar_datos_gps(data_gps)
+                    id_gps = conn.get_max_id_gps()[0]
+                    body.Id_gps = id_gps
             else:
                 # body.Id_gps = None
-                # print('pase por acasss')
+                # print('asddadadada')
                 data_gps= body.dict()
                 conn.agregar_datos_gps(data_gps)
                 id_gps = conn.get_max_id_gps()[0]
                 body.Id_gps = id_gps
-        else:
-            # body.Id_gps = None
-            # print('asddadadada')
-            data_gps= body.dict()
-            conn.agregar_datos_gps(data_gps)
-            id_gps = conn.get_max_id_gps()[0]
-            body.Id_gps = id_gps
         # print('ptm')
         data = body.dict()
         conn.update_datos_vehiculo(data)
