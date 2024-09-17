@@ -978,6 +978,14 @@ async def get_datos_reclutamiento():
     return datos[0]
 
 
+
+@router.get("/lista/comentarios")
+async def get_lista_comentarios_recluta(id: int):
+    datos = conn.lista_comentarios_recluta(id)
+
+    return datos[0]
+
+
 @router.post("/agregar/recluta")
 async def agregar_nuevo_recluta(body : Reclutamiento):
     try:
@@ -1046,10 +1054,3 @@ async def agregar_comentario(body : ComentarioRecluta):
         # Manejar otras excepciones
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error al agregar al nuevo recluta.")
     
-
-
-@router.get("/resumen/rutas/supervisor")
-async def get_experiencia_comentario(fecha_ini: str, fecha_fin: str, usuario: int):
-    datos = conn.resumen_rutas_fecha_sup(fecha_ini, fecha_fin,usuario)
-
-    return datos[0]

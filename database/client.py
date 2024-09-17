@@ -11308,14 +11308,16 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
                     'Operacion_nombre', mo.nombre, 
                     'Nombre_origen', oc.origen,
                     'Nombre_estados', ec.estado,
-                    'Nombre_motivo', mv.motivo 
+                    'Nombre_motivo', mv.motivo,
+                    'Nombre_contacto', u.nombre
                     ) ) as campo
                 FROM transporte.reclutamiento r
                 LEFT JOIN public.op_regiones re ON cast(r.region as varchar) = re.id_region 
                 LEFT JOIN transporte.origen_contacto oc ON r.origen_contacto  = oc.id  
                 LEFT JOIN transporte.estados_contacto ec ON r.estado_contacto  = ec.id  
                 LEFT JOIN transporte.motivo_subestado mv ON r.motivo_subestado  = mv.id  
-                LEFT JOIN operacion.modalidad_operacion mo ON r.operacion_postula = mo.id ;                      
+                LEFT JOIN operacion.modalidad_operacion mo ON r.operacion_postula = mo.id  
+				LEFT JOIN hela.usuarios u ON r.contacto_ejecutivo = u.id                      
                       """)
             return cur.fetchone()
 
@@ -11333,6 +11335,23 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
                 'Comentario', ''
                 ) ) as campo 
             from transporte.experiencia_comentario;   
+                      """)
+            return cur.fetchone()
+        
+    
+    def lista_comentarios_recluta(self,id):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            select 
+            json_agg(json_build_object
+                                ('Estatus_comentario',estatus_comentario ,
+                                'Nombre',nombre,
+                                'Fecha', fecha,
+                                'Hora', hora,
+                                'Comentario', Comentario
+                                ) ) as campo
+
+            from transporte.obtener_comentarios_reclutamiento({id});   
                       """)
             return cur.fetchone()
 
@@ -11368,12 +11387,7 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
 
             )
 
-
-            
         ---select * from mercadolibre.resumen_rutas_fecha_sup('20240901','20240930',158,0);   
-            
-        
-
 
         select json_agg(
                 json_build_object(

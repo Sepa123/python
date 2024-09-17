@@ -802,3 +802,10 @@ async def guardar_dato_citacion_supervisores(data_supervisor : DataSupervisor):
     # except ValueError as e: 
     #     print(e)
     #     raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/resumen/rutas/supervisor")
+async def get_experiencia_comentario(fecha_ini: str, fecha_fin: str, usuario: int):
+    datos = conn.resumen_rutas_fecha_sup(fecha_ini, fecha_fin,usuario)
+
+    return datos[0]
