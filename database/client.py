@@ -10485,8 +10485,18 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
 
         self.conn.commit()
 
+
     def insert_datos_excel_prefactura_meli_diario_lm(self, id_usuario : int,ids_usuario : str,fecha :int,latitud : str,longitud : str,body):
 
+        def verify_int(value, default=0):
+            try:
+                # Intentamos convertir el valor a int. Si tiene éxito, devolvemos el valor original.
+                int(value)
+                return value
+            except (ValueError, TypeError):
+                # Si no es posible, devolvemos el valor por defecto (0 o None).
+                return default
+        
         with self.conn.cursor() as cur:
             query = """
             INSERT INTO mercadolibre.ingreso_diario_textual_lm
@@ -10495,7 +10505,7 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
             """
             values = [
                 (id_usuario, ids_usuario, fecha,item.get('monitoring-row__bold', None),item.get('monitoring-row-details__driver-name', None),item.get('sc-progress-wheel__percentage', None), item.get('monitoring-row-shipments__delivered-packages-text 2', None),
-                item.get('monitoring-row-shipments__delivered-packages-text 3', None),item.get('monitoring-row-shipments__delivered-packages-text 4', None),item.get('monitoring-row-shipments__packages 2', None),item.get('andes-visually-hidden 2', None),
+                item.get('monitoring-row-shipments__delivered-packages-text 3', None), verify_int(item.get('monitoring-row-shipments__delivered-packages-text 4', None), None ),item.get('monitoring-row-shipments__packages 2', None),item.get('andes-visually-hidden 2', None),
                 item.get('metric-box__value-principal', None),item.get('metric-box__value-principal 2', None),item.get('metric-box__value-principal 3', None),item.get('metric-box__value-principal 4', None),item.get('metric-box__value-principal 5', None), item.get('metric-box__value-principal 6', None),
                 item.get('andes-visually-hidden 4', None),item.get('metric-box__value-principal 7', None),item.get('monitoring-row-details__name', None),item.get('monitoring-row-details__untracked', None),item.get('monitoring-row__chevron--open src', None),
                 item.get('monitoring-row-details__license', None),item.get('pipe', None),item.get('monitoring-row-details', None),item.get('andes-badge__content', None),item.get('monitoring-row-details__driver-tooltip__title', None),item.get('monitoring-row-details__driver-tooltip__metrics-stat', None),
@@ -11044,6 +11054,14 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
                          """)
             return cur.fetchall()
         
+    def panel_triplulacion(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            select * from transporte.panel_usuarios();    
+                         """)
+            return cur.fetchall()
+
+
     def datos_seleccionables_reclutamiento(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""   

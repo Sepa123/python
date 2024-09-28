@@ -924,6 +924,15 @@ async def get_panel_colaboradores():
     return resultado_dict
 
 
+@router.get("/panel/tripulacion")
+async def get_panel_tripulacion():
+    datos = conn.panel_triplulacion()
+
+    resultado_dict = {titulo.replace(' ','_') : cant for titulo, cant in datos}
+
+    return resultado_dict
+
+
 @router.get("/panel/vehiculos/observados")
 async def get_panel_vehiculos_observados():
     datos = conn.panel_vehiculos_observados()
