@@ -8725,6 +8725,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
         with self.conn.cursor() as cur:
             cur.execute(f"""
                  --select * from rutas.seguimiento_transporte(); 
+                 -- select * from rutas.seguimiento_transporte_v2();
             select 
            		ruta_beetrack,
            		ppu,
@@ -8736,8 +8737,8 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
            		entregado_fec_comp,
            		pendientes,
            		no_entregados,
-           		coalesce(obs_total_pedidos,'No hay registros')
-           	from rutas.seguimiento_transporte();
+           		obs_total_pedidos
+           	from rutas.seguimiento_transporte_v2();
                         
                          """)
             return cur.fetchall()
@@ -11195,9 +11196,9 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
             cur.execute("""
                         
                 INSERT INTO transporte.reclutamiento
-                (id_user, ids_user, region, operacion_postula, nombre_contacto, telefono, tipo_vehiculo, origen_contacto, estado_contacto, motivo_subestado, contacto_ejecutivo, razon_social, rut_empresa)
+                (id_user, ids_user, region, operacion_postula, nombre_contacto, telefono, tipo_vehiculo, origen_contacto, estado_contacto, motivo_subestado, contacto_ejecutivo, razon_social, rut_empresa,capacidad)
                 VALUES(%(Id_user)s, %(Ids_user)s, %(Region)s, %(Operacion_postula)s,%(Nombre_contacto)s, %(Telefono)s, %(Tipo_vehiculo)s, %(Origen_contacto)s, %(Estado_contacto)s,%(Motivo_subestado)s,
-                       %(Contacto_ejecutivo)s,%(Razon_social)s,%(Rut_empresa)s);
+                       %(Contacto_ejecutivo)s,%(Razon_social)s,%(Rut_empresa)s,%(Capacidad)s);
  
                  """,data)
             self.conn.commit()
@@ -11416,7 +11417,7 @@ UPDATE mercadolibre.citacion SET estado={estado} WHERE fecha='{fecha}' AND id_pp
                 'Fecha', fecha,
                 'Id_ruta', id_ruta,
                 'Ppu', ppu,
-                'Driver', driver,
+                'Driver', coalesce(driver, ''),
                 'Kilometros', kilometros,
                 'P_avance', p_avance,
                 'Avance', avance,
