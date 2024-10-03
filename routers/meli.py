@@ -809,3 +809,11 @@ async def get_experiencia_comentario(fecha_ini: str, fecha_fin: str, usuario: in
     datos = conn.resumen_rutas_fecha_sup(fecha_ini, fecha_fin,usuario)
 
     return datos[0]
+
+
+
+@router.get("/listar/rutas")
+async def get_lista_ruta_meli(fecha_ini: str, fecha_fin: str):
+    datos = conn.listar_rutas_meli(fecha_ini, fecha_fin)
+
+    return datos[0]
