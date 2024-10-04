@@ -6609,7 +6609,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
          with self.conn.cursor() as cur:
             cur.execute(f"""
 
-            with f_opl as (
+           with f_opl as (
             select  easygo.rut_cliente AS "Código de Cliente",
                     initcap(easygo.nombre_cliente) AS "Nombre",
                     coalesce(tbm.direccion,
@@ -6687,7 +6687,9 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                     ee.descripcion as "Estado",
                     se."name" as "Subestado",
                     subquery.verified,
-                    subquery.recepcion
+                    subquery.recepcion,
+                    subquery.observacion,
+                    subquery.alerta
                 FROM (
                 ---EASY OPL 
                 select distinct on (opl.suborden)
@@ -6699,7 +6701,12 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                         opl.estado,
                         opl.subestado, 
                         opl.verified,
-                        opl.recepcion    	
+                        opl.recepcion,
+                        tbm.observacion,
+                        case 
+				        	when tbm.alerta = true then true
+				        	else false 
+				        end as alerta
                     from areati.ti_carga_easy_go_opl opl
                     LEFT JOIN (
                                 SELECT DISTINCT ON (toc.guia) toc.guia as guia, 
@@ -6791,7 +6798,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
 
         ## pendientes de retiro tienda
        
-    ## pendientes de de retiro tiendas
+    
     def pendientes_retiro_tienda(self, fecha_inicio,fecha_fin, offset ):
          with self.conn.cursor() as cur:
             cur.execute(f"""
@@ -6849,7 +6856,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                         """)
             return cur.fetchall()
          
-      ## pendientes de Easy CD
+      ## pendientes de Retiro tienda
     
     def pendientes_retiro_tienda_mio(self, fecha_inicio,fecha_fin, offset ):
          with self.conn.cursor() as cur:
@@ -6982,7 +6989,9 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                     ee.descripcion as "Estado",
                     se."name" as "Subestado",
                     subquery.verified,
-                    subquery.recepcion
+                    subquery.recepcion,
+                    subquery.observacion,
+                    subquery.alerta
                 FROM (
                 select distinct on (rtcl.cod_pedido)
                         rtcl.cod_pedido as guia,
@@ -6993,7 +7002,12 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                         rtcl.estado,
                         rtcl.subestado, 
                         rtcl.verified,
-                        rtcl.verified as recepcion    	
+                        rtcl.verified as recepcion,
+                        tbm.observacion,
+                        case 
+				        	when tbm.alerta = true then true
+				        	else false 
+				        end as alerta
                     from areati.ti_retiro_cliente rtcl
                     LEFT JOIN (
                                 SELECT DISTINCT ON (toc.guia) toc.guia as guia, 
@@ -7181,7 +7195,9 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 ee.descripcion as "Estado",
                 se."name" as "Subestado",
                 subquery.verified,
-                subquery.recepcion
+                subquery.recepcion,
+                subquery.observacion,
+                subquery.alerta
             FROM (
                 SELECT DISTINCT ON (easy.entrega)
                     easy.entrega as guia,
@@ -7198,7 +7214,12 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                     easy.estado,
                     easy.subestado,
                     easy.verified,
-                    easy.recepcion 
+                    easy.recepcion,
+                    tbm.observacion,
+                    case 
+                        when tbm.alerta = true then true
+                        else false 
+                    end as alerta
                 FROM areati.ti_wms_carga_easy easy
                 left join public.ti_wms_carga_easy_paso twcep on twcep.entrega = easy.entrega
                 LEFT JOIN (

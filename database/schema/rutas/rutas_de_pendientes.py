@@ -11,7 +11,9 @@ def ruta_de_pendientes(ruta):
 	"Estado": ruta[8],
 	"Subestado": ruta[9],
 	"Verificado": ruta[10],
-	"Recibido": ruta[11]
+	"Recibido": ruta[11],
+    "Observacion": ruta[12],
+    "Alerta": ruta[13]
 	}
 
 def rutas_de_pendientes_schema(rutas):
