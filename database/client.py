@@ -6523,7 +6523,9 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                     ee.descripcion as "Estado",
                     se."name" as "Subestado",
                     subquery.verified,
-                    subquery.recepcion
+                    subquery.recepcion,
+                    subquery.observacion,
+                    subquery.alerta
                 FROM (
                     ---SPORTEX 
                     select distinct on (sptx.id_sportex)
@@ -6540,7 +6542,9 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                         sptx.estado,
                         sptx.subestado, 
                         sptx.verified,
-                        sptx.recepcion    	
+                        sptx.recepcion,
+                        '' as observacion,
+                        false as alerta  	
                     from areati.ti_wms_carga_sportex sptx
                     LEFT JOIN (
                                 SELECT DISTINCT ON (toc.guia) toc.guia as guia, 
@@ -6575,7 +6579,9 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                         eltx.estado,
                         eltx.subestado, 
                         eltx.verified,
-                        eltx.recepcion    	
+                        eltx.recepcion,
+                        tbm.observacion,
+                        tbm.alerta    	
                     from areati.ti_wms_carga_electrolux eltx
                     LEFT JOIN (
                                 SELECT DISTINCT ON (toc.guia) toc.guia as guia, 
