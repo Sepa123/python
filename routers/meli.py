@@ -191,10 +191,10 @@ async def Obtener_datos(fecha: str, id : int):
      
     
 @router.delete("/borrar")
-async def eliminar_modalidad(id_ppu: str):
+async def eliminar_modalidad(id: str):
     # Llamar a la función para ejecutar la sentencia SQL de eliminación
-    conn.borrar_patente_citacion(id_ppu)
-    return {"message": f"Entrada con ID {id_ppu} eliminada correctamente"}
+    conn.borrar_patente_citacion(id)
+    return {"message": f"Entrada con ID {id} eliminada correctamente"}
 
 
 @router.get("/estadoList")
@@ -258,15 +258,16 @@ async def Obtener_datos(fecha: str, op : int, cop : int):
     datos = conn.recupera_citacion_cop(fecha,op,cop)
     if datos:
         datos_formateados = [{
-                                "id_ppu": fila [0],
-                                "ppu": fila[1],
-                                "ruta_meli": fila[2],
-                                "tipo_ruta":fila[3],
-                                "estado": fila [4],
-                                "id_driver":fila[5],
-                                "nombre_driver": fila[6],
-                                "id_peoneta": fila [7],
-                                "nombre_peoneta":fila[8]
+                                "id": fila[0],
+                                "id_ppu": fila [1],
+                                "ppu": fila[2],
+                                "ruta_meli": fila[3],
+                                "tipo_ruta":fila[4],
+                                "estado": fila [5],
+                                "id_driver":fila[6],
+                                "nombre_driver": fila[7],
+                                "id_peoneta": fila [8],
+                                "nombre_peoneta":fila[9]
                             } 
                             for fila in datos]
         return datos_formateados
@@ -285,9 +286,9 @@ async def agregarPatenteCitacion(body: agregarPatente):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/actualizar_estadoPpu")
-async def actualizar_estado(estado: int, id_ppu : int, fecha:str):
+async def actualizar_estado(estado: int, id : int, fecha:str):
     try:
-        conn.update_estado_patente_citacion(estado,id_ppu,fecha)
+        conn.update_estado_patente_citacion(estado,id,fecha)
         print()
         return {"message": "Datos Ingresados Correctamente"}
     except Exception as e: raise HTTPException(status_code=500, detail=str(e))
@@ -308,10 +309,9 @@ async def Obtener_datos(id_estado: int):
     
 
 @router.post("/actualizar_rutaMeli")
-
-async def actualizar_estado(ruta_meli: int, id_ppu : int, fecha: str):
+async def actualizar_estado(ruta_meli: int, id : int, fecha: str):
     try:
-        conn.update_estado_ruta_meli_citacion(ruta_meli,id_ppu,fecha)
+        conn.update_estado_ruta_meli_citacion(ruta_meli,id,fecha)
         return {"message": "Datos Ingresados Correctamente"}
     except Exception as e: raise HTTPException(status_code=500, detail=str(e))
 
@@ -409,9 +409,9 @@ async def Obtener_datos():
     
 @router.post("/actualizar_tipoRuta")
 
-async def actualizar_estado(tipo_ruta: int, id_ppu : int, fecha: str):
+async def actualizar_estado(tipo_ruta: int, id : int, fecha: str):
     try:
-        rows = conn.update_tipo_ruta_citacion(tipo_ruta,id_ppu,fecha)
+        rows = conn.update_tipo_ruta_citacion(tipo_ruta,id,fecha)
         return {"message": f"Datos Ingresados Correctamente : {rows}"}
     except Exception as e: raise HTTPException(status_code=500, detail=str(e))
 
