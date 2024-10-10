@@ -11,6 +11,7 @@ from passlib.context import CryptContext
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from datetime import datetime, timedelta
+from lib.password import verify_password, hash_password
 
 ##Conexiones
 from database.client import reportesConnection , UserConnection
@@ -18,7 +19,7 @@ from database.hela_prod import HelaConnection
 from datetime import datetime
 
 ## Modelos
-
+from database.models.token import TokenPayload
 from database.models.beetrack.dispatch_guide import DistpatchGuide
 from database.models.beetrack.dispatch import Dispatch , DispatchInsert
 from database.models.beetrack.route import Route
@@ -172,3 +173,87 @@ async def post_route(body : Union[Dict, List[Dict]] ):
     return {
             "body" : body
             }
+
+
+########### esto es el login migrado para no sufra por las c aidas
+from database.models.user import loginSchema
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+
+
+hela_conn = HelaConnection()
+
+
+SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 100
+
+oauth2 = OAuth2PasswordBearer(tokenUrl="/login")
+
+@app.post("/api/login", status_code=status.HTTP_202_ACCEPTED)
+def login_user(user_data:loginSchema):
+    data = user_data.dict()
+    user_db = hela_conn.read_only_one(user_data.mail.lower())
+    server = "hela"
+
+    if user_db is None:
+        user_db = conn.read_only_one(data)
+        server = "portal"
+        if user_db is None:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="El usuario no existe")
+    
+    if not verify_password(data["password"],user_db[3]):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="la contraseña no es correcto")
+    
+
+    if not user_db[4]:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="El usuario esta inactivo")
+    
+    # return user_db
+    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+
+    print(server)
+    access_token = {"sub": user_db[1],
+                    "exp": expire,
+                    "uid": user_db[0],
+                    "email": user_db[2],
+                    "active": user_db[4],
+                    "rol_id":user_db[5],
+                    "imagen_perfil" : user_db[6]
+                    }
+                    # "rol_id": "14"}
+    # # return "Bienvenido {}".format(data["username"])
+    return {
+        "access_token": jwt.encode(access_token, SECRET_KEY,algorithm=ALGORITHM),
+        "token_type":"bearer",
+        "rol_id" : user_db[5],
+        "sub": user_db[1],
+        "server": server,
+        "imagen_perfil" : user_db[6]
+    }
+
+def auth_user(token:str = Depends(oauth2)):
+
+    exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="credenciales no corresponden",
+                            headers={"WWW-Authenticate": "Bearer"})
+    try:
+        username = jwt.decode(token, key=SECRET_KEY, algorithms=[ALGORITHM])
+        if username is None:
+            raise exception  
+    except JWTError:
+        raise exception
+
+    return username
+
+def current_user(user = Depends(auth_user)):
+
+    if not user["active"]:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="usuario inactivo",
+                            headers={"WWW-Authenticate": "Bearer"})
+    return user
+
+
+
+@app.get("/api/user")
+def me (user:TokenPayload = Depends(current_user)):
+    print("Hola" )
+    return user

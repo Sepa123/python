@@ -144,7 +144,7 @@ async def select():
     return users_schema(users_db)
 
 
-@app.post("/api/login", status_code=status.HTTP_202_ACCEPTED)
+@app.post("/api/login/respaldo", status_code=status.HTTP_202_ACCEPTED)
 def login_user(user_data:loginSchema):
     data = user_data.dict()
     user_db = hela_conn.read_only_one(user_data.mail.lower())
@@ -208,7 +208,7 @@ def current_user(user = Depends(auth_user)):
 
 
     
-@app.get("/api/user")
+@app.get("/api/user/respaldo")
 def me (user:TokenPayload = Depends(current_user)):
     print("Hola" )
     return user
