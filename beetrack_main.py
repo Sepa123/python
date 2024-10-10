@@ -189,7 +189,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 100
 
 oauth2 = OAuth2PasswordBearer(tokenUrl="/login")
 
-@app.post("/api/login", status_code=status.HTTP_202_ACCEPTED)
+@app.post("/api/v2/login", status_code=status.HTTP_202_ACCEPTED)
 def login_user(user_data:loginSchema):
     data = user_data.dict()
     user_db = hela_conn.read_only_one(user_data.mail.lower())
@@ -253,7 +253,7 @@ def current_user(user = Depends(auth_user)):
 
 
 
-@app.get("/api/user")
+@app.get("/api/v2/user")
 def me (user:TokenPayload = Depends(current_user)):
     print("Hola" )
     return user
