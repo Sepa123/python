@@ -593,7 +593,7 @@ async def get_ns_drivers(fecha_inicio : str, fecha_fin: str):
 async def get_ns_easy():
 
     ahora = datetime.datetime.now()
-    datos =  datos_json.ejecutar_por_minutos(5,'ns_easy')
+    datos =  datos_json.ejecutar_por_minutos(2,'ns_easy')
 
     if datos is None:
         results = conn.detalle_pendientes_easy_hoy()
@@ -606,7 +606,7 @@ async def get_ns_easy():
 async def get_ns_easy_con_ruta():
 
     ahora = datetime.datetime.now()
-    datos =  datos_json.ejecutar_por_minutos(5,'ns_easy_con_ruta')
+    datos =  datos_json.ejecutar_por_minutos(2,'ns_easy_con_ruta')
 
     if datos is None:
         results = conn.detalle_pendientes_easy_hoy_con_ruta()
@@ -620,7 +620,7 @@ async def get_ns_easy_con_ruta():
 async def get_ns_easy():
 
     ahora = datetime.datetime.now()
-    datos =  datos_json.ejecutar_por_minutos(5,'ns/ns_easy_sin_ruta')
+    datos =  datos_json.ejecutar_por_minutos(2,'ns/ns_easy_sin_ruta')
 
     results = conn.detalle_pendientes_easy_hoy_sin_ruta()
 
@@ -632,7 +632,7 @@ async def get_ns_easy():
 async def get_ns_pendiente_easy_por_region():
 
     ahora = datetime.datetime.now()
-    datos =  datos_json.ejecutar_por_minutos(5,'ns_easy_por_region')
+    datos =  datos_json.ejecutar_por_minutos(2,'ns_easy_por_region')
 
     if datos is None:   
 
@@ -646,7 +646,7 @@ async def get_ns_pendiente_easy_por_region():
 async def get_panel_principal_ns_easy():
 
     ahora = datetime.datetime.now()
-    datos =  datos_json.ejecutar_por_minutos(5,'panel_principal_ns_easy')
+    datos =  datos_json.ejecutar_por_minutos(2,'panel_principal_ns_easy')
 
     if datos is None:   
 
@@ -660,7 +660,7 @@ async def get_panel_principal_ns_easy():
 async def get_panel_regiones_ns_easy():
 
     ahora = datetime.datetime.now()
-    datos =  datos_json.ejecutar_por_minutos(5,'panel_regiones_ns_easy')
+    datos =  datos_json.ejecutar_por_minutos(2,'panel_regiones_ns_easy')
 
     if datos is None:   
         results = conn.panel_regiones_ns_easy()
