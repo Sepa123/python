@@ -11072,7 +11072,7 @@ SELECT *
     def panel_vehiculos(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
-            select * from transporte.panel_vehiculos();        
+            select campo,cant from transporte.panel_vehiculos();        
                          """)
             return cur.fetchall()
         
@@ -11080,14 +11080,14 @@ SELECT *
     def panel_vehiculos_observados(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
-            select * from transporte.panel_vehiculos_observados();      
+            select campo,cant from transporte.panel_vehiculos_observados();      
                          """)
             return cur.fetchall()
         
     def panel_triplulacion(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
-            select * from transporte.panel_usuarios();    
+            select titulo,cant from transporte.panel_usuarios();    
                          """)
             return cur.fetchall()
 
