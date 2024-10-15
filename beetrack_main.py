@@ -181,6 +181,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
 
 hela_conn = HelaConnection()
+conn_user = UserConnection()
 
 
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
@@ -196,7 +197,7 @@ def login_user(user_data:loginSchema):
     server = "hela"
 
     if user_db is None:
-        user_db = conn.read_only_one(data)
+        user_db = conn_user.read_only_one(data)
         server = "portal"
         if user_db is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="El usuario no existe")
@@ -255,5 +256,5 @@ def current_user(user = Depends(auth_user)):
 
 @app.get("/api/v2/user")
 def me (user:TokenPayload = Depends(current_user)):
-    print("Hola" )
+
     return user
