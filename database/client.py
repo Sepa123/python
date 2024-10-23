@@ -11345,9 +11345,9 @@ SELECT *
                     'Nombre', r.nombre_contacto,
                     'Telefono', r.telefono,
                     'Tipo_vehiculo', r.tipo_vehiculo,
-                    'Origen_contacto', r.origen_contacto,
-                    'Estado_contacto', r.estado_contacto,
-                    'Motivo_subestado', r.motivo_subestado,
+                    'Origen_contacto', coalesce (r.origen_contacto, 4),
+                    'Estado_contacto', coalesce (r.estado_contacto, 3),
+                    'Motivo_subestado', coalesce (r.motivo_subestado, 7),
                     'Contacto_ejecutivo', r.contacto_ejecutivo,
                     'Razon_social', r.razon_social,
                     'Rut_empresa',r.rut_empresa,
@@ -11359,13 +11359,13 @@ SELECT *
                     'Nombre_motivo', mv.motivo,
                     'Nombre_contacto', u.nombre
                     ) ) as campo
-                FROM transporte.reclutamiento r
-                LEFT JOIN public.op_regiones re ON cast(r.region as varchar) = re.id_region 
-                LEFT JOIN transporte.origen_contacto oc ON r.origen_contacto  = oc.id  
-                LEFT JOIN transporte.estados_contacto ec ON r.estado_contacto  = ec.id  
-                LEFT JOIN transporte.motivo_subestado mv ON r.motivo_subestado  = mv.id  
-                LEFT JOIN operacion.modalidad_operacion mo ON r.operacion_postula = mo.id  
-				LEFT JOIN hela.usuarios u ON r.contacto_ejecutivo = u.id                      
+            FROM transporte.reclutamiento r
+            LEFT JOIN public.op_regiones re ON cast(r.region as varchar) = re.id_region 
+            LEFT JOIN transporte.origen_contacto oc ON r.origen_contacto  = oc.id  
+            LEFT JOIN transporte.estados_contacto ec ON r.estado_contacto  = ec.id  
+            LEFT JOIN transporte.motivo_subestado mv ON r.motivo_subestado  = mv.id  
+            LEFT JOIN operacion.modalidad_operacion mo ON r.operacion_postula = mo.id  
+            LEFT JOIN hela.usuarios u ON r.contacto_ejecutivo = u.id                      
                       """)
             return cur.fetchone()
 
