@@ -11354,9 +11354,9 @@ SELECT *
                     'Internalizado', r.internalizado,
                     'Region_nombre', re.region_name, 
                     'Operacion_nombre', mo.nombre, 
-                    'Nombre_origen', oc.origen,
-                    'Nombre_estados', ec.estado,
-                    'Nombre_motivo', mv.motivo,
+                    'Nombre_origen', coalesce (oc.origen, 'Página web'),
+                    'Nombre_estados', coalesce (ec.estado, 'En espera'),
+                    'Nombre_motivo', coalesce (mv.motivo, 'En espera'),
                     'Nombre_contacto', u.nombre
                     ) ) as campo
             FROM transporte.reclutamiento r
@@ -11365,7 +11365,8 @@ SELECT *
             LEFT JOIN transporte.estados_contacto ec ON r.estado_contacto  = ec.id  
             LEFT JOIN transporte.motivo_subestado mv ON r.motivo_subestado  = mv.id  
             LEFT JOIN operacion.modalidad_operacion mo ON r.operacion_postula = mo.id  
-            LEFT JOIN hela.usuarios u ON r.contacto_ejecutivo = u.id                      
+            LEFT JOIN hela.usuarios u ON r.contacto_ejecutivo = u.id  
+                   
                       """)
             return cur.fetchone()
 
