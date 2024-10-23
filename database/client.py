@@ -11579,6 +11579,122 @@ SELECT *
                       """)
             return cur.fetchone() 
 
+
+
+    ######### Tarifario Especifico
+
+    def listar_tarifario_especifico(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            select * from finanzas.listar_tarifario_especifico();
+                      """)
+            return cur.fetchall()
+        
+    def datos_cop_tarifario_especifico(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            select id, centro, descripcion from operacion.centro_operacion co
+                      """)
+            return cur.fetchall()
+
+    def actualizar_fecha_tarifario_especifico(self, id:str, fecha_de_caducidad:str):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+           UPDATE finanzas.tarifario_especifico SET fecha_de_caducidad='{fecha_de_caducidad}' WHERE id={id};
+                          """)
+        self.conn.commit()
+
+    def insert_tarifario_especifico(self,id_usuario:str, ids_usuario:str, latitud:str, longitud:str, ppu:int, razon_social:int, operacion:int, centro_operacion:int, periodicidad: int, tarifa: int):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+           INSERT INTO finanzas.tarifario_especifico(id_usuario, ids_usuario, latitud, longitud, ppu, razon_social, operacion, centro_operacion, periodicidad, tarifa) VALUES('{id_usuario}','{ids_usuario}','{latitud}','{longitud}',{ppu},{razon_social},{operacion},{centro_operacion},{periodicidad},{tarifa})
+                          """)
+        self.conn.commit()
+
+    def datos_op_tarifario_especifico(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            select id, nombre from operacion.modalidad_operacion mo  
+                      """)
+            return cur.fetchall()
+        
+
+    def datos_cop_tarifario_especifico_por_id(self,id_op):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            select id,centro from operacion.centro_operacion co where id_op = {id_op}
+                      """)
+            return cur.fetchall()
+
+    def datos_razon_social_tarifario_especifio(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            select id, razon_social from transporte.colaborador c
+                      """)
+            return cur.fetchall()
+
+            
+
+    def datos_razon_social_tarifario_especifico(self,id):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            select id, ppu  from transporte.vehiculo v  where razon_id = {id}
+                      """)
+            return cur.fetchall()
+
+    
+    def datos_tarifario_especifico_fecha_null(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            SELECT id, operacion, centro_operacion, ppu, periodicidad, tarifa, fecha_de_caducidad FROM finanzas.tarifario_especifico te WHERE fecha_de_caducidad IS NULL;
+
+                      """)
+            return cur.fetchall()
+
+
+    def insert_recluta_externo(self, data):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            INSERT INTO transporte.trabajemos
+            (nombre_contacto, telefono, pais, correo, region, comuna, cant_vehiculos, ppu, tipo_vehiculo, 
+            tipo_carroceria, tipo_adicionales, metros_cubicos, inicio_actividades_factura, giro)
+            VALUES(%(Nombre_contacto)s, %(Telefono)s, %(Pais)s, %(Correo)s, %(Region)s,
+                   %(Comuna)s,  %(Cant_vehiculos)s, %(Ppu)s, %(Tipo_vehiculo)s,  %(Tipo_carroceria)s,
+                   %(Tipo_adicionales)s,  %(Metros_cubicos)s, %(Inicio_actividades_factura)s,  %(Giro)s);
+           
+                          """,data)
+        self.conn.commit()
+
+    def obtener_campos_recluta_externo(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select 'Comuna' as nombre, json_agg(json_build_object('Nombre_comuna',comuna_name,'Id_region', id_region,'Id_comuna', id_comuna  )order by id_comuna) as campo
+            from public.op_comunas oc 
+            union all
+            select 'Tipo_vehiculo' as nombre, json_agg(json_build_object('Id',id,'Name', tipo ) ORDER BY id) as campo
+            from transporte.tipo_vehiculo
+            union all
+            select 'Region' as nombre, json_agg(json_build_object('Id_region',id_region,'Nombre_region', region_name ) ORDER BY id_region) as campo
+            from public.op_regiones
+            union all
+            select 'Giro_factura' as nombre, json_agg(json_build_object('Id', id,'Giro', giro) ORDER BY id ) AS campo
+            from transporte.giro_factura
+            union all
+            select 'Paises' as nombre, json_agg(json_build_object('Id', id,'Pais', pais,'Cod_telefono',codigo_telefonico) ORDER BY id ) AS campo
+            from public.paises_latinoamerica
+            union all
+            select 'Tipo_carroceria' as nombre, json_agg(json_build_object('Id', id,'Tipo', tipo) ORDER BY id ) AS campo
+            from transporte.tipo_carroceria
+            union all
+            select 'Tipo_adicionales' as nombre, json_agg(json_build_object('Id', id,'Tipo', tipo) ORDER BY id ) AS campo
+            from transporte.tipo_adicionales
+           
+                          """)
+            return cur.fetchall()
+
+
+            
+
 class transyanezConnection():
     conn = None
     def __init__(self) -> None:

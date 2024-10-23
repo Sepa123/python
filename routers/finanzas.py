@@ -229,3 +229,212 @@ async def actualizar_estado(id_usuario:str, ids_usuario:str, latitud:str, longit
         print()
         return {"message": "Datos Ingresados Correctamente"}
     except Exception as e: raise HTTPException(status_code=500, detail=str(e))
+
+
+
+### Tarifario Especifico
+
+
+@router.get("/tarifarioEspecifico/tablaTarifarioEspecifico")
+async def ObtenerInformacionTabla():
+     # Consulta SQL para obtener datos (por ejemplo)
+    # consulta = "select * from finanzas.listar_tarifario_especifico();"
+    datos = conn.listar_tarifario_especifico()
+    # Verificar si hay datos
+    if datos:
+        datos_formateados = [{
+                                "id" : fila[0],
+                                "ppu": fila[1],
+                                "razon_social": fila[2],
+                                "operacion": fila[3],
+                                "cop": fila[4],
+                                "periodo": fila[5],
+                                "tarifa":fila[6],
+                                "fecha_de_caducidad": fila[7]
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+
+@router.get("/tarifarioEspecifico/CentroFilter")
+async def datos_cop():
+     # Consulta SQL para obtener datos (por ejemplo)
+    # consulta = f"""select id, centro, descripcion from operacion.centro_operacion co"""
+    datos = conn.datos_cop_tarifario_especifico()
+    # Verificar si hay datos
+    if datos:
+        datos_formateados = [{
+                                "id" : fila[0],
+                                "centro": fila[1],
+                                "descripcion": fila[2]
+
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+
+@router.post("/tarifarioEspecifico/insertDateTe")
+async def insertarFechaCaducidad(id:str, fecha_de_caducidad:str):
+    try:
+        conn.actualizar_fecha_tarifario_especifico(id,fecha_de_caducidad)
+        print()
+        return {"message": "Datos Ingresados Correctamente"}
+    except Exception as e: raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/tarifarioEspecifico/NuevaTarifa")
+async def IngresarTarifarioEspecifico(id_usuario:str, ids_usuario:str, latitud:str, longitud:str, ppu:int, razon_social:int, operacion:int, centro_operacion:int, periodicidad: int, tarifa: int):
+    try:
+        conn.insert_tarifario_especifico(id_usuario, ids_usuario, latitud, longitud, ppu, razon_social, operacion, centro_operacion, periodicidad, tarifa)
+        print()
+        return {"message": "Datos Ingresados Correctamente"}
+    except Exception as e: raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/tarifarioEspecifico/getOperacion")
+async def getOperaciones():
+     # Consulta SQL para obtener datos (por ejemplo)
+    # consulta = "select id, nombre from operacion.modalidad_operacion mo  "
+    # Ejecutar la consulta utilizando nuestra función
+    datos = conn.datos_op_tarifario_especifico()
+    # Verificar si hay datos
+    if datos:
+        datos_formateados = [{
+                                "id" : fila[0],
+                                "nombre": fila[1],
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+
+@router.get("/tarifarioEspecifico/getCentroOperacion")
+async def select_info_cop(id_op: int):
+     # Consulta SQL para obtener datos (por ejemplo)
+    consulta = f"""select id,centro from operacion.centro_operacion co where id_op = {id_op}"""
+    # Ejecutar la consulta utilizando nuestra función
+    datos = conn.datos_cop_tarifario_especifico_por_id(id_op)
+    # Verificar si hay datos
+    if datos:
+        datos_formateados = [{
+                                "id" : fila[0],
+                                "centro": fila[1],
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+
+@router.get("/tarifarioEspecifico/getTipoVehiculo")
+async def selectTipoVehiculo():
+     # Consulta SQL para obtener datos (por ejemplo)
+    # consulta = f"""select * from transporte.tipo_vehiculo tv """
+    # Ejecutar la consulta utilizando nuestra función
+    datos = conn.obtener_tipo_vehiculo()
+    # Verificar si hay datos
+    if datos:
+        datos_formateados = [{
+                                "id" : fila[0],
+                                "tipo": fila[1],
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+
+@router.get("/tarifarioEspecifico/getPeriodicidad")
+async def ObtenerPeriodo():
+     # Consulta SQL para obtener datos (por ejemplo)
+    # consulta = f"""select * from finanzas.periodicidad p"""
+    # Ejecutar la consulta utilizando nuestra función
+    datos = conn.obtener_periodicidad()
+    # Verificar si hay datos
+    if datos:
+        datos_formateados = [{
+                                "id" : fila[0],
+                                "periodo": fila[1],
+                                "descripcion":fila[2],
+                                "icono": fila[3]
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+
+# @router.get("/api/CentroFilter")
+# async def SelectCo():
+#      # Consulta SQL para obtener datos (por ejemplo)
+#     # consulta = f"""select id, centro, descripcion from operacion.centro_operacion co"""
+#     # Ejecutar la consulta utilizando nuestra función
+#     datos = conn.datos_cop_tarifario_especifico()
+#     # Verificar si hay datos
+#     if datos:
+#         datos_formateados = [{
+#                                 "id" : fila[0],
+#                                 "centro": fila[1],
+#                                 "descripcion": fila[2]
+
+#                             } 
+#                             for fila in datos]
+#         return datos_formateados
+#     else:
+#         raise HTTPException(status_code=404, detail="No se encontraron datos")
+
+@router.get("/tarifarioEspecifico/Colaborador")
+async def SelectRazonSocial():
+     # Consulta SQL para obtener datos (por ejemplo)
+    # consulta = f"""select id, razon_social from transporte.colaborador c"""
+    # Ejecutar la consulta utilizando nuestra función
+    datos = conn.datos_razon_social_tarifario_especifio()
+    # Verificar si hay datos
+    if datos:
+        datos_formateados = [{
+                                "id" : fila[0],
+                                "razon_social": fila[1]
+
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+
+@router.get("/tarifarioEspecifico/vehiculosXpatente")
+async def SelectpatenteFiltrada( id:int):
+     # Consulta SQL para obtener datos (por ejemplo)
+    # consulta = f"""select id, ppu  from transporte.vehiculo v  where razon_id = {id}"""
+    # Ejecutar la consulta utilizando nuestra función
+    # The code snippet provided is assigning the value of `conn` to the variable `datos` in Python.
+    datos = conn.datos_razon_social_tarifario_especifico(id)
+    # Verificar si hay datos
+    if datos:
+        datos_formateados = [{
+                                "id" : fila[0],
+                                "ppu": fila[1]
+
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+
+@router.get("/tarifarioEspecifico/infoTableToSearchTe")
+async def Obtener_datos():
+     # Consulta SQL para obtener datos (por ejemplo)
+    # consulta = "SELECT id, operacion, centro_operacion, ppu, periodicidad, tarifa, fecha_de_caducidad FROM finanzas.tarifario_especifico te WHERE fecha_de_caducidad IS NULL;"
+    # Ejecutar la consulta utilizando nuestra función
+    datos = conn.datos_tarifario_especifico_fecha_null()
+    # Verificar si hay datos
+    if datos:
+        datos_formateados = [{
+                                "id": fila [0],
+                                "operacion" : fila[1],
+                                "centro_operacion": fila[2],
+                                "tipo_vehiculo":fila[3],
+                                "periodicidad":fila[4],
+                                "tarifa":fila[5],
+                                "fecha_de_caducidad":fila[6]
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")

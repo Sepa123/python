@@ -2,6 +2,7 @@ from fastapi import  status,HTTPException,Header,Depends,FastAPI
 from typing import List , Dict ,Union
 import re
 from decouple import config
+from database.models.transporte.trabajemos import ContactoExterno
 import lib.beetrack_data as data_beetrack
 import httpx
 import lib.guardar_datos_json as guardar_json
@@ -46,7 +47,8 @@ origins = [
     "http://prueba.transyanez.cl",
     "https://prueba.transyanez.cl",
     "https://garm.transyanez.cl",
-    "http://garm.transyanez.cl"
+    "http://garm.transyanez.cl",
+    'http://localhost:4001'
 ]
 
 app.add_middleware(
@@ -258,3 +260,29 @@ def current_user(user = Depends(auth_user)):
 def me (user:TokenPayload = Depends(current_user)):
 
     return user
+
+
+
+#### API para los registros de externos 
+
+
+@app.post("/api/v2/externo/registar/candidato")
+async def Registro_candidatos_externos(body : ContactoExterno ):
+
+    body.Nombre_contacto = body.Nombre_contacto+' '+body.Apellido
+    # print(body)
+
+    data = body.dict()
+
+    conn.insert_recluta_externo(data)
+    return {
+            'message' : 'Datos ingresados correctamente'
+            }
+
+
+@app.get("/api/v2/externo/campos")
+async def get_campos_registro():
+    datos = conn.obtener_campos_recluta_externo()
+    resultado_dict = {titulo : cant for titulo, cant in datos}
+
+    return resultado_dict
