@@ -48,7 +48,9 @@ origins = [
     "https://prueba.transyanez.cl",
     "https://garm.transyanez.cl",
     "http://garm.transyanez.cl",
-    'http://localhost:4001'
+    'http://localhost:4001',
+    'http://trabajemos.transyanez.cl',
+    'https://trabajemos.transyanez.cl'
 ]
 
 app.add_middleware(
