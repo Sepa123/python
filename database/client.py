@@ -11128,6 +11128,9 @@ SELECT *
                 select 'Region' as nombre, json_agg(json_build_object('Id_region',id_region,'Nombre_region', region_name )) as campo
                 from public.op_regiones
                 union all
+                select 'Comuna' as nombre, json_agg(json_build_object('Nombre_comuna',comuna_name,'Id_region', id_region,'Id_comuna', id_comuna  )order by id_comuna) as campo
+                from public.op_comunas oc 
+                union all
                 select 'Comentarios' as nombre, json_agg(json_build_object('Id',id ,'Calificacion',calificacion ,'Icono', icono ,'Color', color,'Latitud', '','Longitud', '','Comentario', '')) as campo 
 				from transporte.experiencia_comentario;
                          """)
@@ -11243,12 +11246,12 @@ SELECT *
             cur.execute("""
               
                 UPDATE transporte.reclutamiento
-                SET last_update=CURRENT_TIMESTAMP, region=%(Region)s, operacion_postula=%(Operacion_postula)s, nombre_contacto=%(Nombre_contacto)s,
+                SET last_update=CURRENT_TIMESTAMP, region=%(Region)s,comuna=%(Comuna)s ,operacion_postula=%(Operacion_postula)s, nombre_contacto=%(Nombre_contacto)s,
                 telefono=%(Telefono)s, tipo_vehiculo=%(Tipo_vehiculo)s, 
                 origen_contacto=%(Origen_contacto)s, estado_contacto=%(Estado_contacto)s, motivo_subestado=%(Motivo_subestado)s, 
-                contacto_ejecutivo=%(Contacto_ejecutivo)s, razon_social=%(Razon_social)s, rut_empresa=%(Rut_empresa)s
+                contacto_ejecutivo=%(Contacto_ejecutivo)s, razon_social=%(Razon_social)s, rut_empresa=%(Rut_empresa)s,
+                cant_vehiculos=%(Cant_vehiculos)s, ppu=%(Ppu)s, metros_cubicos=%(Metros_cubicos)s, correo=%(Correo)s
                 WHERE id=%(Id_reclutamiento)s
-
                  """,data)
             self.conn.commit()
 
@@ -11344,35 +11347,50 @@ SELECT *
     def obtener_datos_reclutamiento(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
-            SELECT json_agg(json_build_object
-                    ('Id_reclutamiento',r.id ,
-                    'Region',r.region,
+            SELECT json_agg(json_build_object(
+                    'Id_reclutamiento', r.id,
+                    'Fecha_creacion', TO_CHAR(r.created_at, 'YYYY-MM-DD'),
+                    'Region', r.region,
+                    'Comuna', r.comuna,
                     'Operacion_postula', r.operacion_postula,
                     'Nombre', r.nombre_contacto,
                     'Telefono', r.telefono,
                     'Tipo_vehiculo', r.tipo_vehiculo,
-                    'Origen_contacto', coalesce (r.origen_contacto, 4),
-                    'Estado_contacto', coalesce (r.estado_contacto, 3),
-                    'Motivo_subestado', coalesce (r.motivo_subestado, 7),
+                    'Origen_contacto', coalesce(r.origen_contacto, 4),
+                    'Estado_contacto', coalesce(r.estado_contacto, 3),
+                    'Motivo_subestado', coalesce(r.motivo_subestado, 7),
                     'Contacto_ejecutivo', r.contacto_ejecutivo,
                     'Razon_social', r.razon_social,
-                    'Rut_empresa',r.rut_empresa,
+                    'Rut_empresa', r.rut_empresa,
                     'Internalizado', r.internalizado,
-                    'Region_nombre', re.region_name, 
-                    'Operacion_nombre', mo.nombre, 
-                    'Nombre_origen', coalesce (oc.origen, 'Página web'),
-                    'Nombre_estados', coalesce (ec.estado, 'En espera'),
-                    'Nombre_motivo', coalesce (mv.motivo, 'En espera'),
-                    'Nombre_contacto', u.nombre
-                    ) ) as campo
+                    'Region_nombre', re.region_name,
+                    'Operacion_nombre', mo.nombre,
+                    'Nombre_origen', coalesce(oc.origen, 'Página web'),
+                    'Nombre_estados', coalesce(ec.estado, 'En espera'),
+                    'Nombre_motivo', coalesce(mv.motivo, 'En espera'),
+                    'Nombre_contacto', u.nombre,
+                    'Pais', r.pais,
+                    'Inicio_actividades_factura', r.inicio_actividades_factura,
+                    'Giro', r.giro,
+                    'Cantidad_vehiculo', r.cant_vehiculos,
+                    'Correo', r.correo,
+                    'Ppu', r.ppu,
+                    'Metros_cubicos', r.metros_cubicos,
+                    'Rango_fecha', 
+                        CASE 
+                            WHEN r.created_at::date = CURRENT_DATE THEN 1
+                            WHEN r.created_at::date BETWEEN CURRENT_DATE - INTERVAL '6 days' AND CURRENT_DATE - INTERVAL '2 days' THEN 2
+                            WHEN r.created_at::date <= CURRENT_DATE - INTERVAL '7 days' THEN 3
+                        END
+                ))
             FROM transporte.reclutamiento r
-            LEFT JOIN public.op_regiones re ON cast(r.region as varchar) = re.id_region 
-            LEFT JOIN transporte.origen_contacto oc ON r.origen_contacto  = oc.id  
-            LEFT JOIN transporte.estados_contacto ec ON r.estado_contacto  = ec.id  
-            LEFT JOIN transporte.motivo_subestado mv ON r.motivo_subestado  = mv.id  
-            LEFT JOIN operacion.modalidad_operacion mo ON r.operacion_postula = mo.id  
-            LEFT JOIN hela.usuarios u ON r.contacto_ejecutivo = u.id  
-                   
+            LEFT JOIN public.op_regiones re ON CAST(r.region AS varchar) = re.id_region
+            LEFT JOIN transporte.origen_contacto oc ON r.origen_contacto = oc.id
+            LEFT JOIN transporte.estados_contacto ec ON r.estado_contacto = ec.id
+            LEFT JOIN transporte.motivo_subestado mv ON r.motivo_subestado = mv.id
+            LEFT JOIN operacion.modalidad_operacion mo ON r.operacion_postula = mo.id
+            LEFT JOIN hela.usuarios u ON r.contacto_ejecutivo = u.id;
+                            
                       """)
             return cur.fetchone()
 
