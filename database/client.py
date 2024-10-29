@@ -11378,7 +11378,7 @@ SELECT *
                     'Metros_cubicos', r.metros_cubicos,
                     'Rango_fecha', 
                         CASE 
-                            WHEN r.created_at::date = CURRENT_DATE THEN 1
+                            WHEN r.contacto_ejecutivo is not null THEN 1
                             WHEN r.created_at::date BETWEEN CURRENT_DATE - INTERVAL '6 days' AND CURRENT_DATE - INTERVAL '2 days' THEN 2
                             WHEN r.created_at::date <= CURRENT_DATE - INTERVAL '7 days' THEN 3
                         END
