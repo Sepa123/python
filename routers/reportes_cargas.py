@@ -438,7 +438,8 @@ async def get_pedidos():
 @router.get("/ruta/beetrack/hoy",status_code=status.HTTP_202_ACCEPTED)
 async def get_ruta_beetrack_hoy():
     results = conn.read_ruta_beetrack_hoy()
-    return rutas_beetrack_hoy_schema(results)
+    # return rutas_beetrack_hoy_schema(results)
+    return results[0]
 
 @router.get("/pedidos/sin_tiendas",status_code=status.HTTP_202_ACCEPTED)
 async def get_pedidos_sin_tienda():

@@ -1711,16 +1711,47 @@ class reportesConnection():
     def read_ruta_beetrack_hoy(self):
         with self.conn.cursor() as cur:
             cur.execute("""
-            select 1 as numero,  ruta_beetrack,patente,driver,inicio,region,total_pedidos,h1100_10,h1300_40,h1500_60,h1700_80,h1800_95,h2000_100,entregados,no_entregados,
-                    case when estado_ruta = 'Finalizado' then 100
-                        else 0
-                    end
-            from rutas.panel_resumen_rutas(); 
+           -- select 1 as numero,  ruta_beetrack,patente,driver,inicio,region,total_pedidos,h1100_10,h1300_40,h1500_60,h1700_80,h1800_95,h2000_100,entregados,no_entregados,
+              --      case when estado_ruta = 'Finalizado' then 100
+              --          else 0
+             --       end
+           -- from rutas.panel_resumen_rutas(); 
+                        
+                SELECT json_agg(json_build_object(
+                    'Numero', 1,
+                    'Ruta', r.ruta_beetrack,
+                    'Patente', r.patente,
+                    'Tipo', r.tipo,
+                    'Driver', r.driver,
+                    'Inicio', r.inicio,
+                    'Region', r.region,
+                    'Total_pedidos', r.total_pedidos,
+                    'Once', r.h1100_10,
+                    'P_once', r.p_h1100_10,
+                    'Una', r.h1300_40,
+                    'P_una', r.p_h1300_40,
+                    'Tres', r.h1500_60,
+                    'P_tres', r.p_h1500_60,
+                    'Cinco', r.h1700_80,
+                    'P_cinco', r.p_h1700_80,
+                    'Seis', r.h1800_95,
+                    'P_seis', r.p_h1800_95,
+                    'Ocho', r.h2000_100,
+                    'P_ocho', r.p_h2000_100,
+                    'Entregados', r.entregados,
+                    'No_entregados', r.no_entregados,
+                    --'Porcentaje', r.rut_empresa,
+                    'Porcentaje', 
+                        case when r.estado_ruta = 'Finalizado' then 100
+                     	   else 0
+                    	end	
+                ))
+            from rutas.panel_resumen_rutas_v2() as r;
                 
                         
             """)
 
-            return cur.fetchall()
+            return cur.fetchone()
     
     @reconnect_if_closed_postgres
     def read_pedidos_tiendas_easy_opl(self):
