@@ -1744,7 +1744,16 @@ class reportesConnection():
                     'Porcentaje', 
                         case when r.estado_ruta = 'Finalizado' then 100
                      	   else 0
-                    	end	
+                    	end,
+                   	'P_hora_actual' , 
+                        case WHEN EXTRACT(HOUR FROM NOW()) < 13 THEN 10
+                            WHEN EXTRACT(HOUR FROM NOW()) < 15 then 40	
+                            WHEN EXTRACT(HOUR FROM NOW()) < 17 then 60
+                            WHEN EXTRACT(HOUR FROM NOW()) < 18 then 80
+                            WHEN EXTRACT(HOUR FROM NOW()) < 20 then 95
+                            WHEN EXTRACT(HOUR FROM NOW()) < 24 then 100
+                        end
+	
                 ))
             from rutas.panel_resumen_rutas_v2() as r;
                 
