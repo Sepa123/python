@@ -10662,6 +10662,21 @@ SELECT *
                          """)
             return cur.fetchall()
         
+    def obtener_datos_excel_prefactura_meli_limit(self,ano,mes):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+                          
+           SELECT id_usuario, ids_usuario, id_prefactura, periodo, descripcion, id_de_ruta, 
+            TO_CHAR(fecha_de_fin, 'YYYY-MM-DD') AS fecha_inicio, TO_CHAR(fecha_de_fin, 'YYYY-MM-DD') AS fecha_fin,
+            patente, id_patente, conductor, cantidad, precio_unitario, descuento, total
+            FROM mercadolibre.mae_proforma_mensual mpm
+            WHERE SUBSTRING(mpm.periodo, 1, 4) = '{ano}' -- año
+            AND SUBSTRING(mpm.periodo, 5, 2) = '{mes}' -- mes
+            limit 300
+       
+                         """)
+            return cur.fetchall()
+        
     def obtener_datos_excel_prefactura_meli_descargar(self,ano,mes):
         with self.conn.cursor() as cur:
             cur.execute(f""" 

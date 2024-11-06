@@ -663,6 +663,18 @@ async def Obtener_datos_excel_prefactura_meli(ano : str, mes : str):
         raise HTTPException(status_code=404, detail="No se encontraron datos")
     
 
+@router.get("/prefacturas/limit")
+async def Obtener_datos_excel_prefactura_meli_limit(ano : str, mes : str):
+
+    datos = conn.obtener_datos_excel_prefactura_meli_limit(ano,mes)
+    # Verificar si hay datos 
+    if datos:
+
+        return prefactura_meli_schema(datos)
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+    
+
 
 @router.get("/descargar/prefacturas")
 async def Obtener_datos_excel_prefactura_meli(ano : str, mes : str):
