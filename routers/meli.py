@@ -191,10 +191,10 @@ async def Obtener_datos(fecha: str, id : int):
      
     
 @router.delete("/borrar")
-async def eliminar_modalidad(id: str):
+async def eliminar_modalidad(id_ppu: int, fecha: str):
     # Llamar a la función para ejecutar la sentencia SQL de eliminación
-    conn.borrar_patente_citacion(id)
-    return {"message": f"Entrada con ID {id} eliminada correctamente"}
+    conn.borrar_patente_citacion(id_ppu,fecha)
+    return {"message": f"Entrada con ID {id_ppu} eliminada correctamente"}
 
 
 @router.get("/estadoList")

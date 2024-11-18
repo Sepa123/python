@@ -10428,10 +10428,10 @@ SELECT *
                         """)
         self.conn.commit() 
 
-    def borrar_patente_citacion(self, id: str):
+    def borrar_patente_citacion(self, id_ppu: str,fecha):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            DELETE FROM mercadolibre.citacion WHERE id ='{id}';
+            delete from mercadolibre.citacion where id_ppu = {id_ppu} and fecha = '{fecha}'
                         """)
         self.conn.commit() 
 
