@@ -10,7 +10,7 @@ from datetime import datetime
 
 ##Modelos Schemas
 
-from database.models.toc.toc_bitacora import BitacoraToc
+from database.models.toc.toc_bitacora import BitacoraToc,BitacoraTiendaToc
 from database.schema.toc.producto_toc import buscar_producto_toc_schema
 
 from database.schema.toc.subestados import subestados_schema
@@ -385,3 +385,45 @@ async def descargar_reporte_telefonos_easy(body :ProductoIngresado):
 async def get_productos_adelanto():
     result = conn.recupera_productos_adelanto()
     return result[0]
+
+
+
+@router.get("/bitacora/tienda/campos")
+async def get_campos_registro():
+    datos = conn.campos_bitacora_tienda_toc()
+    resultado_dict = {titulo : cant for titulo, cant in datos}
+
+    return resultado_dict
+
+
+
+@router.post("/registrar_bitacora_tienda", status_code=status.HTTP_201_CREATED)
+async def registrar_bitacora_tienda(body : BitacoraTiendaToc):
+#     try:
+
+        if body.Guia == '':
+             body.Guia = None
+        
+        if body.Estado == '':
+             body.Estado = None
+        
+        if body.Subestado == '':
+             body.Subestado = None
+
+        if body.Driver == '':
+             body.Driver = None     
+        
+        if body.Observacion == "":
+             body.Observacion = None
+        
+
+        id_transyanez = conn.id_transyanez_bitacora()[0]
+        body.Id_transyanez = id_transyanez
+
+                  
+        body.Ids_transyanez = f"ty{id_transyanez}"
+
+
+        data = body.dict()
+        conn.insert_bitacora_tienda_toc(data)
+        return {"message" : f"Bitacora {body.Ids_transyanez} registrada correctamente"}

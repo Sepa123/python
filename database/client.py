@@ -4132,7 +4132,7 @@ class reportesConnection():
     def id_transyanez_bitacora(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            select coalesce (max(id_transyanez)+1,1) from rutas.toc_bitacora_mae tbm 
+            select * from rutas.genera_siguiente_id_transyanez(); 
                         """)
             return cur.fetchone() 
 
@@ -11772,7 +11772,31 @@ SELECT *
                           """)
             return cur.fetchall()
 
+    def insert_bitacora_tienda_toc(self, data):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            INSERT INTO rutas.toc_bitacora_tienda_mae
+(id_usuario, ids_usuario, driver, guia, cliente, estado, subestado, id_transyanez, ids_transyanez, observacion, codigo1)
+VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
+        %(EstadoStr)s, %(SubestadoStr)s,%(Id_transyanez)s, %(Ids_transyanez)s,
+        %(Observacion)s, %(Codigo1)s);            
+                        """,data)
+        self.conn.commit()
 
+
+    def campos_bitacora_tienda_toc(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            select 'Estados' as nombre, json_agg(json_build_object('Id_estado',estado ,'Descripcion',descripcion)) as campo 
+				from areati.estado_entregas ee
+            union all
+            select 'Subestados' as nombre, json_agg(json_build_object('Id_subestado',code ,'Id_estado',parent_code,'Descripcion',name)) as campo 
+                            from areati.subestado_entregas se  
+            union all
+            select 'Codigo1' as nombre, json_agg(json_build_object('Id',id ,'Descripcion',descripcion)) as campo 
+                            from rutas.def_codigo1; 
+                      """)
+            return cur.fetchall()
             
 
 class transyanezConnection():

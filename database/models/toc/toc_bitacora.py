@@ -27,3 +27,20 @@ class BitacoraToc(BaseModel):
     Alerta: Optional[bool]
     Codigo1Str: Optional[str]
     Codigo1: Optional[int]
+
+
+class BitacoraTiendaToc(BaseModel):
+    Guia: Optional[str]
+    Cliente: Optional[str]
+    Estado: Optional[int]
+    Subestado: Optional[int]
+    Driver: Optional[str]
+    Observacion: Optional[str]
+    Id_transyanez: Optional[int]
+    Ids_transyanez: Optional[str]
+    Id_usuario: Optional[int]
+    Ids_usuario: Optional[str]
+    Codigo1Str: Optional[str]
+    Codigo1: Optional[int]
+    EstadoStr: Optional[str]
+    SubestadoStr: Optional[str]
