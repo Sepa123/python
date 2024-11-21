@@ -11796,7 +11796,10 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
                             where parent_code in (1,2)                      
             union all
             select 'Codigo1' as nombre, json_agg(json_build_object('Id',id ,'Descripcion',descripcion)) as campo 
-                            from rutas.def_codigo1;
+                            from rutas.def_codigo1
+            union all
+            select 'Clientes' as nombre, json_agg(json_build_object('Id',id ,'Clientes',cliente)) as campo 
+                from rutas.toc_clientes
                       """)
             return cur.fetchall()
             
