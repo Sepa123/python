@@ -11787,14 +11787,16 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
     def campos_bitacora_tienda_toc(self):
         with self.conn.cursor() as cur:
             cur.execute(f""" 
-            select 'Estados' as nombre, json_agg(json_build_object('Id_estado',estado ,'Descripcion',descripcion)) as campo 
+             select 'Estados' as nombre, json_agg(json_build_object('Id_estado',estado ,'Descripcion',descripcion)) as campo 
 				from areati.estado_entregas ee
+                where estado not in  (3)
             union all
             select 'Subestados' as nombre, json_agg(json_build_object('Id_subestado',code ,'Id_estado',parent_code,'Descripcion',name)) as campo 
-                            from areati.subestado_entregas se  
+                            from areati.subestado_entregas se 
+                            where parent_code in (1,2)                      
             union all
             select 'Codigo1' as nombre, json_agg(json_build_object('Id',id ,'Descripcion',descripcion)) as campo 
-                            from rutas.def_codigo1; 
+                            from rutas.def_codigo1;
                       """)
             return cur.fetchall()
             
