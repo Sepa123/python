@@ -11802,6 +11802,61 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
                 from rutas.toc_clientes
                       """)
             return cur.fetchall()
+
+    def panel_alertas_vigentes_toc(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+             select campo, cant from rutas.panel_toc_alertas();
+                      """)
+            return cur.fetchall()
+        
+    def datos_alertas_vigentes_toc(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+             select 'Comuna' as nombre, json_agg(json_build_object('Nombre_comuna',comuna_name,'Id_region', id_region,'Id_comuna', id_comuna  )order by id_comuna) as campo
+                from public.op_comunas oc                
+            union all
+            select 'Subestados' as nombre, json_agg(json_build_object('Id',id ,'Parent_code',parent_code,'Nombre',name,'Codigo',code)) as campo 
+                            from areati.subestado_entregas se 
+                            where parent_code in (1,2)                      
+            union all
+            select 'Codigo1' as nombre, json_agg(json_build_object('Id',id ,'Descripcion',descripcion,'Descripcion_larga',descripcion_larga)) as campo 
+                            from rutas.def_codigo1;
+                      """)
+            return cur.fetchall()
+        
+
+    ####Venta Traspaso
+
+    def obtener_datos_PPU_ventas_traspaso(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+             select * from transporte.obtener_vehiculos_venta()
+                      """)
+            return cur.fetchall()
+        
+    def obtener_datos_Emp_ventas_traspaso(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+             SELECT * FROM transporte.obtener_colaboradores_venta();
+                      """)
+            return cur.fetchall()
+        
+    def cambiar_razon_social_vehiculo(self, razon_id: int, id : int):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+           update transporte.vehiculo v set razon_id = '{razon_id}' where id ='{id}';
+                          """)
+        self.conn.commit()
+
+    def ingreso_bitacora_cambio_razon_ppu(self, id_ppu: int, id_razon_Antigua: int, id_razon_nueva:int, observacion:str):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+           INSERT INTO transporte.cambio_razon_ppu(id_ppu, id_razon_antigua, id_razon_nueva, observacion) VALUES({id_ppu}, {id_razon_Antigua}, {id_razon_nueva}, '{observacion}');
+                          """)
+        self.conn.commit()
+
+
             
 
 class transyanezConnection():

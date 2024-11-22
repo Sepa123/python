@@ -429,3 +429,23 @@ async def registrar_bitacora_tienda(body : BitacoraTiendaToc):
         conn.insert_bitacora_tienda_toc(data)
         return {"message" : f"Bitacora {body.Ids_transyanez} registrada correctamente",
                 "codigo_ty": body.Ids_transyanez}
+
+
+
+@router.get("/alertas_vigentes/panel")
+async def get_panel_alertas_vigentes():
+    datos = conn.panel_alertas_vigentes_toc()
+
+    resultado_dict = {titulo.replace(' ','_') : cant for titulo, cant in datos}
+
+    return resultado_dict
+
+
+
+@router.get("/alertas_vigentes/datos")
+async def get_productos_adelanto():
+    datos = conn.datos_alertas_vigentes_toc()
+    resultado_dict = {titulo : cant for titulo, cant in datos}
+
+    return resultado_dict
+
