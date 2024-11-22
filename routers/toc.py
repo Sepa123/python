@@ -449,3 +449,7 @@ async def get_productos_adelanto():
 
     return resultado_dict
 
+@router.get("/bitacoras/tienda")
+async def get_bitacoras_usuarios(fecha_inicio : str, fecha_fin : str):
+     results = conn.listar_bitacoras_tiendas_rango_fecha(fecha_inicio,fecha_fin)
+     return results[0]

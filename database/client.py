@@ -11857,6 +11857,33 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
         self.conn.commit()
 
 
+    def listar_bitacoras_tiendas_rango_fecha(self, fecha_inicio : str, fecha_fin : str):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+             with listar_bitacora_tiendas_fechas as (
+            select	to_char(tbtm.created_at,'yyyy-mm-dd hh24:mi') as fec_creacion, 
+                    u.nombre as created_by,
+                    tbtm.guia as guia,
+                    tc.cliente as cliente,
+                    tbtm.estado as estado,
+                    tbtm.subestado as subestado,
+                    tbtm.observacion as observacion,
+                    tbtm.ids_transyanez  as codigo_ty
+            from rutas.toc_bitacora_tienda_mae tbtm 
+            left join rutas.toc_clientes tc on tc.id = tbtm.cliente
+            left join hela.usuarios u on u.id = tbtm.id_usuario
+            where to_char(tbtm.created_at,'yyyymmdd')>='{fecha_inicio}'
+            and to_char(tbtm.created_at,'yyyymmdd')<='{fecha_fin}'
+            order by tbtm.created_at desc 
+            )
+
+            select json_agg(json_build_object('Fecha_creacion',fec_creacion ,'Created_by',created_by,'Guia',guia,'Cliente',cliente,'Estado',estado,'Subestado',subestado,'Observacion',observacion,'Codigo_ty',codigo_ty)) as campo 
+            from listar_bitacora_tiendas_fechas
+
+                        """)
+            return cur.fetchone()
+
+
             
 
 class transyanezConnection():
