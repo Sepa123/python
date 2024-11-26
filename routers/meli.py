@@ -743,7 +743,7 @@ async def get_citacion_activa(id_usuario: int, fecha : str):
 
           # Estructura deseada
 
-                prom_avance = sum_avance /len(info['Detalles'])
+                prom_avance = round(sum_avance /len(info['Detalles']),2 )
 
                 chart_data = {
                     "labels": [
