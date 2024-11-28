@@ -1,4 +1,5 @@
-from fastapi import APIRouter, status,HTTPException
+import os
+from fastapi import APIRouter, File, UploadFile, status,HTTPException
 from fastapi.responses import FileResponse
 from openpyxl import Workbook
 from openpyxl.styles import Font , PatternFill, Border ,Side, Alignment
@@ -11,7 +12,7 @@ import re
 from typing import Dict, List
 from database.schema.rutas.datos_rutas_tracking import datos_rutas_tracking_schema
 from geopy.geocoders import Nominatim
-
+import pandas as pd
 ## conexion
 
 from database.client import reportesConnection , UserConnection
@@ -1437,3 +1438,66 @@ async def get_veh_disp_operaciones(fecha : str):
 async def get_lista_patentes_disponibles():
     datos = conn.obtener_patentes_disponibles_crv_crm()
     return datos[0]
+
+
+
+@router.post("/quadminds/subir-archivo", status_code=status.HTTP_202_ACCEPTED)
+async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
+
+    # select quadminds.convierte_en_ruta_manual(1,'202308021040');
+
+    directorio  = os.path.abspath("excel")
+
+    ruta = os.path.join(directorio,file.filename)
+
+    with open(ruta, "wb") as f:
+        contents = await file.read()
+        print("pase por aqui")
+        f.write(contents)
+
+    df = pd.read_excel(ruta,skiprows=4)
+
+    lista = df.to_dict(orient='records')
+
+    for i, data in enumerate(lista):
+        # cantidad_encontrada = conn.get_pedido_planificados_quadmind_by_cod_pedido()
+        # if cantidad_encontrada[0] >= 1:
+        #     print("Producto ya esta registrado") 
+        # else:
+        direccion = data['Domicilio']
+        posicion = i + 1
+        conn.write_pedidos_planificados(data ,posicion, direccion)
+        print(posicion)
+
+
+    fecha_hora_actual = datetime.now()
+
+    fecha_dia = fecha_hora_actual.strftime("%Y%m%d")
+
+    fecha_hora_formateada = fecha_hora_actual.strftime("%Y%m%d%H%M")
+    
+    # time.sleep(8)
+   
+    error = conn.asignar_ruta_quadmind_manual(id_usuario, fecha_hora_formateada)
+
+    diferencia = conn.calcular_diferencia_tiempo(fecha_dia)
+
+    # error 1 : codigos inexistentes
+
+    if error[0][0] == 1:
+        return {
+                "filename": file.filename, 
+                "message": "Error al subir el archivo", 
+                "codigos": f"{error[0][1]}",
+                "tiempo": diferencia[0][0],
+                "termino" : True ,
+                "error" : 1,
+                }
+    else:   
+        return {"filename": file.filename, 
+                "message": error[0][1], 
+                "codigos": "",
+                "tiempo": diferencia[0][0],
+                "termino" : True,
+                "error" : 0,
+                }

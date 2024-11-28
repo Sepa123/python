@@ -2556,7 +2556,7 @@ class reportesConnection():
     def asignar_ruta_quadmind_manual(self, id , fecha):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            select * from quadminds.convierte_en_ruta_manual({id}, '{fecha}');
+            select * from rutas.carga_rutas_bloque_excel({id}, '{fecha}');
             """)
             return cur.fetchall()
     
