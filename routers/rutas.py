@@ -1455,7 +1455,9 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
         print("pase por aqui")
         f.write(contents)
 
-    df = pd.read_excel(ruta,skiprows=4)
+    df = pd.read_excel(ruta)
+
+    df = df.applymap(lambda x: None if pd.isna(x) else x)
 
     lista = df.to_dict(orient='records')
 
@@ -1464,10 +1466,14 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
         # if cantidad_encontrada[0] >= 1:
         #     print("Producto ya esta registrado") 
         # else:
-        direccion = data['Domicilio']
+        if not data['razon_social'] or not data['domicilio'] or not data['fecha_reparto'] or not data['maquina'] or not data['fecha_pedido'] or not data['cod_pedido'] or not data['cod_producto'] or not data['producto'] or not data['cantidad']:
+            print(f"Registro en la posición {i+1} ignorado por campos vacíos")
+            continue  
+
+        direccion = data['domicilio']
         posicion = i + 1
         conn.write_pedidos_planificados(data ,posicion, direccion)
-        print(posicion)
+        # print(posicion)
 
 
     fecha_hora_actual = datetime.now()
@@ -1475,10 +1481,8 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
     fecha_dia = fecha_hora_actual.strftime("%Y%m%d")
 
     fecha_hora_formateada = fecha_hora_actual.strftime("%Y%m%d%H%M")
-    
-    # time.sleep(8)
    
-    error = conn.asignar_ruta_quadmind_manual(id_usuario, fecha_hora_formateada)
+    error = conn.asignar_ruta_quadmind_manual(id_usuario, fecha_dia)
 
     diferencia = conn.calcular_diferencia_tiempo(fecha_dia)
 

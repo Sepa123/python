@@ -2006,27 +2006,27 @@ class reportesConnection():
         self.conn.commit()
 
     ### insertar datos en quadmind.pedidos_planificados
-    @reconnect_if_closed_postgres
-    def write_pedidos_planificados(self, data, posicion, direccion):
-        # print(data)
-        with self.conn.cursor() as cur: 
-            consulta = f"""
-            INSERT INTO quadminds.pedidos_planificados
-            (cod_cliente, razon_social, domicilio, tipo_cliente, fecha_reparto, cod_reparto, maquina, chofer, fecha_pedido, 
-            cod_pedido, cod_producto, producto, cantidad, horario, arribo, partida, peso, volumen, dinero, posicion)
-            values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
-            """
-            # Ejecutar la consulta con los parámetros
-            cur.execute(consulta, (
-                data['Código cliente'], data['Razón social'], direccion,
-                data['Tipo de Cliente'], data['Fecha de Reparto'], data['Codigo Reparto'],
-                data['Máquina'], data['Chofer'], data['Fecha De Pedido'], data['Codigo de Pedido'],
-                data['Codigo de Producto'], data['Producto'], data['Cantidad'], data['Ventana Horaria'],
-                data['Arribo'], data['Partida'], data['Peso (kg)'], data['Volumen (m3)'],
-                data['Dinero ($)'], posicion
-            ))
+    # @reconnect_if_closed_postgres
+    # def write_pedidos_planificados(self, data, posicion, direccion):
+    #     # print(data)
+    #     with self.conn.cursor() as cur: 
+    #         consulta = f"""
+    #         INSERT INTO quadminds.pedidos_planificados
+    #         (cod_cliente, razon_social, domicilio, tipo_cliente, fecha_reparto, cod_reparto, maquina, chofer, fecha_pedido, 
+    #         cod_pedido, cod_producto, producto, cantidad, horario, arribo, partida, peso, volumen, dinero, posicion)
+    #         values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+    #         """
+    #         # Ejecutar la consulta con los parámetros
+    #         cur.execute(consulta, (
+    #             data['Código cliente'], data['Razón social'], direccion,
+    #             data['Tipo de Cliente'], data['Fecha de Reparto'], data['Codigo Reparto'],
+    #             data['Máquina'], data['Chofer'], data['Fecha De Pedido'], data['Codigo de Pedido'],
+    #             data['Codigo de Producto'], data['Producto'], data['Cantidad'], data['Ventana Horaria'],
+    #             data['Arribo'], data['Partida'], data['Peso (kg)'], data['Volumen (m3)'],
+    #             data['Dinero ($)'], posicion
+    #         ))
 
-        self.conn.commit()
+    #     self.conn.commit()
 
     
     ### Insertar datos en tabla quadmind.ruta_manual
@@ -11882,6 +11882,33 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
 
                         """)
             return cur.fetchone()
+
+
+
+    ### insertar datos en quadmind.pedidos_planificados v2
+    @reconnect_if_closed_postgres
+    def write_pedidos_planificados(self, data, posicion, direccion):
+        # print(data)
+        with self.conn.cursor() as cur: 
+            consulta = f"""
+            INSERT INTO quadminds.pedidos_planificados
+            (cod_cliente, razon_social, domicilio, tipo_cliente, fecha_reparto, cod_reparto, maquina, chofer, fecha_pedido, 
+            cod_pedido, cod_producto, producto, cantidad, horario, arribo, partida, peso, volumen, dinero,  posicion)
+            values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+            """
+            # Ejecutar la consulta con los parámetros
+            cur.execute(consulta, (
+                data['cod_cliente'], data['razon_social'], direccion,
+                data['tipo_cliente'], data['fecha_reparto'], data['cod_reparto'],
+                data['maquina'], data['chofer'], data['fecha_pedido'], data['cod_pedido'],
+                data['cod_producto'], data['producto'], data['cantidad'], data['horario'],
+                data['arribo'], data['partida'], data['peso'], data['volumen'],
+                data['dinero'], 
+                # data['id_ruta_ty'], data['id_ruta_beetrack'], data['observacion'], 
+                posicion
+            ))
+
+        self.conn.commit()
 
 
             

@@ -10,18 +10,18 @@ class Reclutamiento(BaseModel):
     Latitud: Optional[str]
     Longitud: Optional[str]
     Origen: Optional[str]
-    Region: int
-    Operacion_postula : int
+    Region: Optional[int]
+    Operacion_postula : Optional[int]
     Nombre_contacto : str
     Telefono : Optional[str]
-    Origen_contacto : int
-    Estado_contacto : int
+    Origen_contacto : Optional[int]
+    Estado_contacto : Optional[int]
     Motivo_subestado : Optional[int]
     Contacto_ejecutivo : Optional[int]
     Razon_social : Optional[str]
     Rut_empresa : Optional[str]
     Capacidad : Optional[str]
-    Comuna: int  # Entero para la comuna
+    Comuna: Optional[int]  # Entero para la comuna
     Cant_vehiculos: Optional[int]  # Número opcional de vehículos, puede ser None
     Ppu: Optional[str] # Placa patente única, máximo 6 caracteres
     Tipo_vehiculo: Optional[int]  # Entero para tipo de vehículo
