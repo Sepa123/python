@@ -11289,9 +11289,9 @@ SELECT *
             cur.execute("""
                         
                 INSERT INTO transporte.reclutamiento
-                (id_user, ids_user, region, operacion_postula, nombre_contacto, telefono, tipo_vehiculo, origen_contacto, estado_contacto, motivo_subestado, contacto_ejecutivo, razon_social, rut_empresa,capacidad)
+                (id_user, ids_user, region, operacion_postula, nombre_contacto, telefono, tipo_vehiculo, origen_contacto, estado_contacto, motivo_subestado, contacto_ejecutivo, razon_social, rut_empresa)
                 VALUES(%(Id_user)s, %(Ids_user)s, %(Region)s, %(Operacion_postula)s,%(Nombre_contacto)s, %(Telefono)s, %(Tipo_vehiculo)s, %(Origen_contacto)s, %(Estado_contacto)s,%(Motivo_subestado)s,
-                       %(Contacto_ejecutivo)s,%(Razon_social)s,%(Rut_empresa)s,%(Capacidad)s);
+                       %(Contacto_ejecutivo)s,%(Razon_social)s,%(Rut_empresa)s);
  
                  """,data)
             self.conn.commit()
