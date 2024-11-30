@@ -11489,80 +11489,19 @@ SELECT *
     def resumen_rutas_fecha_sup(self,fecha_ini,fecha_fin,usuario):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
-            with resumen_sup as (
-            SELECT  mo.modalidad,mo.nombre AS operacion,co.centro AS centro_operacion,r.region_name AS region,
-                    mds.fecha,mds.id_ruta,mds.ppu,mds.driver,
-                    mds.kilometros,mds.p_avance,mds.avance,
-                    CASE 
-                        WHEN (SELECT maux.modalidad FROM operacion.modalidad_operacion maux WHERE maux.id = mo.id) = 'FM' THEN
-                            (SELECT array_agg(json_build_object('fm_total_paradas', daux.fm_total_paradas, 'fm_paqueteria_colectada', daux.fm_paqueteria_colectada, 'fm_estimados', daux.fm_estimados, 'fm_preparados', daux.fm_preparados,'fm_p_colectas_a_tiempo', daux.fm_p_colectas_a_tiempo,'fm_p_no_colectadas', daux.fm_p_no_colectadas))
-                            FROM mercadolibre.mae_data_supervisores daux
-                            WHERE daux.id = mds.id)
-                        WHEN (SELECT maux.modalidad FROM operacion.modalidad_operacion maux WHERE maux.id = mo.id) = 'LM' THEN 
-                            (SELECT array_agg(json_build_object('lm_fallido',  daux.lm_fallido, 'lm_pendiente', daux.lm_pendiente, 'lm_spr', daux.lm_spr, 'lm_entregas', daux.lm_entregas,'lm_tiempo_ruta', daux.lm_tiempo_ruta,'lm_estado', daux.lm_estado))
-                            FROM mercadolibre.mae_data_supervisores daux
-                            WHERE daux.id = mds.id)
-                    END AS campos_por_operacion,
-                    mds.valor_ruta,
-                    mds.ruta_cerrada 
-                FROM mercadolibre.mae_data_supervisores mds 
-                LEFT JOIN operacion.centro_operacion co ON (co.id = mds.id_centro_operacion AND co.id_op = mds.id_operacion)
-                LEFT JOIN operacion.modalidad_operacion mo ON mo.id = mds.id_operacion
-                LEFT JOIN public.op_regiones r ON r.id_region::INT8 = co.region
-                LEFT JOIN mercadolibre.citacion c ON c.ruta_meli::INTEGER = mds.id_ruta
-                WHERE mds.fecha BETWEEN '{fecha_ini}'::DATE AND '{fecha_fin}'::DATE
-                and ({usuario} = ANY(co.id_coordinador) or {usuario} in (select u.id from hela.usuarios u where u.rol_id in ('5','90')))
-                ORDER BY 1 DESC, 5 asc
-
-            )
-
-
-            
-        ---select * from mercadolibre.resumen_rutas_fecha_sup('20240901','20240930',158,0);   
-            
-        
-
-
-        select json_agg(
-                json_build_object(
-                'Modalidad',modalidad,
-                'Operacion', operacion,
-                'Centro_operacion', centro_operacion,
-                'Region', region,
-                'Fecha', fecha,
-                'Id_ruta', id_ruta,
-                'Ppu', ppu,
-                'Driver', coaelsce(driver,''),
-                'Kilometros', kilometros,
-                'P_avance', p_avance,
-                'Avance', avance,
-                'Campos_por_operacion', campos_por_operacion,
-                'Valor_ruta', valor_ruta,
-                'Ruta_cerrada', ruta_cerrada
-                )
-        ) as campo
-            from resumen_sup                              
-                      """)
-            return cur.fetchone() 
-
-    ##############
-
-    def listar_rutas_meli(self,fecha_inicio,fecha_fin):
-        with self.conn.cursor() as cur:
-            cur.execute(f"""   
             with lista_rutas as (
             SELECT 
                 mds.fecha,
                 mo.modalidad,
                 mds.id_ruta,
                 co.centro,
-                mds.ppu,
+                coalesce(mds.ppu,'') as ppu,
                 mds.tipo_vehiculo,
                 CASE 
                     WHEN mds.ruta_cerrada = TRUE THEN 'Cerrada'
                     ELSE 'Abierta'
                 END AS estado_ruta,
-                mds.driver,
+                coalesce(mds.driver,'') as driver,
                 tr.tipo,
                 c.ruta_meli_amb AS ruta_auxiliada,
                 mds.avance,
@@ -11596,8 +11535,8 @@ SELECT *
             LEFT JOIN transporte.colaborador col ON col.id = mds.razon_id
             LEFT JOIN operacion.modalidad_operacion mo ON mo.id = co.id_op
             LEFT JOIN mercadolibre.mae_proforma_mensual mpm ON mpm.id_de_ruta = mds.id_ruta
-            WHERE mds.fecha >= '{fecha_inicio}'::date 
-            AND mds.fecha <= '{fecha_fin}'::date
+            WHERE mds.fecha >= '2024-11-01'::date 
+            AND mds.fecha <= '2024-11-29'::date
                 --where mds.fecha >= '20240901'::date AND mds.fecha <= '20241001'::date
             GROUP BY 
                 mds.fecha,
@@ -11633,10 +11572,10 @@ SELECT *
                 'Modalidad',modalidad,
                 'Id_ruta', id_ruta,
                 'Centro_operacion', centro,
-                'Ppu', coalesce(ppu,''),
+                'Ppu', ppu,
                 'Tipo_vehiculo', tipo_vehiculo,
                 'Estado_ruta', estado_ruta,
-                'Driver', coalesce(driver, ''),
+                'Driver', driver,
                 'Tipo', tipo,
                 'Ruta_auxiliada', ruta_auxiliada,
                 'Avance', avance,
@@ -11655,7 +11594,7 @@ SELECT *
                 'P_a_pago', p_a_pago
                 )
         ) as campo
-            from lista_rutas                              
+            from lista_rutas                                
                       """)
             return cur.fetchone() 
 
