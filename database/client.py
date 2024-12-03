@@ -11911,10 +11911,10 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
         self.conn.commit()
 
 
-    def panel_citacion_meli(self):
+    def panel_citacion_meli(self,fecha):
         with self.conn.cursor() as cur:
             cur.execute(f""" 
-             select campo, cant from mercadolibre.panel_citacion('20241128');
+             select campo, cant from mercadolibre.panel_citacion('{fecha}');
                       """)
             return cur.fetchall()
         
