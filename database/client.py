@@ -11900,7 +11900,7 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
             cur.execute(consulta, (
                 data['cod_cliente'], data['razon_social'], direccion,
                 data['tipo_cliente'], data['fecha_reparto'], data['cod_reparto'],
-                data['maquina'], data['chofer'], data['fecha_pedido'], data['cod_pedido'],
+                data['nombre_ruta'], data['chofer'], data['fecha_pedido'], data['cod_pedido'],
                 data['cod_producto'], data['producto'], data['cantidad'], data['horario'],
                 data['arribo'], data['partida'], data['peso'], data['volumen'],
                 data['dinero'], 
@@ -11910,6 +11910,14 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
 
         self.conn.commit()
 
+
+    def panel_citacion_meli(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+             select campo, cant from mercadolibre.panel_citacion('20241128');
+                      """)
+            return cur.fetchall()
+        
 
             
 

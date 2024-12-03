@@ -829,3 +829,12 @@ async def get_lista_ruta_meli(fecha_ini: str, fecha_fin: str):
     datos = conn.listar_rutas_meli(fecha_ini, fecha_fin)
 
     return datos[0]
+
+
+@router.get("/citaciones/panel")
+async def panel_citacion_meli():
+    datos = conn.panel_citacion_meli()
+
+    resultado_dict = {titulo.replace(' ','_') : cant for titulo, cant in datos}
+
+    return resultado_dict
