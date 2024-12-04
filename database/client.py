@@ -11432,6 +11432,7 @@ SELECT *
                     'Correo', r.correo,
                     'Ppu', r.ppu,
                     'Metros_cubicos',  coalesce(r.metros_cubicos, 0),
+                    'Capacidad', coalesce(r.capacidad, 0),
                     'Rango_fecha', 
                         CASE 
                             WHEN r.contacto_ejecutivo is not null THEN 1
