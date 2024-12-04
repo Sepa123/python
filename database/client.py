@@ -11289,9 +11289,9 @@ SELECT *
             cur.execute("""
                         
                 INSERT INTO transporte.reclutamiento
-                (id_user, ids_user, region, operacion_postula, nombre_contacto, telefono, tipo_vehiculo, origen_contacto, estado_contacto, motivo_subestado, contacto_ejecutivo, razon_social, rut_empresa)
+                (id_user, ids_user, region, operacion_postula, nombre_contacto, telefono, tipo_vehiculo, origen_contacto, estado_contacto, motivo_subestado, contacto_ejecutivo, razon_social, rut_empresa,capacidad)
                 VALUES(%(Id_user)s, %(Ids_user)s, %(Region)s, %(Operacion_postula)s,%(Nombre_contacto)s, %(Telefono)s, %(Tipo_vehiculo)s, %(Origen_contacto)s, %(Estado_contacto)s,%(Motivo_subestado)s,
-                       %(Contacto_ejecutivo)s,%(Razon_social)s,%(Rut_empresa)s);
+                       %(Contacto_ejecutivo)s,%(Razon_social)s,%(Rut_empresa)s,%(Capacidad)s);
  
                  """,data)
             self.conn.commit()
@@ -11305,7 +11305,8 @@ SELECT *
                 telefono=%(Telefono)s, tipo_vehiculo=%(Tipo_vehiculo)s, 
                 origen_contacto=%(Origen_contacto)s, estado_contacto=%(Estado_contacto)s, motivo_subestado=%(Motivo_subestado)s, 
                 contacto_ejecutivo=%(Contacto_ejecutivo)s, razon_social=%(Razon_social)s, rut_empresa=%(Rut_empresa)s,
-                cant_vehiculos=%(Cant_vehiculos)s, ppu=%(Ppu)s, metros_cubicos=%(Metros_cubicos)s, correo=%(Correo)s
+                cant_vehiculos=%(Cant_vehiculos)s, ppu=%(Ppu)s, metros_cubicos=%(Metros_cubicos)s, correo=%(Correo)s,
+                capacidad=%(Capacidad)s
                 WHERE id=%(Id_reclutamiento)s
                  """,data)
             self.conn.commit()
