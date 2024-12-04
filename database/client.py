@@ -11427,7 +11427,7 @@ SELECT *
                     'Pais', r.pais,
                     'Inicio_actividades_factura', coalesce(r.inicio_actividades_factura, false),
                     'Giro', coalesce(r.giro, 1),
-                    'Cantidad_vehiculo', r.cant_vehiculos,
+                    'Cantidad_vehiculo', coalesce(r.cant_vehiculos,0),
                     'Correo', r.correo,
                     'Ppu', r.ppu,
                     'Metros_cubicos', r.metros_cubicos,
