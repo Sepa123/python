@@ -11921,6 +11921,23 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
             return cur.fetchall()
         
 
+
+    ## Finanzas descuentos
+
+    def datos_seleccionables_descuentos(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            select 'Patentes' as nombre,
+            json_agg(json_build_object('Id',id,'Patente', ppu)) as campo
+            from transporte.vehiculo 
+            union all
+            select 'Razon_social' as nombre,
+            json_agg(json_build_object('Id',id,'Nombre_razon', razon_social)) as campo
+            from transporte.colaborador
+                         """)
+            return cur.fetchall()
+        
+
             
 
 class transyanezConnection():

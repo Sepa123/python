@@ -438,3 +438,12 @@ async def Obtener_datos():
         return datos_formateados
     else:
         raise HTTPException(status_code=404, detail="No se encontraron datos")
+    
+
+
+@router.get("/selecciones/descuentos")
+async def get_datos_seleccionables_descuentos():
+    datos = conn.datos_seleccionables_descuentos()
+    resultado_dict = {titulo : cant for titulo, cant in datos}
+
+    return resultado_dict
