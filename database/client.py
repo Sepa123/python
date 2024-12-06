@@ -11934,6 +11934,10 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
             select 'Razon_social' as nombre,
             json_agg(json_build_object('Id',id,'Nombre_razon', razon_social)) as campo
             from transporte.colaborador
+            union all
+            select  'Etiquetas' as nombre,
+            json_agg(json_build_object('Id',id,'Etiqueta', etiqueta )) as campo
+            from  finanzas.etiquetas_descuento_manual
                          """)
             return cur.fetchall()
         
