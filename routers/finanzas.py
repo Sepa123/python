@@ -1,4 +1,5 @@
-from fastapi import APIRouter, status,HTTPException
+import os
+from fastapi import APIRouter, File, UploadFile, status,HTTPException
 from typing import List
 import re, json
 import lib.excel_generico as excel
@@ -447,3 +448,21 @@ async def get_datos_seleccionables_descuentos():
     resultado_dict = {titulo : cant for titulo, cant in datos}
 
     return resultado_dict
+
+
+@router.post("/subir/archivo", status_code=status.HTTP_202_ACCEPTED)
+async def subir_archivo(id : str, file: UploadFile = File(...)):
+
+    directorio  = os.path.abspath(f"finanzas/archivo_adjunto")
+    # print(directorio)
+    # nombre_hash = hash_password(tipo_archivo+nombre)
+
+    ruta = os.path.join(directorio,file.filename)
+
+    with open(ruta, "wb") as f:
+        contents = await file.read()
+        # print("pase por aqui")
+        f.write(contents)
+
+
+    conn.agregar_archivo_adjunto_descuento(f'finanzas/archivo_adjunto/{file.filename}',id)

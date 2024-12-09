@@ -11942,6 +11942,18 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
             return cur.fetchall()
         
 
+
+    def agregar_archivo_adjunto_descuento(self,jpg, id):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            --- PDF RRPP
+            UPDATE finanzas.descuento_manual
+            SET adjunto='{jpg}'
+            WHERE id = {id}
+            """)
+            self.conn.commit()
+        
+
             
 
 class transyanezConnection():

@@ -417,8 +417,19 @@ async def actualizar_estado(tipo_ruta: int, id : int, fecha: str):
 
 def corregir_utf8(texto):
     # Decodificar el texto usando la codificación incorrecta (latin-1)
-    texto_decodificado = texto.encode('latin-1').decode('utf-8')
-    return texto_decodificado
+    try:
+        texto_decodificado = texto.encode('latin-1').decode('utf-8')
+        return texto_decodificado
+    
+    except UnicodeDecodeError:
+        # Si ocurre un error de decodificación, intentar con 'ignore' para omitir caracteres problemáticos
+        # print(texto)
+        # texto_decodificado = texto.encode('latin-1', errors='ignore').decode('utf-8', errors='ignore')
+
+        # print('Texto Decodificado',texto )
+        
+        return texto
+
 
 ##### update 2 15-07-2024
 
@@ -573,10 +584,9 @@ async def subir_archivo_prefactura_meli(id_usuario : str,ids_usuario : str,file:
     desc = pd.read_excel(ruta, skiprows=4)
     desc = desc.dropna(subset=['DescripciÃ³n'])
     desc = desc[desc['DescripciÃ³n'] != 'Total prefactura:']
-
+    
     desc["DescripciÃ³n"] = desc["DescripciÃ³n"].apply(corregir_utf8)
     desc["Conductor"] = desc["Conductor"].apply(corregir_utf8)
-
 
     lista = df.to_dict(orient='records')
     lista_desc = desc.to_dict(orient='records')
@@ -584,18 +594,20 @@ async def subir_archivo_prefactura_meli(id_usuario : str,ids_usuario : str,file:
     id_prefect =lista[0]['ID prefactura']
     periodo = lista[0]['Periodo']
 
-    # if len(desc.columns) == 9:
-    #     conn.insert_datos_excel_prefactura_meli(id_usuario,ids_usuario,id_prefect,periodo,lista_desc)
-    # else:
-    #     ###en caso de que falte un campo ( total) uso este para insertar los datos
-    #     conn.insert_datos_excel_prefactura_meli_minus(id_usuario,ids_usuario,id_prefect,periodo,lista_desc)
+    # # if len(desc.columns) == 9:
+    # #     conn.insert_datos_excel_prefactura_meli(id_usuario,ids_usuario,id_prefect,periodo,lista_desc)
+    # # else:
+    # #     ###en caso de que falte un campo ( total) uso este para insertar los datos
+    # #     conn.insert_datos_excel_prefactura_meli_minus(id_usuario,ids_usuario,id_prefect,periodo,lista_desc)
 
     
     conn.insert_datos_excel_prefactura_meli(id_usuario,ids_usuario,id_prefect,periodo,lista_desc)
 
     mensaje = conn.ejecutar_funcion_tabla_paso_prefactura()
 
-    # print(len(desc.columns))
+
+    print(lista)
+    # print(lista_desc)
 
     # return {
     #     'message': '0'
