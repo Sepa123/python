@@ -10599,6 +10599,11 @@ SELECT *
     def insert_datos_excel_prefactura_meli(self, id_usuario : int,ids_usuario : str,id_prefact :int,periodo : str,body):
 
         with self.conn.cursor() as cur:
+
+            # Truncar la tabla antes de insertar los datos
+            truncate_query = "TRUNCATE TABLE mercadolibre.prefactura_paso;"
+            cur.execute(truncate_query)
+
             query = """
             INSERT INTO mercadolibre.prefactura_paso
             (id_usuario, ids_usuario, id_prefactura, periodo, descripcion, id_de_ruta, fecha_de_inicio, fecha_de_fin, patente, conductor, cantidad, precio_unitario)
