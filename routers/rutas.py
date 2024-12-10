@@ -1512,5 +1512,7 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
 async def armar_rutas_codigos(body : ArmarRutaBloque):
     data = body.dict()
     result = conn.armar_rutas_bloque(data)
-    return result[0][1]
+    return {
+        'message' : result[0][1]
+    }
 
