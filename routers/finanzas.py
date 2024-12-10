@@ -2,6 +2,9 @@ import os
 from fastapi import APIRouter, File, UploadFile, status,HTTPException
 from typing import List
 import re, json
+
+import psycopg2
+from database.models.finanza.descuento import DescuentoManual
 import lib.excel_generico as excel
 
 ##Conexiones
@@ -453,7 +456,8 @@ async def get_datos_seleccionables_descuentos():
 @router.post("/subir/archivo", status_code=status.HTTP_202_ACCEPTED)
 async def subir_archivo(id : str, file: UploadFile = File(...)):
 
-    directorio  = os.path.abspath(f"finanzas/archivo_adjunto")
+    directorio  = os.path.abspath(f"archivos/finanzas/archivo_adjunto")
+    print(directorio)
     # print(directorio)
     # nombre_hash = hash_password(tipo_archivo+nombre)
 
@@ -465,4 +469,46 @@ async def subir_archivo(id : str, file: UploadFile = File(...)):
         f.write(contents)
 
 
-    conn.agregar_archivo_adjunto_descuento(f'finanzas/archivo_adjunto/{file.filename}',id)
+    conn.agregar_archivo_adjunto_descuento(f'archivos/finanzas/archivo_adjunto/{file.filename}',id)
+
+
+
+
+
+
+@router.post("/guardar/descuento", status_code=status.HTTP_202_ACCEPTED)
+async def subir_archivo(body : DescuentoManual):
+    try:
+        # directorio  = os.path.abspath(f"finanzas/archivo_adjunto")
+        # print(directorio)
+
+        data = body.dict()
+
+        conn.insert_descuentos_finanzas(data)
+
+        id_desc = conn.get_max_id_descuentos_manuales()[0]
+        ids_origen = str(id_desc) + '-' +'Finanza'
+
+        conn.insert_datos_descuentos(data, id_desc, ids_origen)
+
+        print(data)
+
+        return {
+            'message' : 'Descuento registrado exitosamente',
+            'id' : id_desc
+        }
+
+
+
+    except psycopg2.errors.UniqueViolation as error:
+            # Manejar la excepción UniqueViolation específica
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error: La ruta {body.Ruta} ya se encuentra registrado")
+
+    except Exception as error:
+        print(error)
+        # Manejar otras excepciones
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error al agregar el descuento.")
+
+
+
+

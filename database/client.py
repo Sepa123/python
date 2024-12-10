@@ -11956,7 +11956,62 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
             SET adjunto='{jpg}'
             WHERE id = {id}
             """)
-            self.conn.commit()
+        self.conn.commit()
+
+
+    def insert_descuentos_finanzas(self, body):
+
+        with self.conn.cursor() as cur:
+            cur.execute("""
+
+            INSERT INTO finanzas.descuentos_manuales
+            (id_user, ids_user, fecha_evento, id_ppu, razon_social, ruta, etiqueta, descripcion, monto, cuotas)
+            VALUES(%(Id_user)s, %(Ids_user)s, %(Fecha_evento)s, %(Pantente)s, %(Razon_social)s,
+                    %(Ruta)s, %(Etiqueta)s,%(Descripcion)s, %(Monto)s, %(Cant_cuotas)s);            
+                        """,body)
+            
+        self.conn.commit()
+
+
+    def get_max_id_descuentos_manuales(self) :
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            select coalesce (max(id)+1,1) from finanzas.descuentos_manuales dm 
+
+            """)
+
+            return cur.fetchone()
+        
+    def insert_datos_descuentos(self,body, id_origen : int,ids_origen : str):
+
+       
+        with self.conn.cursor() as cur:
+            query = """
+            INSERT INTO finanzas.descuentos
+            (id_user, ids_user,  id_origen_descuento, ids_origen_descuento, fecha_cobro, valor_cuota, numero_cuota, origen, cobrada, oc_cobro)
+            VALUES %s
+            """
+            values = [
+                (
+                    body['Id_user'], body['Ids_user'], id_origen, ids_origen, item['Fecha_comp'], item['Valor_cuota'], item['Numero_cuota'],
+                    item['Origen'], item['Cobrada'], item['Oc_cobro']
+                )
+                for item in body['Cuotas']
+            ]
+            execute_values(cur, query, values)
+
+            print(values)
+
+        self.conn.commit()
+
+
+
+    def armar_rutas_codigos_masivo(self,data):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+                select * from rutas.armar_ruta_codigos(%(Codigos)s, %(Fecha_ruta)s, %(Id_user)s)
+                        """,data)
+            return cur.fetchall()
         
 
             

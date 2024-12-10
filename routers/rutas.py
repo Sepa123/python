@@ -1505,3 +1505,12 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
                 "termino" : True,
                 "error" : 0,
                 }
+
+
+
+@router.post("/armar/ruta_codigos")
+async def armar_rutas_codigos(body : ArmarRutaBloque):
+    data = body.dict()
+    result = conn.armar_rutas_bloque(data)
+    return result[0][1]
+
