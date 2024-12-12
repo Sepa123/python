@@ -1516,3 +1516,17 @@ async def armar_rutas_codigos(body : ArmarRutaBloque):
         'message' : result[0][1]
     }
 
+@router.get("/archivo_ejemplo/descargar")
+async def download_file():
+    # Ruta completa del archivo
+
+    directorio  = os.path.abspath(f"excel/rutas")
+
+    file_path = os.path.join(directorio, 'prueba carga masiva.xlsx')
+
+    # Verifica si el archivo existe
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="File not found")
+
+    # Retorna el archivo como respuesta
+    return FileResponse(file_path, filename='prueba carga masiva.xlsx')
