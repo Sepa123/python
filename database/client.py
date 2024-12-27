@@ -10766,7 +10766,7 @@ SELECT *
     def recupera_data_por_citacion_activa(self,op: int,cop : int, fecha : str):
         with self.conn.cursor() as cur:
             cur.execute(f""" 
-            -- select * from mercadolibre.recupera_data_por_citacion_activa({op},{cop},'{fecha}');
+            -- select * from mercadolibre.recupera_data_por_citacion_activa_v2({op},{cop},'{fecha}');
             SELECT 
             json_agg(
                 json_build_object(

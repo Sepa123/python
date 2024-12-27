@@ -11,7 +11,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 from datetime import datetime, timedelta
 from lib.password import verify_password, hash_password
 from database.models.token import TokenPayload
-from routers import finanzas, inventario,areati, carga,panel,electrolux, transyanez, reportes_cargas, pedidos, productos, rutas, recepcion, comunas, clientes, toc , rsv, beetrack, easy,logistica_inversa,seguridad, meli , operaciones, venta_traspaso
+from routers import finanzas, inventario,areati, carga,panel,electrolux, transyanez, reportes_cargas, pedidos, productos, rutas, recepcion, comunas, clientes, toc , rsv, beetrack, easy,logistica_inversa,seguridad, meli , operaciones, venta_traspaso, CamaraPpu
 from database.schema.roles_list import roles_list_schema
 import time,re
 
@@ -61,6 +61,7 @@ app.include_router(meli.router)
 app.include_router(operaciones.router)
 app.include_router(finanzas.router)
 app.include_router(venta_traspaso.router)
+app.include_router(CamaraPpu.router)
 
 conn = UserConnection()
 hela_conn = HelaConnection()
@@ -94,10 +95,6 @@ app.add_middleware(GZipMiddleware, minimum_size=10000)
 
 @app.get("/api")
 def root():
-    # time.sleep(10)
-    # print('hola')
-    # time.sleep(10)
-    # print('Sigo funcionando')
     return "hola"
 
 # @app.get("/api/cpu")
