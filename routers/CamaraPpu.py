@@ -113,7 +113,7 @@ async def subir_archivo(
         image = Image.open(BytesIO(image_bytes))
         # Guardar la imagen en el servidor, por ejemplo
         # Aquí estamos usando el nombre original del archivo, pero puedes renombrarlo si es necesario
-        image.save(ruta_completa+'/'+nombre_hash+'.png')
+        image.save(ruta_completa+'/'+nombre_hash+'_1.png')
 
 
 
@@ -124,7 +124,7 @@ async def subir_archivo(
         image = Image.open(BytesIO(image_bytes2))
         # Guardar la imagen en el servidor, por ejemplo
         # Aquí estamos usando el nombre original del archivo, pero puedes renombrarlo si es necesario
-        image.save(ruta_completa+'/'+nombre_hash+'.png')
+        image.save(ruta_completa+'/'+nombre_hash+'_2.png')
 
 
         # Leer el archivo de imagen recibido
@@ -134,7 +134,7 @@ async def subir_archivo(
         image2 = Image.open(BytesIO(image_bytes3))
         # Guardar la imagen en el servidor, por ejemplo
         # Aquí estamos usando el nombre original del archivo, pero puedes renombrarlo si es necesario
-        image2.save(ruta_completa+'/'+nombre_hash+'.png')
+        image2.save(ruta_completa+'/'+nombre_hash+'_3.png')
 
 
         # Leer el archivo de imagen recibido
@@ -144,7 +144,7 @@ async def subir_archivo(
         image3 = Image.open(BytesIO(image_bytes4))
         # Guardar la imagen en el servidor, por ejemplo
         # Aquí estamos usando el nombre original del archivo, pero puedes renombrarlo si es necesario
-        image3.save(ruta_completa+'/'+nombre_hash+'.png')
+        image3.save(ruta_completa+'/'+nombre_hash+'_4.png')
 
 
         
@@ -164,10 +164,10 @@ async def subir_archivo(
         ruta_bd = f"archivos/{ppu}/{nombre_hash}"
         conexion = get_db_connection()
         cursor = conexion.cursor()
-        imagen1_png = f"{directorio}/{nombre_hash+'.png'}" if directorio else None
-        imagen2_png = f"{directorio}/{nombre_hash+'.png'}" if directorio else None
-        imagen3_png = f"{directorio}/{nombre_hash+'.png'}" if directorio else None
-        imagen4_png = f"{directorio}/{nombre_hash+'.png'}" if directorio else None
+        imagen1_png = f"{directorio}/{nombre_hash+'_1.png'}" if directorio else None
+        imagen2_png = f"{directorio}/{nombre_hash+'_2.png'}" if directorio else None
+        imagen3_png = f"{directorio}/{nombre_hash+'_3.png'}" if directorio else None
+        imagen4_png = f"{directorio}/{nombre_hash+'_4.png'}" if directorio else None
         consulta = """
             INSERT INTO mercadolibre.evidencia_diaria_fm
             (latitud, longitud, escaneo, ppu, id_ruta, imagen1_png, imagen2_png, imagen3_png, imagen4_png, intentos)
