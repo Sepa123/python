@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import psycopg2
 import os
 from dotenv import load_dotenv
-from fastapi.responses import StreamingResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel
 from PIL import Image
 from io import BytesIO
@@ -230,6 +230,37 @@ async def obtener_imagen(nombre_imagen: str):
             cursor.close()
         if "conexion" in locals():
             conexion.close()
+
+
+@router.get("/image/fotos/{ppu}")
+async def get_fotos_patentes(ppu: str):
+
+        # Conectar a la base de datos
+    conexion = get_db_connection()
+    cursor = conexion.cursor()
+
+    # Buscar la imagen por su nombre, se usa %s para los parámetros en la consulta
+    consulta = """
+        SELECT created_at, imagen1_png, imagen2_png, imagen3_png, imagen4_png
+        FROM mercadolibre.evidencia_diaria_fm edf
+        WHERE ppu = %s
+        ORDER BY created_at DESC
+        LIMIT 1
+    """
+
+    # Ejecutar la consulta pasando el parámetro ppu
+    cursor.execute(consulta, (ppu,))
+
+    # Obtener el resultado de la consulta
+    resultado = cursor.fetchone()
+
+    # Asegurarse de cerrar el cursor y la conexión cuando se termine
+    cursor.close()
+    conexion.close()
+    
+    return FileResponse(resultado[0])
+
+
 
 @router.get("/info")
 async def Obtener_datos(Ppu: str):
