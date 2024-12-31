@@ -254,11 +254,12 @@ async def get_fotos_patentes(ppu: str):
     # Obtener el resultado de la consulta
     resultado = cursor.fetchone()
 
+    
     # Asegurarse de cerrar el cursor y la conexión cuando se termine
     cursor.close()
     conexion.close()
     
-    return FileResponse(resultado[0])
+    return FileResponse(resultado[1])
 
 
 
