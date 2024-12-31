@@ -250,7 +250,7 @@ async def get_fotos_patentes(ppu: str):
 
     # Buscar la imagen por su nombre, se usa %s para los parámetros en la consulta
     consulta = """
-        SELECT created_at, imagen1_png, imagen2_png, imagen3_png, imagen4_png
+        SELECT  created_at, latitud, longitud, imagen1_png, imagen2_png, imagen3_png, imagen4_png
         FROM mercadolibre.evidencia_diaria_fm edf
         WHERE ppu = %s
         ORDER BY created_at DESC
@@ -271,11 +271,15 @@ async def get_fotos_patentes(ppu: str):
 
     if not resultado:
         return {"error": "No se encontraron imágenes para el PPU especificado"}
-    
-
-    
-    
-    return FileResponse(resultado[1])
+        
+    return {
+        "Latitud" : resultado[1],
+        "Longitud" : resultado[2],
+        "Imagen_1" : "https://hela.transyanez.cl/api/camara/image/foto?image_path="+resultado[3],
+        "Imagen_2" : "https://hela.transyanez.cl/api/camara/image/foto?image_path="+resultado[4],
+        "Imagen_3" : "https://hela.transyanez.cl/api/camara/image/foto?image_path="+resultado[5],
+        "Imagen_4" : "https://hela.transyanez.cl/api/camara/image/foto?image_path="+resultado[6],
+    }
 
 
 
