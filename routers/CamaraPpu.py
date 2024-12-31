@@ -232,6 +232,15 @@ async def obtener_imagen(nombre_imagen: str):
             conexion.close()
 
 
+@router.get("/image/foto")
+async def get_image(image_path: str):
+    # image_path = os.path.join(IMAGE_DIR, image_name)
+    if os.path.exists(image_path):
+        return FileResponse(image_path)
+    else:
+        raise HTTPException(status_code=404, detail="Image not found")
+
+
 @router.get("/image/fotos/{ppu}")
 async def get_fotos_patentes(ppu: str):
 
@@ -258,6 +267,13 @@ async def get_fotos_patentes(ppu: str):
     # Asegurarse de cerrar el cursor y la conexión cuando se termine
     cursor.close()
     conexion.close()
+
+
+    if not resultado:
+        return {"error": "No se encontraron imágenes para el PPU especificado"}
+    
+
+    
     
     return FileResponse(resultado[1])
 
