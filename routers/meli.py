@@ -865,6 +865,12 @@ async def get_fotos_patentes(ppu: str):
     return {
         "Latitud" : resultado[1],
         "Longitud" : resultado[2],
+        "Imagenes": [
+                     "https://hela.transyanez.cl/api/camara/image/foto?image_path="+resultado[3],
+                     "https://hela.transyanez.cl/api/camara/image/foto?image_path="+resultado[4],
+                     "https://hela.transyanez.cl/api/camara/image/foto?image_path="+resultado[5],
+                     "https://hela.transyanez.cl/api/camara/image/foto?image_path="+resultado[6]
+                     ],
         "Imagen_1" : "https://hela.transyanez.cl/api/camara/image/foto?image_path="+resultado[3],
         "Imagen_2" : "https://hela.transyanez.cl/api/camara/image/foto?image_path="+resultado[4],
         "Imagen_3" : "https://hela.transyanez.cl/api/camara/image/foto?image_path="+resultado[5],
