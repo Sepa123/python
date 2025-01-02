@@ -850,3 +850,23 @@ async def panel_citacion_meli(fecha : str):
     resultado_dict = {titulo.replace(' ','_') : cant for titulo, cant in datos}
 
     return resultado_dict
+
+
+
+
+@router.get("/image/fotos/{ppu}")
+async def get_fotos_patentes(ppu: str):
+    # Obtener el resultado de la consulta
+    resultado = conn.get_fotos_patentes(ppu)
+
+    if not resultado:
+        return {"error": "No se encontraron imágenes para el PPU especificado"}
+        
+    return {
+        "Latitud" : resultado[1],
+        "Longitud" : resultado[2],
+        "Imagen_1" : "https://hela.transyanez.cl/api/camara/image/foto?image_path="+resultado[3],
+        "Imagen_2" : "https://hela.transyanez.cl/api/camara/image/foto?image_path="+resultado[4],
+        "Imagen_3" : "https://hela.transyanez.cl/api/camara/image/foto?image_path="+resultado[5],
+        "Imagen_4" : "https://hela.transyanez.cl/api/camara/image/foto?image_path="+resultado[6],
+    }

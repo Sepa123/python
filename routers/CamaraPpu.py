@@ -244,7 +244,7 @@ async def get_image(image_path: str):
 @router.get("/image/fotos/{ppu}")
 async def get_fotos_patentes(ppu: str):
 
-        # Conectar a la base de datos
+        # Conectar a la base de 
     conexion = get_db_connection()
     cursor = conexion.cursor()
 
