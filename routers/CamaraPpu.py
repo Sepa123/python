@@ -232,7 +232,8 @@ async def obtener_imagen(nombre_imagen: str):
             conexion.close()
 
 
-@router.get("/image/foto")
+# @router.get("/image/foto")
+@router.get("/image/foto{image_path}")
 async def get_image(image_path: str):
     # image_path = os.path.join(IMAGE_DIR, image_name)
     if os.path.exists(image_path):
