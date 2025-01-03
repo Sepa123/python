@@ -11558,43 +11558,40 @@ SELECT *
         with self.conn.cursor() as cur:
             cur.execute(f"""   
             with lista_rutas as (
-            SELECT 
-                mds.fecha,
-                mo.modalidad,
-                mds.id_ruta,
-                co.centro,
-                mds.ppu,
-                mds.tipo_vehiculo,
-                CASE 
-                    WHEN mds.ruta_cerrada = TRUE THEN 'Cerrada'
-                    ELSE 'Abierta'
-                END AS estado_ruta,
-                mds.driver,
-                tr.tipo,
-                c.ruta_meli_amb AS ruta_auxiliada,
-                mds.avance,
-                mds.lm_fallido,
-                mds.p_avance,
-                mds.lm_entregas,
-                mds.kilometros AS km,
-                u.nombre_completo AS peoneta,
-                mds.valor_ruta,
-                mds.observacion,
-                mds.razon_id,
-                col.razon_social,
-                col.rut AS rut_empresa,
-                CASE 
+                SELECT 	distinct on (mds.id_ruta)
+                    mds.fecha,
+                    mo.modalidad,
+                    mds.id_ruta,
+                    co.centro,
+                    mds.ppu,
+                    mds.tipo_vehiculo,
+                    CASE 
+                        WHEN mds.ruta_cerrada = TRUE THEN 'Cerrada'
+                        ELSE 'Abierta'
+                    END AS estado_ruta,
+                    mds.driver,
+                    tr.tipo,
+                    c.ruta_meli_amb AS ruta_auxiliada,
+                    mds.avance,
+                    mds.lm_fallido,
+                    mds.p_avance,
+                    mds.lm_entregas,
+                    mds.kilometros AS km,
+                    u.nombre_completo AS peoneta,
+                    mds.valor_ruta,
+                    mds.observacion,
+                    mds.razon_id,
+                    col.razon_social,
+                    col.rut AS rut_empresa,
+                    CASE 
                     WHEN mpm.id IS NOT NULL THEN TRUE 
-                    ELSE FALSE 
-                END AS en_proforma,
-                COALESCE(SUM(CASE 
-                                WHEN mpm.descuento = TRUE THEN mpm.precio_unitario 
-                                ELSE 0 
-                            END), 0) AS p_total_descuentos,
-                CASE 
-                        WHEN mpm.cantidad = 1 THEN TRUE 
                         ELSE FALSE 
-                END AS p_a_pago
+                    END AS en_proforma,
+                    finanzas.sumar_descuentos(mds.id_ruta) AS p_total_descuentos,
+                    CASE 
+                            WHEN mpm.cantidad = 1 THEN TRUE 
+                            ELSE FALSE 
+                    END AS p_a_pago
             FROM mercadolibre.mae_data_supervisores mds
             LEFT JOIN operacion.centro_operacion co ON co.id = mds.id_centro_operacion
             LEFT JOIN mercadolibre.citacion c ON (c.ruta_meli::int8 = mds.id_ruta)
@@ -11629,7 +11626,7 @@ SELECT *
                 col.razon_social,
                 col.rut,
                 mpm.id
-                ORDER BY mds.razon_id, mds.ppu, mds.fecha ASC
+                ORDER BY mds.id_ruta,mds.razon_id, mds.ppu, mds.fecha ASC
             )
 
         ---SELECT * FROM finanzas.listar_rutas_meli('2024-09-09', '2024-09-11',0);
