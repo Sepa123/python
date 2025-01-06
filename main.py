@@ -80,7 +80,9 @@ origins = [
     "http://prueba.transyanez.cl",
     "https://prueba.transyanez.cl",
     "https://garm.transyanez.cl",
-    "http://garm.transyanez.cl"
+    "http://garm.transyanez.cl",
+    "https://melifm.transyanez.cl/camera-ppu"
+
 ]
 
 app.add_middleware(
