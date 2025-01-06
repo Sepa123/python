@@ -81,7 +81,7 @@ origins = [
     "https://prueba.transyanez.cl",
     "https://garm.transyanez.cl",
     "http://garm.transyanez.cl",
-    "https://melifm.transyanez.cl/camera-ppu"
+    "https://melifm.transyanez.cl"
 
 ]
 
