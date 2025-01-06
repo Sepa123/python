@@ -57,3 +57,4 @@ class DesvincularColaborador(BaseModel):
     Origen: Optional[str] = None
     Fecha_desactivacion: Optional[str] = None
     Motivo_desactivacion: Optional[str] = None
+    Modificacion: Optional[str] = None

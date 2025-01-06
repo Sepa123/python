@@ -649,11 +649,16 @@ async def motivos_desvinculacion():
 async def desvincular_colaborador(body : DesvincularColaborador ):
     try:
         # razon_id = conn.buscar_id_colab_por_rut(body.Rut_razon_social)[0]
+        
 
+        body.Modificacion = f'Se ha desvinculado al colaborador con rut {body.Rut}'
         # body.Id_razon_social=razon_id
         data = body.dict()
 
         conn.update_desactivar_colaborador(data)
+
+
+        conn.insert_bitacora_transporte(data)
 
         return {
             "message": "Colaborador desvinculado correctamente",
