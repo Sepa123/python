@@ -11517,8 +11517,8 @@ SELECT *
                 LEFT JOIN operacion.modalidad_operacion mo ON mo.id = mds.id_operacion
                 LEFT JOIN public.op_regiones r ON r.id_region::INT8 = co.region
                 LEFT JOIN mercadolibre.citacion c ON c.ruta_meli::INTEGER = mds.id_ruta
-                WHERE mds.fecha BETWEEN '2024-11-01'::DATE AND '2024-11-21'::DATE
-                and (1020 = ANY(co.id_coordinador) or 1020 in (select u.id from hela.usuarios u where u.rol_id in ('5','90')))
+                WHERE mds.fecha BETWEEN '{fecha_ini}'::DATE AND '{fecha_fin}'::DATE
+                and ({usuario} = ANY(co.id_coordinador) or {usuario} in (select u.id from hela.usuarios u where u.rol_id in ('5','90')))
                 ORDER BY 1 DESC, 5 asc
 
             )

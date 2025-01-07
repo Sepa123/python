@@ -72,6 +72,12 @@ class AsignarOperacion(BaseModel):
 class cambiarEstadoVehiculo(BaseModel):
     id : Optional[int]
     ppu : Optional[str]
+    Id_user : Optional[int]
+    Ids_user : Optional[str]
+    Id_ppu : Optional[str]
+    Latitud : Optional[str]
+    Longitud : Optional[str]
+    
 
 
 
