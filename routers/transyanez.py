@@ -122,10 +122,14 @@ async def actualizar_datos_colaborador(body : Colaboradores):
         # Manejar otras excepciones
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error al agregar el detalle de pago.")
     
-@router.get("/activar/colaborador")
-async def activar_colaborador(rut : str,activar: bool):
+@router.post("/activar/colaborador")
+async def activar_colaborador(body : DesvincularColaborador):
 
-    conn.activar_colab(rut,activar)
+    conn.activar_colab(body.Rut,True)
+
+    data = body.dict()
+
+    conn.insert_bitacora_transporte(data)
     return {
         "message": "Colaborador activado correctamente",
     }
