@@ -10784,7 +10784,7 @@ SELECT *
             cur.execute(f""" 
             --select id_operacion as "Id_operacion", nombre as "Nombre", id_centro_op as "Id_centro_op",
 	        --       centro as  "Centro", region_name as "Region", detalles as "Detalles"     
-            --from mercadolibre.pantalla_inicial_supervisores('{fecha}', {id_usuario});
+            --from mercadolibre.pantalla_inicial_supervisores_v2('{fecha}', {id_usuario});
             SELECT json_agg(
                 json_build_object(
                     'Id_operacion', id_operacion,
@@ -10795,7 +10795,7 @@ SELECT *
                     'Detalles', detalles
                 )
             ) AS result
-            FROM mercadolibre.pantalla_inicial_supervisores('{fecha}', {id_usuario});
+            FROM mercadolibre.pantalla_inicial_supervisores_v2('{fecha}', {id_usuario});
                          """)
             return cur.fetchone()
         
