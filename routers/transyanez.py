@@ -127,6 +127,9 @@ async def activar_colaborador(body : DesvincularColaborador):
 
     conn.activar_colab(body.Rut,True)
 
+
+    body.Modificacion = f'Se ha activado al colaborador con rut {body.Rut}'
+
     data = body.dict()
 
     conn.insert_bitacora_transporte(data)
