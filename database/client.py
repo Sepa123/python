@@ -11557,109 +11557,133 @@ SELECT *
     def listar_rutas_meli(self,fecha_inicio,fecha_fin):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
-            with lista_rutas as (
-                SELECT 	distinct on (mds.id_ruta)
-                    mds.fecha,
-                    mo.modalidad,
-                    mds.id_ruta,
-                    co.centro,
-                    mds.ppu,
-                    mds.tipo_vehiculo,
-                    CASE 
-                        WHEN mds.ruta_cerrada = TRUE THEN 'Cerrada'
-                        ELSE 'Abierta'
-                    END AS estado_ruta,
-                    mds.driver,
-                    tr.tipo,
-                    c.ruta_meli_amb AS ruta_auxiliada,
-                    mds.avance,
-                    mds.lm_fallido,
-                    mds.p_avance,
-                    mds.lm_entregas,
-                    mds.kilometros AS km,
-                    u.nombre_completo AS peoneta,
-                    mds.valor_ruta,
-                    mds.observacion,
-                    mds.razon_id,
-                    col.razon_social,
-                    col.rut AS rut_empresa,
-                    CASE 
-                    WHEN mpm.id IS NOT NULL THEN TRUE 
-                        ELSE FALSE 
-                    END AS en_proforma,
-                    finanzas.sumar_descuentos(mds.id_ruta) AS p_total_descuentos,
-                    CASE 
-                            WHEN mpm.cantidad = 1 THEN TRUE 
-                            ELSE FALSE 
-                    END AS p_a_pago
-            FROM mercadolibre.mae_data_supervisores mds
-            LEFT JOIN operacion.centro_operacion co ON co.id = mds.id_centro_operacion
-            LEFT JOIN mercadolibre.citacion c ON (c.ruta_meli::int8 = mds.id_ruta)
-            LEFT JOIN mercadolibre.tipo_ruta tr ON tr.id = c.tipo_ruta
-            LEFT JOIN transporte.usuarios u ON u.id = c.id_peoneta
-            LEFT JOIN transporte.colaborador col ON col.id = mds.razon_id
-            LEFT JOIN operacion.modalidad_operacion mo ON mo.id = co.id_op
-            LEFT JOIN mercadolibre.mae_proforma_mensual mpm ON mpm.id_de_ruta = mds.id_ruta
-            WHERE mds.fecha >= '{fecha_inicio}'::date 
-            AND mds.fecha <= '{fecha_fin}'::date
-                --where mds.fecha >= '20240901'::date AND mds.fecha <= '20241001'::date
-            GROUP BY 
-                mds.fecha,
-                mo.modalidad,
-                mds.id_ruta,
-                co.centro,
-                mds.ppu,
-                mds.tipo_vehiculo,
-                mds.ruta_cerrada,
-                mds.driver,
-                tr.tipo,
-                c.ruta_meli_amb,
-                mds.avance,
-                mds.lm_fallido,
-                mds.p_avance,
-                mds.lm_entregas,
-                mds.kilometros,
-                u.nombre_completo,
-                mds.valor_ruta,
-                mds.observacion,
-                mds.razon_id,
-                col.razon_social,
-                col.rut,
-                mpm.id
-                ORDER BY mds.id_ruta,mds.razon_id, mds.ppu, mds.fecha ASC
-            )
 
-        ---SELECT * FROM finanzas.listar_rutas_meli('2024-09-09', '2024-09-11',0);
-  
-        select json_agg(
-                json_build_object(
-                'Fecha', fecha,
-                'Modalidad',modalidad,
-                'Id_ruta', id_ruta,
-                'Centro_operacion', centro,
-                'Ppu', ppu,
-                'Tipo_vehiculo', tipo_vehiculo,
-                'Estado_ruta', estado_ruta,
-                'Driver', coalesce(driver, ''),
-                'Tipo', tipo,
-                'Ruta_auxiliada', ruta_auxiliada,
-                'Avance', avance,
-                'Lm_fallido', lm_fallido,
-                'P_avance', p_avance,
-                'Lm_entregas', lm_entregas,
-                'Km', km,
-                'Peoneta', peoneta,
-                'Valor_ruta', valor_ruta,
-                'Observacion', observacion,
-                'Razon_id', razon_id,
-                'Razon_social', razon_social,
-                'Rut_empresa', rut_empresa,
-                'En_proforma', en_proforma,
-                'P_total_descuentos', p_total_descuentos,
-                'P_a_pago', p_a_pago
+            --select * from finanzas.listar_rutas_meli_v2('20241202','20241202',0);
+
+             with lista_rutas as (
+                select 	subquery.fecha,
+                        subquery.modalidad,
+                        subquery.id_ruta,
+                        subquery.centro,
+                        subquery.ppu,
+                        subquery.tipo_vehiculo,
+                        subquery.estado_ruta,
+                        subquery.driver,
+                        subquery.tipo,
+                        subquery.ruta_auxiliada,
+                        subquery.id_ambulancia,
+                        subquery.avance,
+                        subquery.fallidos,
+                        subquery.lm_entregas,
+                        subquery.total_pedidos,
+                        subquery.km,
+                        subquery.peoneta,
+                        subquery.valor_ruta,
+                        subquery.observacion,
+                        CASE 
+                            WHEN subquery.total_pedidos = 0 THEN 0
+                            ELSE ROUND(subquery.lm_entregas::NUMERIC / subquery.total_pedidos::NUMERIC,4)
+                        END as ns,
+                        subquery.razon_id,
+                        subquery.razon_social,
+                        subquery.rut_empresa,
+                        subquery.en_proforma,
+                        subquery.p_total_descuentos,
+                        subquery.p_a_pago,
+                        subquery.patente_proforma
+                from (
+                    SELECT 	distinct on (mds.id_ruta)
+                            mds.fecha,
+                            mo.modalidad,
+                            mds.id_ruta,
+                            co.centro,
+                            mds.ppu,
+                            mds.tipo_vehiculo,
+                            CASE 
+                                WHEN mds.ruta_cerrada = TRUE THEN 'Cerrada'
+                                ELSE 'Abierta'
+                            END AS estado_ruta,
+                            mds.driver,
+                            tr.tipo,
+                            c.ruta_meli_amb AS ruta_auxiliada,
+                            c.ruta_amb_interna as id_ambulancia,
+                            mds.avance,
+                            CASE 
+                                WHEN mo.modalidad = 'LM' THEN (coalesce(mds.lm_fallido,0))
+                                WHEN mo.modalidad = 'FM' THEN 0
+                                ELSE 0
+                            END as fallidos,
+                            mds.lm_entregas,
+                            CASE 
+                                WHEN mo.modalidad = 'LM' THEN (coalesce(mds.lm_spr,0))
+                                WHEN mo.modalidad = 'FM' THEN 0
+                                ELSE 0
+                            END as total_pedidos,
+                            mds.kilometros AS km,
+                            u.nombre_completo AS peoneta,
+                            mds.valor_ruta,
+                            mds.observacion,
+                            mds.razon_id,
+                            col.razon_social,
+                            col.rut AS rut_empresa,
+                            CASE 
+                                WHEN mpm.id IS NOT NULL THEN TRUE 
+                                ELSE FALSE 
+                            END AS en_proforma,
+                            finanzas.sumar_descuentos(mds.id_ruta) AS p_total_descuentos,
+                            CASE 
+                                    WHEN mpm.cantidad = 1 THEN TRUE 
+                                    ELSE FALSE 
+                            END AS p_a_pago,
+                            mpm.patente as patente_proforma
+                    FROM mercadolibre.mae_data_supervisores mds
+                    LEFT JOIN operacion.centro_operacion co ON co.id = mds.id_centro_operacion
+                    LEFT JOIN mercadolibre.citacion c ON (c.ruta_meli::int8 = mds.id_ruta)
+                    LEFT JOIN mercadolibre.tipo_ruta tr ON tr.id = c.tipo_ruta
+                    LEFT JOIN transporte.usuarios u ON u.id = c.id_peoneta
+                    LEFT JOIN transporte.colaborador col ON col.id = mds.razon_id
+                    LEFT JOIN operacion.modalidad_operacion mo ON mo.id = co.id_op
+                    LEFT JOIN mercadolibre.mae_proforma_mensual mpm ON mpm.id_de_ruta = mds.id_ruta
+                    WHERE mds.fecha >= '{fecha_inicio}'::date AND mds.fecha <= '{fecha_fin}'::date
+                    --where mds.fecha >= '20241202'::date AND mds.fecha <= '20241202'::date
+                ) subquery
+                ORDER BY subquery.razon_id, subquery.ppu, subquery.fecha
+                
                 )
-        ) as campo
-            from lista_rutas                              
+            
+        select json_agg(
+                        json_build_object(
+                        'Fecha', fecha,
+                        'Modalidad',modalidad,
+                        'Id_ruta', id_ruta,
+                        'Centro_operacion', centro,
+                        'Ppu', ppu,
+                        'Tipo_vehiculo', tipo_vehiculo,
+                        'Estado_ruta', estado_ruta,
+                        'Driver', coalesce(driver, ''),
+                        'Tipo', tipo,
+                        'Ruta_auxiliada', ruta_auxiliada,
+                        'Avance', avance,
+                        'Lm_fallido', fallidos,
+                        --'P_avance', p_avance,
+                        'Lm_entregas', lm_entregas,
+                        'Total_pedidos', total_pedidos,
+                        'Km', km,
+                        'Peoneta', peoneta,
+                        'Valor_ruta', valor_ruta,
+                        'Observacion', observacion,
+                        'Ns', ns,
+                        'Razon_id', razon_id,
+                        'Razon_social', razon_social,
+                        'Rut_empresa', rut_empresa,
+                        'En_proforma', en_proforma,
+                        'P_total_descuentos', p_total_descuentos,
+                        'P_a_pago', p_a_pago,
+                        'Patente_proforma', patente_proforma
+                        )
+                ) as campo
+                    from lista_rutas   
+                                    
                       """)
             return cur.fetchone() 
 
