@@ -860,8 +860,8 @@ async def get_fotos_patentes(ppu: str):
     resultado = conn.get_fotos_patentes(ppu)
 
     if not resultado:
-        return {"error": "No se encontraron imágenes para el PPU especificado"}
-        
+        raise HTTPException(status_code=404, detail="No se encontraron imágenes para el PPU especificado") 
+    
     return {
         "Latitud" : resultado[1],
         "Longitud" : resultado[2],
