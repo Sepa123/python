@@ -10535,6 +10535,64 @@ SELECT *
            UPDATE mercadolibre.citacion SET ruta_amb_interna = '{ruta_amb_interna}', id_ppu_amb = {id_ppu_amb}, ruta_meli_amb = '{ruta_meli_amb}' where id_ppu = {id_ppu} and fecha ='{fecha}'                    
            """)
         self.conn.commit()
+
+
+    def insert_datos_excel_prefactura_meli_diario_lh(self, id_usuario : int,ids_usuario : str,fecha :int,latitud : str,longitud : str,body):
+
+        with self.conn.cursor() as cur:
+            query = """
+            INSERT INTO mercadolibre.ingreso_diario_textual_lh
+            (id_usuario, ids_usuario, fecha_ingreso, list_routes_steps__route_id_title, list_routes_steps__travel_id, list_routes_steps__rostering_id, list_routes_steps__rostering_id_2, list_routes_steps__vehicles_plates_title,
+             list_routes_steps__vehicles_plates_title_2, andes_visually_hidden_2, list_routes_steps__vehicles_plates_title_3, andes_tooltip__trigger_src, gps_status__title, andes_visually_hidden_4, list_routes_steps__location_title, andes_tooltip__trigger_2,
+             label_with_tooltip__title, label_with_tooltip__area_real_time, label_with_tooltip__tooltip, label_with_tooltip__tooltip_2, list_routes_steps__location_title_2, andes_tooltip__trigger_3, andes_tooltip__trigger_4, label_with_tooltip__title_3, label_with_tooltip__area_real_time_2,
+             label_with_tooltip__tooltip_3, label_with_tooltip__tooltip_4, list_routes_steps__sub_status_title, andes_tooltip__trigger_5, andes_tooltip__trigger_6, label_with_tooltip__title_4, label_with_tooltip__title_5, label_with_tooltip__title_6, andes_tooltip__trigger_7, andes_tooltip__trigger_8, 
+             label_with_tooltip__title_7, latitud, longitud)
+
+            VALUES %s
+            """
+            values = [
+            (id_usuario, ids_usuario, fecha, 
+            item.get('list-routes-steps__route-id-title', None),
+            item.get('list-routes-steps__travel-id', None),
+            item.get('list-routes-steps__rostering-id', None),
+            item.get('list-routes-steps__rostering-id 2', None),
+            item.get('list-routes-steps__vehicles-plates-title', None),
+            item.get('list-routes-steps__vehicles-plates-title 2', None),
+            item.get('andes-visually-hidden 2', None),
+            item.get('list-routes-steps__vehicles-plates-title 3', None),
+            item.get('andes-tooltip__trigger src', None),
+            item.get('gps-status__title', None),
+            item.get('andes-visually-hidden 4', None),
+            item.get('list-routes-steps__location-title', None),
+            item.get('andes-tooltip__trigger 2', None),
+            item.get('label-with-tooltip__title', None),
+            item.get('label-with-tooltip__area-real-time', None),
+            item.get('label-with-tooltip__tooltip', None),
+            item.get('label-with-tooltip__tooltip 2', None),
+            item.get('list-routes-steps__location-title 2', None),
+            item.get('andes-tooltip__trigger 3', None),
+            item.get('andes-tooltip__trigger 4', None),
+            item.get('label-with-tooltip__title 3', None),
+            item.get('label-with-tooltip__area-real-time 2', None),
+            item.get('label-with-tooltip__tooltip 3', None),
+            item.get('label-with-tooltip__tooltip 4', None),
+            item.get('list-routes-steps__sub-status-title', None),
+            item.get('andes-tooltip__trigger 5', None),
+            item.get('andes-tooltip__trigger 6', None),
+            item.get('label-with-tooltip__title 4', None),
+            item.get('label-with-tooltip__title 5', None),
+            item.get('label-with-tooltip__title 6', None),
+            item.get('andes-tooltip__trigger 7', None),
+            item.get('andes-tooltip__trigger 8', None),
+            item.get('label-with-tooltip__title 7', None),
+            latitud, longitud
+            )
+              
+            for item in body
+                    ]
+            execute_values(cur, query, values)
+
+        self.conn.commit()
         
 
     def insert_datos_excel_prefactura_meli_diario_fm(self, id_usuario : int,ids_usuario : str,fecha :int,latitud : str,longitud : str,body):
@@ -11492,6 +11550,23 @@ SELECT *
         
 
      ##############
+
+
+    def lista_ppu_con_fotos(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            with ppus as (
+                    select distinct ppu as ppu
+                    FROM mercadolibre.evidencia_diaria_fm edf
+                    where ppu != 'null'
+                    )
+                    select 
+                    json_agg(json_build_object
+                                                    ('Pantente',ppu
+                                                    ) ) as campo
+                    FROM ppus 
+                      """)
+            return cur.fetchone()
 
     def resumen_rutas_fecha_sup(self,fecha_ini,fecha_fin,usuario):
         with self.conn.cursor() as cur:

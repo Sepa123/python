@@ -651,6 +651,11 @@ async def subir_archivo_prefactura_meli_diario(id_usuario : str,ids_usuario : st
 
         conn.insert_datos_excel_prefactura_meli_diario_fm(id_usuario,ids_usuario,fecha_formateada,latitud,longitud,lista)
 
+    elif fkey == 'list-routes-steps__route-id-title':
+        print('es un LH')
+
+        conn.insert_datos_excel_prefactura_meli_diario_lh(id_usuario,ids_usuario,fecha_formateada,latitud,longitud,lista)
+
     else:
 
         # print(df.columns)
@@ -831,8 +836,9 @@ async def guardar_dato_citacion_supervisores(data_supervisor : DataSupervisor):
 @router.get("/resumen/rutas/supervisor")
 async def get_experiencia_comentario(fecha_ini: str, fecha_fin: str, usuario: int):
     datos = conn.resumen_rutas_fecha_sup(fecha_ini, fecha_fin,usuario)
-
+    # datos_patentes = conn.lista_ppu_con_fotos()
     return datos[0]
+    
 
 
 
