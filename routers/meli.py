@@ -840,6 +840,12 @@ async def get_experiencia_comentario(fecha_ini: str, fecha_fin: str, usuario: in
     return datos[0]
     
 
+@router.get("/lista_ppu/fotos")
+async def get_lista_ppu_con_fotos():
+    datos = conn.lista_ppu_con_fotos()
+    # datos_patentes = conn.lista_ppu_con_fotos()
+    return datos[0]
+
 
 
 @router.get("/listar/rutas")

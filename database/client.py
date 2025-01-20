@@ -150,6 +150,7 @@ class reportesConnection():
     conn = None
     def __init__(self) -> None:
         try:
+            # print(config("POSTGRES_DB_CARGA"))
             self.conn = psycopg2.connect(config("POSTGRES_DB_CARGA"), options=options)
             # self.conn.encoding("")
             self.conn.autocommit = True
