@@ -2,6 +2,7 @@ from fastapi import  status,HTTPException,Header,Depends,FastAPI
 from typing import List , Dict ,Union
 import re
 from decouple import config
+import psycopg2
 from database.models.transporte.trabajemos import ContactoExterno
 import lib.beetrack_data as data_beetrack
 import httpx
@@ -271,15 +272,32 @@ def me (user:TokenPayload = Depends(current_user)):
 @app.post("/api/v2/externo/registar/candidato")
 async def Registro_candidatos_externos(body : ContactoExterno ):
 
-    body.Nombre_contacto = body.Nombre_contacto+' '+body.Apellido
-    # print(body)
 
-    data = body.dict()
+    try:
+        body.Nombre_contacto = body.Nombre_contacto+' '+body.Apellido
+        # print(body)
 
-    conn.insert_recluta_externo(data)
-    return {
-            'message' : 'Datos ingresados correctamente'
-            }
+        data = body.dict()
+
+        conn.insert_recluta_externo(data)
+        return {
+                'message' : 'Datos ingresados correctamente'
+                }
+    except psycopg2.errors.UniqueViolation as error:
+        # Manejar la excepción UniqueViolation específica
+
+        match = re.search(r"Key \(telefono\)=\((\+?\d+)\)", str(error))
+        if match:
+            # telefono = match.group(1)
+            # Generar un error con el teléfono extraído
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error: El teléfono ya se encuentra registrado")
+        else:
+            # Si no se encuentra el teléfono, puedes manejar el error de manera genérica
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Error: El correo ya se encuentra registrado")
+
+    except Exception as error:
+        # Manejar otras excepciones
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error al agregar al nuevo recluta.")
 
 
 @app.get("/api/v2/externo/campos")
