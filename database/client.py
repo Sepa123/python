@@ -11556,16 +11556,14 @@ SELECT *
     def lista_ppu_con_fotos(self):
         with self.conn.cursor() as cur:
             cur.execute(f""" 
-            with ppus as (
-                    select distinct ppu as ppu
-                    FROM mercadolibre.evidencia_diaria_fm edf
-                    where ppu != 'null'
-                    )
-                    select 
-                    json_agg(json_build_object
-                                                    ('Pantente',ppu
-                                                    ) ) as campo
-                    FROM ppus 
+           with ppus as (
+            select distinct ppu as ppu
+            FROM mercadolibre.evidencia_diaria_fm edf
+            where ppu != 'null'
+            )
+            select 
+            json_agg(ppu) as campo
+            FROM ppus 
                       """)
             return cur.fetchone()
 
