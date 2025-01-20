@@ -11828,8 +11828,7 @@ SELECT *
     def datos_tarifario_especifico_fecha_null(self):
         with self.conn.cursor() as cur:
             cur.execute(f""" 
-            SELECT id, operacion, centro_operacion, ppu, periodicidad, tarifa, fecha_de_caducidad FROM finanzas.tarifario_especifico te WHERE fecha_de_caducidad IS NULL;
-
+            SELECT id, operacion, centro_operacion, ppu, razon_social, periodicidad, tarifa, fecha_de_caducidad FROM finanzas.tarifario_especifico te WHERE fecha_de_caducidad IS NULL;
                       """)
             return cur.fetchall()
 

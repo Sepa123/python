@@ -433,10 +433,11 @@ async def Obtener_datos():
                                 "id": fila [0],
                                 "operacion" : fila[1],
                                 "centro_operacion": fila[2],
-                                "tipo_vehiculo":fila[3],
-                                "periodicidad":fila[4],
-                                "tarifa":fila[5],
-                                "fecha_de_caducidad":fila[6]
+                                "ppu":fila[3],
+                                "razon_social":fila[4],
+                                "periodicidad":fila[5],
+                                "tarifa":fila[6],
+                                "fecha_de_caducidad":fila[7]
                             } 
                             for fila in datos]
         return datos_formateados
