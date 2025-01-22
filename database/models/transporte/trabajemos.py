@@ -16,7 +16,7 @@ class ContactoExterno(BaseModel):
     Tipo_carroceria: Optional[int]  # Entero para tipo de carrocería
     Tipo_adicionales: Optional[int]  # Entero para tipo de adicionales
     Metros_cubicos: Optional[Decimal]  # Decimal con precisión 5,2
-    Inicio_actividades_factura: bool  # Booleano para inicio de actividades de facturación
+    Inicio_actividades_factura: Optional[bool]  # Booleano para inicio de actividades de facturación
     Giro: Optional[int]  # Entero para giro comercial
 
 

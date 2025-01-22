@@ -56,7 +56,6 @@ async def Obtener_datos_Emp():
 async def cambio_razon(razon_id: int, id : int):
     try:
         conn.cambiar_razon_social_vehiculo(razon_id,id)
-        print()
         return {"message": "Datos Ingresados Correctamente"}
     except Exception as e: raise HTTPException(status_code=500, detail=str(e))
 
@@ -66,6 +65,5 @@ async def cambio_razon(razon_id: int, id : int):
 async def ingresoBitacora(id_ppu: int, id_razon_Antigua: int, id_razon_nueva:int, observacion:str):
     try:
         conn.ingreso_bitacora_cambio_razon_ppu(id_ppu,id_razon_Antigua,id_razon_nueva,observacion)
-        print()
         return {"message": "Datos Ingresados Correctamente"}
     except Exception as e: raise HTTPException(status_code=500, detail=str(e))

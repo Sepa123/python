@@ -64,7 +64,6 @@ async def Obtener_datos():
 async def actualizar_estado(id_usuario:str, ids_usuario: str, nombre:str, valor_inferior:int, valor_superior:int, unidad:int):
     try:
         conn.agregar_nueva_tarifa(id_usuario, ids_usuario, nombre, valor_inferior, valor_superior, unidad)
-        print()
         return {"message": "Datos Ingresados Correctamente"}
     except Exception as e: raise HTTPException(status_code=500, detail=str(e))
 
@@ -221,7 +220,6 @@ async def Obtener_datos():
 async def actualizar_estado(id:str, fecha_de_caducidad:str):
     try:
         conn.actualizar_fecha_tarifario_general(id, fecha_de_caducidad)
-        print()
         return {"message": "Datos Ingresados Correctamente"}
     except Exception as e: raise HTTPException(status_code=500, detail=str(e))
 
@@ -230,7 +228,6 @@ async def actualizar_estado(id:str, fecha_de_caducidad:str):
 async def actualizar_estado(id_usuario:str, ids_usuario:str, latitud:str, longitud:str, operacion:int, centro_operacion:int, tipo_vehiculo:int, capacidad:int, periodicidad: int, tarifa: int):
     try:
         conn.agregar_nuevo_tarifario_general(id_usuario, ids_usuario, latitud, longitud, operacion, centro_operacion, tipo_vehiculo, capacidad, periodicidad, tarifa)
-        print()
         return {"message": "Datos Ingresados Correctamente"}
     except Exception as e: raise HTTPException(status_code=500, detail=str(e))
 
@@ -283,7 +280,6 @@ async def datos_cop():
 async def insertarFechaCaducidad(id:str, fecha_de_caducidad:str):
     try:
         conn.actualizar_fecha_tarifario_especifico(id,fecha_de_caducidad)
-        print()
         return {"message": "Datos Ingresados Correctamente"}
     except Exception as e: raise HTTPException(status_code=500, detail=str(e))
 
@@ -291,7 +287,6 @@ async def insertarFechaCaducidad(id:str, fecha_de_caducidad:str):
 async def IngresarTarifarioEspecifico(id_usuario:str, ids_usuario:str, latitud:str, longitud:str, ppu:int, razon_social:int, operacion:int, centro_operacion:int, periodicidad: int, tarifa: int):
     try:
         conn.insert_tarifario_especifico(id_usuario, ids_usuario, latitud, longitud, ppu, razon_social, operacion, centro_operacion, periodicidad, tarifa)
-        print()
         return {"message": "Datos Ingresados Correctamente"}
     except Exception as e: raise HTTPException(status_code=500, detail=str(e))
 

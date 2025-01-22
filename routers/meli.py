@@ -289,7 +289,6 @@ async def agregarPatenteCitacion(body: agregarPatente):
 async def actualizar_estado(estado: int, id : int, fecha:str):
     try:
         conn.update_estado_patente_citacion(estado,id,fecha)
-        print()
         return {"message": "Datos Ingresados Correctamente"}
     except Exception as e: raise HTTPException(status_code=500, detail=str(e))
 
