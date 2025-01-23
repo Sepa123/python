@@ -11737,6 +11737,7 @@ SELECT *
                         'Driver', coalesce(driver, ''),
                         'Tipo', tipo,
                         'Ruta_auxiliada', ruta_auxiliada,
+                        'Id_ambulacia', id_ambulancia,
                         'Avance', avance,
                         'Lm_fallido', fallidos,
                         --'P_avance', p_avance,
