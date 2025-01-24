@@ -6,7 +6,7 @@ class Dato(BaseModel):
     estado: Optional[int]
     fecha: Optional[str]
     nombre_ruta: Optional[str]
-    tipo_ruta: Optional[str]
+    tipo_ruta: Optional[int]
     id_ruta: Optional[int]
     p_avance: Optional[Decimal]
     avance: Optional[int]

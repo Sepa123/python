@@ -10831,7 +10831,7 @@ SELECT *
                 json_build_object(
                     'id_ty', id_ty, 'operacion', operacion, 'estado', estado, 'estado_correcto', estado_correcto,'ruta_meli', ruta_meli, 'id_ppu', id_ppu,'razon_id', razon_id,
                     'ppu', ppu,'patente_igual', patente_igual,'driver', driver,'driver_ok', driver_ok, 'p_avance', p_avance,'avance', avance,'campos_por_operacion', campos_por_operacion,
-                    'tipo_vehiculo', tipo_vehiculo,'valor_ruta', valor_ruta, 'ruta_cerrada', ruta_cerrada, 'observacion', observacion , 'kilometro', km
+                    'tipo_vehiculo', tipo_vehiculo,'valor_ruta', valor_ruta, 'ruta_cerrada', ruta_cerrada, 'observacion', observacion , 'kilometro', km, 'tipo_ruta', tipo_ruta
               )) AS result
 
             from mercadolibre.recupera_data_por_citacion_activa_v2({op},{cop},'{fecha}');
