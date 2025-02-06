@@ -12120,6 +12120,18 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
             """)
 
             return cur.fetchone()
+        
+
+    ####  generador de codigos de ambulancias
+
+    def get_max_id_meli_ambulancias(self) :
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            select * from mercadolibre.generar_codigo_ruta_ambulancia();
+
+            """)
+
+            return cur.fetchone()
             
 
 class transyanezConnection():
