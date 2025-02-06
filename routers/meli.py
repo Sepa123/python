@@ -755,7 +755,7 @@ async def actualizar_estado(id_usuario: int, ids_usuario:str, modificacion: str,
 async def guardar_dato_citacion_supervisores(data_supervisor : DataSupervisor):
 
     
-    # try:
+    try:
 
         contador_fallas = []
         # conn.insert_datos_de_citacion_activa_FM(data_supervisor)
@@ -788,13 +788,13 @@ async def guardar_dato_citacion_supervisores(data_supervisor : DataSupervisor):
         else:
             return {"message": f"Datos guardados pero con {len(contador_fallas)} intento(s) fallidos"}
     
-    # except Exception as e: 
-    #     print(e)
-    #     raise HTTPException(status_code=500, detail=str(e))
+    except Exception as e: 
+        print(e)
+        raise HTTPException(status_code=500, detail=str(e))
     
-    # except ValueError as e: 
-    #     print(e)
-    #     raise HTTPException(status_code=500, detail=str(e))
+    except ValueError as e: 
+        print(e)
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/resumen/rutas/supervisor")
