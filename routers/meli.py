@@ -765,8 +765,8 @@ async def guardar_dato_citacion_supervisores(data_supervisor : DataSupervisor):
             if datos.ruta_meli is None:
                 # contador_fallas.append(datos.ppu)
                 id_ambulancia = conn.get_max_id_meli_ambulancias()[0]
-                datos.id_ruta = id_ambulancia
-                conn.insert_datos_de_citacion_activa_FM(data_supervisor,datos)
+
+                conn.insert_datos_de_citacion_activa_FM_ambulancia(data_supervisor,datos,id_ambulancia)
 
                 # pass
 
