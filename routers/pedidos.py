@@ -44,7 +44,6 @@ async def get_pedidos_sin_despacho():
 async def get_pedidos_sin_despacho_descarga():
 
     results = conn.read_pedido_compromiso_sin_despacho()
-    # print(results)
     wb = Workbook()
     ws = wb.active
     
@@ -54,7 +53,6 @@ async def get_pedidos_sin_despacho_descarga():
                       "Verificado", "Recibido"))
     # update
     for row in results:
-        # print(row)
         ws.append(row)
 
     for col in ws.columns:
@@ -138,15 +136,12 @@ async def get_rutas_de_pendientes_por_rango(fecha_inicio, fecha_fin):
     except:
         print("error pedidos/pendientes")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No se pudieron cargar los pendientes,por favor vuelva a cargar la pagina")
-    # return body
 
 
 @router.get("/pendientes")
 async def get_rutas_de_pendientes_limitada(offset : int):
      try:
-        # print("pendientes limit",offset)
         result = conn.prueba_ty(offset)
-        # print("pendientes limit fin",offset)
         return rutas_de_pendientes_schema(result)
      except:
         print("error pedidos/pendientes")
@@ -170,8 +165,6 @@ async def get_rutas_de_pendientes_limitada():
 async def get_rutas_de_pendientes_limitada(fecha_inicio, fecha_fin):
      try:
         result = conn.pendientes_sportex_elux(fecha_inicio, fecha_fin)
-
-        # print('pendientes elux + sportex', len(result))
         return rutas_de_pendientes_schema(result)
      except:
         print("error pedidos/pendientes")
@@ -181,7 +174,6 @@ async def get_rutas_de_pendientes_limitada(fecha_inicio, fecha_fin):
 async def get_rutas_de_pendientes_limitada(fecha_inicio, fecha_fin , offset):
      try:
         result = conn.pendientes_easy_opl_mio(fecha_inicio, fecha_fin, offset)
-        # print('Pendientes OPL', len(result))
         return rutas_de_pendientes_schema(result)
      except:
         print("error pedidos/pendientes")
@@ -192,7 +184,6 @@ async def get_rutas_de_pendientes_limitada(fecha_inicio, fecha_fin , offset):
 async def get_rutas_de_pendientes_limitada(fecha_inicio, fecha_fin , offset):
      try:
         result = conn.pendientes_easy_opl_mio(fecha_inicio, fecha_fin, offset)
-        # print('Pendientes OPL', len(result))
         return rutas_de_pendientes_schema(result)
      except:
         print("error pedidos/pendientes")
@@ -203,7 +194,6 @@ async def get_rutas_de_pendientes_limitada(fecha_inicio, fecha_fin , offset):
 async def get_rutas_de_pendientes_limitada(fecha_inicio, fecha_fin , offset):
      try:
         result = conn.pendientes_retiro_tienda_mio(fecha_inicio, fecha_fin, offset)
-        # print('Pendientes retiro tienda',len(result))
         return rutas_de_pendientes_schema(result)
      except:
         print("error pedidos/pendientes")
@@ -213,7 +203,6 @@ async def get_rutas_de_pendientes_limitada(fecha_inicio, fecha_fin , offset):
 async def get_rutas_de_pendientes_limitada(fecha_inicio, fecha_fin , offset):
      try:
         result = conn.pendientes_retiro_tienda_mio(fecha_inicio, fecha_fin, offset)
-        # print('Pendientes retiro tienda',len(result))
         return rutas_de_pendientes_schema(result)
      except:
         print("error pedidos/pendientes")
@@ -224,7 +213,6 @@ async def get_rutas_de_pendientes_limitada(fecha_inicio, fecha_fin , offset):
 async def get_rutas_de_pendientes_limitada(fecha_inicio, fecha_fin , offset):
      try:
         result = conn.pendientes_easy_cd_mio(fecha_inicio, fecha_fin, offset)
-        # print('easy cd cantidad:',len(result))
         return rutas_de_pendientes_schema(result)
      except:
         print("error pedidos/pendientes")
@@ -234,7 +222,6 @@ async def get_rutas_de_pendientes_limitada(fecha_inicio, fecha_fin , offset):
 async def get_rutas_de_pendientes_cd_mio(fecha_inicio, fecha_fin , offset):
      try:
         result = conn.pendientes_easy_cd_mio(fecha_inicio, fecha_fin, offset)
-        # print('easy cd cantidad:',len(result))
         return rutas_de_pendientes_schema(result)
      except:
         print("error pedidos/pendientes")
@@ -247,7 +234,6 @@ async def get_rutas_de_pendientes_cd_mio(fecha_inicio, fecha_fin , offset):
 async def get_pendientes_en_ruta_retiro_tienda(fecha_inicio, fecha_fin , offset):
      try:
         result = conn.pendientes_en_ruta_retiro_tienda(fecha_inicio, fecha_fin, offset)
-        # print('easy cd cantidad:',len(result))
         return rutas_de_pendientes_con_ruta_schema(result)
 
      except:

@@ -49,8 +49,6 @@ async def registrar_retiro_clientes(bitacora : BitacoraLg):
         conn.inser_bitacora_log_inversa(data)
         rows = conn.update_estados_pendientes(bitacora.Estado_final,bitacora.Subestado_final,bitacora.Codigo_pedido)
 
-        # print(rows)
-         
         return {
             "message" : "Orden de compra actualizada correctamente"
         }
@@ -103,11 +101,6 @@ def cambiar_bool(valor):
 @router.post("/pendientes/descargar")
 async def obtener_catalogo_rsv(pendientes : List[PedidosPendientes]):
 
-    # tupla = [( datos_envio.Origen, datos_envio.Cod_entrega, datos_envio.Fecha_ingreso, datos_envio.Fecha_compromiso, 
-    #            datos_envio.Region, datos_envio.Comuna, datos_envio.Descripcion, datos_envio.Bultos, datos_envio.Estado, datos_envio.Subestado,
-    #            cambiar_bool(datos_envio.Verificado), cambiar_bool(datos_envio.Recibido)) for datos_envio in pendientes]
-    
-    # tupla = excel.objetos_a_tuplas(pendientes, atributos)
     tupla = excel.objetos_a_tuplas(pendientes)
 
     nombre_filas = ( 'Origen', 'Cod. Entrega', "Fecha Ingreso", "Fecha Compromiso", 
@@ -129,16 +122,10 @@ async def get_ruta_manual(body : bodyUpdateVerified):
         body.cod_pedido = cod_opl
         body.cod_producto = cod_opl
 
-
-    # print(body)
-
     if results is None or results == []:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El codigo del producto no existe")
     
     data = body.dict()
-    # connHela.insert_data_bitacora_recepcion(data)
-
-   
 
     return ruta_productos_schema(results)
 
@@ -147,15 +134,10 @@ async def get_ruta_manual(body : bodyUpdateVerified):
 async def get_ruta_manual(body : bodyUpdateVerified):
     results  = conn.obtener_rutas_productos_por_ruta(body.cod_pedido)
 
-    # print(body)
-
     if results is None or results == []:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El codigo del producto no existe")
     
     data = body.dict()
-    # connHela.insert_data_bitacora_recepcion(data)
-
-   
 
     return ruta_productos_schema(results)
 
@@ -168,11 +150,6 @@ async def get_ruta_manual(nombre_ruta : str):
 
     entregados = [obj for obj in resultados if obj["Estado"] == "Entregado"]
     no_entregados = [obj for obj in resultados if obj["Estado"] != "Entregado"]
-
-
-    # data = body.dict()
-
-    # connHela.insert_data_bitacora_recepcion(data)
 
     return {
          "entregados" : entregados,
@@ -189,9 +166,7 @@ async def get_estados_pedidos(cod_pedido : str):
 
 @router.get("/pendientes",status_code=status.HTTP_202_ACCEPTED)
 async def get_pendientes_log_inversa(fecha : str):
-
     fecha = fecha.replace("-","")
-    # print(fecha)
     no_entregado  = conn.pendientes_log_inversa(fecha)
 
     return pendientes_schema(no_entregado)
@@ -201,7 +176,6 @@ async def get_pendientes_log_inversa(fecha : str):
 @router.get("/bodega-virtual",status_code=status.HTTP_202_ACCEPTED)
 async def recuperar_bodega_virtual():
     result  = conn.recuperar_bodega_virtual()
-
     return bodega_virtual_schema(result)
 
 
@@ -211,7 +185,6 @@ async def recuperar_bodega_virtual():
 @router.post("/reingresar/operacion",status_code=status.HTTP_202_ACCEPTED)
 async def recuperar_bodega_virtual(body : ReingresoOperacion):
     data = body.dict()
-
     conn.reingresa_producto_a_operacion(data)
 
     return {

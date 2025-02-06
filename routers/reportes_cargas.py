@@ -303,18 +303,14 @@ def ejecutar_solo_una_vez_al_dia():
 
 @router.get("/historico/mensual",status_code=status.HTTP_202_ACCEPTED)
 async def get_historico_mensual():
-    # ejecutar_solo_una_vez_al_dia()
-    # results = conn.read_reporte_historico_mensual()
-    # return reportes_historico_schema(results)
-    # return reporte_historico
+
     return {
         'message' : 'sos'
     }
 
 @router.get("/historico/hoy",status_code=status.HTTP_202_ACCEPTED)
 async def get_historico_hoy():
-    # results = conn.read_reporte_historico_hoy()
-    # return reportes_historico_schema(results)
+
     return {
             'message' : 'sos'
         }

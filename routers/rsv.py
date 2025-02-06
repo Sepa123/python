@@ -862,10 +862,6 @@ async def obtener_catalogo_rsv(sucursal_id : int, var_r : str):
     nombre_filas = ( "Carga", "Barcode", "Código", "Descripción", "Color", "Tipo etiqueta", "En stock","Ubicación")
     nombre_excel = f"Reporte-Etiquetas-{sucursal_id}"
 
-    # for result in results:
-    #     print(result[6])
-    #     result[6] = ",".join(result[6])
-
     return excel.generar_excel_generico(results,nombre_filas,nombre_excel)
     # return reporte_etiquetas_schema(result)
 

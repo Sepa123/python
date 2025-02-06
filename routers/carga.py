@@ -34,26 +34,21 @@ quadeasy = []
 @router.get("/quadminds/easy_cd" , status_code=status.HTTP_202_ACCEPTED)
 async def get_carga_quadminds_easy_cd():
     results = conn.get_cargas_quadmind_easy_cd_mio()
-    # print(len(results))
     return cargas_quadminds_schema(results)
-    # time.sleep(14)
-    # print(len(quadeasy))
-    # return quadeasy
 
 ## este es con los datos de la db
 
 @router.get("/quadminds/easy_cd/query" , status_code=status.HTTP_202_ACCEPTED)
 async def get_carga_quadminds_easy_cd():
     results = conn.get_cargas_quadmind_easy_cd()
-    # print(len(results))
     return cargas_quadminds_schema(results)
 
 @router.get("/quadminds/easy_opl" , status_code=status.HTTP_202_ACCEPTED)
 async def get_carga_quadminds_easy_opl():
-    # results = conn.get_cargas_quadmind_easy_opl()
+
     ## es la version con WITH
     results = conn.get_cargas_quadmind_easy_opl_mio()
-    # print(len(results))
+
     return cargas_quadminds_schema(results)
 
 @router.get("/quadminds/electrolux" , status_code=status.HTTP_202_ACCEPTED)
@@ -75,36 +70,26 @@ async def get_carga_quadminds_retiro_tienda():
 @router.get("/quadminds" , status_code=status.HTTP_202_ACCEPTED)
 async def get_carga_quadminds():
     results = conn.get_cargas_quadmind()
-
     return cargas_quadminds_schema(results)
 
 @router.get("/quadminds/limit" , status_code=status.HTTP_202_ACCEPTED)
 async def get_carga_quadminds_offset(offset : int):
     results = conn.get_cargas_quadmind_offset(offset)
-    # print(len(results))
     return cargas_quadminds_schema(results)
 
 @router.get("/quadminds/pedidos_planificados" , status_code=status.HTTP_202_ACCEPTED)
 async def get_carga_quadminds():
     results = conn.get_pedidos_planificados_quadmind()
-
-    # print(len(results))
-
     return pedidos_planificados_schema(results)
 
 @router.get("/quadminds/buscar/pedido_planificados" , status_code=status.HTTP_202_ACCEPTED)
 async def get_carga_quadminds():
     results = conn.get_pedido_planificados_quadmind_by_cod_pedido()
 
-    # print(len(results))
-
     return results[0]
 
 @router.post("/quadminds/subir-archivo", status_code=status.HTTP_202_ACCEPTED)
 async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
-
-    # select quadminds.convierte_en_ruta_manual(1,'202308021040');
-
     directorio  = os.path.abspath("excel")
 
     ruta = os.path.join(directorio,file.filename)
@@ -119,10 +104,7 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
     lista = df.to_dict(orient='records')
 
     for i, data in enumerate(lista):
-        # cantidad_encontrada = conn.get_pedido_planificados_quadmind_by_cod_pedido()
-        # if cantidad_encontrada[0] >= 1:
-        #     print("Producto ya esta registrado") 
-        # else:
+
         direccion = data['Domicilio']
         posicion = i + 1
         conn.write_pedidos_planificados(data ,posicion, direccion)
@@ -135,8 +117,6 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
 
     fecha_hora_formateada = fecha_hora_actual.strftime("%Y%m%d%H%M")
     
-    # time.sleep(8)
-   
     error = conn.asignar_ruta_quadmind_manual(id_usuario, fecha_hora_formateada)
 
     diferencia = conn.calcular_diferencia_tiempo(fecha_dia)
@@ -186,46 +166,3 @@ async def asignar_ruta():
         "fecha_dia" : fecha_dia,
         "fecha_hora_formateada": fecha_hora_formateada
     }
-# @router.post("/quadminds/descargar", status_code=status.HTTP_202_ACCEPTED)
-# async def descargar_quadminds_excel(body : List[CargaQuadmind]):
-
-#     results = body
-
-#     tupla_data = body.dict()
-
-#     print(tupla_data)
-
-#     return results
-    # wb = Workbook()
-    # ws = wb.active
-    # print("Descarga /quadminds/fecha_compromiso")
-    # results.insert(0, ("","","","",""))
-    # results.insert(1, ("Codigo de Cliente","Nombre","Calle y Número","Ciudad","Provincia/Estado","Latitud",
-    #                    "Longitud","Teléfono con código de país","Email","Código de Pedido","Fecha de Pedido","Operación E/R",
-    #                    "Código de Producto","Descripción del Producto","Cantidad de Producto","Peso","Volumen","Dinero",
-    #                    "Duración min","Ventana horaria 1","Ventana horaria 2","Notas","Agrupador","Email de Remitentes","Eliminar Pedido Si - No - Vacío",
-    #                    "Vehículo","Habilidades"))
-    # # for row in results:
-    # #     texto = row[2]
-    # #     texto_limpio = re.sub(r'[\x01]', '', str(texto))
-    # #     new_row = row[:2] + (texto_limpio,) + row[3:]
-    # #     ws.append(new_row)
-
-    # for col in ws.columns:
-    #     max_length = 0
-    #     column = col[0].column_letter# get column letter
-    #     for cell in col:
-    #         try:
-    #             if len(str(cell.value)) > max_length:
-    #                 max_length = len(str(cell.value))
-    #         except:
-    #             pass
-    #     adjusted_width = (max_length + 2)
-    #     ws.column_dimensions[column].width = adjusted_width
-
-    # wb.save("excel/Carga_Quadminds.xlsx")
-
-    # return FileResponse("excel/Carga_Quadminds.xlsx")
-
-
-

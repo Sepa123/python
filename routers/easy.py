@@ -34,9 +34,7 @@ def validar_encabezados(content_type: str = Header(None), auth_token: str = Head
 
 @router.post("/daas")
 async def post_route(body : Union[Dict, List[Dict]] ,  headers: tuple = Depends(validar_encabezados) ):
-    print("/easydaas")
-    print("estos son los datos que recibe de easy daas")
-    print(body)
+
     return {
             "message" : "datos recibidos"
             }

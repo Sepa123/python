@@ -52,10 +52,7 @@ async def get_recepcion_easy_opl():
 @router.get("/easy_opl/detalle", status_code=status.HTTP_202_ACCEPTED)
 async def get_recepcion_easy_opl_detalle():
     results = conn.read_recepcion_easy_opl_detalles()
-    # if results == [] :
-    #     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"El  código ingresado no se pudo encontrar")
 
-    # return recepcion_tiendas_schema(results)
     return recepcion_opl_schema(results)
 
 
@@ -171,8 +168,6 @@ async def get_recepcion_sportex_by_codigo_producto(body: bodyUpdateVerified):
 @router.put("/easy_opl", status_code=status.HTTP_202_ACCEPTED)
 async def get_recepcion_easy_opl_by_codigo_producto(body: bodyUpdateVerified):
     codigo = conn.get_codigo_pedido_opl(body.cod_producto)
-    # print(codigo)
-    # print(f"producto El  producto {body.cod_producto} OPL, codigo[0][0] = {codigo[0][0]}")
     body.n_guia = codigo[0][0]
     try:
         if body.ids_usuario == 'hela-null' or body.ids_usuario == 'portal-null':
@@ -195,10 +190,9 @@ async def get_recepcion_easy_opl_by_codigo_producto(body: bodyUpdateVerified):
 
 @router.put("/easy_cd", status_code=status.HTTP_202_ACCEPTED)
 async def get_recepcion_easy_cd_by_codigo_producto(body: bodyUpdateVerified):
-    # results = conn.read_recepcion_easy_cd_by_codigo_producto(body.cod_producto)
+
     try:
         data = body.dict()
-        # print(f"El  producto {body.cod_producto} CD")
         
         rows = conn.update_verified_cd(body.cod_producto)
         # print(rows)
@@ -217,11 +211,8 @@ async def get_recepcion_easy_cd_by_codigo_producto(body: bodyUpdateVerified):
 
 @router.put("/easy_cd/masivo", status_code=status.HTTP_202_ACCEPTED)
 async def get_recepcion_easy_cd_by_codigo_producto(body: bodyUpdateVerified):
-    # results = conn.read_recepcion_easy_cd_by_codigo_producto(body.cod_producto)
     try:
-        
-        # print(f"El  producto {body.cod_producto} CD")
-        
+
         rows = conn.update_verified_masivo_cd(body.lista_codigos)
         print(rows)
         if rows != 0:
@@ -276,8 +267,7 @@ async def update_estado_verificado_producto(body: bodyUpdateVerified):
         if body.ids_usuario == 'hela-null' or body.ids_usuario == 'portal-null':
              body.ids_usuario = body.ids_usuario.replace('null', str(body.id_usuario))
         data = body.dict()
-        # print(body.cod_producto)
-        # print(body.check)
+
         rows = conn.update_estado_verified_opl(body.cod_pedido,body.sku,body.check)
         # print(rows)
         if rows != 0 :
@@ -296,8 +286,7 @@ async def update_recepcion_easy_cd_by_codigo_producto(body: bodyUpdateVerified):
     try:
         data = body.dict()        
         rows = conn.update_recepcion_cd(body.cod_producto)
-        # print(f"easy_cd codigo {body.cod_producto}")
-        # print(rows)
+
         if rows != 0:
             connHela.insert_data_bitacora_recepcion(data)
         else:
@@ -316,9 +305,9 @@ async def update_recepcion_easy_cd_by_codigo_producto(body: bodyUpdateVerified):
 async def update_recepcion_easy_opl_by_codigo_producto_sko(body: bodyUpdateVerified):
     # results = conn.read_recepcion_easy_cd_by_codigo_producto(body.cod_producto)
     # try:
-        # print(body.cod_pedido)
+
         codigo_pedido = conn.get_codigo_pedido_opl(body.cod_pedido)[0][0]
-        # print(codigo_pedido)
+
         body.n_guia = codigo_pedido
         body.cod_producto = codigo_pedido
 
@@ -327,8 +316,7 @@ async def update_recepcion_easy_opl_by_codigo_producto_sko(body: bodyUpdateVerif
 
         data = body.dict()     
         rows = conn.update_recepcion_opl(codigo_pedido, body.sku)
-        # print(f"easy_opl codigo {codigo_pedido} y sku {body.sku}")
-        # print(rows)
+
         if rows != 0:
             connHela.insert_data_bitacora_recepcion(data)
         else:

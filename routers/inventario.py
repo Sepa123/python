@@ -70,12 +70,6 @@ async def download_imprimir_planilla_entrega(id:int):
     result = conn.read_ubicacion_pdf_entrega(id)
     print(result)
     return FileResponse(result[0], media_type="application/octet-stream")
-    # if result:
-
-    #la ruta del pdf ubicada se envia al servidor y se realiza la descarga
-    #     return FileResponse(result[0][0], media_type="application/octet-stream")
-    # else:
-    #     raise HTTPException(status_code=404, detail="File not found")
 
 @router.get("/descargar/devolucion")
 async def download_imprimir_planilla_devolucion(id:int):
@@ -161,9 +155,8 @@ async def asignar_equipo(body: AsignarEquipo):
         data = body.dict()
         conn.ingresar_equipo_asignado(data)
         conn.bitacora_asignar_licencia(data)
-        # conn.bitacora_asignar_chip(data)
         conn.actualizar_estado_equipo(data)
-        # conn.actualizar_estado_chip(data)
+
         return{
              "message": "Equipo asignado correctamente"
         }
@@ -175,13 +168,12 @@ async def asignar_equipo(body: AsignarEquipo):
 @router.post("/asignacion-chip")
 async def asignar_chip(body: AsignarEquipo):
     try:
-        # filename = os.path.basename(body.ubicacionarchivo)
-        # body.ubicacionarchivo = 'pdfs/foto_entrega/'+filename
+
         data = body.dict()
         print(data)
         conn.ingresar_chip_asignado(data) 
         conn.bitacora_asignar_chip(data)
-        # conn.actualizar_estado_equipo(data)
+
         conn.actualizar_estado_chip(data)
         return{
              "message": "Equipo asignado correctamente"
@@ -194,8 +186,7 @@ async def asignar_chip(body: AsignarEquipo):
 @router.post("/asignacion-licencia")
 async def asignar_licencia(body: AsignarEquipo):
     try:
-        # filename = os.path.basename(body.ubicacionarchivo)
-        # body.ubicacionarchivo = 'pdfs/foto_entrega/'+filename
+
         data = body.dict() 
         conn.bitacora_asignar_licencia(data)
         conn.actualizar_estado_licencia(data)

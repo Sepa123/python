@@ -166,7 +166,6 @@ def login_user(user_data:loginSchema):
     # return user_db
     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
 
-    print(server)
     access_token = {"sub": user_db[1],
                     "exp": expire,
                     "uid": user_db[0],
@@ -175,8 +174,7 @@ def login_user(user_data:loginSchema):
                     "rol_id":user_db[5],
                     "imagen_perfil" : user_db[6]
                     }
-                    # "rol_id": "14"}
-    # # return "Bienvenido {}".format(data["username"])
+
     return {
         "access_token": jwt.encode(access_token, SECRET_KEY,algorithm=ALGORITHM),
         "token_type":"bearer",
@@ -206,11 +204,9 @@ def current_user(user = Depends(auth_user)):
                             headers={"WWW-Authenticate": "Bearer"})
     return user
 
-
-    
 @app.get("/api/user")
 def me (user:TokenPayload = Depends(current_user)):
-    print("Hola" )
+
     return user
 
 @app.get("/api/roles")
@@ -218,21 +214,12 @@ async def me ():
     results = conn.read_roles()
     return roles_list_schema(results)
 
-
-
 def valida_rut(rut_completo):
-
     rut_completo = rut_completo.replace("‐","-");
     if not re.match(r'^[0-9]+[-|‐]{1}[0-9kK]{1}$', rut_completo, re.IGNORECASE):
         return False
-    # rut, digv = rut_completo.split('-')
+
     rut, digv = rut_completo.split('-')
-
-    print(rut)
-    print(digv)
-
-    # rut = rut_completo[:-2]
-    # digv = rut_completo[-1]
 
     if digv == 'K':
         digv = 'k'
@@ -259,8 +246,6 @@ async def validarRut (rut : str):
 
 @app.get("/api/test/comando")
 async def test_comandos():  
-
-    print("Salida")
 
     return {
         "message" : f"Resp "

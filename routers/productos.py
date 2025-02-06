@@ -92,9 +92,9 @@ async def get_productos_OPL_by_sku(codigo_sku : str):
 @router.put("/actualizar/verificado/OPL",status_code=status.HTTP_202_ACCEPTED)
 async def update_verificado_producto_OPL(body: bodyUpdate):
     try:
-        # print(body.cod_producto, body.cod_sku)
+
         producto = body.cod_producto
-        #   print(cod_producto)
+
         conn.update_producto_picking_OPL(body.cod_producto,body.cod_sku)
         return { "message": f"Producto de codigo {body.cod_producto} verificado" }
     except:

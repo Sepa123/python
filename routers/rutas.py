@@ -418,20 +418,6 @@ async def insert_ruta_existente_activa(fecha_ruta_nueva : str, rutas : List[List
                     nombre_ruta = producto.Nombre_ruta 
                     break
 
-            # valores_unicos = set(objeto.Codigo_pedido for objeto in ruta)
-            # lista_val = list(valores_unicos)
-
-            # if len(lista_val) > 1:
-            #     nueva_pos = separar_por_codigo_pedido(ruta)
-            #     index_eliminar = i
-            #     rutas.pop(index_eliminar)
-            #     for c,pos in enumerate(nueva_pos):
-            #         rutas.insert(index_eliminar + c, pos )
-
-            
-        # id_ruta = rutas[0][0].Id_ruta
-        # nombre_ruta = rutas[0][0].Nombre_ruta
-
         for i,ruta in enumerate(rutas):
             for j,producto in enumerate(ruta):
                 producto.Peso=1
@@ -446,12 +432,9 @@ async def insert_ruta_existente_activa(fecha_ruta_nueva : str, rutas : List[List
                 producto.Habilidades=''
 
                 data = producto.dict()
-
-                # direccion_textual = conn.direccion_textual(data["Codigo_pedido"])
                 data["Posicion"] = i + 1
-                # print(i)
                 check = conn.check_producto_codigo_repetido(nombre_ruta,data["Codigo_pedido"],data["Codigo_producto"], data["SKU"])
-                # print("Codigo pedido",data["Codigo_pedido"])
+
                 if check is not None:
                     data["Pickeado"] = data["Pistoleado"] 
                     if data["Pickeado"] == '1':
@@ -459,7 +442,7 @@ async def insert_ruta_existente_activa(fecha_ruta_nueva : str, rutas : List[List
                     else: 
                         data["Pickeado"] = False
                     count = conn.update_posicion(data["Posicion"], data["Codigo_pedido"], data["Codigo_producto"], fecha_ruta, data["DE"], data["DP"], nombre_ruta, data["Pickeado"])
-                    # print("Posicion:",data["Posicion"])
+
                 else :
                     data["Calle"] = conn.direccion_textual(data["Codigo_pedido"])[0][0]
                     data["Id_ruta"] = id_ruta
@@ -467,23 +450,17 @@ async def insert_ruta_existente_activa(fecha_ruta_nueva : str, rutas : List[List
                     data["Nombre_ruta"] = nombre_ruta
                     data["Pickeado"] = data["Pistoleado"] 
                     data["Fecha_ruta"] = fecha_ruta
-                    # conn.update_verified(data["Codigo_producto"])
-                    # print('posicion :',data["Posicion"])
+
                     conn.write_rutas_manual(data)
 
                 if i == len(rutas) - 1 and j == len(ruta) - 1:
                     conn.recalcular_posicion_ruta(nombre_ruta)
-        
-        
-        # conn.recalcular_posicion_ruta(nombre_ruta)
+
         return { "message": f"La Ruta {nombre_ruta} fue actualizada exitosamente" }
     except Exception as e:
         print("error an actualizar ruta: ",e)
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
-    # finally:
-    #     conn.recalcular_posicion_ruta(nombre_ruta)
 
-  
 @router.get("/activo/nombre_ruta")
 async def get_nombres_ruta(fecha : str):
     # read_nombres_rutas_comunas v1
@@ -493,9 +470,6 @@ async def get_nombres_ruta(fecha : str):
 
 @router.get("/activo/comunas")
 async def get_nombres_ruta_comuna(fecha : str):
-
-    # results = conn.read_comunas_ruta_by_fecha(fecha)
-    # return comunas_ruta_schema(results)
     results = conn.read_comunas_regiones_ruta()
     return comuna_region_rutas_schema(results)
 
@@ -505,17 +479,14 @@ async def filter_nombre_ruta_by_comuna(fecha: str, comuna : str, region : str):
     
     if comuna == 'Todas' or comuna == 'Comunas' or comuna == '':
         results = conn.filter_nombres_rutas_by_region(fecha,comuna,region)
-        # print("Filtro por region")
     else : 
         results = conn.filter_nombres_rutas_by_comuna(fecha,comuna,region)
-        # print("Filtro por comuna")
 
     return nombres_rutas_activas_schema(results)
 
 @router.put("/actualizar/estado/activo/{nombre_ruta}",status_code=status.HTTP_202_ACCEPTED)
 async def update_estado_ruta(nombre_ruta:str, body : bodyUpdateVerified):
      try:
-        #   print(nombre_ruta)
           data = body.dict()
           conn.update_estado_rutas(nombre_ruta)
 
@@ -527,7 +498,6 @@ async def update_estado_ruta(nombre_ruta:str, body : bodyUpdateVerified):
 
 @router.get("/datos_ruta/{nombre_ruta}",status_code=status.HTTP_202_ACCEPTED)
 async def get_ruta_by_nombre_ruta(nombre_ruta: str):
-    #  print(nombre_ruta)
      results = conn.read_ruta_activa_by_nombre_ruta(nombre_ruta)
      return datos_rutas_activas_editar_schema(results)
 
@@ -568,12 +538,10 @@ async def delete_cargas_rsv(lista : ListaEliminar):
     }
     codigos = lista.lista.split(',')
 
-    # print(codigos)
-
     results = conn.delete_productos_ruta(lista.lista, lista.nombre_ruta)
 
     data = lista.dict()
-    # connHela.insert_data_bitacora_recepcion(data)
+
     return {
         "message" : f"productos eliminados ,{results}",
         "mostrar" : True
@@ -608,7 +576,6 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
         "UND", "Bult","Obs"
     ])
   
-    # result = conn.read_rutas_en_activo(nombre_ruta) 
     result = conn.read_rutas_en_activo_para_armar_excel(nombre_ruta)
     
     border = Border(left=Side(border_style='thin', color='000000'),   
@@ -617,7 +584,6 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
                 bottom=Side(border_style='thin', color='000000')) 
     
     rutas_activas = ruta_en_activo_excel_schema(result)
-    # rutas_activas = body
 
     # Crear un libro de Excel y seleccionar la hoja activa
     libro_excel = Workbook()
@@ -635,8 +601,6 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
     hoja.append(("Fecha Asignación : "+ fecha_asignacion,))
     hoja.append(("Fecha Impresión : "+ fecha_impresion,))
 
-    # "Patente : "+patente, "driver : "+driver
-
     for ruta in rutas_activas:
         arrayProductos = ruta["Producto"].split("@")
         arraySKU = ruta["SKU"].split("@")
@@ -646,7 +610,6 @@ async def download_excel(nombre_ruta : str,patente: str,driver:str , body : list
             for i in range(len(arrayProductos)):
                 arraySKU.append("")
 
-        # print(ruta["arrayBultos"])
         if len(arrayProductos) == 1:
             fila = [
                 ruta["Pos"], ruta["Codigo_pedido"], ruta["Comuna"] ,ruta["Nombre_cliente"],ruta["Direccion_cliente"], ruta["Telefono"], arraySKU[0], arrayProductos[0],
@@ -757,8 +720,7 @@ async def download_excel_antigua(nombre_ruta : str,patente: str,driver:str , bod
         "N°", "Pedido", "Comuna","Nombre","Direccion", "Teléfono", "SKU", "Producto",
         "UND", "Bult","Obs"
     ])
-  
-    # result = conn.read_rutas_en_activo(nombre_ruta) 
+
     result = conn.read_rutas_en_activo_para_armar_excel(nombre_ruta)
     
     border = Border(left=Side(border_style='thin', color='000000'),   
@@ -767,9 +729,6 @@ async def download_excel_antigua(nombre_ruta : str,patente: str,driver:str , bod
                 bottom=Side(border_style='thin', color='000000')) 
     
     rutas_activas = ruta_en_activo_excel_schema(result)
-    
-
-    # rutas_activas = body
 
     # Crear un libro de Excel y seleccionar la hoja activa
     libro_excel = Workbook()
@@ -796,7 +755,6 @@ async def download_excel_antigua(nombre_ruta : str,patente: str,driver:str , bod
             for i in range(len(arrayProductos)):
                 arraySKU.append("")
 
-        # print(ruta["arrayBultos"])
         if len(arrayProductos) == 1:
             fila = [
                 ruta["Pos"], ruta["Codigo_pedido"], ruta["Comuna"] ,ruta["Nombre_cliente"],ruta["Direccion_cliente"], ruta["Telefono"], arraySKU[0], arrayProductos[0],
@@ -861,7 +819,6 @@ async def download_excel_antigua(nombre_ruta : str,patente: str,driver:str , bod
     for col_letter in ['H']:
       hoja.column_dimensions[col_letter].width = 30
 
-    # print(nHoja)
     for n in range(nHoja):
          for celda in hoja[n+5]:
              celda.font = Font(color="070707")
@@ -897,7 +854,6 @@ async def download_excel_antigua(nombre_ruta : str,patente: str,driver:str , bod
 async def asignar_ruta_activa(asignar : RutasAsignadas):
     try:
         asignar.id_ruta = conn.get_id_ruta_activa_by_nombre(asignar.nombre_ruta)[0]
-        # print(asignar)
         data = asignar.dict()
         connHela.insert_ruta_asignada(data)
 
@@ -909,7 +865,6 @@ async def asignar_ruta_activa(asignar : RutasAsignadas):
 async def get_ruta_activa_by_nombre(nombre_ruta: str):
     try:
         results = connHela.read_id_ruta_activa_by_nombre(nombre_ruta)
-        # print(results)
         if results is None:
             return { "OK": False}
 
@@ -933,13 +888,11 @@ async def descargar_archivo_beetrack_antigua(id_ruta : str):
     wb = Workbook()
     ws = wb.active
     print("/rutas/beetrack/descargar")
-    # results.insert(0, ("",))
     results.insert(0, ("NÚMERO GUÍA *","VEHÍCULO *","NOMBRE ITEM *","CANTIDAD","CODIGO ITEM","IDENTIFICADOR CONTACTO *","NOMBRE CONTACTO", "TELÉFONO","EMAIL CONTACTO","DIRECCIÓN *",
     "LATITUD","LONGITUD","FECHA MIN ENTREGA","FECHA MAX ENTREGA","CT DESTINO","DIRECCION","DEPARTAMENTO","COMUNA","CIUDAD","PAIS","EMAIL","Fechaentrega","fechahr",
     "conductor","Cliente","Servicio","Origen","Región de despacho","CMN","Peso","Volumen", "Bultos","ENTREGA","FACTURA","OC","RUTA", "TIENDA"))
 
     for row in results:
-        # print(row)
         ws.append(row)
 
     for col in ws.columns:
@@ -960,19 +913,16 @@ async def descargar_archivo_beetrack_antigua(id_ruta : str):
 
 @router.get("/beetrack/{id_ruta}/descargar/{var_random}")
 async def descargar_archivo_beetrack(id_ruta : str, var_random : str):
-    # print("Esta es random ",var_random)
     results = conn.read_datos_descarga_beetrack(id_ruta)
 
     wb = Workbook()
     ws = wb.active
     print("/rutas/beetrack/descargar")
-    # results.insert(0, ("",))
     results.insert(0, ("NÚMERO GUÍA *","VEHÍCULO *","NOMBRE ITEM *","CANTIDAD","CODIGO ITEM","IDENTIFICADOR CONTACTO *","NOMBRE CONTACTO", "TELÉFONO","EMAIL CONTACTO","DIRECCIÓN *",
     "LATITUD","LONGITUD","FECHA MIN ENTREGA","FECHA MAX ENTREGA","CT DESTINO","DIRECCION","DEPARTAMENTO","COMUNA","CIUDAD","PAIS","EMAIL","Fechaentrega","fechahr",
     "conductor","Cliente","Servicio","Origen","Región de despacho","CMN","Peso","Volumen", "Bultos","ENTREGA","FACTURA","OC","RUTA", "TIENDA"))
 
     for row in results:
-        # print(row)
         ws.append(row)
 
     for col in ws.columns:
@@ -998,9 +948,7 @@ async def descargar_archivo_beetrack(id_ruta : str, var_random : str):
 
 @router.get("/recuperar/tracking")
 async def recuperar_tracking_beetrack(codigo : str):
-
     results = conn.recuperar_track_beetrack(codigo)
-    # print(results)
     if results == []:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Codigo no encontrado")
     
@@ -1013,9 +961,7 @@ async def recuperar_alerta_ruta_activa(nombre_ruta :str):
 
 @router.get("/recuperar/linea/producto")
 async def recuperar_linea_producto(codigo : str):
-
     results = conn.recupera_linea_producto(codigo)
-    # print(results)
     if results == []:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Codigo no encontrado")
     
@@ -1024,8 +970,7 @@ async def recuperar_linea_producto(codigo : str):
 @router.get("/fecha_ingreso_sistema/{cod_pedido}")
 async def recuperar_fecha_ingreso_sistema(cod_pedido : str):
     result = conn.recuperar_fecha_ingreso_cliente(cod_pedido)
-    if(result == []) :
-        #  print(f"codigo {cod_pedido} no encontrado")
+    if(result == []):
          return {"Fecha_ingreso_sistema":"Sin Fecha de ingreso al sistema"}
 
     return recuperar_fecha_ingreso_sistema_schema(result)
@@ -1039,12 +984,10 @@ async def test():
 async def geolocalizar_direccion(body : Latlong):
     try:
         check = conn.check_direccion_existe(body.Direccion)
-        # print(check[0])
         if check[0] >= 1:
             return f"La direccion {body.Direccion} ya se encuentra registrada"
         
         geolocalizacion = Nominatim(user_agent="backend/1.0")
-        # ubicacion = geolocalizacion.reverse(f"{body.lat},{body.lng}",exactly_one=False)
         time.sleep(1)
         ubicacion = geolocalizacion.geocode(body.Direccion, exactly_one=True)
 
@@ -1098,7 +1041,6 @@ async def pedido_en_ruta(pedido_id : str):
 @router.put("/actualizar/estado/activo/{nombre_ruta}/abrir",status_code=status.HTTP_202_ACCEPTED)
 async def update_estado_ruta_a_true(nombre_ruta:str, body : bodyUpdateVerified):
      try:
-        #   print(nombre_ruta)
           data = body.dict()
           conn.update_estado_rutas_a_true_abierta(nombre_ruta)
           connHela.insert_data_bitacora_recepcion(data)
@@ -1131,9 +1073,6 @@ async def datos_rutas_mes(dia : str):
     nombre_excel = f"inventario-rutas-{dia}"
 
     return excel.generar_excel_generico(result,nombre_filas,nombre_excel)
-    # return reporte_ruta_dia_schema(result)
-
-
 
 
 ##TRACKING LI
@@ -1229,8 +1168,6 @@ async def get_media_eficiencia_conductor(fecha : str,tienda : str, region: str):
 
 @router.get("/regiones")
 async def get_regiones():
-    
-    # result = conn.obtener_region()
     # obtener_region
     return [
         {
@@ -1247,31 +1184,22 @@ async def get_regiones():
 @router.post("/agregar/porDespachoRuta",status_code=status.HTTP_201_CREATED)
 async def insert_ruta_manual_por_despacho_ruta(body : bodyUpdateVerified):
     results = conn.get_ruta_manual(body.n_guia)
-    # print(results[0][10])
-
     if results is None or results == []:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="El codigo del producto no existe")
     
-
     check_producto  = results[0][10]
-    # print(body)
-
 
     ### para pedidos pickeados de opl p
     if len(body.n_guia) > 20:
         cod_opl = conn.get_codigo_pedido_opl(body.n_guia)[0][0]
         body.n_guia = cod_opl
 
-    # print(body)
-
-    # print(results)
-
     check = conn.check_producto_existe(check_producto)
     check = re.sub(r'\(|\)', '',check[0])
     check = check.split(",")
     
     if(check[0] == "1"):
-        print("codigo pedido repetido")
+
         check_fecha = conn.check_fecha_ruta_producto_existe(check_producto)
 
         if check_fecha is not None:
@@ -1295,18 +1223,13 @@ async def insert_ruta_manual_por_despacho_ruta(body : bodyUpdateVerified):
 
     data = body.dict()
 
-    # print(json_data)
-    # connHela.insert_data_bitacora_recepcion(data)
-
     try:
         for j,producto in enumerate(json_data):
             data = producto
-            # print(data["Codigo_pedido"])
             data["Calle"] = conn.direccion_textual(data["Codigo_pedido"])[0][0]
             data["Id_ruta"] = body.id_ruta
             data["Agrupador"] = body.ruta
-            data["Nombre_ruta"] = body.ruta
-            # data["Pistoleado"]  
+            data["Nombre_ruta"] = body.ruta 
             data["Descripcion_producto"] = re.sub(r'@', ' ', producto['Descripcion_producto'])
             data["Posicion"] = j + 1
             data["Fecha_ruta"] = body.fecha_ruta
@@ -1323,20 +1246,13 @@ async def insert_ruta_manual_por_despacho_ruta(body : bodyUpdateVerified):
         
         return { "message": f"La Ruta {body.ruta} fue guardada exitosamente" }
     except Exception as e:
-        # if validar_fecha(fecha_pedido) == False: 
-        #     raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, detail=f"No se puede crear ruta con la fecha {fecha_pedido}")
-       
         if(check[0] == "1"):
-
             raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, 
                                 detail=f'El Producto "{body.n_guia}" se encuentra en la ruta {check[1]}')
         
         print(f"error al crear ruta: {e}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
-    # finally:
-    #     conn.recalcular_posicion_ruta(nombre_ruta)
 
-    # return body
 
 
 
@@ -1351,10 +1267,8 @@ async def get_ruta_manual(pedido_id : str):
     check = re.sub(r'\(|\)', '',check[0])
     check = check.split(",")
 
-    # print(check)
-    
     if(check[0] == "1"):
-        print("codigo pedido repetido")
+
 
         check_fecha = conn.check_fecha_ruta_producto_existe(pedido_id)
 
@@ -1462,10 +1376,6 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
     lista = df.to_dict(orient='records')
 
     for i, data in enumerate(lista):
-        # cantidad_encontrada = conn.get_pedido_planificados_quadmind_by_cod_pedido()
-        # if cantidad_encontrada[0] >= 1:
-        #     print("Producto ya esta registrado") 
-        # else:
         if not data['razon_social'] or not data['domicilio'] or not data['fecha_reparto'] or not data['maquina'] or not data['fecha_pedido'] or not data['cod_pedido'] or not data['cod_producto'] or not data['producto'] or not data['cantidad']:
             print(f"Registro en la posición {i+1} ignorado por campos vacíos")
             continue  
@@ -1473,8 +1383,6 @@ async def subir_archivo(id_usuario : str, file: UploadFile = File(...)):
         direccion = data['domicilio']
         posicion = i + 1
         conn.write_pedidos_planificados(data ,posicion, direccion)
-        # print(posicion)
-
 
     fecha_hora_actual = datetime.now()
 

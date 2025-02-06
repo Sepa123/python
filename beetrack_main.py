@@ -89,19 +89,16 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
     content_type, x_auth_token = headers
     # Lista de nombres que deseas buscar
     data = body.dict()
-
-    # print("Evento : ", data["event"])
-    
+ 
     if data["resource"] == 'route' and data["event"] == 'create':
-        # print("total datos de create",data)
+
         datos_insert_ruta = data_beetrack.generar_data_insert_creacion_ruta(data)
         conn.insert_beetrack_creacion_ruta(datos_insert_ruta)
 
     if data["resource"] == 'route' and data["event"] in ['start', 'finish']:
         datos_insert_ruta = data_beetrack.generar_data_insert_creacion_ruta(data)
-        # print("Datos para actualizar ruta",datos_insert_ruta)
         row = conn.update_route_beetrack_event(datos_insert_ruta)
-        # print("Tablas actualizadas ", row)
+
         return {
             "message" : "data recibida correctamente"
             }
@@ -113,10 +110,8 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
                         }
 
         resultado = conn.verificar_si_ruta_existe(datos_create)
-        # print("resultado :",resultado)
+
         if len(resultado) == 0:
-            # print("Paso por d guide")
-            # print("d guide : ",data)
             datos_tags_i = data_beetrack.obtener_datos_tags(data["tags"])
             datos_groups_i = data_beetrack.obtener_datos_groups(data["groups"])
             datos_insert_ruta_ty = data_beetrack.generar_data_update_ruta_transyanez(data,datos_tags_i,datos_groups_i)
@@ -166,7 +161,6 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
 async def post_route(body : Route , headers: tuple = Depends(validar_encabezados)):
     content_type, x_auth_token = headers
 
-    # print(body)
     return {
             "body" : body
             }
@@ -174,7 +168,7 @@ async def post_route(body : Route , headers: tuple = Depends(validar_encabezados
 
 @app.post("/api/v2/beetrack/Enviar/loquesea")
 async def post_route(body : Union[Dict, List[Dict]] ):
-    # print(body)
+
     return {
             "body" : body
             }
@@ -210,14 +204,11 @@ def login_user(user_data:loginSchema):
     if not verify_password(data["password"],user_db[3]):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="la contraseña no es correcto")
     
-
     if not user_db[4]:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="El usuario esta inactivo")
     
-    # return user_db
     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
 
-    print(server)
     access_token = {"sub": user_db[1],
                     "exp": expire,
                     "uid": user_db[0],
@@ -226,8 +217,7 @@ def login_user(user_data:loginSchema):
                     "rol_id":user_db[5],
                     "imagen_perfil" : user_db[6]
                     }
-                    # "rol_id": "14"}
-    # # return "Bienvenido {}".format(data["username"])
+
     return {
         "access_token": jwt.encode(access_token, SECRET_KEY,algorithm=ALGORITHM),
         "token_type":"bearer",
@@ -275,7 +265,6 @@ async def Registro_candidatos_externos(body : ContactoExterno ):
 
     try:
         body.Nombre_contacto = body.Nombre_contacto+' '+body.Apellido
-        # print(body)
 
         data = body.dict()
 

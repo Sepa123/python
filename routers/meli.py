@@ -211,30 +211,6 @@ async def Obtener_datos():
         return datos_formateados
     else:
         raise HTTPException(status_code=404, detail="No se encontraron datos")
-### Esto esta repetido
-# @router.get("/citacionOperacionFecha")
-# async def Obtener_datos(fecha: str, id : int):
-#      # Consulta SQL para obtener datos (por ejemplo)
-#     consulta = f"select * from mercadolibre.citacion_operacion_fecha('{fecha}', {id});"
-#     # Ejecutar la consulta utilizando nuestra función
-#     datos = ejecutar_consulta(consulta)
-#     # Verificar si hay datos 
-#     if datos:
-#         datos_formateados = [{
-#                                 "Id_operacion": fila [0],
-#                                 "operacion": fila[1],
-#                                 "id_cop": fila[2],
-#                                 "nombre_cop": fila [3],
-#                                 "region": fila[4],
-#                                 "region_name": fila[5],
-#                                 "citacion": fila[6],
-#                                 "confirmados": fila[7]
-
-#                             } 
-#                             for fila in datos]
-#         return datos_formateados
-#     else:
-#         raise HTTPException(status_code=404, detail="No se encontraron datos")
 
 #### Esto esta repetiod pero lo dejare por ahora
 @router.get("/estadoCitacion")
@@ -604,14 +580,6 @@ async def subir_archivo_prefactura_meli(id_usuario : str,ids_usuario : str,file:
 
     mensaje = conn.ejecutar_funcion_tabla_paso_prefactura()
 
-
-    print(lista)
-    # print(lista_desc)
-
-    # return {
-    #     'message': '0'
-    # }
-
     return {
         "message" : f'insertados: {mensaje[0]} duplicados : {mensaje[1]}'
     }
@@ -657,10 +625,6 @@ async def subir_archivo_prefactura_meli_diario(id_usuario : str,ids_usuario : st
 
     else:
 
-        # print(df.columns)
-        # df.columns = ['sos', 'sas', 'lel', 'mello', 'trizo','Periodo', 'Tipo de prefactura', 'Estado prefactura', 'Unnamed: 8','9','10','11','12']
-        # print(df.columns)
-        # print(df)
         print('no es ninguno')
 
     return {
@@ -750,8 +714,7 @@ async def get_citacion_activa(id_usuario: int, fecha : str):
         datos_formateados = datos[0]
 
         for info in datos_formateados:
-            # for detalle in info['Detalles']:
-                # Extraer el valor de 'p_avance'
+
                 avance = info['Detalles'][0]['avance']
                 sum_avance = 0
                 for detalle in info['Detalles']:

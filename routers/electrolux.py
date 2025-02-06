@@ -179,8 +179,6 @@ async def datos_confirma_facil(codigo : str):
         response = await client.post(url=cf_embarque,json=datos_enviar,headers=resultado_header_token,timeout=timeout)
         # Verificar si la solicitud fue exitosa
         if response.status_code == 200:
-            # print("Electrolux ",response.json())
-            print("si paso cf")
             return response.json()
         elif response.status_code == 400:
             # Si la solicitud no fue exitosa, devolver un error

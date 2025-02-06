@@ -14,12 +14,9 @@ from datetime import datetime
 
 ##Modelos Schemas
 
-
-
 router = APIRouter(tags=["Finanzas"], prefix="/api/finanzas")
 
 conn = reportesConnection()
-
 
 
 @router.get("/infoTarifas")
@@ -39,8 +36,6 @@ async def Obtener_datos():
     else:
         raise HTTPException(status_code=404, detail="No se encontraron datos")
     
-
-
 @router.get("/TipoUnidad")
 async def Obtener_datos():
     # Ejecutar la consulta utilizando nuestra función
@@ -58,16 +53,12 @@ async def Obtener_datos():
     else:
         raise HTTPException(status_code=404, detail="No se encontraron datos")
     
-
-
 @router.post("/NuevaTarifa")
 async def actualizar_estado(id_usuario:str, ids_usuario: str, nombre:str, valor_inferior:int, valor_superior:int, unidad:int):
     try:
         conn.agregar_nueva_tarifa(id_usuario, ids_usuario, nombre, valor_inferior, valor_superior, unidad)
         return {"message": "Datos Ingresados Correctamente"}
     except Exception as e: raise HTTPException(status_code=500, detail=str(e))
-
-
 
 ## Tarifario General
 
@@ -106,7 +97,6 @@ async def Obtener_datos():
         return datos_formateados
     else:
         raise HTTPException(status_code=404, detail="No se encontraron datos")
-
 
 @router.get("/tarifarioGeneral/getCentroOperacion")
 async def Obtener_datos(id_op: int):
@@ -157,7 +147,6 @@ async def Obtener_datos():
         return datos_formateados
     else:
         raise HTTPException(status_code=404, detail="No se encontraron datos")
-
 
 @router.get("/tarifarioGeneral/getPeriodicidad")
 async def Obtener_datos():
@@ -223,7 +212,6 @@ async def actualizar_estado(id:str, fecha_de_caducidad:str):
         return {"message": "Datos Ingresados Correctamente"}
     except Exception as e: raise HTTPException(status_code=500, detail=str(e))
 
-
 @router.post("/tarifarioGeneral/NuevaTarifa")
 async def actualizar_estado(id_usuario:str, ids_usuario:str, latitud:str, longitud:str, operacion:int, centro_operacion:int, tipo_vehiculo:int, capacidad:int, periodicidad: int, tarifa: int):
     try:
@@ -231,10 +219,7 @@ async def actualizar_estado(id_usuario:str, ids_usuario:str, latitud:str, longit
         return {"message": "Datos Ingresados Correctamente"}
     except Exception as e: raise HTTPException(status_code=500, detail=str(e))
 
-
-
 ### Tarifario Especifico
-
 
 @router.get("/tarifarioEspecifico/tablaTarifarioEspecifico")
 async def ObtenerInformacionTabla():
@@ -360,25 +345,6 @@ async def ObtenerPeriodo():
     else:
         raise HTTPException(status_code=404, detail="No se encontraron datos")
 
-# @router.get("/api/CentroFilter")
-# async def SelectCo():
-#      # Consulta SQL para obtener datos (por ejemplo)
-#     # consulta = f"""select id, centro, descripcion from operacion.centro_operacion co"""
-#     # Ejecutar la consulta utilizando nuestra función
-#     datos = conn.datos_cop_tarifario_especifico()
-#     # Verificar si hay datos
-#     if datos:
-#         datos_formateados = [{
-#                                 "id" : fila[0],
-#                                 "centro": fila[1],
-#                                 "descripcion": fila[2]
-
-#                             } 
-#                             for fila in datos]
-#         return datos_formateados
-#     else:
-#         raise HTTPException(status_code=404, detail="No se encontraron datos")
-
 @router.get("/tarifarioEspecifico/Colaborador")
 async def SelectRazonSocial():
      # Consulta SQL para obtener datos (por ejemplo)
@@ -453,23 +419,15 @@ async def get_datos_seleccionables_descuentos():
 async def subir_archivo(id : str, file: UploadFile = File(...)):
 
     directorio  = os.path.abspath(f"archivos/finanzas/archivo_adjunto")
-    print(directorio)
-    # print(directorio)
-    # nombre_hash = hash_password(tipo_archivo+nombre)
 
     ruta = os.path.join(directorio,file.filename)
 
     with open(ruta, "wb") as f:
         contents = await file.read()
-        # print("pase por aqui")
         f.write(contents)
 
 
     conn.agregar_archivo_adjunto_descuento(f'archivos/finanzas/archivo_adjunto/{file.filename}',id)
-
-
-
-
 
 
 @router.post("/guardar/descuento", status_code=status.HTTP_202_ACCEPTED)
@@ -486,8 +444,6 @@ async def subir_archivo(body : DescuentoManual):
         ids_origen = str(id_desc) + '-' +'Finanza'
 
         conn.insert_datos_descuentos(data, id_desc, ids_origen)
-
-        print(data)
 
         return {
             'message' : 'Descuento registrado exitosamente',
