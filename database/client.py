@@ -11589,16 +11589,31 @@ SELECT *
      ##############
 
 
-    def lista_ppu_con_fotos(self):
+    def lista_ppu_con_fotos(self,fecha_ini,fecha_fin):
         with self.conn.cursor() as cur:
             cur.execute(f""" 
-           with ppus as (
-            select distinct ppu as ppu
-            FROM mercadolibre.evidencia_diaria_fm edf
-            where ppu != 'null'
+           --- with ppus as (
+           --- select distinct ppu as ppu
+           --- FROM mercadolibre.evidencia_diaria_fm edf
+           --- where ppu != 'null'
+           --- )
+           --- select 
+           --- json_agg(ppu) as campo
+           --- FROM ppus 
+                        
+
+
+            with ppus as (
+            select distinct id_ruta as id_ruta, ppu
+			FROM mercadolibre.evidencia_diaria_fm edf
+			where ppu != 'null'
+			and created_at BETWEEN '{fecha_ini}'::DATE AND '{fecha_fin}'::DATE
             )
-            select 
-            json_agg(ppu) as campo
+            select
+            json_agg(json_build_object
+                                ('Ppu',ppu ,
+                                'Id_ruta',id_ruta
+                                ) ) as campo
             FROM ppus 
                       """)
             return cur.fetchone()

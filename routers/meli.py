@@ -800,14 +800,13 @@ async def guardar_dato_citacion_supervisores(data_supervisor : DataSupervisor):
 @router.get("/resumen/rutas/supervisor")
 async def get_experiencia_comentario(fecha_ini: str, fecha_fin: str, usuario: int):
     datos = conn.resumen_rutas_fecha_sup(fecha_ini, fecha_fin,usuario)
-    # datos_patentes = conn.lista_ppu_con_fotos()
+
     return datos[0]
     
 
 @router.get("/lista_ppu/fotos")
-async def get_lista_ppu_con_fotos():
-    datos = conn.lista_ppu_con_fotos()
-    # datos_patentes = conn.lista_ppu_con_fotos()
+async def get_lista_ppu_con_fotos(fecha_ini: str, fecha_fin: str):
+    datos = conn.lista_ppu_con_fotos(fecha_ini, fecha_fin)
     return datos[0]
 
 
