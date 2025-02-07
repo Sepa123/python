@@ -11626,7 +11626,7 @@ SELECT *
                 LEFT JOIN operacion.centro_operacion co ON (co.id = mds.id_centro_operacion AND co.id_op = mds.id_operacion)
                 LEFT JOIN operacion.modalidad_operacion mo ON mo.id = mds.id_operacion
                 LEFT JOIN public.op_regiones r ON r.id_region::INT8 = co.region
-                LEFT JOIN mercadolibre.citacion c ON c.ruta_meli::INTEGER = mds.id_ruta
+                LEFT JOIN mercadolibre.citacion c ON c.ruta_meli::INT8 = mds.id_ruta
                 WHERE mds.fecha BETWEEN '{fecha_ini}'::DATE AND '{fecha_fin}'::DATE
                 and ({usuario} = ANY(co.id_coordinador) or {usuario} in (select u.id from hela.usuarios u where u.rol_id in ('5','90')))
                 ORDER BY 1 DESC, 5 asc
