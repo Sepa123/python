@@ -11539,7 +11539,8 @@ SELECT *
                             WHEN r.contacto_ejecutivo is not null THEN 1
                             WHEN r.created_at::date BETWEEN CURRENT_DATE - INTERVAL '6 days' AND CURRENT_DATE - INTERVAL '2 days' THEN 2
                             WHEN r.created_at::date <= CURRENT_DATE - INTERVAL '7 days' THEN 3
-                        END
+                        END,
+                    'Pestana', pestana
                 ))
             FROM transporte.reclutamiento r
             LEFT JOIN public.op_regiones re ON CAST(r.region AS varchar) = re.id_region
