@@ -11540,7 +11540,8 @@ SELECT *
                             WHEN r.created_at::date BETWEEN CURRENT_DATE - INTERVAL '6 days' AND CURRENT_DATE - INTERVAL '2 days' THEN 2
                             WHEN r.created_at::date <= CURRENT_DATE - INTERVAL '7 days' THEN 3
                         END,
-                    'Pestana', pestana
+                    'Pestana', pestana,
+                    'Comentario', rc.comentario
                 ))
             FROM transporte.reclutamiento r
             LEFT JOIN public.op_regiones re ON CAST(r.region AS varchar) = re.id_region
@@ -11548,7 +11549,8 @@ SELECT *
             LEFT JOIN transporte.estados_contacto ec ON r.estado_contacto = ec.id
             LEFT JOIN transporte.motivo_subestado mv ON r.motivo_subestado = mv.id
             LEFT JOIN operacion.modalidad_operacion mo ON r.operacion_postula = mo.id
-            LEFT JOIN hela.usuarios u ON r.contacto_ejecutivo = u.id;
+            LEFT JOIN hela.usuarios u ON r.contacto_ejecutivo = u.id
+            left join transporte.reclutamiento_comentarios rc ON r.id = rc.id_reclutamiento
                             
                       """)
             return cur.fetchone()
