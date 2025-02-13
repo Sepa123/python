@@ -11638,7 +11638,8 @@ SELECT *
                             WHERE daux.id = mds.id)
                     END AS campos_por_operacion,
                     mds.valor_ruta,
-                    mds.ruta_cerrada 
+                        mds.observacion,
+                    mds.ruta_cerrada
                 FROM mercadolibre.mae_data_supervisores mds 
                 LEFT JOIN operacion.centro_operacion co ON (co.id = mds.id_centro_operacion AND co.id_op = mds.id_operacion)
                 LEFT JOIN operacion.modalidad_operacion mo ON mo.id = mds.id_operacion
@@ -11672,7 +11673,8 @@ SELECT *
                 'Avance', avance,
                 'Campos_por_operacion', campos_por_operacion,
                 'Valor_ruta', valor_ruta,
-                'Ruta_cerrada', ruta_cerrada
+                'Ruta_cerrada', ruta_cerrada,
+                'Observacion', observacion
                 )
         ) as campo
             from resumen_sup                           

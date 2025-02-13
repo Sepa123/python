@@ -723,7 +723,7 @@ async def buscar_marcas_vehiculos():
 @router.post("/vehiculos/descargar/resumen")
 async def descargar_vehiculos_filtro(pendientes : List[VehiculosExcelResumen]):
 
-    print(pendientes)
+    # print(pendientes)
 
 
     tupla = excel.objetos_a_tuplas(pendientes)
