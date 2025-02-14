@@ -11535,7 +11535,7 @@ SELECT *
                     'Region', region,
                     'Comuna', comuna,
                     'Operacion_postula', operacion_postula,
-                    'Nombre', nombre_contacto,
+                    'Nombre', nombre,
                     'Telefono', telefono,
                     'Tipo_vehiculo', tipo_vehiculo,
                     'Origen_contacto', origen_contacto,
