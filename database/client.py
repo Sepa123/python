@@ -11407,7 +11407,7 @@ SELECT *
                 origen_contacto=%(Origen_contacto)s, estado_contacto=%(Estado_contacto)s, motivo_subestado=%(Motivo_subestado)s, 
                 contacto_ejecutivo=%(Contacto_ejecutivo)s, razon_social=%(Razon_social)s, rut_empresa=%(Rut_empresa)s,
                 cant_vehiculos=%(Cant_vehiculos)s, ppu=%(Ppu)s, metros_cubicos=%(Metros_cubicos)s, correo=%(Correo)s,
-                capacidad=%(Capacidad)s
+                capacidad=%(Capacidad)s , ,inicio_actividades_factura=%(Inicio_actividades_factura)s, giro=%(Giro)s
                 WHERE id=%(Id_reclutamiento)s
                  """,data)
             self.conn.commit()
