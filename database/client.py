@@ -11540,7 +11540,7 @@ SELECT *
                             WHEN r.created_at::date BETWEEN CURRENT_DATE - INTERVAL '6 days' AND CURRENT_DATE - INTERVAL '2 days' THEN 2
                             WHEN r.created_at::date <= CURRENT_DATE - INTERVAL '7 days' THEN 3
                         END,
-                    'Pestana', pestana
+                    'Pestana', r.pestana,
                     'Comentario', rc.comentario
                 ))
             FROM transporte.reclutamiento r
