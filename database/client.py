@@ -11504,45 +11504,19 @@ SELECT *
     def obtener_datos_reclutamiento(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
-            SELECT json_agg(json_build_object(
-                    'Id_reclutamiento', r.id,
-                    'Fecha_creacion', TO_CHAR(r.created_at, 'YYYY-MM-DD'),
-                    'Region', coalesce(r.region,1),
-                    'Comuna', coalesce(r.comuna,1),
-                    'Operacion_postula', r.operacion_postula,
-                    'Nombre', r.nombre_contacto,
-                    'Telefono', r.telefono,
-                    'Tipo_vehiculo', r.tipo_vehiculo,
-                    'Origen_contacto', coalesce(r.origen_contacto, 4),
-                    'Estado_contacto', coalesce(r.estado_contacto, 3),
-                    'Motivo_subestado', coalesce(r.motivo_subestado, 7),
-                    'Contacto_ejecutivo', r.contacto_ejecutivo,
-                    'Razon_social', r.razon_social,
-                    'Rut_empresa', r.rut_empresa,
-                    'Internalizado', r.internalizado,
-                    'Region_nombre', re.region_name,
-                    'Operacion_nombre', mo.nombre,
-                    'Nombre_origen', coalesce(oc.origen, 'Página web'),
-                    'Nombre_estados', coalesce(ec.estado, 'En espera'),
-                    'Nombre_motivo', coalesce(mv.motivo, 'En espera'),
-                    'Nombre_contacto', u.nombre,
-                    'Pais', r.pais,
-                    'Inicio_actividades_factura', coalesce(r.inicio_actividades_factura, false),
-                    'Giro', coalesce(r.giro, 1),
-                    'Cantidad_vehiculo', coalesce(r.cant_vehiculos,0),
-                    'Correo', r.correo,
-                    'Ppu', r.ppu,
-                    'Metros_cubicos',  coalesce(r.metros_cubicos, 0),
-                    'Capacidad', coalesce(r.capacidad, 0),
-                    'Rango_fecha', 
-                        CASE 
-                            WHEN r.contacto_ejecutivo is not null THEN 1
-                            WHEN r.created_at::date BETWEEN CURRENT_DATE - INTERVAL '6 days' AND CURRENT_DATE - INTERVAL '2 days' THEN 2
-                            WHEN r.created_at::date <= CURRENT_DATE - INTERVAL '7 days' THEN 3
-                        END,
-                    'Pestana', r.pestana,
-                    'Comentario', rc.comentario
-                ))
+           with reclutas as (
+            SELECT distinct on (r.id)  r.id as  Id_reclutamiento, TO_CHAR(r.created_at, 'YYYY-MM-DD') as Fecha_creacion, coalesce(r.region,1) as Region,coalesce(r.comuna,1) as Comuna, r.operacion_postula as Operacion_postula,r.nombre_contacto as Nombre,
+                    r.telefono as Telefono,r.tipo_vehiculo as Tipo_vehiculo,coalesce(r.origen_contacto, 4) as Origen_contacto,coalesce(r.estado_contacto, 3) as Estado_contacto,coalesce(r.motivo_subestado, 7) as Motivo_subestado, r.contacto_ejecutivo as Contacto_ejecutivo,
+                    r.razon_social as Razon_social, r.rut_empresa as Rut_empresa,r.internalizado as Internalizado, re.region_name as Region_nombre,mo.nombre as Operacion_nombre,coalesce(oc.origen, 'Página web') as Nombre_origen , coalesce(ec.estado, 'En espera') as Nombre_estados,coalesce(mv.motivo, 'En espera') as Nombre_motivo,
+                    u.nombre as Nombre_contacto, r.pais as Pais,coalesce(r.inicio_actividades_factura, false) as Inicio_actividades_factura,coalesce(r.giro, 1) as Giro,coalesce(r.cant_vehiculos,0) as Cantidad_vehiculo,
+                    r.correo as Correo,r.ppu as Ppu, coalesce(r.metros_cubicos, 0) as Metros_cubicos,coalesce(r.capacidad, 0) as Capacidad,
+                    CASE 
+                        WHEN r.contacto_ejecutivo is not null THEN 1
+                        WHEN r.created_at::date BETWEEN CURRENT_DATE - INTERVAL '6 days' AND CURRENT_DATE - INTERVAL '2 days' THEN 2
+                        WHEN r.created_at::date <= CURRENT_DATE - INTERVAL '7 days' THEN 3
+                    end as Rango_fecha,
+                    r.pestana as Pestana,
+                    rc.comentario as Comentario
             FROM transporte.reclutamiento r
             LEFT JOIN public.op_regiones re ON CAST(r.region AS varchar) = re.id_region
             LEFT JOIN transporte.origen_contacto oc ON r.origen_contacto = oc.id
@@ -11550,7 +11524,47 @@ SELECT *
             LEFT JOIN transporte.motivo_subestado mv ON r.motivo_subestado = mv.id
             LEFT JOIN operacion.modalidad_operacion mo ON r.operacion_postula = mo.id
             LEFT JOIN hela.usuarios u ON r.contacto_ejecutivo = u.id
-            inner join transporte.reclutamiento_comentarios rc ON r.id = rc.id_reclutamiento
+            left join transporte.reclutamiento_comentarios rc ON r.id = rc.id_reclutamiento
+            
+            )
+            
+            
+            select json_agg(json_build_object(
+                    'Id_reclutamiento', id_reclutamiento,
+                    'Fecha_creacion', fecha_creacion,
+                    'Region', region,
+                    'Comuna', comuna,
+                    'Operacion_postula', operacion_postula,
+                    'Nombre', nombre_contacto,
+                    'Telefono', telefono,
+                    'Tipo_vehiculo', tipo_vehiculo,
+                    'Origen_contacto', origen_contacto,
+                    'Estado_contacto', estado_contacto,
+                    'Motivo_subestado', motivo_subestado,
+                    'Contacto_ejecutivo', contacto_ejecutivo,
+                    'Razon_social', razon_social,
+                    'Rut_empresa', rut_empresa,
+                    'Internalizado', internalizado,
+                    'Region_nombre', region_nombre,
+                    'Operacion_nombre', operacion_nombre,
+                    'Nombre_origen', nombre_origen,
+                    'Nombre_estados', nombre_estados,
+                    'Nombre_motivo',  nombre_motivo,
+                    'Nombre_contacto', nombre_contacto,
+                    'Pais', pais,
+                    'Inicio_actividades_factura',inicio_actividades_factura,
+                    'Giro',giro,
+                    'Cantidad_vehiculo', cantidad_vehiculo,
+                    'Correo', correo,
+                    'Ppu', ppu,
+                    'Metros_cubicos', metros_cubicos,
+                    'Capacidad', capacidad,
+                    'Rango_fecha', rango_fecha,
+                    'Pestana', pestana,
+                    'Comentario', comentario
+                ))
+            
+            from reclutas 
                             
                       """)
             return cur.fetchone()
