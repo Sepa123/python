@@ -11550,7 +11550,7 @@ SELECT *
             LEFT JOIN transporte.motivo_subestado mv ON r.motivo_subestado = mv.id
             LEFT JOIN operacion.modalidad_operacion mo ON r.operacion_postula = mo.id
             LEFT JOIN hela.usuarios u ON r.contacto_ejecutivo = u.id
-            left join transporte.reclutamiento_comentarios rc ON r.id = rc.id_reclutamiento
+            inner join transporte.reclutamiento_comentarios rc ON r.id = rc.id_reclutamiento
                             
                       """)
             return cur.fetchone()
