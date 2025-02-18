@@ -809,8 +809,9 @@ async def get_experiencia_comentario(fecha_ini: str, fecha_fin: str, usuario: in
 async def get_lista_ppu_con_fotos(fecha_ini: str, fecha_fin: str):
     datos = conn.lista_ppu_con_fotos(fecha_ini, fecha_fin)
 
+    print(datos)
 
-    if datos is None or datos == 'null':
+    if datos[0] is None or datos[0] == 'null':
         return [{
             'Ppu': '',
             'Id_ruta' : ''
