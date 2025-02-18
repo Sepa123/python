@@ -808,7 +808,12 @@ async def get_experiencia_comentario(fecha_ini: str, fecha_fin: str, usuario: in
 @router.get("/lista_ppu/fotos")
 async def get_lista_ppu_con_fotos(fecha_ini: str, fecha_fin: str):
     datos = conn.lista_ppu_con_fotos(fecha_ini, fecha_fin)
-    return datos[0]
+
+
+    if datos is None:
+        return {"message": "No se encontraron datos"}
+    else:
+        return datos[0]
 
 
 
