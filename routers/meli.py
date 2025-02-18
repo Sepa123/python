@@ -810,8 +810,11 @@ async def get_lista_ppu_con_fotos(fecha_ini: str, fecha_fin: str):
     datos = conn.lista_ppu_con_fotos(fecha_ini, fecha_fin)
 
 
-    if datos is None:
-        return {"message": "No se encontraron datos"}
+    if datos is None or datos == 'null':
+        return [{
+            'Ppu': '',
+            'Id_ruta' : ''
+        }]
     else:
         return datos[0]
 
