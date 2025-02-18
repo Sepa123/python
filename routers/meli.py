@@ -142,7 +142,8 @@ async def Obtener_datos(fecha:str):
     if datos:
         datos_formateados = [{
                                 "id": fila[0],
- 	                            "nombre_completo": fila [1]
+ 	                            "nombre_completo": fila [1],
+                                "telefono": fila[2]
                             } 
                             for fila in datos]
         return datos_formateados

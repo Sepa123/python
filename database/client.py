@@ -10364,7 +10364,7 @@ SELECT *
     def lista_conductores(self, fecha):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
-           select u.id, u.nombre_completo from transporte.usuarios u 
+           select u.id, u.nombre_completo, u.telefono  from transporte.usuarios u 
            where u.tipo_usuario = 1 AND u.id NOT IN 
            (select id_driver FROM mercadolibre.citacion c WHERE fecha = '{fecha}'::date and c.id_driver notnull);                       
                          """)
