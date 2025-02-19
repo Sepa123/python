@@ -10361,12 +10361,10 @@ SELECT *
                          """)
             return cur.fetchall()
         
-    def lista_conductores(self, fecha):
+    def lista_conductores(self, id_ppu):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
-           select u.id, u.nombre_completo, u.telefono  from transporte.usuarios u 
-           where u.tipo_usuario = 1 AND u.id NOT IN 
-           (select id_driver FROM mercadolibre.citacion c WHERE fecha = '{fecha}'::date and c.id_driver notnull);                       
+           SELECT * FROM mercadolibre.obtener_usuarios_con_telefono_formateado({id_ppu});                     
                          """)
             return cur.fetchall()
         

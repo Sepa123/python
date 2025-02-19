@@ -136,14 +136,14 @@ async def Obtener_datos():
         raise HTTPException(status_code=404, detail="No se encontraron datos")
 
 @router.get("/conductoresList")
-async def Obtener_datos(fecha:str):
-    datos = conn.lista_conductores(fecha)
+async def Obtener_datos(id_ppu:str):
+    datos = conn.lista_conductores(id_ppu)
     # Verificar si hay datos
     if datos:
         datos_formateados = [{
-                                "id": fila[0],
- 	                            "nombre_completo": fila [1],
-                                "telefono": fila[2]
+                                "nombre_completo": fila[0],
+                                "tipo_usuario": fila [1],
+                                "celular_formateado": fila[2]
                             } 
                             for fila in datos]
         return datos_formateados
