@@ -141,9 +141,10 @@ async def Obtener_datos(id_ppu:str):
     # Verificar si hay datos
     if datos:
         datos_formateados = [{
-                                "nombre_completo": fila[0],
-                                "tipo_usuario": fila [1],
-                                "celular_formateado": fila[2]
+                                "id": fila[0],
+                                "nombre_completo": fila[1],
+                                "tipo_usuario": fila [2],
+                                "celular_formateado": fila[3]
                             } 
                             for fila in datos]
         return datos_formateados
