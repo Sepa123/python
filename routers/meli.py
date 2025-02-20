@@ -626,11 +626,12 @@ async def subir_archivo_prefactura_meli_diario(id_usuario : str,ids_usuario : st
         conn.insert_datos_excel_prefactura_meli_diario_lh(id_usuario,ids_usuario,fecha_formateada,latitud,longitud,lista)
 
     else:
-
         print('no es ninguno')
+        raise HTTPException(status_code=404, detail="El archivo no tiene el formato correcto")
+        
 
     return {
-        "message" : 'El archivo no tiene el formato ni de FM ni de LM'
+        "message" : 'El archivo se ha subido correctamente'
     }
 
 @router.get("/prefacturas")
