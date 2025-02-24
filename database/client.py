@@ -10476,11 +10476,18 @@ SELECT *
         
     
 
-    def update_ingresar_driver_peoneta(self, id_driver: int, id_peoneta : int, fecha: str, id_ppu:int):
+    def update_ingresar_driver_peoneta(self, id_driver: int, id_ppu: int, fecha: str, id_peoneta):
         with self.conn.cursor() as cur:
-            cur.execute(f"""
-            UPDATE mercadolibre.citacion SET id_driver ={id_driver}, id_peoneta = {id_peoneta} WHERE fecha='{fecha}' AND id_ppu={id_ppu}
-                      """)
+
+            if id_peoneta is not None:
+                cur.execute(f"""
+                UPDATE mercadolibre.citacion SET id_driver = {id_driver}, id_peoneta = {id_peoneta}  WHERE fecha='{fecha}' AND id_ppu={id_ppu}
+                        """)
+            else:
+                cur.execute(f"""
+                UPDATE mercadolibre.citacion SET id_driver = {id_driver} WHERE fecha='{fecha}' AND id_ppu={id_ppu}
+                        """)
+                
         self.conn.commit()
         
     def update_tipo_ruta_citacion(self, tipo_ruta: int, id : int, fecha: str):

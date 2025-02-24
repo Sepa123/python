@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 from fastapi import APIRouter, status,HTTPException, UploadFile, File
 # from typing import List
 import pandas as pd
@@ -293,11 +294,13 @@ async def actualizar_estado(ruta_meli: int, id : int, fecha: str):
     except Exception as e: raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/ingresarDriversPeoneta")
-async def actualizar_estado(id_driver: int, id_peoneta : int, fecha: str, id_ppu:int):
+async def actualizar_estado(id_driver: int, id_ppu: int, fecha: str, id_peoneta: Optional[int] = None):
     try:
-        conn.update_ingresar_driver_peoneta(id_driver, id_peoneta,fecha,id_ppu)
+        conn.update_ingresar_driver_peoneta(id_driver, id_ppu, fecha, id_peoneta)
         return {"message": "Datos Ingresados Correctamente"}
-    except Exception as e: raise HTTPException(status_code=500, detail=str(e))
+    except Exception as e: 
+        print(f"Error en la consulta: {e}")  # 🛠️ Muestra el error en consola
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/SaveData")
@@ -590,49 +593,52 @@ async def subir_archivo_prefactura_meli(id_usuario : str,ids_usuario : str,file:
 @router.post("/subir/prefactura/diario", status_code=status.HTTP_202_ACCEPTED)
 async def subir_archivo_prefactura_meli_diario(id_usuario : str,ids_usuario : str,latitud : str,longitud : str,file: UploadFile = File(...)):
 
-    # Obtener la fecha actual
-    fecha_actual = datetime.now()
+    try:
+        # Obtener la fecha actual
+        fecha_actual = datetime.now()
 
-    # Formatear la fecha en el formato 'yyyy-mm-dd'
-    fecha_formateada = fecha_actual.strftime('%Y-%m-%d')
+        # Formatear la fecha en el formato 'yyyy-mm-dd'
+        fecha_formateada = fecha_actual.strftime('%Y-%m-%d')
 
-    directorio  = os.path.abspath("excel")
+        directorio  = os.path.abspath("excel")
 
-    ruta = os.path.join(directorio,file.filename)
+        ruta = os.path.join(directorio,file.filename)
 
-    with open(ruta, "wb") as f:
-        contents = await file.read()
-        # print("pase por aqui")
-        f.write(contents)
+        with open(ruta, "wb") as f:
+            contents = await file.read()
+            # print("pase por aqui")
+            f.write(contents)
 
-    df = pd.read_excel(ruta)
+        df = pd.read_excel(ruta)
 
-    lista = df.to_dict(orient='records')
+        lista = df.to_dict(orient='records')
 
-    fkey = list(lista[0].keys())[0]
+        fkey = list(lista[0].keys())[0]
 
-    if fkey == 'monitoring-row__bold':
-        print('es un LM')
-        conn.insert_datos_excel_prefactura_meli_diario_lm(id_usuario,ids_usuario,fecha_formateada,latitud,longitud,lista)
+        if fkey == 'monitoring-row__bold':
+            print('es un LM')
+            conn.insert_datos_excel_prefactura_meli_diario_lm(id_usuario,ids_usuario,fecha_formateada,latitud,longitud,lista)
 
-    elif fkey == 'monitoring-row-higher-details__text':
-        print('es un FM')
+        elif fkey == 'monitoring-row-higher-details__text':
+            print('es un FM')
 
-        conn.insert_datos_excel_prefactura_meli_diario_fm(id_usuario,ids_usuario,fecha_formateada,latitud,longitud,lista)
+            conn.insert_datos_excel_prefactura_meli_diario_fm(id_usuario,ids_usuario,fecha_formateada,latitud,longitud,lista)
 
-    elif fkey == 'list-routes-steps__route-id-title':
-        print('es un LH')
+        elif fkey == 'list-routes-steps__route-id-title':
+            print('es un LH')
 
-        conn.insert_datos_excel_prefactura_meli_diario_lh(id_usuario,ids_usuario,fecha_formateada,latitud,longitud,lista)
+            conn.insert_datos_excel_prefactura_meli_diario_lh(id_usuario,ids_usuario,fecha_formateada,latitud,longitud,lista)
 
-    else:
-        print('no es ninguno')
-        raise HTTPException(status_code=404, detail="El archivo no tiene el formato correcto")
-        
+        else:
+            print('no es ninguno')
+            raise HTTPException(status_code=404, detail="El archivo no tiene el formato correcto")
+            
 
-    return {
-        "message" : 'El archivo se ha subido correctamente'
-    }
+        return {
+            "message" : 'El archivo se ha subido correctamente'
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/prefacturas")
 async def Obtener_datos_excel_prefactura_meli(ano : str, mes : str):
