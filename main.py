@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, status, Depends
+from fastapi import FastAPI, HTTPException, Request, status, Depends
 from database.client import UserConnection 
 from database.hela_prod import HelaConnection
 from database.schema.user_schema import users_schema, user_schema
@@ -252,3 +252,8 @@ async def test_comandos():
         }
 
 
+@app.get("/client-info")
+async def client_info(request: Request):
+    client_ip = request.client.host  # Dirección IP del cliente
+    user_agent = request.headers.get("User-Agent")  # Agente de usuario del cliente
+    return {"client_ip": client_ip, "user_agent": user_agent}
