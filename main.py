@@ -252,7 +252,7 @@ async def test_comandos():
         }
 
 
-@app.get("/client-info")
+@app.get("/api/client-info")
 async def client_info(request: Request):
     client_ip = request.client.host  # Dirección IP del cliente
     user_agent = request.headers.get("User-Agent")  # Agente de usuario del cliente
