@@ -12229,7 +12229,7 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
         with self.conn.cursor() as cur:
             cur.execute(f"""   
             select 'Categorias' as nombre,
-            json_agg(json_build_object('Id',id,'categoria', nombre)) as campo
+            json_agg(json_build_object('Id',id,'Categoria', nombre)) as campo
             from taskmaster.categorias
             union all
             select 'Task_status' as nombre,
