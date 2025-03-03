@@ -10323,7 +10323,7 @@ SELECT *
         SELECT u.id, u.nombre ,mail, imagen_perfil ,
             operacion.obtener_centros_por_portal('hela-' || u.id) AS centros
         FROM hela.usuarios u
-        where rol_id in ('80','81')
+        where rol_id in ('80','81') and activate = true
                          """)
             return cur.fetchall()
 
@@ -12208,7 +12208,45 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
             """)
 
             return cur.fetchone()
+        
+    ###Task master
+
+    def insert_activos_taskmaster(self, body):
+
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            INSERT INTO taskmaster.activos
+            (id_user, id_area, codigo_equipo, nombre_equipo, categoria, marca, modelo, region, comuna, direccion, latitud, longitud, descripcion, activo)
+            VALUES(%(Id_user)s, %(Id_area)s, %(Codigo_equipo)s, %(Nombre_equipo)s, 
+            %(Categoria)s, %(Marca)s,  %(Modelo)s, %(Region)s, %(Comuna)s, %(Direccion)s, 
+            %(Latitud)s, %(Longitud)s, %(Descripcion)s,  %(Activo)s);           
+                        """,body)
             
+        self.conn.commit()
+
+
+    def datos_seleccion_taskmasters(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            select 'Categorias' as nombre,
+            json_agg(json_build_object('Id',id,'categoria', nombre)) as campo
+            from taskmaster.categorias
+            union all
+            select 'Task_status' as nombre,
+            json_agg(json_build_object('Id',id,'Status', name)) as campo
+            from taskmaster.task_status;
+                         """)
+            return cur.fetchall()
+        
+    def actualizar_estados_activos(self, id):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+
+            UPDATE taskmaster.activos
+            SET activo = NOT activo
+            WHERE id = {id};    
+            """)
+        self.conn.commit()
 
 class transyanezConnection():
     conn = None
