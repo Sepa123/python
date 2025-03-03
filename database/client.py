@@ -12232,6 +12232,12 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
             json_agg(json_build_object('Id',id,'Categoria', nombre)) as campo
             from taskmaster.categorias
             union all
+            select 'Comuna' as nombre, json_agg(json_build_object('Nombre_comuna',comuna_name,'Id_region', id_region,'Id_comuna', id_comuna  )order by id_comuna) as campo
+            from public.op_comunas oc 
+            union all
+            select 'Region' as nombre, json_agg(json_build_object('Id_region',id_region,'Nombre_region', region_name ) ORDER BY id_region) as campo
+            from public.op_regiones     
+            union all       
             select 'Task_status' as nombre,
             json_agg(json_build_object('Id',id,'Status', name)) as campo
             from taskmaster.task_status;
