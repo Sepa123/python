@@ -12216,10 +12216,13 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
         with self.conn.cursor() as cur:
             cur.execute("""
             INSERT INTO taskmaster.activos
-            (id_user, id_area, codigo_equipo, nombre_equipo, categoria, marca, modelo, region, comuna, direccion, latitud, longitud, descripcion, activo)
-            VALUES(%(Id_user)s, %(Id_area)s, %(Codigo_equipo)s, %(Nombre_equipo)s, 
-            %(Categoria)s, %(Marca)s,  %(Modelo)s, %(Region)s, %(Comuna)s, %(Direccion)s, 
-            %(Latitud)s, %(Longitud)s, %(Descripcion)s,  %(Activo)s);           
+            (id_user, id_area, categoria, nombre_equipo, marca, modelo, codigo, descripcion, region, comuna, direccion, 
+            latitud, longitud, fecha_adquisicion, id_estado, garantia, proveedor, valor_adquisicion,
+            vida_util, id_responsable,observaciones, activo, fecha_baja)
+            VALUES(%(Id_user)s, %(Id_area)s, %(Categoria)s, %(Nombre_equipo)s, %(Marca)s, %(Modelo)s, %(Codigo)s, %(Descripcion)s, 
+            %(Region)s, %(Comuna)s, %(Direccion)s, %(Latitud)s, %(Longitud)s, %(Fecha_adquisicion)s, %(Id_estado)s, 
+            %(Garantia)s, %(Proveedor)s, %(Valor_adquisicion)s, %(Vida_util)s, %(Id_responsable)s, %(Observaciones)s, 
+            %(Activo)s, %(Fecha_baja)s);           
                         """,body)
             
         self.conn.commit()
@@ -12228,6 +12231,14 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
     def datos_seleccion_taskmasters(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
+            select 'Estados' as nombre,
+            json_agg(json_build_object('Id',id,'Estado', nombre)) as campo
+            from taskmaster.estados_activos
+            union all
+            select 'Areas' as nombre,
+            json_agg(json_build_object('Id',id,'Area', nombre)) as campo
+            from taskmaster.areas
+            union all
             select 'Categorias' as nombre,
             json_agg(json_build_object('Id',id,'Categoria', nombre)) as campo
             from taskmaster.categorias

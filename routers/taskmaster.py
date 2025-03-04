@@ -19,6 +19,7 @@ async def cambio_razon(body: Activo):
     try:
         # conn.cambiar_razon_social_vehiculo(razon_id,id)
         data = body.dict()
+        conn.insert_activos_taskmaster(data)
         return {"message": "Datos Ingresados Correctamente"}
     except Exception as e: raise HTTPException(status_code=500, detail=str(e))
 
