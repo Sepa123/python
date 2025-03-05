@@ -2771,7 +2771,8 @@ class reportesConnection():
              easygo.codigo_sku as "Cod. SKU",                         
              easygo.verified as "Pistoleado",
              easygo.id_ruta as "N carga",
-             easygo.recepcion as "Recepcion"
+             easygo.recepcion as "Recepcion",
+            'comuna' as "Comuna"
         
             from areati.ti_carga_easy_go_opl easygo
             where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd') 
@@ -2900,7 +2901,8 @@ class reportesConnection():
                     cast(easy.producto as text) as "Cod. SKU",                            -- no va a Quadminds
                     easy.verified as "Pistoleado",
                     easy.nro_carga as "Carga",
-                    easy.recepcion as "Recepcion"                 
+                    easy.recepcion as "Recepcion",
+                    LOWER(easy.comuna) as "Comuna"              
             from areati.ti_wms_carga_easy easy
             --where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd') 
             WHERE to_char(created_at,'yyyy-mm-dd hh24:mi')  >= to_char(('{dia_anterior}'::date + INTERVAL '17 hours 30 minutes'),'yyyy-mm-dd hh24:mi')
@@ -2965,7 +2967,8 @@ class reportesConnection():
              easygo.codigo_sku as "Cod. SKU",                         
              easygo.verified as "Pistoleado",
              easygo.id_ruta as "N carga",
-             easygo.recepcion as "Recepcion"
+             easygo.recepcion as "Recepcion",
+            'comuna' as "Comuna"
              
             from areati.ti_carga_easy_go_opl easygo
             --where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd') AND easygo.suborden = '{codigo_pedido}'

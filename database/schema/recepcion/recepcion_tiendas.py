@@ -30,7 +30,8 @@ def recepcion_easy_cd(producto):
             "SKU":producto[9],
             "Pistoleado":producto[10],
             "Carga" : producto[11],
-            "Recepcion" : producto[12]
+            "Recepcion" : producto[12],
+            "Ciudad": producto[13]
             }
 
 
