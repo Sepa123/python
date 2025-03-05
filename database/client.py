@@ -2902,7 +2902,7 @@ class reportesConnection():
                     easy.verified as "Pistoleado",
                     easy.nro_carga as "Carga",
                     easy.recepcion as "Recepcion",
-                    LOWER(easy.comuna) as "Comuna"              
+                    initcap(lower(easy.comuna)) as "Comuna"              
             from areati.ti_wms_carga_easy easy
             --where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd') 
             WHERE to_char(created_at,'yyyy-mm-dd hh24:mi')  >= to_char(('{dia_anterior}'::date + INTERVAL '17 hours 30 minutes'),'yyyy-mm-dd hh24:mi')
