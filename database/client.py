@@ -11670,7 +11670,7 @@ SELECT *
                 LEFT JOIN public.op_regiones r ON r.id_region::INT8 = co.region
                 LEFT JOIN mercadolibre.citacion c ON c.ruta_meli::INT8 = mds.id_ruta
                 WHERE mds.fecha BETWEEN '{fecha_ini}'::DATE AND '{fecha_fin}'::DATE
-                and ({usuario} = ANY(co.id_coordinador) or {usuario} in (select u.id from hela.usuarios u where u.rol_id in ('5','90')))
+                and ({usuario} = ANY(co.id_coordinador) or {usuario} in (select u.id from hela.usuarios u where u.rol_id in ('5','90','72')))
                 ORDER BY 1 DESC, 5 asc
 
             )
