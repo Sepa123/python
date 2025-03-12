@@ -12187,12 +12187,12 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
                         """,data)
             return cur.fetchall()
         
-    def get_fotos_patentes(self,ppu):
+    def get_fotos_patentes(self,ppu,id_ruta):
         with self.conn.cursor() as cur:
             cur.execute(f"""
             SELECT  created_at, latitud, longitud, imagen1_png, imagen2_png, imagen3_png, imagen4_png
             FROM mercadolibre.evidencia_diaria_fm edf
-            WHERE ppu = '{ppu}'
+            WHERE ppu = '{ppu}' and id_ruta = {id_ruta}
             ORDER BY created_at DESC
             LIMIT 1
 

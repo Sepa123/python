@@ -847,10 +847,10 @@ async def panel_citacion_meli(fecha : str):
 
 
 
-@router.get("/image/fotos/{ppu}")
-async def get_fotos_patentes(ppu: str):
+@router.get("/image/fotos/{ppu}/{id_ruta}")
+async def get_fotos_patentes(ppu: str, id_ruta: int):
     # Obtener el resultado de la consulta
-    resultado = conn.get_fotos_patentes(ppu)
+    resultado = conn.get_fotos_patentes(ppu,id_ruta)
 
     if not resultado:
         raise HTTPException(status_code=404, detail="No se encontraron imágenes para el PPU especificado") 

@@ -85,6 +85,7 @@ async def subir_archivo(
     escaneo: str = Form(...),
     ppu: str = Form(...),
     id_ruta: str = Form(...),
+    id_ppu: str = Form(...),
     imagen1_png: UploadFile = File(...),
     imagen2_png: UploadFile = File(...),
     imagen3_png: UploadFile = File(...),
@@ -170,8 +171,8 @@ async def subir_archivo(
         imagen4_png = f"{directorio}/{nombre_hash+'_4.png'}" if directorio else None
         consulta = """
             INSERT INTO mercadolibre.evidencia_diaria_fm
-            (latitud, longitud, escaneo, ppu, id_ruta, imagen1_png, imagen2_png, imagen3_png, imagen4_png, intentos)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+            (latitud, longitud, escaneo, ppu, id_ruta, id_ppu, imagen1_png, imagen2_png, imagen3_png, imagen4_png, intentos)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
         """
         cursor.execute(
             consulta, 
@@ -181,6 +182,7 @@ async def subir_archivo(
                 escaneo,
                 ppu,
                 id_ruta,
+                id_ppu,
                 imagen1_png,  # Usar la ruta del archivo 
                 imagen2_png,
                 imagen3_png,
@@ -295,7 +297,8 @@ async def Obtener_datos(Ppu: str):
                                 "codigo": fila [0],
                                 "glosa": fila[1],
                                 "ruta_meli_result": fila[2],
-                                "patente_result": fila[3]
+                                "patente_result": fila[3],
+                                 "Id_ppus": fila[4],
 
                             } 
                             for fila in datos]
