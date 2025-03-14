@@ -2,6 +2,7 @@ from fastapi import APIRouter, File, UploadFile, status,HTTPException
 import os
 import glob
 from fastapi.responses import FileResponse
+import psycopg2
 ##Modelos 
 
 from database.models.operaciones.centro_operacion import UpdateCentroOperacion
@@ -16,6 +17,11 @@ from database.hela_prod import HelaConnection
 from database.schema.operaciones.centro_operacion import centro_operacion_usuario_schema, co_lista_coordinador_schema
 from database.schema.operaciones.supervisores import datos_supervisores_schema
 from lib.password import hash_password
+
+### rodrigo
+
+from dotenv import load_dotenv
+from pydantic import BaseModel
 
 router = APIRouter(tags=["panel"], prefix="/api/panel")
 
@@ -224,3 +230,97 @@ async def get_datos_supervisores_hela():
      # Consulta SQL para obtener datos (por ejemplo)
     results = conn.buscar_datos_supervisores_hela()
     return datos_supervisores_schema(results)
+
+
+
+
+
+
+#### Panel Rodrigo
+
+
+# Crear los parámetros de conexión usando las variables del .env
+parametros_conexion = {
+     "host": os.getenv("DB_HOST"),
+     "database": os.getenv("DB_NAME"),
+     "user": os.getenv("DB_USER"),
+     "password": os.getenv("DB_PASSWORD"),
+     "port": os.getenv("DB_PORT")
+ }
+
+def ejecutar_consulta(sql):
+     try:
+         conexion = psycopg2.connect(**parametros_conexion)
+         cursor = conexion.cursor()
+         cursor.execute(sql)
+         filas = cursor.fetchall()
+         cursor.close()
+         conexion.close()
+         return filas
+     except Exception as e:
+         raise HTTPException(status_code=500, detail=str(e))
+     
+@router.get("/cargarUsuarios/GestionyMantencion")
+async def Obtener_datos():
+    # Consulta SQL para obtener datos (por ejemplo)
+    consulta = "select * from taskmaster.retorna_listado_usuarios();"
+    # Ejecutar la consulta utilizando nuestra función
+    datos = ejecutar_consulta(consulta)
+    # Verificar si hay datos
+    if datos:
+        datos_formateados = [{
+                                "usuario_id" : fila[0],
+                                "usuario_nombre": fila[1],
+                                "usuario_mail": fila [2],
+                                "usuario_telefono": fila[3],
+                                "area_id" : fila[4],
+                                "area_nombre" : fila[5],
+                                "rol_id" : fila[6],
+                                "rol_nombre": fila[7],
+                                "imagen_perfil": fila[8],
+                                "activate": fila[9],
+                                "area_icono": fila[10],
+                                "area_color": fila[11],                    
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+
+
+@router.get("/Rol/")
+async def Obtener_datos():
+    # Consulta SQL para obtener datos (por ejemplo)
+    consulta = "select * from hela.rol"
+    # Ejecutar la consulta utilizando nuestra función
+    datos = ejecutar_consulta(consulta)
+    # Verificar si hay datos
+    if datos:
+        datos_formateados = [{
+                                "id" : fila[0],
+                                "nombre": fila[1],
+                                                
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+
+
+@router.get("/area/")
+async def Obtener_datos():
+    # Consulta SQL para obtener datos (por ejemplo)
+    consulta = "select * from taskmaster.areas"
+    # Ejecutar la consulta utilizando nuestra función
+    datos = ejecutar_consulta(consulta)
+    # Verificar si hay datos
+    if datos:
+        datos_formateados = [{
+                                "id" : fila[0],
+                                "nombre": fila[1],
+                                                
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
