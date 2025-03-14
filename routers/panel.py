@@ -20,8 +20,8 @@ from lib.password import hash_password
 
 ### rodrigo
 
-from dotenv import load_dotenv
-from pydantic import BaseModel
+# from dotenv import load_dotenv
+# from pydantic import BaseModel
 
 router = APIRouter(tags=["panel"], prefix="/api/panel")
 
