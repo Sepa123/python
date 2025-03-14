@@ -238,7 +238,7 @@ async def get_datos_supervisores_hela():
 
 #### Panel Rodrigo
 
-
+load_dotenv()
 # Crear los parámetros de conexión usando las variables del .env
 parametros_conexion = {
      "host": os.getenv("DB_HOST"),
