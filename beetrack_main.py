@@ -168,7 +168,7 @@ async def post_route(body : Route , headers: tuple = Depends(validar_encabezados
 
 @app.post("/api/v2/beetrack/Enviar/loquesea")
 async def post_route(body : Union[Dict, List[Dict]] ):
-
+    print(body)
     return {
             "body" : body
             }
@@ -182,8 +182,6 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 hela_conn = HelaConnection()
 conn_user = UserConnection()
 
-
-SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 100
 
@@ -219,7 +217,7 @@ def login_user(user_data:loginSchema):
                     }
 
     return {
-        "access_token": jwt.encode(access_token, SECRET_KEY,algorithm=ALGORITHM),
+        "access_token": jwt.encode(access_token, config("SECRET_KEY"),algorithm=ALGORITHM),
         "token_type":"bearer",
         "rol_id" : user_db[5],
         "sub": user_db[1],
@@ -232,7 +230,7 @@ def auth_user(token:str = Depends(oauth2)):
     exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="credenciales no corresponden",
                             headers={"WWW-Authenticate": "Bearer"})
     try:
-        username = jwt.decode(token, key=SECRET_KEY, algorithms=[ALGORITHM])
+        username = jwt.decode(token, key=config("SECRET_KEY"), algorithms=[ALGORITHM])
         if username is None:
             raise exception  
     except JWTError:
