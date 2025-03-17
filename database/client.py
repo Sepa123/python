@@ -12233,7 +12233,11 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
 
     def datos_seleccion_taskmasters(self):
         with self.conn.cursor() as cur:
-            cur.execute(f"""   
+            cur.execute(f"""
+            select 'Responsables' as nombre,
+            json_agg(json_build_object('Id',id,'Responsable', nombre)) as campo
+            from hela.usuarios u where id not in (3,4,5,8,66,120,121) and u.activate = true
+            union all   
             select 'Estados' as nombre,
             json_agg(json_build_object('Id',id,'Estado', nombre)) as campo
             from taskmaster.estados_activos
@@ -12257,7 +12261,16 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
             from taskmaster.task_status;
                          """)
             return cur.fetchall()
-        
+
+    def get_max_id_activos(self) :
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            select coalesce (max(id)+1,1) from taskmaster.activos dm
+
+            """)
+
+            return cur.fetchone()
+
     def actualizar_estados_activos(self, id):
         with self.conn.cursor() as cur:
             cur.execute(f""" 
@@ -12265,6 +12278,27 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
             UPDATE taskmaster.activos
             SET activo = NOT activo
             WHERE id = {id};    
+            """)
+        self.conn.commit()
+
+    def agregar_archivo_adjunto_activo(self,pdf, id):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            --- PDF RRPP
+            UPDATE taskmaster.activos
+            SET manual_pdf='{pdf}'
+            WHERE id = {id}
+            """)
+        self.conn.commit()
+
+
+    def agregar_imagenes_activo(self,imagen1,imagen2,imagen3, id):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            --- PDF RRPP
+            UPDATE taskmaster.activos
+            SET imagen_1='{imagen1}', imagen_2='{imagen2}', imagen_3='{imagen3}'
+            WHERE id = {id}
             """)
         self.conn.commit()
 

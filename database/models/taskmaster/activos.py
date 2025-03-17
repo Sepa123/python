@@ -1,4 +1,5 @@
 from typing import Optional
+from fastapi import UploadFile
 from pydantic import BaseModel
 
 class Activo(BaseModel):
@@ -33,3 +34,10 @@ class Activo(BaseModel):
     Observaciones: Optional[str]
     Activo: Optional[bool]
     Fecha_baja: Optional[str]  # Optional date for the asset's deactivation
+
+
+class ImagenesActivo(BaseModel):
+    imagen1_png: Optional[UploadFile] = None
+    imagen2_png: Optional[UploadFile] = None
+    imagen3_png: Optional[UploadFile] = None
+    id_activo: Optional[int] = None
