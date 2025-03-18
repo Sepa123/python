@@ -21,7 +21,6 @@ conn = reportesConnection()
 @router.post("/activos")
 async def registrar_activos(body: Activo):
     try:
-        # conn.cambiar_razon_social_vehiculo(razon_id,id)
         data = body.dict()
         # conn.insert_activos_taskmaster(data)
         id_activo = conn.get_max_id_activos()[0]

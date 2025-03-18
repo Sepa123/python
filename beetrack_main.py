@@ -166,11 +166,11 @@ async def post_route(body : Route , headers: tuple = Depends(validar_encabezados
             }
 
 
-@app.post("/api/v2/beetrack/Enviar/loquesea")
+@app.post("/api/v2/dispatch")
 async def post_route(body : Union[Dict, List[Dict]] ):
     print(body)
     return {
-            "body" : body
+            "message" : "data recibida correctamente"
             }
 
 
