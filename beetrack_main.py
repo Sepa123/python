@@ -166,7 +166,7 @@ async def post_route(body : Route , headers: tuple = Depends(validar_encabezados
             }
 
 
-@app.post("/api/v2/dispatch/sos")
+@app.post("/api/v2/dispatch")
 async def post_route(body : Union[Dict, List[Dict]] , headers: tuple = Depends(validar_encabezados)):
     print(body)
     content_type, x_auth_token = headers
