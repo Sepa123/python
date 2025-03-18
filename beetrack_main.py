@@ -168,12 +168,27 @@ async def post_route(body : Route , headers: tuple = Depends(validar_encabezados
 
 @app.post("/api/v2/dispatch")
 async def post_route(body : Union[Dict, List[Dict]] , headers: tuple = Depends(validar_encabezados)):
-    print(body)
-    content_type, x_auth_token = headers
-    return {
-            "message" : "data recibida correctamente"
-            }
+    
+    try:
 
+        x = 1 / 0 # Generar un error para probar el manejo de excepciones
+        print("Esto es el try")
+        print(body)
+        content_type, x_auth_token = headers
+        return {
+                "message" : "data recibida correctamente"
+                }
+    
+    except Exception as error:
+        # print("Esto es el exception")
+        print(body)
+        return {
+                "message" : "data recibida correctamente"
+                }
+
+        # raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error al agregar al nuevo recluta.")
+    finally:
+        pass
 
 ########### esto es el login migrado para no sufra por las c aidas
 from database.models.user import loginSchema
