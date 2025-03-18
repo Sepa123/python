@@ -869,3 +869,11 @@ async def get_fotos_patentes(ppu: str, id_ruta: int):
         "Imagen_3" : "https://hela.transyanez.cl/api/camara/image/foto?image_path="+resultado[5],
         "Imagen_4" : "https://hela.transyanez.cl/api/camara/image/foto?image_path="+resultado[6],
     }
+
+
+
+@router.get("/lista/posibles/rutas")
+async def get_lista_posible_ruta_meli(fecha_ini: str, fecha_fin: str):
+    datos = conn.get_recupera_posibles_rutas(fecha_ini, fecha_fin)
+
+    return datos[0]
