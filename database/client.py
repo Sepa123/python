@@ -12271,6 +12271,29 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
 
             return cur.fetchone()
 
+
+    def get_activos_taskmaster(self) :
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            with activos as (
+                select 
+                dm.nombre_equipo,
+                dm.categoria ,
+                c.nombre,
+                dm.activo
+                from taskmaster.activos dm
+                left join taskmaster.categorias c on c.id = dm.categoria 
+            )
+
+            select 
+            json_agg(json_build_object('Nombre_equipo',nombre_equipo,'Categoria',categoria,
+            'Nombre_categoria',nombre,'Activo', activo )) 
+            from activos 
+
+            """)
+
+            return cur.fetchone()
+
     def actualizar_estados_activos(self, id):
         with self.conn.cursor() as cur:
             cur.execute(f""" 
