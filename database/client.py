@@ -12277,6 +12277,7 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
             cur.execute("""
             with activos as (
                 select 
+                dm.id,
                 dm.nombre_equipo,
                 dm.categoria ,
                 c.nombre,
@@ -12286,7 +12287,7 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
             )
 
             select 
-            json_agg(json_build_object('Nombre_equipo',nombre_equipo,'Categoria',categoria,
+            json_agg(json_build_object('Id',id,'Nombre_equipo',nombre_equipo,'Categoria',categoria,
             'Nombre_categoria',nombre,'Activo', activo )) 
             from activos 
 
