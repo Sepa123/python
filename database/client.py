@@ -12308,7 +12308,7 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
 
     def get_recupera_posibles_rutas(self, fecha_inicio : str, fecha_fin : str) :
         with self.conn.cursor() as cur:
-            cur.execute("""
+            cur.execute(f"""
             ----select * from mercadolibre.resumen_rutas_fecha_sup('20250308','20250308',158,0);
 
             select
@@ -12316,7 +12316,7 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
             'Ppu',ppu,'Existe_citacion',existe_en_citacion,
             'Existe_en_mae_ds',existe_en_mae_data_supervisores,'En_proforma',en_proforma,
             'Usuarios',usuarios)) as campo
-            from mercadolibre.recupera_posibles_rutas('20250301','20250318',0);
+            from mercadolibre.recupera_posibles_rutas('{fecha_inicio}','{fecha_fin}',0);
 
             """)
 
