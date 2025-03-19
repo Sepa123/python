@@ -41,3 +41,8 @@ class ImagenesActivo(BaseModel):
     imagen2_png: Optional[UploadFile] = None
     imagen3_png: Optional[UploadFile] = None
     id_activo: Optional[int] = None
+
+
+class ActualizaEstadoActivos(BaseModel):
+    id: Optional[int]
+    estado: Optional[int]

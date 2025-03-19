@@ -12302,7 +12302,11 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
             SET activo = NOT activo
             WHERE id = {id};    
             """)
+
+            row = cur.rowcount
         self.conn.commit()
+
+        return row
 
     def agregar_archivo_adjunto_activo(self,pdf, id):
         with self.conn.cursor() as cur:

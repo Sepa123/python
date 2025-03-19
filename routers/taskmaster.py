@@ -9,7 +9,7 @@ from PIL import Image
 from database.client import reportesConnection
 
 
-from database.models.taskmaster.activos import Activo, ImagenesActivo
+from database.models.taskmaster.activos import Activo, ImagenesActivo, ActualizaEstadoActivos
 
 router = APIRouter(tags=["task_master"], prefix="/api/task")
 
@@ -40,6 +40,20 @@ async def datos_vehiculos():
     resultado_dict = {titulo : cant for titulo, cant in datos}
 
     return resultado_dict
+
+@router.put("/estado/activo", status_code=status.HTTP_202_ACCEPTED)
+async def actualizar_estado_activo(body: ActualizaEstadoActivos):
+    try:
+
+        rows = conn.actualizar_estados_activos(body.id)
+
+        return { "message": f"Activo actualizado correctamente." }
+    except:
+          print("error con verificar electrolux")
+          if rows == 0:
+               raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"El  activo no se pudo verificar")
+          
+          raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la verificación")
 
 
 @router.post("/subir/fotos")
