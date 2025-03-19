@@ -16,13 +16,19 @@ router = APIRouter(tags=["task_master"], prefix="/api/task")
 conn = reportesConnection()
 
 
-    
+# @router.get("/activos")
+# async def get_lista_activos():
+#     try:
+
+#         return {"message": "Datos Ingresados Correctamente", 
+#                 "id_activo": id_activo}
+#     except Exception as e: raise HTTPException(status_code=500, detail=str(e))    
 
 @router.post("/activos")
 async def registrar_activos(body: Activo):
     try:
         data = body.dict()
-        # conn.insert_activos_taskmaster(data)
+        conn.insert_activos_taskmaster(data)
         id_activo = conn.get_max_id_activos()[0]
 
         return {"message": "Datos Ingresados Correctamente", 
