@@ -16,7 +16,7 @@ router = APIRouter(tags=["task_master"], prefix="/api/task")
 conn = reportesConnection()
 
 
-@router.get("/activos")
+@router.get("/lista/activos")
 async def get_lista_activos():
     try:
         return conn.get_activos_taskmaster()[0]
