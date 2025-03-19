@@ -27,9 +27,10 @@ conn = reportesConnection()
 @router.post("/activos")
 async def registrar_activos(body: Activo):
     try:
+        id_activo = conn.get_max_id_activos()[0]
         data = body.dict()
         conn.insert_activos_taskmaster(data)
-        id_activo = conn.get_max_id_activos()[0]
+        
 
         return {"message": "Datos Ingresados Correctamente", 
                 "id_activo": id_activo}
