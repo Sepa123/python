@@ -777,7 +777,7 @@ async def guardar_dato_citacion_supervisores(data_supervisor : DataSupervisor):
 
                 conn.insert_datos_de_citacion_activa_FM_ambulancia(data_supervisor,datos,id_ambulancia)
 
-                conn.insert_bitacora_meli(data_supervisor.id_usuario, data_supervisor.ids_usuario, f'Ingreso de ambulancia id: {id_ambulancia}', float(data_supervisor.latitud), float(data_supervisor.longitud), 'Citacion Supervisor')
+                conn.insert_bitacora_meli(data_supervisor.id_usuario, data_supervisor.ids_usuario, f'Ingreso de ambulancia id: {id_ambulancia}', float(data_supervisor.latitud), float(data_supervisor.longitud), 'Citacion_Supervisor')
 
                 # pass
 
@@ -788,12 +788,12 @@ async def guardar_dato_citacion_supervisores(data_supervisor : DataSupervisor):
                 if existe_id_ruta == 0:
                     conn.insert_datos_de_citacion_activa_FM(data_supervisor,datos)
 
-                    conn.insert_bitacora_meli(data_supervisor.id_usuario, data_supervisor.ids_usuario, f'Ingreso de nueva citación', float(data_supervisor.latitud), float(data_supervisor.longitud), 'Citacion Supervisor')
+                    conn.insert_bitacora_meli(data_supervisor.id_usuario, data_supervisor.ids_usuario, f'Ingreso de nueva citación', float(data_supervisor.latitud), float(data_supervisor.longitud), 'Citacion_Supervisor')
 
                 else:
                     conn.update_datos_de_citacion_activa_FM(data_supervisor,datos)
 
-                    conn.insert_bitacora_meli(data_supervisor.id_usuario, data_supervisor.ids_usuario, f'Actualización de citación : {datos.ruta_meli} ', float(data_supervisor.latitud), float(data_supervisor.longitud), 'Citacion Supervisor')
+                    conn.insert_bitacora_meli(data_supervisor.id_usuario, data_supervisor.ids_usuario, f'Actualización de citación : {datos.ruta_meli} ', float(data_supervisor.latitud), float(data_supervisor.longitud), 'Citacion_Supervisor')
 
 
              
