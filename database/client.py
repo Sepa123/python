@@ -10870,7 +10870,7 @@ SELECT *
     def insert_bitacora_meli(self,id_usuario: int, ids_usuario:str, modificacion: str, latitud : float , longitud: float , origen):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            INSERT INTO mercadolibre.bitacora_general(id_usuario,ids_usuario, modificacion, latitud, longitud, origen)VALUES('{id_usuario}', '{ids_usuario}', '{modificacion}', '{latitud}', '{longitud}, '{origen}');                     
+            INSERT INTO mercadolibre.bitacora_general(id_usuario,ids_usuario, modificacion, latitud, longitud, origen)VALUES('{id_usuario}', '{ids_usuario}', '{modificacion}', '{latitud}', '{longitud}', '{origen}');                     
               """)
         self.conn.commit()
 
