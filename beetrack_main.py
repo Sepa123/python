@@ -175,22 +175,28 @@ async def webhook_dispatch_paris(request : Request , headers: tuple = Depends(va
 
     # print(body["resource"])
 
-    if body["resource"] == "dispatch_guide":
-        mensaje = "Recibido Modelo Creación Guia"
-        data = CreacionGuia(**body)
+    try:
 
-    if body["resource"] == "dispatch":
-        mensaje = "Recibido Modelo Actualización Guia"
-        data = ActualizacionGuia(**body)
+        if body["resource"] == "dispatch_guide":
+            mensaje = "Recibido Modelo Creación Guia"
+            data = CreacionGuia(**body)
 
-    if body["resource"] == "route":
-        mensaje = "Recibido Modelo Creación Ruta"
-        data = CreacionRuta(**body)
-    
-    return {
-            "message": mensaje
-            # "datos": data
-             }
+        if body["resource"] == "dispatch":
+            mensaje = "Recibido Modelo Actualización Guia"
+            data = ActualizacionGuia(**body)
+
+        if body["resource"] == "route":
+            mensaje = "Recibido Modelo Creación Ruta"
+            data = CreacionRuta(**body)
+        
+        return {
+                "message": mensaje
+                # "datos": data
+                }
+    except Exception as error:
+
+        print('Error al recibir el cuerpo del mensaje de dispatch paris',error)
+        raise HTTPException(status_code=400, detail="Error al recibir el cuerpo del mensaje")
     
 
 
