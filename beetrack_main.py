@@ -1,8 +1,9 @@
-from fastapi import  status,HTTPException,Header,Depends,FastAPI 
+from fastapi import  Request, status,HTTPException,Header,Depends,FastAPI 
 from typing import List , Dict ,Union
 import re
 from decouple import config
 import psycopg2
+from pydantic import BaseModel
 from database.models.transporte.trabajemos import ContactoExterno
 import lib.beetrack_data as data_beetrack
 import httpx
@@ -25,6 +26,7 @@ from database.models.token import TokenPayload
 from database.models.beetrack.dispatch_guide import DistpatchGuide
 from database.models.beetrack.dispatch import Dispatch , DispatchInsert
 from database.models.beetrack.route import Route
+from database.models.dispatch_paris.distpatch import CreacionGuia, CreacionRuta, ActualizacionGuia
 
 
 # app = APIRouter(tags=["Beetrack"], prefix="/api/beetrack")
@@ -167,28 +169,30 @@ async def post_route(body : Route , headers: tuple = Depends(validar_encabezados
 
 
 @app.post("/api/v2/dispatch")
-async def post_route(body : Union[Dict, List[Dict]] , headers: tuple = Depends(validar_encabezados)):
+async def webhook_dispatch_paris(request : Request , headers: tuple = Depends(validar_encabezados)):
     
-    try:
+    body = await request.json()  # Obtener el cuerpo como JSON
 
-        x = 1 / 0 # Generar un error para probar el manejo de excepciones
-        print("Esto es el try")
-        print(body)
-        content_type, x_auth_token = headers
-        return {
-                "message" : "data recibida correctamente"
-                }
+    # print(body["resource"])
+
+    if body["resource"] == "dispatch_guide":
+        mensaje = "Recibido Modelo Creación Guia"
+        data = CreacionGuia(**body)
+
+    if body["resource"] == "dispatch":
+        mensaje = "Recibido Modelo Actualización Guia"
+        data = ActualizacionGuia(**body)
+
+    if body["resource"] == "route":
+        mensaje = "Recibido Modelo Creación Ruta"
+        data = CreacionRuta(**body)
     
-    except Exception as error:
-        # print("Esto es el exception")
-        print(body)
-        return {
-                "message" : "data recibida correctamente"
-                }
+    return {
+            "message": mensaje
+            # "datos": data
+             }
+    
 
-        # raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error al agregar al nuevo recluta.")
-    finally:
-        pass
 
 ########### esto es el login migrado para no sufra por las c aidas
 from database.models.user import loginSchema
@@ -309,3 +313,27 @@ async def get_campos_registro():
     resultado_dict = {titulo : cant for titulo, cant in datos}
 
     return resultado_dict
+
+
+# # Definir tres modelos distintos
+# class ModeloA(BaseModel):
+#     campo1: str
+#     campo2: int
+
+# class ModeloB(BaseModel):
+#     campo3: float
+#     campo4: bool
+
+# class ModeloC(BaseModel):
+#     campo5: str
+#     campo6: list[int]
+
+# # Ruta que puede recibir cualquiera de los tres modelos
+# @app.post("/api/v2/reconocer/")
+# async def reconocer(modelo: ModeloA | ModeloB | ModeloC):
+#     if isinstance(modelo, ModeloA):
+#         return {"mensaje": "Recibido Modelo A", "datos": modelo}
+#     elif isinstance(modelo, ModeloB):
+#         return {"mensaje": "Recibido Modelo B", "datos": modelo}
+#     elif isinstance(modelo, ModeloC):
+#         return {"mensaje": "Recibido Modelo C", "datos": modelo}
