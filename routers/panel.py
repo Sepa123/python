@@ -1,4 +1,5 @@
-from fastapi import APIRouter, File, UploadFile, status,HTTPException
+from typing import Optional
+from fastapi import APIRouter, File, Form, UploadFile, status,HTTPException
 import os
 import glob
 from fastapi.responses import FileResponse
@@ -22,6 +23,11 @@ from lib.password import hash_password
 
 from dotenv import load_dotenv
 from pydantic import BaseModel
+
+from PIL import Image
+from io import BytesIO
+import datetime
+
 
 router = APIRouter(tags=["panel"], prefix="/api/panel")
 
@@ -260,6 +266,32 @@ def ejecutar_consulta(sql):
      except Exception as e:
          raise HTTPException(status_code=500, detail=str(e))
      
+
+
+class Usuario(BaseModel):
+     nombre: str
+     mail: str
+     password: str
+     activate : bool
+     rol_id:str
+     telefono: str
+     fecha_nacimiento: str
+     direccion: str
+     area_id: str
+     cargo: str
+ 
+class UsuarioUpdate(BaseModel):
+     nombre: Optional[str] = None
+     mail: Optional[str] = None
+     password: Optional[str] = None
+     activate: Optional[bool] = None
+     rol_id: Optional[int] = None
+     telefono: Optional[str] = None
+     fecha_nacimiento: Optional[str] = None  # Considerar usar datetime
+     direccion: Optional[str] = None
+     area_id: Optional[int] = None
+     cargo: Optional[str] = None
+     
 @router.get("/cargarUsuarios/GestionyMantencion")
 async def Obtener_datos():
     # Consulta SQL para obtener datos (por ejemplo)
@@ -318,9 +350,173 @@ async def Obtener_datos():
         datos_formateados = [{
                                 "id" : fila[0],
                                 "nombre": fila[1],
+                                "icono": fila[2],
+                                "color": fila[3],
                                                 
                             } 
                             for fila in datos]
         return datos_formateados
     else:
         raise HTTPException(status_code=404, detail="No se encontraron datos")
+    
+
+
+@router.get("/usuarios/")
+async def User_data(id: str):
+     # Consulta SQL para obtener datos (por ejemplo)
+    consulta = f"select * from hela.usuarios u where id = {id}"
+    # Ejecutar la consulta utilizando nuestra función
+    datos = ejecutar_consulta(consulta)
+    # Verificar si hay datos
+    if datos:
+        datos_formateados = [{
+                                "id" : fila[0],
+                                "nombre": fila[1],
+                                "mail": fila[2],
+                                "activate": fila[4],
+                                "rol_id": fila[5],
+                                "telefono": fila[6],
+                                "fecha_nacimiento": fila[7],
+                                "direccion": fila[8],
+                                "imagen_perfil": fila[9],
+                                "area_id": fila[10],
+                                "cargo": fila[11],
+                                                
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+    
+@router.post("/Agregar/Usuario/")
+async def Agregar_newUserHela(body: Usuario):
+    try:
+        conexion = psycopg2.connect(**parametros_conexion)
+        cursor = conexion.cursor()
+        consulta = """
+            INSERT INTO hela.usuarios 
+                (nombre, mail, password, activate, rol_id, telefono, 
+                 fecha_nacimiento, direccion, id_area, cargo) 
+            VALUES 
+                (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+         # Parámetros en una tupla en el mismo orden que los placeholders
+        parametros = (
+            body.nombre, body.mail, body.password, body.activate, 
+            body.rol_id, body.telefono, body.fecha_nacimiento, 
+            body.direccion, body.area_id, body.cargo
+        )
+        cursor.execute(consulta, parametros)
+        conexion.commit()
+        cursor.close()
+        conexion.close()
+        print()
+        return {"message": "Datos Ingresados Correctamente"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/subir-archivo/fotoPerfil/")
+async def subir_archivo(
+    id_user: str = Form(...),
+    imagen1_png: UploadFile = File(...)
+):
+        """
+        Subir un archivo al servidor, registrar su ruta y guardar datos en la base de datos.
+        """
+        # try:
+        # Crear directorio basado en PPU
+        if not id_user:
+            raise HTTPException(status_code=400, detail="Id del usuario es obligatorio.")
+        directorio = os.path.abspath(f"image/foto_perfil/")
+        os.makedirs(directorio, exist_ok=True)
+        # Crear un nombre único para el archivo
+        timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+        nombre_hash = f"{id_user}_{timestamp}"
+        ruta_completa = os.path.join(directorio)
+        # Leer el archivo de imagen recibido
+        image_bytes = await imagen1_png.read()
+        # Usar PIL para abrir y procesar la imagen (si es necesario)
+        image = Image.open(BytesIO(image_bytes))
+        # Guardar la imagen en el servidor, por ejemplo
+        # Aquí estamos usando el nombre original del archivo, pero puedes renombrarlo si es necesario
+        image.save(ruta_completa+'/'+imagen1_png.filename)
+     
+        # with open(imagen1_png, 'rb') as binary_file:
+        #     binary_data = binary_file.read()
+
+        output_image_path = os.path.join(directorio)
+
+        print(f"Imagen guardada en: {output_image_path}")
+        # Guardar el archivo
+        # with open(ruta_completa, "wb") as f:
+        #     contents = await imagen1_png.read()
+        #     f.write(contents)
+        # Registrar la ruta en la base de datos
+        ruta_bd = f"image/foto_perfil/{nombre_hash}"
+        conexion = ejecutar_consulta()
+        cursor = conexion.cursor()
+        imagen1_png = f"{directorio}/imagen1.png" if directorio else None
+        consulta = """
+            INSERT INTO - 
+            (id_user, imagen1_png)
+            VALUES (%s, %s);
+        """
+        cursor.execute(
+            consulta, 
+            (
+                id_user,
+                imagen1_png,  # Usar la ruta del archivo           
+            )
+        )
+        conexion.commit()
+        return {"message": "Archivo subido y registrado exitosamente.", "ruta": ruta_bd}
+    # except Exception as e:
+    #     raise HTTPException(status_code=500, detail=f"Error al subir el archivo: {str(e)}")
+    # finally:
+    #     if "cursor" in locals():
+    #         cursor.close()
+    #     if "conexion" in locals():
+    #         conexion.close()
+
+@router.patch("/Actualizar/Usuario/{usuario_id}")
+async def actualizar_usuarioHela(usuario_id: int, body: UsuarioUpdate):
+    try:
+        conexion = psycopg2.connect(**parametros_conexion)
+        cursor = conexion.cursor()
+        # Construir dinámicamente la consulta UPDATE
+        update_fields = []
+        params = []
+        
+        for field, value in body.dict(exclude_unset=True).items():
+            # Mapear nombres de campos si es necesario (ej: area_id -> id_area)
+            db_field = field
+            if field == "area_id":
+                db_field = "id_area"
+                
+            update_fields.append(f"{db_field} = %s")
+            params.append(value)
+        
+        if not update_fields:
+            raise HTTPException(status_code=400, detail="No se proporcionaron campos para actualizar")
+        
+        # Agregar el WHERE al final de los parámetros
+        params.append(usuario_id)
+        
+        consulta = f"""
+            UPDATE hela.usuarios
+            SET {", ".join(update_fields)}
+            WHERE id = %s
+        """
+        cursor.execute(consulta, tuple(params))
+        if cursor.rowcount == 0:
+            raise HTTPException(status_code=404, detail="Usuario no encontrado")
+        conexion.commit()
+        
+        return {"message": "Usuario actualizado correctamente"}
+        
+    except Exception as e:
+        conexion.rollback()
+        raise HTTPException(status_code=500, detail=f"Error de base de datos: {str(e)}")
+    finally:
+        cursor.close()
+        conexion.close()
