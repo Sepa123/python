@@ -18,6 +18,7 @@ from database.hela_prod import HelaConnection
 from database.schema.operaciones.centro_operacion import centro_operacion_usuario_schema, co_lista_coordinador_schema
 from database.schema.operaciones.supervisores import datos_supervisores_schema
 from lib.password import hash_password
+import bcrypt  # Importa bcrypt para encriptar contraseñas
 
 ### rodrigo
 
@@ -415,70 +416,64 @@ async def Agregar_newUserHela(body: Usuario):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/subir-archivo/fotoPerfil/")
+
+@router.post("/api/subir-archivo/fotoPerfil/")
 async def subir_archivo(
     id_user: str = Form(...),
     imagen1_png: UploadFile = File(...)
 ):
-        """
-        Subir un archivo al servidor, registrar su ruta y guardar datos en la base de datos.
-        """
-        # try:
-        # Crear directorio basado en PPU
+    """
+    Subir un archivo al servidor, registrar su ruta y guardar datos en la base de datos.
+    """
+    try:
+        # Validar que el ID del usuario no esté vacío
         if not id_user:
             raise HTTPException(status_code=400, detail="Id del usuario es obligatorio.")
-        directorio = os.path.abspath(f"image/foto_perfil/")
+        
+        # Crear directorio para guardar la imagen
+        directorio = os.path.abspath("image/foto_perfil/")
         os.makedirs(directorio, exist_ok=True)
+        
         # Crear un nombre único para el archivo
         timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
         nombre_hash = f"{id_user}_{timestamp}"
-        ruta_completa = os.path.join(directorio)
+        ruta_completa = os.path.join(directorio, imagen1_png.filename)
+        
         # Leer el archivo de imagen recibido
         image_bytes = await imagen1_png.read()
-        # Usar PIL para abrir y procesar la imagen (si es necesario)
+        
+        # Usar PIL para abrir y procesar la imagen
         image = Image.open(BytesIO(image_bytes))
-        # Guardar la imagen en el servidor, por ejemplo
-        # Aquí estamos usando el nombre original del archivo, pero puedes renombrarlo si es necesario
-        image.save(ruta_completa+'/'+imagen1_png.filename)
-     
-        # with open(imagen1_png, 'rb') as binary_file:
-        #     binary_data = binary_file.read()
-
-        output_image_path = os.path.join(directorio)
-
-        print(f"Imagen guardada en: {output_image_path}")
-        # Guardar el archivo
-        # with open(ruta_completa, "wb") as f:
-        #     contents = await imagen1_png.read()
-        #     f.write(contents)
+        image.save(ruta_completa)  # Guardar la imagen en el servidor
+        
+        print(f"Imagen guardada en: {ruta_completa}")
+        
         # Registrar la ruta en la base de datos
-        ruta_bd = f"image/foto_perfil/{nombre_hash}"
-        conexion = ejecutar_consulta()
+        ruta_bd = f"{imagen1_png.filename}"
+        conexion = psycopg2.connect(**parametros_conexion)  # Crear conexión a la base de datos
         cursor = conexion.cursor()
-        imagen1_png = f"{directorio}/imagen1.png" if directorio else None
+        
         consulta = """
-            INSERT INTO - 
-            (id_user, imagen1_png)
-            VALUES (%s, %s);
+            UPDATE hela.usuarios
+            SET imagen_perfil = %s
+            WHERE id = %s;
         """
-        cursor.execute(
-            consulta, 
-            (
-                id_user,
-                imagen1_png,  # Usar la ruta del archivo           
-            )
-        )
+        cursor.execute(consulta, (ruta_bd, id_user))
         conexion.commit()
+        
         return {"message": "Archivo subido y registrado exitosamente.", "ruta": ruta_bd}
-    # except Exception as e:
-    #     raise HTTPException(status_code=500, detail=f"Error al subir el archivo: {str(e)}")
-    # finally:
-    #     if "cursor" in locals():
-    #         cursor.close()
-    #     if "conexion" in locals():
-    #         conexion.close()
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al subir el archivo: {str(e)}")
+    
+    finally:
+        # Cerrar cursor y conexión si existen
+        if "cursor" in locals():
+            cursor.close()
+        if "conexion" in locals():
+            conexion.close()
 
-@router.patch("/Actualizar/Usuario/{usuario_id}")
+@router.patch("/api/Actualizar/Usuario/{usuario_id}")
 async def actualizar_usuarioHela(usuario_id: int, body: UsuarioUpdate):
     try:
         conexion = psycopg2.connect(**parametros_conexion)
@@ -492,7 +487,12 @@ async def actualizar_usuarioHela(usuario_id: int, body: UsuarioUpdate):
             db_field = field
             if field == "area_id":
                 db_field = "id_area"
-                
+            
+            # Encriptar el password si está presente
+            if field == "password" and value:
+                hashed_password = bcrypt.hashpw(value.encode("utf-8"), bcrypt.gensalt())
+                value = hashed_password.decode("utf-8")  # Decodificar para almacenar como texto en la base de datos
+            
             update_fields.append(f"{db_field} = %s")
             params.append(value)
         
