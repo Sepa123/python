@@ -47,6 +47,21 @@ async def get_recepcion_easy_opl():
     results = conn.read_recepcion_easy_opl()
     return recepcion_easy_cds_schema(results)
 
+
+#### RECEPCION DE TODAS LAS TIENDAS
+
+@router.get("/tiendas", status_code=status.HTTP_202_ACCEPTED)
+async def get_recepcion_todas_las_tiendasl(tienda : str):
+
+    if tienda == 'easy_opl':
+        results = conn.read_recepcion_easy_opl()
+    if tienda == 'easy_cd':
+        dia_anterior = obtener_dia_anterior()
+        results = conn.read_recepcion_easy_cd(dia_anterior)
+        
+    return recepcion_easy_cds_schema(results)
+ 
+
 ### bultos de easy OPL
 
 @router.get("/easy_opl/detalle", status_code=status.HTTP_202_ACCEPTED)
