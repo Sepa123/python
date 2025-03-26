@@ -399,8 +399,9 @@ async def Agregar_newUserHela(body: Usuario):
                 (nombre, mail, password, activate, rol_id, telefono, 
                  fecha_nacimiento, direccion, id_area, cargo) 
             VALUES 
-                (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
-         # Parámetros en una tupla en el mismo orden que los placeholders
+                (%s, %s, upper(MD5(%s)), %s, %s, %s, %s, %s, %s, %s)
+        """
+        # Parámetros en una tupla en el mismo orden que los placeholders
         parametros = (
             body.nombre, body.mail, body.password, body.activate, 
             body.rol_id, body.telefono, body.fecha_nacimiento, 
@@ -410,14 +411,12 @@ async def Agregar_newUserHela(body: Usuario):
         conexion.commit()
         cursor.close()
         conexion.close()
-        print()
-        return {"message": "Datos Ingresados Correctamente"}
+        return {"message": "Usuario agregado correctamente"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-
-@router.post("/api/subir-archivo/fotoPerfil/")
+@router.post("/subir-archivo/fotoPerfil/")
 async def subir_archivo(
     id_user: str = Form(...),
     imagen1_png: UploadFile = File(...)
@@ -473,7 +472,7 @@ async def subir_archivo(
         if "conexion" in locals():
             conexion.close()
 
-@router.patch("/api/Actualizar/Usuario/{usuario_id}")
+@router.patch("/Actualizar/Usuario/{usuario_id}")
 async def actualizar_usuarioHela(usuario_id: int, body: UsuarioUpdate):
     try:
         conexion = psycopg2.connect(**parametros_conexion)
@@ -490,11 +489,12 @@ async def actualizar_usuarioHela(usuario_id: int, body: UsuarioUpdate):
             
             # Encriptar el password si está presente
             if field == "password" and value:
-                hashed_password = bcrypt.hashpw(value.encode("utf-8"), bcrypt.gensalt())
-                value = hashed_password.decode("utf-8")  # Decodificar para almacenar como texto en la base de datos
-            
-            update_fields.append(f"{db_field} = %s")
-            params.append(value)
+                # Usar MD5 en la consulta SQL
+                update_fields.append(f"{db_field} = upper(MD5(%s))")
+                params.append(value)  # Agregar el valor del password a params
+            else:
+                update_fields.append(f"{db_field} = %s")
+                params.append(value)
         
         if not update_fields:
             raise HTTPException(status_code=400, detail="No se proporcionaron campos para actualizar")
