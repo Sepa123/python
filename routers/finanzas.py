@@ -415,6 +415,25 @@ async def get_datos_seleccionables_descuentos():
     return resultado_dict
 
 
+
+@router.get("/selecciones/operaciones")
+async def obtener_lista_operaciones_y_cop():
+
+    datos = conn.datos_operacion_y_cop()
+    # Verificar si hay datos
+    if datos:
+        datos_formateados = [{
+                                "Id_op" : fila[0],
+                                "Operacion": fila[1],
+                                "Centros": fila[2]
+
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+
+
 @router.post("/subir/archivo", status_code=status.HTTP_202_ACCEPTED)
 async def subir_archivo(id : str, file: UploadFile = File(...)):
 

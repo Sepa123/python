@@ -12119,6 +12119,29 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
             from  finanzas.etiquetas_descuento_manual
                          """)
             return cur.fetchall()
+
+    
+    def datos_operacion_y_cop(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""   
+            SELECT 
+                mo.id as "Id_op",
+                mo.nombre as "Operacion", 
+                jsonb_agg(
+                    jsonb_build_object(
+                    'Nombre', co.centro,
+                    'Id_cop', co.id
+                    )
+                ) AS centros
+            FROM 
+                operacion.centro_operacion co
+            LEFT JOIN 
+                operacion.modalidad_operacion mo 
+                ON co.id_op = mo.id
+            GROUP BY 
+                mo.nombre, mo.id;
+                         """)
+            return cur.fetchall()
         
 
 
@@ -12176,6 +12199,22 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
 
             print(values)
 
+        self.conn.commit()
+
+
+
+    def insert_bitacora_finanzas(self,body):
+
+       
+        with self.conn.cursor() as cur:
+            cur.execute("""
+
+            INSERT INTO finanzas.bitacora_general
+            (id_usuario, ids_usuario, modificacion, latitud, longitud, origen)
+            VALUES(%(Id_user)s, %(Ids_user)s, %(Modificacion)s, %(Latitud)s, %(Longitud)s,
+                    %(Origen)s);            
+                        """,body)
+            
         self.conn.commit()
 
 
