@@ -437,10 +437,11 @@ async def subir_archivo(body : DescuentoManual):
         # print(directorio)
 
         data = body.dict()
+        id_desc = conn.get_max_id_descuentos_manuales()[0]
 
         conn.insert_descuentos_finanzas(data)
 
-        id_desc = conn.get_max_id_descuentos_manuales()[0]
+        
         ids_origen = str(id_desc) + '-' +'Finanza'
 
         conn.insert_datos_descuentos(data, id_desc, ids_origen)
