@@ -1,3 +1,4 @@
+import json
 from fastapi import  Request, status,HTTPException,Header,Depends,FastAPI 
 from typing import List , Dict ,Union
 import re
@@ -188,6 +189,19 @@ async def webhook_dispatch_paris(request : Request , headers: tuple = Depends(va
         if body["resource"] == "route":
             mensaje = "Recibido Modelo Creación Ruta"
             data = CreacionRuta(**body)
+
+
+            # Generar nombre de archivo único usando timestamp
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        filename = f"datos_{timestamp}.txt"
+        
+        # Guardar el contenido del JSON en un archivo de texto
+        with open(filename, "w") as f:
+            json.dump(body, f, indent=4)
+
+
+        
+
         
         return {
                 "message": mensaje
