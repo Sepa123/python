@@ -416,6 +416,14 @@ async def get_datos_seleccionables_descuentos():
 
 
 
+@router.get("/obtener/descuentos")
+async def get_lista_descuentos(fecha_ini: str, fecha_fin: str):
+    datos = conn.get_lista_descuentos(fecha_ini, fecha_fin)
+
+    return datos[0]
+
+
+
 @router.get("/selecciones/operaciones")
 async def obtener_lista_operaciones_y_cop():
 

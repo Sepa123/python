@@ -12142,6 +12142,54 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
                 mo.nombre, mo.id;
                          """)
             return cur.fetchall()
+
+
+    def get_lista_descuentos(self,fecha_ini,fecha_fin):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            with descuentos as (
+
+            SELECT 
+                    d.fecha_cobro,
+                    u.nombre AS ingresado_por,
+                    mo.modalidad AS operacion,
+                    co.centro AS centro_operacion,
+                    v.ppu,
+                    c.razon_social,
+                    d.numero_cuota || '/' || (SELECT COUNT(*) 
+                                            FROM finanzas.descuentos aux 
+                                            WHERE aux.id_origen_descuento = d.id_origen_descuento) AS cuota,
+                    d.valor_cuota,
+                    dm.monto AS total,
+                    edm.etiqueta,
+                    dm.descripcion,
+                    d.cobrada,
+                    d.oc_cobro
+                FROM finanzas.descuentos d
+                LEFT JOIN finanzas.descuentos_manuales dm ON dm.id = d.id_origen_descuento 
+                LEFT JOIN operacion.modalidad_operacion mo ON mo.id = dm.id_operacion
+                LEFT JOIN operacion.centro_operacion co ON co.id = dm.id_centro_op
+                LEFT JOIN finanzas.etiquetas_descuento_manual edm ON edm.id = dm.etiqueta
+                LEFT JOIN transporte.vehiculo v ON v.id = dm.id_ppu
+                LEFT JOIN transporte.colaborador c ON c.id = dm.razon_social
+                LEFT JOIN hela.usuarios u ON u.id = dm.id_user
+                WHERE d.fecha_cobro BETWEEN '{fecha_ini}'::date AND '{fecha_fin}'::date
+                ORDER BY d.fecha_cobro ASC
+
+            )
+
+
+            select 
+            json_agg(json_build_object('Fecha_cobro',fecha_cobro,'Ingresado_por', ingresado_por,
+                    'Operacion',operacion,'Centro_operacion',centro_operacion,'Ppu',ppu,
+                    'Razon_social',razon_social,'Cuota',cuota,'Valor_cuenta',valor_cuota,
+                    'Total',total,'Etiqueta',etiqueta,'Descripcion',descripcion,
+                    'Cobrada',cobrada,'Oc_cobro',oc_cobro)) as campo
+            from descuentos
+
+            """)
+
+            return cur.fetchone()
         
 
 
