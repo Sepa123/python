@@ -887,3 +887,14 @@ async def get_lista_posible_ruta_meli(fecha_ini: str, fecha_fin: str):
         return []
     
     return datos[0]
+
+
+
+@router.put("/actualizar/descuentos")
+
+async def actualizar_descuentos(data_supervisor : DataSupervisor):
+    try:
+        # conn.insert_bitacora_meli(id_usuario, ids_usuario, modificacion, latitud, longitud, origen)
+
+        return {"message": "Datos Ingresados Correctamente"}
+    except Exception as e: raise HTTPException(status_code=500, detail=str(e))

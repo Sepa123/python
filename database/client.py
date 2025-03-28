@@ -12164,7 +12164,8 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
                     edm.etiqueta,
                     dm.descripcion,
                     d.cobrada,
-                    d.oc_cobro
+                    d.oc_cobro,
+                    d.id
                 FROM finanzas.descuentos d
                 LEFT JOIN finanzas.descuentos_manuales dm ON dm.id = d.id_origen_descuento 
                 LEFT JOIN operacion.modalidad_operacion mo ON mo.id = dm.id_operacion
@@ -12180,7 +12181,7 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
 
 
             select 
-            json_agg(json_build_object('Fecha_cobro',fecha_cobro,'Ingresado_por', ingresado_por,
+            json_agg(json_build_object('Id',id,'Fecha_cobro',fecha_cobro,'Ingresado_por', ingresado_por,
                     'Operacion',operacion,'Centro_operacion',centro_operacion,'Ppu',ppu,
                     'Razon_social',razon_social,'Cuota',cuota,'Valor_cuenta',valor_cuota,
                     'Total',total,'Etiqueta',etiqueta,'Descripcion',descripcion,
@@ -12210,11 +12211,21 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
             cur.execute("""
 
             INSERT INTO finanzas.descuentos_manuales
-            (id_user, ids_user, fecha_evento, id_ppu, razon_social, ruta, etiqueta, descripcion, monto, cuotas)
+            (id_user, ids_user, fecha_evento, id_ppu, razon_social, ruta, etiqueta, descripcion, monto, cuotas,id_operacion,id_centro_op)
             VALUES(%(Id_user)s, %(Ids_user)s, %(Fecha_evento)s, %(Pantente)s, %(Razon_social)s,
-                    %(Ruta)s, %(Etiqueta)s,%(Descripcion)s, %(Monto)s, %(Cant_cuotas)s);            
+                    %(Ruta)s, %(Etiqueta)s,%(Descripcion)s, %(Monto)s, %(Cant_cuotas)s, %(Id_operacion)s, %(Id_cop)s);            
                         """,body)
             
+        self.conn.commit()
+
+    def update_descuentos_finanzas(self, oc_cobro, cobro, id):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            UPDATE finanzas.descuentos
+            SET cobrada={oc_cobro}, oc_cobro='{cobro}'
+            WHERE id={id}
+
+                          """)
         self.conn.commit()
 
 
