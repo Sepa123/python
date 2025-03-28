@@ -488,6 +488,34 @@ async def subir_archivo(body : DescuentoManual):
         print(error)
         # Manejar otras excepciones
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error al agregar el descuento.")
+    
+
+
+
+
+
+@router.put("/actualizar/descuento", status_code=status.HTTP_202_ACCEPTED)
+async def subir_archivo(body : DescuentoManual):
+    try:
+
+        conn.update_descuentos_finanzas()
+
+
+        return {
+            'message' : 'Descuento actualizado exitosamente',
+
+        }
+
+
+
+    except psycopg2.errors.UniqueViolation as error:
+            # Manejar la excepción UniqueViolation específica
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error: La ruta {body.Ruta} ya se encuentra registrado")
+
+    except Exception as error:
+        print(error)
+        # Manejar otras excepciones
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error al agregar el descuento.")
 
 
 
