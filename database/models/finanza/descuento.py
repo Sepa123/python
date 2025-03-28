@@ -35,3 +35,9 @@ class DescuentoManual (BaseModel):
     Id_copec: Optional[int]
 
 
+
+class ActualizarDescuento(BaseModel):
+    Id_detalle: Optional[int]
+    Cobrado: Optional[bool]
+    Oc_cobro: Optional[str]
+

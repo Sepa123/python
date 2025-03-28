@@ -4,7 +4,7 @@ from typing import List
 import re, json
 
 import psycopg2
-from database.models.finanza.descuento import DescuentoManual
+from database.models.finanza.descuento import ActualizarDescuento, DescuentoManual
 import lib.excel_generico as excel
 
 ##Conexiones
@@ -495,10 +495,10 @@ async def subir_archivo(body : DescuentoManual):
 
 
 @router.put("/actualizar/descuento", status_code=status.HTTP_202_ACCEPTED)
-async def subir_archivo(body : DescuentoManual):
+async def subir_archivo(body : ActualizarDescuento):
     try:
 
-        conn.update_descuentos_finanzas()
+        conn.update_descuentos_finanzas(body.Oc_cobro,body.Cobrado, body.Id_detalle)
 
 
         return {
