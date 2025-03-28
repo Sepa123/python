@@ -270,32 +270,82 @@ def ejecutar_consulta(sql):
 
 
 class Usuario(BaseModel):
-     nombre: str
-     mail: str
-     password: str
-     activate : bool
-     rol_id:str
-     telefono: str
-     fecha_nacimiento: str
-     direccion: str
-     area_id: str
-     cargo: str
- 
+    nombre: str
+    mail: str
+    password: str
+    activate : bool
+    rol_id:str
+    telefono: str
+    fecha_nacimiento: str
+    direccion: str
+    area_id: str
+    cargo: str
+    id_supervisor: Optional[int] = None
+
 class UsuarioUpdate(BaseModel):
-     nombre: Optional[str] = None
-     mail: Optional[str] = None
-     password: Optional[str] = None
-     activate: Optional[bool] = None
-     rol_id: Optional[int] = None
-     telefono: Optional[str] = None
-     fecha_nacimiento: Optional[str] = None  # Considerar usar datetime
-     direccion: Optional[str] = None
-     area_id: Optional[int] = None
-     cargo: Optional[str] = None
-     
+    nombre: Optional[str] = None
+    mail: Optional[str] = None
+    password: Optional[str] = None
+    activate: Optional[bool] = None
+    rol_id: Optional[int] = None
+    id_supervisor: Optional[int] = None
+    telefono: Optional[str] = None
+    fecha_nacimiento: Optional[str] = None  # Considerar usar datetime
+    direccion: Optional[str] = None
+    area_id: Optional[int] = None
+    cargo: Optional[str] = None
+
+class Bitacora(BaseModel):
+    id_user: str
+    ids_user: Optional[str] = None
+    origen: str
+    dato_actual: Optional[str] = None
+    dato_resultado: Optional[str] = None
+    tabla_impactada: str
+
+def ejecutar_consulta(sql):
+    try:
+        conexion = psycopg2.connect(**parametros_conexion)
+        cursor = conexion.cursor()
+        cursor.execute(sql)
+        filas = cursor.fetchall()
+        cursor.close()
+        conexion.close()
+        return filas
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+@router.post("/Agregar/Bitacora/")
+async def agregar_bitacora(body: Bitacora):
+    """
+    Endpoint para insertar un registro en la tabla areati.bitacora_general.
+    """
+    try:
+        conexion = psycopg2.connect(**parametros_conexion)
+        cursor = conexion.cursor()
+        consulta = """
+            INSERT INTO areati.bitacora_general
+                (id_user, ids_user, origen, dato_actual, dato_resultado, tabla_impactada)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """
+        # Parámetros en el mismo orden que los placeholders
+        parametros = (
+            body.id_user, body.ids_user, body.origen, 
+            body.dato_actual, body.dato_resultado, body.tabla_impactada
+        )
+        cursor.execute(consulta, parametros)
+        conexion.commit()
+        cursor.close()
+        conexion.close()
+        return {"message": "Registro agregado a la bitácora correctamente"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al insertar en la bitácora: {str(e)}")
+    
 @router.get("/cargarUsuarios/GestionyMantencion")
 async def Obtener_datos():
-    # Consulta SQL para obtener datos (por ejemplo)
+     # Consulta SQL para obtener datos (por ejemplo)
     consulta = "select * from taskmaster.retorna_listado_usuarios();"
     # Ejecutar la consulta utilizando nuestra función
     datos = ejecutar_consulta(consulta)
@@ -323,7 +373,7 @@ async def Obtener_datos():
 
 @router.get("/Rol/")
 async def Obtener_datos():
-    # Consulta SQL para obtener datos (por ejemplo)
+     # Consulta SQL para obtener datos (por ejemplo)
     consulta = "select * from hela.rol"
     # Ejecutar la consulta utilizando nuestra función
     datos = ejecutar_consulta(consulta)
@@ -342,7 +392,7 @@ async def Obtener_datos():
 
 @router.get("/area/")
 async def Obtener_datos():
-    # Consulta SQL para obtener datos (por ejemplo)
+     # Consulta SQL para obtener datos (por ejemplo)
     consulta = "select * from taskmaster.areas"
     # Ejecutar la consulta utilizando nuestra función
     datos = ejecutar_consulta(consulta)
@@ -359,8 +409,6 @@ async def Obtener_datos():
         return datos_formateados
     else:
         raise HTTPException(status_code=404, detail="No se encontraron datos")
-    
-
 
 @router.get("/usuarios/")
 async def User_data(id: str):
@@ -382,6 +430,25 @@ async def User_data(id: str):
                                 "imagen_perfil": fila[9],
                                 "area_id": fila[10],
                                 "cargo": fila[11],
+                                "id_supervisor": fila[12],
+                                                
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+    
+@router.get("/Supervisor/")
+async def supervisor_data():
+     # Consulta SQL para obtener datos (por ejemplo)
+    consulta = """select * from hela.usuarios u where activate = true;"""
+    # Ejecutar la consulta utilizando nuestra función
+    datos = ejecutar_consulta(consulta)
+    # Verificar si hay datos
+    if datos:
+        datos_formateados = [{
+                                "id" : fila[0],
+                                "nombre": fila[1],
                                                 
                             } 
                             for fila in datos]
@@ -397,15 +464,15 @@ async def Agregar_newUserHela(body: Usuario):
         consulta = """
             INSERT INTO hela.usuarios 
                 (nombre, mail, password, activate, rol_id, telefono, 
-                 fecha_nacimiento, direccion, id_area, cargo) 
+                 fecha_nacimiento, direccion, id_area, cargo, id_supervisor) 
             VALUES 
-                (%s, %s, upper(MD5(%s)), %s, %s, %s, %s, %s, %s, %s)
+                (%s, %s, upper(MD5(%s)), %s, %s, %s, %s, %s, %s, %s, %s);
         """
         # Parámetros en una tupla en el mismo orden que los placeholders
         parametros = (
             body.nombre, body.mail, body.password, body.activate, 
             body.rol_id, body.telefono, body.fecha_nacimiento, 
-            body.direccion, body.area_id, body.cargo
+            body.direccion, body.area_id, body.cargo, body.id_supervisor
         )
         cursor.execute(consulta, parametros)
         conexion.commit()
