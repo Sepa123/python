@@ -12222,7 +12222,7 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
         with self.conn.cursor() as cur:
             cur.execute(f"""
             UPDATE finanzas.descuentos
-            SET cobrada={oc_cobro}, oc_cobro='{cobro}'
+            SET cobrada={cobro}, oc_cobro='{oc_cobro}'
             WHERE id={id}
 
                           """)
