@@ -12150,6 +12150,7 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
             with descuentos as (
 
             SELECT 
+                    dm.fecha_evento,
                     d.fecha_cobro,
                     u.nombre AS ingresado_por,
                     mo.modalidad AS operacion,
@@ -12185,7 +12186,7 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
                     'Operacion',operacion,'Centro_operacion',centro_operacion,'Ppu',ppu,
                     'Razon_social',razon_social,'Cuota',cuota,'Valor_cuenta',valor_cuota,
                     'Total',total,'Etiqueta',etiqueta,'Descripcion',descripcion,
-                    'Cobrada',cobrada,'Oc_cobro',oc_cobro)) as campo
+                    'Cobrada',cobrada,'Oc_cobro',oc_cobro, 'Fecha_evento',fecha_evento)) as campo
             from descuentos
 
             """)
