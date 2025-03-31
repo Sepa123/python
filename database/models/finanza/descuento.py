@@ -31,8 +31,8 @@ class DescuentoManual (BaseModel):
     Cant_cuotas : Optional[int]
     Monto: Optional[int]
     Cuotas : List[Cuota] 
-    Id_operacion_ : Optional[int]
-    Id_copec: Optional[int]
+    Id_operacion : Optional[int]
+    Id_cop: Optional[int]
 
 
 
