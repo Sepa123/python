@@ -3,6 +3,7 @@ from fastapi import APIRouter, File, UploadFile, status,HTTPException
 from typing import List
 import re, json
 
+from fastapi.responses import FileResponse
 import psycopg2
 from database.models.finanza.descuento import ActualizarDescuento, DescuentoManual
 import lib.excel_generico as excel
@@ -519,4 +520,11 @@ async def subir_archivo(body : ActualizarDescuento):
 
 
 
+@router.get("/descargar/archivo")
+def download_file(name_file: str):
+    # nombre_file = name_file.split('/')[4]
 
+    print(name_file)
+    # print(nombre_file)
+    
+    return FileResponse(name_file)
