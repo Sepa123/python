@@ -12167,7 +12167,7 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
                     dm.adjunto,
                     d.cobrada,
                     d.oc_cobro,
-                    d.id,
+                    d.id
                 FROM finanzas.descuentos d
                 LEFT JOIN finanzas.descuentos_manuales dm ON dm.id = d.id_origen_descuento 
                 LEFT JOIN operacion.modalidad_operacion mo ON mo.id = dm.id_operacion
