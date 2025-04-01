@@ -12164,9 +12164,10 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
                     dm.monto AS total,
                     edm.etiqueta,
                     dm.descripcion,
+                    dm.adjunto,
                     d.cobrada,
                     d.oc_cobro,
-                    d.id
+                    d.id,
                 FROM finanzas.descuentos d
                 LEFT JOIN finanzas.descuentos_manuales dm ON dm.id = d.id_origen_descuento 
                 LEFT JOIN operacion.modalidad_operacion mo ON mo.id = dm.id_operacion
@@ -12186,7 +12187,7 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
                     'Operacion',operacion,'Centro_operacion',centro_operacion,'Ppu',ppu,
                     'Razon_social',razon_social,'Cuota',cuota,'Valor_cuenta',valor_cuota,
                     'Total',total,'Etiqueta',etiqueta,'Descripcion',descripcion,
-                    'Cobrada',cobrada,'Oc_cobro',oc_cobro, 'Fecha_evento',fecha_evento)) as campo
+                    'Cobrada',cobrada,'Oc_cobro',oc_cobro, 'Fecha_evento',fecha_evento,'Adjunto',adjunto)) as campo
             from descuentos
 
             """)
