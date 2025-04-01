@@ -12199,7 +12199,7 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
         with self.conn.cursor() as cur:
             cur.execute(f""" 
             --- PDF RRPP
-            UPDATE finanzas.descuento_manual
+            UPDATE finanzas.descuentos_manuales
             SET adjunto='{jpg}'
             WHERE id = {id}
             """)
