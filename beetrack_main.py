@@ -169,27 +169,90 @@ async def post_route(body : Route , headers: tuple = Depends(validar_encabezados
             }
 
 
+
+
+def construct_body_from_actualizacion_guia(actualizacion_guia :ActualizacionGuia, itemNumber : int):
+    # Crear un diccionario que contiene los datos necesarios para la inserción
+    body = {
+        "guide": actualizacion_guia.guide,
+        "identifier": actualizacion_guia.identifier,
+        "route_id": actualizacion_guia.route_id,
+        "dispatch_id": actualizacion_guia.dispatch_id,
+        "truck_identifier": actualizacion_guia.truck_identifier,
+        "contact_name": actualizacion_guia.contact_name,
+        "contact_phone": actualizacion_guia.contact_phone,
+        "contact_identifier": actualizacion_guia.contact_identifier,
+        "contact_email": actualizacion_guia.contact_email,
+        "contact_address": actualizacion_guia.contact_address,
+        
+        # Asegúrate de que los tags sean manejados apropiadamente, si tienes múltiples tags
+        
+        "tag_asn_id": [tag.value for tag in actualizacion_guia.tags if tag.name == 'ASN_ID'][0]  if actualizacion_guia.tags else None,
+        "tag_desc_comuna": [tag.value for tag in actualizacion_guia.tags if tag.name == 'Desc_Comuna'][0]  if actualizacion_guia.tags else None,
+        "tag_desc_emp": [tag.value for tag in actualizacion_guia.tags if tag.name == 'DESC_EMP'][0]  if actualizacion_guia.tags else None,
+        "tag_do_id": [tag.value for tag in actualizacion_guia.tags if tag.name == 'DO_ID'][0]  if actualizacion_guia.tags else None,
+        "tag_fecdesfis": [tag.value for tag in actualizacion_guia.tags if tag.name == 'FECDESFIS'][0]  if actualizacion_guia.tags else None,
+        "fechaemi": [tag.value for tag in actualizacion_guia.tags if tag.name == 'FECHAEMI'][0]  if actualizacion_guia.tags else None,
+        "fecsoldes": [tag.value for tag in actualizacion_guia.tags if tag.name == 'FECSOLDES'][0]  if actualizacion_guia.tags else None,
+        "numcorhr": [tag.value for tag in actualizacion_guia.tags if tag.name == 'NUMCORHR'][0]  if actualizacion_guia.tags else None,
+        "numsolgui": [tag.value for tag in actualizacion_guia.tags if tag.name == 'NUMSOLGUI'][0]  if actualizacion_guia.tags else None,
+        "urlcarga": [tag.value for tag in actualizacion_guia.tags if tag.name == 'URLCARGA'][0]  if actualizacion_guia.tags else None,
+        "urlguia": [tag.value for tag in actualizacion_guia.tags if tag.name == 'URLGUIA'][0]  if actualizacion_guia.tags else None,
+        
+
+        # Los valores de los items (por ejemplo, insertarlos como el primer item)
+        "item_id": actualizacion_guia.items[itemNumber].id if actualizacion_guia.items else None,
+        "item_name": actualizacion_guia.items[itemNumber].name if actualizacion_guia.items else None,
+        "item_description": actualizacion_guia.items[itemNumber].description if actualizacion_guia.items else None,
+        "item_quantity": actualizacion_guia.items[itemNumber].quantity if actualizacion_guia.items else None,
+        "item_original_quantity": actualizacion_guia.items[itemNumber].original_quantity if actualizacion_guia.items else None,
+        "item_delivered_quantity": actualizacion_guia.items[itemNumber].delivered_quantity if actualizacion_guia.items else None,
+        "item_code": actualizacion_guia.items[itemNumber].code if actualizacion_guia.items else None,
+
+        "item_carton": [extra.value for extra in actualizacion_guia.items[itemNumber].extras if extra.name == 'CARTONID'][0]  if actualizacion_guia.items[itemNumber].extras else None,
+        "item_sku": [extra.value for extra in actualizacion_guia.items[itemNumber].extras if extra.name == 'SKU'][0]  if actualizacion_guia.items[itemNumber].extras else None
+    }
+    
+    return body
+
+
+
 @app.post("/api/v2/dispatch")
 async def webhook_dispatch_paris(request : Request , headers: tuple = Depends(validar_encabezados)):
     
     body = await request.json()  # Obtener el cuerpo como JSON
-
-    # print(body["resource"])
 
     try:
 
         if body["resource"] == "dispatch_guide":
             mensaje = "Recibido Modelo Creación Guia"
             data = CreacionGuia(**body)
+            
+
 
         if body["resource"] == "dispatch":
             mensaje = "Recibido Modelo Actualización Guia"
             data = ActualizacionGuia(**body)
 
+            lista_cartones = []
+
+            for n in range(len(data.items)):
+                carton = [extra.value for extra in data.items[n].extras if extra.name == 'CARTONID'][0]
+                print(carton)
+                if carton not in lista_cartones:
+                    
+                    ingreso = construct_body_from_actualizacion_guia(data,n)
+                    conn.insert_dispatch_paris(ingreso)
+                    lista_cartones.append(carton)
+
+
         if body["resource"] == "route":
             mensaje = "Recibido Modelo Creación Ruta"
             data = CreacionRuta(**body)
 
+            data = data.dict()
+
+            conn.insert_creacion_ruta_paris(data)
 
             # Generar nombre de archivo único usando timestamp
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -199,10 +262,6 @@ async def webhook_dispatch_paris(request : Request , headers: tuple = Depends(va
         with open(filename, "w") as f:
             json.dump(body, f, indent=4)
 
-
-        
-
-        
         return {
                 "message": mensaje
                 # "datos": data

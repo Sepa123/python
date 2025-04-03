@@ -12451,6 +12451,52 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
             return cur.fetchone()
 
 
+    #### Dispatch_paris
+
+
+    def insert_dispatch_paris(self, body):
+
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            INSERT INTO paris.dispatch_paris
+            (guide, identifier, route_id, dispatch_id, truck_identifier, 
+            contact_name, contact_phone, contact_identifier, contact_email, contact_address,
+            tag_asn_id, tag_desc_comuna, tag_desc_emp, tag_do_id, tag_fecdesfis, fechaemi, 
+            fecsoldes, numcorhr, numsolgui, urlcarga, urlguia, item_id, item_name, 
+            item_description, item_quantity, item_original_quantity, item_delivered_quantity, 
+            item_code, item_carton, item_sku)
+            VALUES(
+                %(guide)s, %(identifier)s, %(route_id)s, %(dispatch_id)s, %(truck_identifier)s,  
+                %(contact_name)s, %(contact_phone)s, %(contact_identifier)s, 
+                %(contact_email)s, %(contact_address)s,
+                %(tag_asn_id)s, %(tag_desc_comuna)s, %(tag_desc_emp)s, %(tag_do_id)s, 
+                %(tag_fecdesfis)s, %(fechaemi)s, %(fecsoldes)s, %(numcorhr)s, 
+                %(numsolgui)s, %(urlcarga)s, %(urlguia)s, %(item_id)s, %(item_name)s, 
+                %(item_description)s, %(item_quantity)s, %(item_original_quantity)s, 
+                %(item_delivered_quantity)s, %(item_code)s, %(item_carton)s, 
+                %(item_sku)s);
+        """, body)
+            
+        self.conn.commit()
+
+
+    def insert_creacion_ruta_paris(self, body):
+
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            INSERT INTO paris.dispatch_paris
+            (resource, evento, account_name, route, account_id, fecha, truck, 
+            truck_driver, started, started_at, ended, ended_at)
+            VALUES(
+                %(resource)s, %(event)s, %(account_name)s, %(route)s, %(account_id)s,  
+                %(date)s, %(truck)s, %(truck_driver)s, 
+                %(started)s, %(started_at)s,
+                %(ended)s, %(ended_at)s);
+        """, body)
+            
+        self.conn.commit()
+
+
 
 class transyanezConnection():
     conn = None
