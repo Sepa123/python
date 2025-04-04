@@ -503,21 +503,14 @@ async def subir_archivo(
         # Crear un nombre único para el archivo
         timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
         nombre_hash = f"{id_user}_{timestamp}"
-        extension = os.path.splitext(imagen1_png.filename)[1].lower()  # Obtener la extensión del archivo
-        ruta_completa = os.path.join(directorio, f"{nombre_hash}{extension}")
+        ruta_completa = os.path.join(directorio, imagen1_png.filename)
         
         # Leer el archivo de imagen recibido
         image_bytes = await imagen1_png.read()
         
-        # Verificar si el archivo es un GIF
-        if extension == ".gif":
-            # Guardar el archivo directamente sin procesarlo
-            with open(ruta_completa, "wb") as f:
-                f.write(image_bytes)
-        else:
-            # Usar PIL para abrir y procesar la imagen
-            image = Image.open(BytesIO(image_bytes))
-            image.save(ruta_completa)  # Guardar la imagen en el servidor
+        # Usar PIL para abrir y procesar la imagen
+        image = Image.open(BytesIO(image_bytes))
+        image.save(ruta_completa)  # Guardar la imagen en el servidor
         
         print(f"Imagen guardada en: {ruta_completa}")
         
