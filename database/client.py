@@ -12497,6 +12497,22 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
         self.conn.commit()
 
 
+    ### Dashboard pendientes
+    def read_clientes_de_paris(self, body):
+            with self.conn.cursor() as cur:
+                cur.execute("""  
+                    with guia_paris as (
+                        SELECT  created_at, identificador_ruta, identificador, guia, cliente, lugar_de_trabajo, servicio, region_de_despacho, origen_de_la_entrega, fecha_estimada, fecha_llegada, estado, subestado, usuario_movil, telefono_usuario, id_cliente, nombre_cliente, direccion_cliente, telefono_cliente, correo_electronico_cliente, tiempo_en_destino, n_intentos, distancia_km, fechahr, tipo, email, conductor, fechaentrega, peso, cmn, cuenta, volumen, bultos, entrega, factura, oc, ruta, tienda, nombre_ejecutivo, codigo, observacion
+                        FROM beetrack.ruta_transyanez
+                        where guia = %(guide)s AND identificador_ruta = %(route_id)s
+                        --where guia = '59634426' AND identificador_ruta = 43989886
+                    )
+
+                    select json_agg(guia_paris) from guia_paris
+                    """,body)
+                return cur.fetchone()
+
+
 
 class transyanezConnection():
     conn = None
