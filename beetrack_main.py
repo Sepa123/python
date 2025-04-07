@@ -222,7 +222,7 @@ async def post_route(body : Route , headers: tuple = Depends(validar_encabezados
 
 def send_put_request(payload, codigo_guia):
     # URL del endpoint
-    url = f'https://cluster-staging.dispatchtrack.com/api/external/v1/dispatches/397668'
+    url = f'https://cluster-staging.dispatchtrack.com/api/external/v1/dispatches/{codigo_guia}'
 
     # Encabezados
     headers = {
