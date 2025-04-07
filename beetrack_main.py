@@ -87,6 +87,17 @@ async def post_dispatch_guide(body: DistpatchGuide, headers: tuple = Depends(val
             "body" : body
             }
 
+
+@app.get("/api/v2/productos/paris")
+async def post_dispatch_guide():
+    # content_type, x_auth_token = headers
+
+    datos = conn.read_clientes_de_paris()
+
+    # print("datos",datos)
+
+    return datos[0]
+
 @app.post("/api/v2/beetrack/dispatch")
 async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabezados)):
     content_type, x_auth_token = headers
@@ -96,11 +107,11 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
     if data["resource"] == 'route' and data["event"] == 'create':
 
         datos_insert_ruta = data_beetrack.generar_data_insert_creacion_ruta(data)
-        conn.insert_beetrack_creacion_ruta(datos_insert_ruta)
+        # conn.insert_beetrack_creacion_ruta(datos_insert_ruta)
 
     if data["resource"] == 'route' and data["event"] in ['start', 'finish']:
         datos_insert_ruta = data_beetrack.generar_data_insert_creacion_ruta(data)
-        row = conn.update_route_beetrack_event(datos_insert_ruta)
+        # row = conn.update_route_beetrack_event(datos_insert_ruta)
 
         return {
             "message" : "data recibida correctamente"
@@ -128,9 +139,28 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
                 datos = { 
                     "Numero" : factura,
                     "Hora_registro": str(ahora)
-                }
+                } 
 
                 guardar_json.guardar_datos_a_archivo_existente_cf(datos,ahora,'info_factura')
+
+            if "paris" in datos_groups_i["Cliente"].lower():
+
+                print('data, YO PASE')
+
+                body = {
+                    "status": data["status"],
+                    "substatus": data["substatus"],
+                    "substatus_code": data["substatus_code"]
+                }
+
+                send_put_request(body, data["guide"])
+
+                
+                return {
+                    "message" : "data recibida correctamente"
+                }
+
+            
 
             return {
                 "message" : "data recibida correctamente"
@@ -155,6 +185,26 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
                 }
 
                 guardar_json.guardar_datos_a_archivo_existente_cf(datos,ahora,'info_factura')
+
+
+            if "paris" in datos_groups["Cliente"].lower():
+
+                print('data, YO PASE')
+
+                body = {
+                    "status": data["status"],
+                    "substatus": data["substatus"],
+                    "substatus_code": data["substatus_code"]
+                }
+
+                send_put_request(body, data["guide"])
+
+                # cliente_paris = conn.read_clientes_de_paris(dato_ruta_ty)[0]
+
+                
+                return {
+                    "message" : "data recibida correctamente"
+                }
                 
     return {
             "message" : "data recibida correctamente"
@@ -169,6 +219,33 @@ async def post_route(body : Route , headers: tuple = Depends(validar_encabezados
             }
 
 
+
+def send_put_request(payload, codigo_guia):
+    # URL del endpoint
+    url = f'https://cluster-staging.dispatchtrack.com/api/external/v1/dispatches/397668'
+
+    # Encabezados
+    headers = {
+        'Accept': '*/*',
+        'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
+        'X-AUTH-TOKEN': '7ce8afa16d70abc96be658a0ebaa33fdd2c5ddde84d869b0b7398dbae1d9cb9d',
+    }
+
+    # Cuerpo de la solicitud (puedes modificar esto según lo que necesites enviar)
+    payload = payload
+
+    # Realizamos la solicitud PUT
+    with httpx.Client() as client:
+        response = client.put(url, headers=headers, json=payload)
+
+    # Verificamos la respuesta
+    if response.status_code == 200:
+        print("Solicitud PUT exitosa:", response.json())
+    else:
+        print(f"Error en la solicitud PUT: {response.status_code}")
+        print(response.text)
+
+##### PARIS 
 
 
 def construct_body_from_actualizacion_guia(actualizacion_guia :ActualizacionGuia, itemNumber : int):
@@ -280,6 +357,14 @@ async def webhook_dispatch_paris(request : Request , headers: tuple = Depends(va
         raise HTTPException(status_code=400, detail="Error al recibir el cuerpo del mensaje")
     
 
+    
+@app.post("/api/v2/beetrack/dispatch_guide")
+async def post_dispatch_guide(body: DistpatchGuide, headers: tuple = Depends(validar_encabezados)):
+    content_type, x_auth_token = headers
+
+    return {
+            "body" : body
+            }
 
 ########### esto es el login migrado para no sufra por las c aidas
 from database.models.user import loginSchema
