@@ -228,7 +228,7 @@ def send_put_request(payload, codigo_guia):
     headers = {
         'Accept': '*/*',
         'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
-        'X-AUTH-TOKEN': '7ce8afa16d70abc96be658a0ebaa33fdd2c5ddde84d869b0b7398dbae1d9cb9d',
+        'X-AUTH-TOKEN': config("SECRET_KEY_PARIS"),
     }
 
     # Cuerpo de la solicitud (puedes modificar esto según lo que necesites enviar)
