@@ -1,5 +1,5 @@
 import json
-from fastapi import  Request, status,HTTPException,Header,Depends,FastAPI 
+from fastapi import  Request, status,HTTPException,Header,Depends,FastAPI
 from typing import List , Dict ,Union
 import re
 from decouple import config
@@ -103,7 +103,7 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
     content_type, x_auth_token = headers
     # Lista de nombres que deseas buscar
     data = body.dict()
- 
+
     if data["resource"] == 'route' and data["event"] == 'create':
 
         datos_insert_ruta = data_beetrack.generar_data_insert_creacion_ruta(data)
@@ -116,7 +116,7 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
         return {
             "message" : "data recibida correctamente"
             }
-    
+
     if data["resource"] == 'dispatch' and data["event"] == 'update':
         datos_create = {
                         "ruta_id" : data["route_id"],
@@ -136,10 +136,10 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
                 factura = re.sub(patron, '', datos_tags_i["FACTURA"])
                 ahora = datetime.now()
 
-                datos = { 
+                datos = {
                     "Numero" : factura,
                     "Hora_registro": str(ahora)
-                } 
+                }
 
                 guardar_json.guardar_datos_a_archivo_existente_cf(datos,ahora,'info_factura')
 
@@ -157,12 +157,12 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
 
                 send_put_request(body, data["guide"])
 
-                
+
                 return {
                     "message" : "data recibida correctamente"
                 }
 
-            
+
 
             return {
                 "message" : "data recibida correctamente"
@@ -181,7 +181,7 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
 
                 ahora = datetime.now()
 
-                datos = { 
+                datos = {
                     "Numero" : factura,
                     "Hora_registro": str(ahora)
                 }
@@ -211,11 +211,11 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
 
                 # cliente_paris = conn.read_clientes_de_paris(dato_ruta_ty)[0]
 
-                
+
                 return {
                     "message" : "data recibida correctamente"
                 }
-                
+
     return {
             "message" : "data recibida correctamente"
             }
@@ -282,7 +282,7 @@ def send_put_request_paris_yanez(payload, codigo_guia):
         print(response.text)
 
 
-def get_update_estados_paris_yanez(payload, codigo_guia):
+def get_update_estados_paris_yanez( codigo_guia):
     # URL del endpoint
     url = f'https://cluster-staging.dispatchtrack.com/api/external/v1/dispatches/{codigo_guia}'
 
@@ -293,26 +293,23 @@ def get_update_estados_paris_yanez(payload, codigo_guia):
         'X-AUTH-TOKEN': config("SECRET_KEY_PARIS_YANEZ"),
     }
 
-    # Cuerpo de la solicitud (puedes modificar esto según lo que necesites enviar)
-    payload = payload
-
     # Realizamos la solicitud PUT
     with httpx.Client() as client:
-        response = client.get(url, headers=headers, json=payload)
+        response = client.get(url, headers=headers)
 
     # Verificamos la respuesta
     if response.status_code == 200:
         datos = response.json()
         status_id = datos.get("response", {}).get("status_id", None)
         substatus_code = datos.get("response", {}).get("substatus_code", None)
-        
+
         # Devolvemos solo estos dos valores
         return {"status_id": status_id, "substatus_code": substatus_code}
     else:
         print(f"Error en la solicitud PUT: {response.status_code}")
         print(response.text)
 
-##### PARIS 
+##### PARIS
 
 
 def construct_body_from_actualizacion_guia(actualizacion_guia :ActualizacionGuia, itemNumber : int):
@@ -328,9 +325,9 @@ def construct_body_from_actualizacion_guia(actualizacion_guia :ActualizacionGuia
         "contact_identifier": actualizacion_guia.contact_identifier,
         "contact_email": actualizacion_guia.contact_email,
         "contact_address": actualizacion_guia.contact_address,
-        
+
         # Asegúrate de que los tags sean manejados apropiadamente, si tienes múltiples tags
-        
+
         "tag_asn_id": [tag.value for tag in actualizacion_guia.tags if tag.name == 'ASN_ID'][0]  if actualizacion_guia.tags else None,
         "tag_desc_comuna": [tag.value for tag in actualizacion_guia.tags if tag.name == 'Desc_Comuna'][0]  if actualizacion_guia.tags else None,
         "tag_desc_emp": [tag.value for tag in actualizacion_guia.tags if tag.name == 'DESC_EMP'][0]  if actualizacion_guia.tags else None,
@@ -342,7 +339,7 @@ def construct_body_from_actualizacion_guia(actualizacion_guia :ActualizacionGuia
         "numsolgui": [tag.value for tag in actualizacion_guia.tags if tag.name == 'NUMSOLGUI'][0]  if actualizacion_guia.tags else None,
         "urlcarga": [tag.value for tag in actualizacion_guia.tags if tag.name == 'URLCARGA'][0]  if actualizacion_guia.tags else None,
         "urlguia": [tag.value for tag in actualizacion_guia.tags if tag.name == 'URLGUIA'][0]  if actualizacion_guia.tags else None,
-        
+
 
         # Los valores de los items (por ejemplo, insertarlos como el primer item)
         "item_id": actualizacion_guia.items[itemNumber].id if actualizacion_guia.items else None,
@@ -356,14 +353,14 @@ def construct_body_from_actualizacion_guia(actualizacion_guia :ActualizacionGuia
         "item_carton": [extra.value for extra in actualizacion_guia.items[itemNumber].extras if extra.name == 'CARTONID'][0]  if actualizacion_guia.items[itemNumber].extras else None,
         "item_sku": [extra.value for extra in actualizacion_guia.items[itemNumber].extras if extra.name == 'SKU'][0]  if actualizacion_guia.items[itemNumber].extras else None
     }
-    
+
     return body
 
 
 
 @app.post("/api/v2/dispatch")
 async def webhook_dispatch_paris(request : Request , headers: tuple = Depends(validar_encabezados)):
-    
+
     body = await request.json()  # Obtener el cuerpo como JSON
 
     try:
@@ -371,7 +368,7 @@ async def webhook_dispatch_paris(request : Request , headers: tuple = Depends(va
         if body["resource"] == "dispatch_guide":
             mensaje = "Recibido Modelo Creación Guia"
             data = CreacionGuia(**body)
-            
+
 
 
         if body["resource"] == "dispatch":
@@ -386,7 +383,7 @@ async def webhook_dispatch_paris(request : Request , headers: tuple = Depends(va
                 carton = [extra.value for extra in data.items[n].extras if extra.name == 'CARTONID'][0]
                 print(carton)
                 if carton not in lista_cartones :
-                    
+
                     ingreso = construct_body_from_actualizacion_guia(data,n)
                     conn.insert_dispatch_paris(ingreso)
                     lista_cartones.append(carton)
@@ -404,9 +401,13 @@ async def webhook_dispatch_paris(request : Request , headers: tuple = Depends(va
 
                     # conn.update_estado_dispatch_paris(data.dispatch_id, data.status,data.substatus_code)
 
-                    body = conn.read_estados_paris(data.status,data.substatus_code)
+                    body_estados = get_update_estados_paris_yanez(data.guide) ## esto es beetrack paris Yanez
+
+                    body = conn.read_estados_paris(body_estados['status_id'],body_estados['substatus_code'])
 
                     send_put_request(body, data.guide)
+
+
 
                     send_put_request_paris_yanez(body, data.guide)
 
@@ -423,7 +424,7 @@ async def webhook_dispatch_paris(request : Request , headers: tuple = Depends(va
             # Generar nombre de archivo único usando timestamp
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         filename = f"datos_{timestamp}.txt"
-        
+
         # Guardar el contenido del JSON en un archivo de texto
         with open(filename, "w") as f:
             json.dump(body, f, indent=4)
@@ -437,28 +438,73 @@ async def webhook_dispatch_paris(request : Request , headers: tuple = Depends(va
 
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         filename = f"datos_por_error_400_{timestamp}.txt"
-        
+
         # Guardar el contenido del JSON en un archivo de texto
         with open(filename, "w") as f:
             json.dump(body, f, indent=4)
 
         print('Error al recibir el cuerpo del mensaje de dispatch paris',error)
         raise HTTPException(status_code=400, detail="Error al recibir el cuerpo del mensaje")
-    
 
-    
-@app.post("/api/v2/beetrack/dispatch_guide")
-async def post_dispatch_guide(body: DistpatchGuide, headers: tuple = Depends(validar_encabezados)):
-    content_type, x_auth_token = headers
 
-    return {
-            "body" : body
-            }
+
+@app.post("/api/v2/dispatch/yanez")
+async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(validar_encabezados)):
+
+    body = await request.json()  # Obtener el cuerpo como JSON
+
+    try:
+
+        if body["resource"] == "dispatch_guide":
+            mensaje = "Recibido Modelo Creación Guia"
+            data = CreacionGuia(**body)
+
+
+
+        if body["resource"] == "dispatch":
+            mensaje = "Recibido Modelo Actualización Guia"
+            data = ActualizacionGuia(**body)
+
+                    # conn.update_estado_dispatch_paris(data.dispatch_id, data.status,data.substatus_code)
+
+            body_estados = get_update_estados_paris_yanez(data.guide) ## esto es beetrack paris Yanez
+
+            body = conn.read_estados_paris(body_estados['status_id'],body_estados['substatus_code'])
+
+            # send_put_request(body, data.guide)
+
+            # send_put_request_paris_yanez(body, data.guide)
+
+
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        filename = f"datos_{timestamp}.txt"
+
+        # Guardar el contenido del JSON en un archivo de texto
+        with open(filename, "w") as f:
+            json.dump(body, f, indent=4)
+
+        return {
+                "message": mensaje
+                # "datos": data
+                }
+    except Exception as error:
+
+
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        filename = f"datos_por_error_400_{timestamp}.txt"
+
+        # Guardar el contenido del JSON en un archivo de texto
+        with open(filename, "w") as f:
+            json.dump(body, f, indent=4)
+
+        print('Error al recibir el cuerpo del mensaje de dispatch paris',error)
+        raise HTTPException(status_code=400, detail="Error al recibir el cuerpo del mensaje")
+
 
 
 @app.get("/api/v2/dispatch/test")
 async def post_dispatch_guide(dispatch_id :int):
-    
+
     lista_cartones = conn.get_cartones_despacho_paris(dispatch_id)
 
     return {
@@ -489,13 +535,13 @@ def login_user(user_data:loginSchema):
         server = "portal"
         if user_db is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="El usuario no existe")
-    
+
     if not verify_password(data["password"],user_db[3]):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="la contraseña no es correcto")
-    
+
     if not user_db[4]:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="El usuario esta inactivo")
-    
+
     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
 
     access_token = {"sub": user_db[1],
@@ -523,7 +569,7 @@ def auth_user(token:str = Depends(oauth2)):
     try:
         username = jwt.decode(token, key=config("SECRET_KEY"), algorithms=[ALGORITHM])
         if username is None:
-            raise exception  
+            raise exception
     except JWTError:
         raise exception
 
@@ -545,7 +591,7 @@ def me (user:TokenPayload = Depends(current_user)):
 
 
 
-#### API para los registros de externos 
+#### API para los registros de externos
 
 
 @app.post("/api/v2/externo/registar/candidato")
