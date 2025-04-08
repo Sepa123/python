@@ -381,7 +381,7 @@ async def webhook_dispatch_paris(request : Request , headers: tuple = Depends(va
 
             for n in range(len(data.items)):
                 carton = [extra.value for extra in data.items[n].extras if extra.name == 'CARTONID'][0]
-                print(carton)
+                # print(carton)
                 if carton not in lista_cartones :
 
                     ingreso = construct_body_from_actualizacion_guia(data,n)
@@ -491,7 +491,7 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
 
 
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        filename = f"datos_por_error_400_{timestamp}.txt"
+        filename = f"datos_wh_bt_yanez__error_400_{timestamp}.txt"
 
         # Guardar el contenido del JSON en un archivo de texto
         with open(filename, "w") as f:
