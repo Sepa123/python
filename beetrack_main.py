@@ -199,7 +199,7 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
                 if data["substatus_code"] is None:
                     data["substatus_code"] = 0
 
-                body = conn.read_estados_paris(data["status"],data["substatus_code"])
+                # body = conn.read_estados_paris(data["status"],data["substatus_code"])
 
                 # body = {
                 #     "status": data["status"],
