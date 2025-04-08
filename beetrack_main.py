@@ -468,17 +468,27 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
             if data.is_trunk is None:
                 data.is_trunk = False
 
+            if data.status is None:
+                data.status = 0
+
+            if data.substatus_code is None:
+                data.substatus_code = "null"
+
+            if data.substatus_code is None and data.status == 1:
+                body = conn.read_estados_paris(1,21, data.is_trunk)
+
+            else:
+                body = conn.read_estados_paris(data.status,data.substatus_code, data.is_trunk)
+            
                     # conn.update_estado_dispatch_paris(data.dispatch_id, data.status,data.substatus_code)
 
             # body_estados = get_update_estados_paris_yanez(data.guide) ## esto es beetrack paris Yanez
 
             print(data.status, data.substatus_code, data.is_trunk)
 
-            body = conn.read_estados_paris(data.status,data.substatus_code, data.is_trunk)
-
-
+            
             print(body)
-            # send_put_request(body, data.guide)
+            send_put_request(body, data.guide)
 
             # send_put_request_paris_yanez(body, data.guide)
 

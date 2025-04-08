@@ -12502,16 +12502,25 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
 
     def read_estados_paris(self, id_status, id_substatus, is_trunk):
             with self.conn.cursor() as cur:
-                cur.execute(f"""  
-                    with estados_paris as(
+                if is_trunk == 'true':
 
-                    select id_estado_destino as "status_id" , glosa_destino as "substatus", 'CT Transyañez' as "place", {is_trunk} as "is_trunk"
-    from paris.conversion_estados_beetrack ceb 
-                    where id_estado = {id_status} and id_subestado = {id_substatus}
-                    )
-
-                    select json_agg(estados_paris) from estados_paris
-                    """)
+                    cur.execute(f"""  
+                        with estados_paris as(
+                            select id_estado_destino as "status_id" , glosa_destino as "substatus", 'CT Transyañez' as "place", {is_trunk} as "is_trunk"
+                            from paris.conversion_estados_beetrack ceb 
+                            where id_estado = {id_status} and id_subestado = {id_substatus}
+                            )
+                        select json_agg(estados_paris) from estados_paris
+                        """)
+                else:
+                    cur.execute(f"""  
+                        with estados_paris as(
+                            select id_estado_destino as "status_id" , glosa_destino as "substatus",  {is_trunk} as "is_trunk"
+                            from paris.conversion_estados_beetrack ceb 
+                            where id_estado = {id_status} and id_subestado = {id_substatus}
+                            )
+                        select json_agg(estados_paris) from estados_paris
+                        """)
                 return cur.fetchone()
 
 
