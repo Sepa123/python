@@ -193,6 +193,12 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
 
                 print('data, YO PASE')
 
+                if data["status"] is None:
+                    data["status"] = 0
+
+                if data["substatus_code"] is None:
+                    data["substatus_code"] = 0
+
                 body = conn.read_estados_paris(data["status"],data["substatus_code"])
 
                 # body = {
