@@ -207,7 +207,7 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
                 #     "substatus_code": data["substatus_code"]
                 # }
 
-                send_put_request(body, data["guide"])
+                # send_put_request(body, data["guide"])
 
                 # cliente_paris = conn.read_clientes_de_paris(dato_ruta_ty)[0]
 
@@ -251,6 +251,63 @@ def send_put_request(payload, codigo_guia):
     # Verificamos la respuesta
     if response.status_code == 200:
         print("Solicitud PUT exitosa:", response.json())
+    else:
+        print(f"Error en la solicitud PUT: {response.status_code}")
+        print(response.text)
+
+
+def send_put_request_paris_yanez(payload, codigo_guia):
+    # URL del endpoint
+    url = f'https://cluster-staging.dispatchtrack.com/api/external/v1/dispatches/{codigo_guia}'
+
+    # Encabezados
+    headers = {
+        'Accept': '*/*',
+        'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
+        'X-AUTH-TOKEN': config("SECRET_KEY_PARIS_YANEZ"),
+    }
+
+    # Cuerpo de la solicitud (puedes modificar esto según lo que necesites enviar)
+    payload = payload
+
+    # Realizamos la solicitud PUT
+    with httpx.Client() as client:
+        response = client.put(url, headers=headers, json=payload)
+
+    # Verificamos la respuesta
+    if response.status_code == 200:
+        print("Solicitud PUT exitosa:", response.json())
+    else:
+        print(f"Error en la solicitud PUT: {response.status_code}")
+        print(response.text)
+
+
+def get_update_estados_paris_yanez(payload, codigo_guia):
+    # URL del endpoint
+    url = f'https://cluster-staging.dispatchtrack.com/api/external/v1/dispatches/{codigo_guia}'
+
+    # Encabezados
+    headers = {
+        'Accept': '*/*',
+        'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
+        'X-AUTH-TOKEN': config("SECRET_KEY_PARIS_YANEZ"),
+    }
+
+    # Cuerpo de la solicitud (puedes modificar esto según lo que necesites enviar)
+    payload = payload
+
+    # Realizamos la solicitud PUT
+    with httpx.Client() as client:
+        response = client.get(url, headers=headers, json=payload)
+
+    # Verificamos la respuesta
+    if response.status_code == 200:
+        datos = response.json()
+        status_id = datos.get("response", {}).get("status_id", None)
+        substatus_code = datos.get("response", {}).get("substatus_code", None)
+        
+        # Devolvemos solo estos dos valores
+        return {"status_id": status_id, "substatus_code": substatus_code}
     else:
         print(f"Error en la solicitud PUT: {response.status_code}")
         print(response.text)
@@ -345,11 +402,13 @@ async def webhook_dispatch_paris(request : Request , headers: tuple = Depends(va
                         data.substatus_code = 0
 
 
-                    conn.update_estado_dispatch_paris(data.dispatch_id, data.status,data.substatus_code)
+                    # conn.update_estado_dispatch_paris(data.dispatch_id, data.status,data.substatus_code)
 
                     body = conn.read_estados_paris(data.status,data.substatus_code)
 
                     send_put_request(body, data.guide)
+
+                    send_put_request_paris_yanez(body, data.guide)
 
 
 
