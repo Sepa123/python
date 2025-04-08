@@ -39,7 +39,6 @@ def obtener_datos_tags(tags):
 def obtener_datos_groups(groups):
     nombres_a_buscar = [276, 8404, 8405, 462658]
 
-    print(groups)
 
     data = {
         "Cliente" : "",
@@ -49,8 +48,6 @@ def obtener_datos_groups(groups):
     # Buscar los objetos JSON con los nombres especificados
     objetos_json = [item for item in groups if item["group_category_id"] in nombres_a_buscar]
 
-    print( 'obj',objetos_json)
-
     # Obtener los valores asociados con los nombres especificados
     valores = {item["group_category"]: item["name"] for item in objetos_json}
 
@@ -59,8 +56,6 @@ def obtener_datos_groups(groups):
         data[nombre.strip()] = valor
         
         # print(f"El valor asociado con '{nombre}' es: {valor}")
-
-    print(data)
 
     return data
 
