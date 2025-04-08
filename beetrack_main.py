@@ -264,7 +264,29 @@ def send_put_request(payload, codigo_guia):
     # Verificamos la respuesta
     if response.status_code == 200:
         print("Solicitud PUT exitosa:", response.json())
+        body = response.json()
+
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        filename = f"r_update_dispatch_Paris_{timestamp}.txt"
+
+
+            # body = await request.json()  # Obtener el cuerpo como JSON
+            # Guardar el contenido del JSON en un archivo de texto
+        with open(filename, "w") as f:
+            json.dump(body, f, indent=4)
     else:
+
+
+
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        filename = f"r_update_dispatch_Paris_error_{timestamp}.txt"
+
+
+            # body = await request.json()  # Obtener el cuerpo como JSON
+            # Guardar el contenido del JSON en un archivo de texto
+        with open(filename, "w") as f:
+            f.write(response.text)
+
         print(f"Error en la solicitud PUT: {response.status_code}")
         print(response.text)
 
