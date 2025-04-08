@@ -1,0 +1,141 @@
+{
+    "resource": "dispatch",
+    "event": "update",
+    "account_name": "paris",
+    "account_id": 17,
+    "guide": "397674",
+    "identifier": "397674",
+    "beecode": "65fa0b456acd381c6e14c912",
+    "mode": 0,
+    "position": 1,
+    "route_id": null,
+    "dispatch_id": 88635938,
+    "truck_identifier": null,
+    "truck_type": null,
+    "status": 1,
+    "estimated_at": null,
+    "max_delivery_time": "2025-04-08T21:00:00.000-04:00",
+    "min_delivery_time": "2025-04-08T09:00:00.000-04:00",
+    "is_pickup": false,
+    "is_trunk": false,
+    "locked": false,
+    "trigger": "Association",
+    "substatus": null,
+    "substatus_code": null,
+    "contact_name": "Enzo Parra Ibarra",
+    "contact_phone": "+56994255964",
+    "contact_identifier": "17.429.539-5",
+    "contact_email": "enzo.parraibarra@paris.cl",
+    "contact_address": "Av.El Golf  203, LAS CONDES, SANTIAGO",
+    "tags": [
+        {
+            "name": "ASN_ID",
+            "value": "1003626110182959"
+        },
+        {
+            "name": "CODCIUD",
+            "value": "01"
+        },
+        {
+            "name": "CODCOMU",
+            "value": "130106"
+        },
+        {
+            "name": "CODREGI",
+            "value": "13"
+        },
+        {
+            "name": "Desc_Comuna",
+            "value": "LAS CONDES"
+        },
+        {
+            "name": "DESC_EMP",
+            "value": "Transporte Yanez Ltda"
+        },
+        {
+            "name": "DO_ID",
+            "value": "110182959"
+        },
+        {
+            "name": "FECDESFIS",
+            "value": "20250408"
+        },
+        {
+            "name": "FECHAEMI",
+            "value": "20250408"
+        },
+        {
+            "name": "FECSOLDES",
+            "value": "20250408"
+        },
+        {
+            "name": "JORNADA",
+            "value": "TH"
+        },
+        {
+            "name": "LOCALDESPA",
+            "value": "12"
+        },
+        {
+            "name": "NUMCORHR",
+            "value": "4000901"
+        },
+        {
+            "name": "NUMSOLGUI",
+            "value": "110621307"
+        },
+        {
+            "name": "RUT_EMP",
+            "value": "77613240-3"
+        },
+        {
+            "name": "TIPO_ORDEN",
+            "value": "1"
+        },
+        {
+            "name": "TIPOGUI",
+            "value": "0"
+        },
+        {
+            "name": "URLCARGA",
+            "value": "https://dispatcher-guides.aws-test.paris.cl/MergedPdfs/4000901.pdf"
+        },
+        {
+            "name": "URLGUIA",
+            "value": "https://dispatcher-guides.aws-test.paris.cl/Pdfs/4000901/397674.pdf"
+        }
+    ],
+    "items": [
+        {
+            "id": 114396511,
+            "name": "BOX SPRING W 16006130",
+            "description": "BOX SPRING W 16006130",
+            "quantity": 1,
+            "original_quantity": 1,
+            "delivered_quantity": 0,
+            "code": "318474999",
+            "extras": [
+                {
+                    "name": "CARTONID",
+                    "value": "DD000067588"
+                },
+                {
+                    "name": "LINE_ID",
+                    "value": "1"
+                },
+                {
+                    "name": "SKU",
+                    "value": "318474999"
+                }
+            ]
+        }
+    ],
+    "groups": [],
+    "evaluation_answers": [],
+    "truck_groups": [],
+    "kpi_distance": null,
+    "real_distance": null,
+    "time_of_management": null,
+    "management_latitude": null,
+    "management_longitude": null
+}

@@ -12530,7 +12530,7 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
                      with cartones_id as (
 
                     select item_carton from paris.dispatch_paris
-                    where dispatch_id = {id_dispatch}
+                    where guide = '{id_dispatch}'
                     )
                     select array_agg(item_carton) from cartones_id
                     """)

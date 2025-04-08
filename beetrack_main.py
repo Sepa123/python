@@ -388,7 +388,9 @@ async def webhook_dispatch_paris(request : Request , headers: tuple = Depends(va
             mensaje = "Recibido Modelo Actualización Guia"
             data = ActualizacionGuia(**body)
 
-            lista_cartones = conn.get_cartones_despacho_paris(data.dispatch_id)[0]
+            lista_cartones = conn.get_cartones_despacho_paris(data.guide)[0]
+
+            # print (data.route_id)
             if lista_cartones is None:
                 lista_cartones = []
 
@@ -418,11 +420,11 @@ async def webhook_dispatch_paris(request : Request , headers: tuple = Depends(va
 
                     body = conn.read_estados_paris(body_estados['status_id'],body_estados['substatus_code'],data.is_trunk)
 
-                    send_put_request(body, data.guide)
+                    # send_put_request(body, data.guide)
 
 
 
-                    send_put_request_paris_yanez(body, data.guide)
+                    # send_put_request_paris_yanez(body, data.guide)
 
 
 

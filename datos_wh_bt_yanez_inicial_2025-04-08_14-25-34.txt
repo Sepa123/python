@@ -1,0 +1,66 @@
+{
+    "resource": "dispatch",
+    "event": "update",
+    "account_name": "Transya\u00f1ez",
+    "account_id": 2097,
+    "guide": "397674",
+    "identifier": "397674",
+    "beecode": "f10dce3900b9f5510a7b9df9",
+    "mode": 0,
+    "position": 1,
+    "route_id": 5145441,
+    "dispatch_id": 88635921,
+    "truck_identifier": "JWFK91",
+    "truck_type": "Cami\u00f3n",
+    "status": 2,
+    "estimated_at": "2025-04-08T12:31:32.000-04:00",
+    "max_delivery_time": null,
+    "min_delivery_time": null,
+    "is_pickup": false,
+    "is_trunk": true,
+    "locked": false,
+    "substatus": "CT entregado YA\u00d1EZ",
+    "substatus_code": "21",
+    "contact_name": "Enzo Parra Ibarrabace",
+    "contact_phone": "+56994255964",
+    "contact_identifier": "17.429.539-5",
+    "contact_email": "enzo.parraibarra@paris.cl",
+    "contact_address": null,
+    "tags": [],
+    "items": [
+        {
+            "id": 114396512,
+            "name": "BOX SPRING W 16006130",
+            "description": "BOX SPRING W 16006130",
+            "quantity": 1,
+            "original_quantity": 1,
+            "delivered_quantity": 1,
+            "code": "318474999",
+            "extras": []
+        }
+    ],
+    "groups": [
+        {
+            "name": "PARIS",
+            "group_category": "Cliente",
+            "group_category_id": 462658,
+            "associated_at": "2025-04-08T12:11:32-04:00"
+        }
+    ],
+    "place": {
+        "id": 2751,
+        "name": "CT Ya\u00f1ez"
+    },
+    "arrived_at": "2025-04-08 12:31:47-0400",
+    "waypoint": {
+        "latitude": "-33.424407",
+        "longitude": "-70.615392"
+    },
+    "evaluation_answers": [],
+    "truck_groups": [],
+    "kpi_distance": 0,
+    "real_distance": 0,
+    "time_of_management": "2025-04-08T12:31:47-04:00",
+    "management_latitude": "-33.424407",
+    "management_longitude": "-70.615392"
+}
