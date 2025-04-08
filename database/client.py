@@ -12484,7 +12484,7 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
 
         with self.conn.cursor() as cur:
             cur.execute("""
-            INSERT INTO paris.dispatch_paris
+            INSERT INTO paris.route
             (resource, evento, account_name, route, account_id, fecha, truck, 
             truck_driver, started, started_at, ended, ended_at)
             VALUES(
@@ -12512,6 +12512,33 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
                     select json_agg(estados_paris) from estados_paris
                     """)
                 return cur.fetchone()
+
+
+    def get_cartones_despacho_paris(self, id_dispatch):
+            with self.conn.cursor() as cur:
+                cur.execute(f"""  
+                     with cartones_id as (
+
+                    select item_carton from paris.dispatch_paris
+                    where dispatch_id = {id_dispatch}
+                    )
+                    select array_agg(item_carton) from cartones_id
+                    """)
+                return cur.fetchone()
+
+    
+    def update_estado_dispatch_paris(self, id_dispatch,estado,subestado):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            UPDATE paris.dispatch_paris AS tgt
+            SET estado = {estado}, subestado = {subestado}
+            WHERE dispatch_id = {id_dispatch}
+            """)
+            row = cur.rowcount
+        self.conn.commit()
+
+
+   
 
 
 

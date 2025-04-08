@@ -315,16 +315,22 @@ async def webhook_dispatch_paris(request : Request , headers: tuple = Depends(va
             mensaje = "Recibido Modelo Actualización Guia"
             data = ActualizacionGuia(**body)
 
-            lista_cartones = []
+            lista_cartones = conn.get_cartones_despacho_paris(data.dispatch_id)[0]
 
             for n in range(len(data.items)):
                 carton = [extra.value for extra in data.items[n].extras if extra.name == 'CARTONID'][0]
                 print(carton)
-                if carton not in lista_cartones:
+                if carton not in lista_cartones or lista_cartones:
                     
                     ingreso = construct_body_from_actualizacion_guia(data,n)
                     conn.insert_dispatch_paris(ingreso)
                     lista_cartones.append(carton)
+
+                else:
+                    print('carton ya existe', carton)
+
+                    conn.update_estado_dispatch_paris(data.dispatch_id, data.status, data.substatus_code)
+
 
 
         if body["resource"] == "route":
@@ -368,6 +374,16 @@ async def post_dispatch_guide(body: DistpatchGuide, headers: tuple = Depends(val
 
     return {
             "body" : body
+            }
+
+
+@app.get("/api/v2/dispatch/test")
+async def post_dispatch_guide(dispatch_id :int):
+    
+    lista_cartones = conn.get_cartones_despacho_paris(dispatch_id)
+
+    return {
+            "body" : lista_cartones[0]
             }
 
 ########### esto es el login migrado para no sufra por las c aidas
