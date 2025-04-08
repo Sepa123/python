@@ -477,6 +477,9 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
             if data.substatus_code is None and data.status == 1:
                 body = conn.read_estados_paris(1,21, data.is_trunk)
 
+            elif data.substatus_code == "21" and data.status == 2:
+                body = conn.read_estados_paris(1,21, data.is_trunk)
+                
             else:
                 body = conn.read_estados_paris(data.status,data.substatus_code, data.is_trunk)
             
