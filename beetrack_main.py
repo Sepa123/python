@@ -122,6 +122,19 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
                         "ruta_id" : data["route_id"],
                         "guia" : data["guide"]
                         }
+        
+
+        if body.guide == "397674":
+            timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+            filename = f"datos_wh_bt_yanez_inicial_MD{timestamp}.txt"
+
+
+            # body = await request.json()  # Obtener el cuerpo como JSON
+            # Guardar el contenido del JSON en un archivo de texto
+            with open(filename, "w") as f:
+                json.dump(body, f, indent=4)
+
+            return None
 
         resultado = conn.verificar_si_ruta_existe(datos_create)
 
