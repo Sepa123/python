@@ -331,9 +331,15 @@ async def webhook_dispatch_paris(request : Request , headers: tuple = Depends(va
                 else:
                     print('carton ya existe', carton)
 
-                    
 
-                    conn.update_estado_dispatch_paris(data.dispatch_id, data.status)
+                    if data.status is None:
+                        data.status = 0
+
+                    if data.substatus_code is None:
+                        data.substatus_code = 0
+
+
+                    conn.update_estado_dispatch_paris(data.dispatch_id, data.status,data.substatus_code)
 
 
 
