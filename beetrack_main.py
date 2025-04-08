@@ -536,6 +536,8 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
     except Exception as error:
 
 
+        body = await request.json()  # Obtener el cuerpo como JSON
+
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         filename = f"datos_wh_bt_yanez__error_400_{timestamp}.txt"
 
