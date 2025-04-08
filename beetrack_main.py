@@ -462,74 +462,74 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
     with open(filename, "w") as f:
         json.dump(body, f, indent=4)
 
-    try:
+    # try:
 
-        if body["resource"] == "dispatch_guide":
-            mensaje = "Recibido Modelo Creación Guia"
-            data = CreacionGuia(**body)
+    #     if body["resource"] == "dispatch_guide":
+    #         mensaje = "Recibido Modelo Creación Guia"
+    #         data = CreacionGuia(**body)
 
 
 
-        if body["resource"] == "dispatch":
-            mensaje = "Recibido Modelo Actualización Guia"
-            data = ActualizacionGuia(**body)
+    #     if body["resource"] == "dispatch":
+    #         mensaje = "Recibido Modelo Actualización Guia"
+    #         data = ActualizacionGuia(**body)
 
-            if data.is_trunk is None:
-                data.is_trunk = False
+    #         if data.is_trunk is None:
+    #             data.is_trunk = False
 
-            if data.status is None:
-                data.status = 0
+    #         if data.status is None:
+    #             data.status = 0
 
-            if data.substatus_code is None:
-                data.substatus_code = "null"
+    #         if data.substatus_code is None:
+    #             data.substatus_code = "null"
 
-            if data.substatus_code is None and data.status == 1:
-                body = conn.read_estados_paris(1,21, data.is_trunk)
+    #         if data.substatus_code is None and data.status == 1:
+    #             body = conn.read_estados_paris(1,21, data.is_trunk)
 
-            elif data.substatus_code == "21" and data.status == 2:
-                body = conn.read_estados_paris(1,21, data.is_trunk)
+    #         elif data.substatus_code == "21" and data.status == 2:
+    #             body = conn.read_estados_paris(1,21, data.is_trunk)
                 
-            else:
-                body = conn.read_estados_paris(data.status,data.substatus_code, data.is_trunk)
+    #         else:
+    #             body = conn.read_estados_paris(data.status,data.substatus_code, data.is_trunk)
             
-                    # conn.update_estado_dispatch_paris(data.dispatch_id, data.status,data.substatus_code)
+    #                 # conn.update_estado_dispatch_paris(data.dispatch_id, data.status,data.substatus_code)
 
-            # body_estados = get_update_estados_paris_yanez(data.guide) ## esto es beetrack paris Yanez
+    #         # body_estados = get_update_estados_paris_yanez(data.guide) ## esto es beetrack paris Yanez
 
-            print(data.status, data.substatus_code, data.is_trunk)
+    #         print(data.status, data.substatus_code, data.is_trunk)
 
             
-            print(body[0][0])
-            send_put_request(body[0][0], data.guide)
+    #         print(body[0][0])
+    #         send_put_request(body[0][0], data.guide)
 
-            # send_put_request_paris_yanez(body, data.guide)
-
-
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        filename = f"datos_wh_bt_yanez_final{timestamp}.txt"
+    #         # send_put_request_paris_yanez(body, data.guide)
 
 
-        body = await request.json()  # Obtener el cuerpo como JSON
-        # Guardar el contenido del JSON en un archivo de texto
-        with open(filename, "w") as f:
-            json.dump(body, f, indent=4)
-
-        return {
-                "message": mensaje
-                # "datos": data
-                }
-    except Exception as error:
+    #     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    #     filename = f"datos_wh_bt_yanez_final{timestamp}.txt"
 
 
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        filename = f"datos_wh_bt_yanez__error_400_{timestamp}.txt"
+    #     body = await request.json()  # Obtener el cuerpo como JSON
+    #     # Guardar el contenido del JSON en un archivo de texto
+    #     with open(filename, "w") as f:
+    #         json.dump(body, f, indent=4)
 
-        # Guardar el contenido del JSON en un archivo de texto
-        with open(filename, "w") as f:
-            json.dump(body, f, indent=4)
+    #     return {
+    #             "message": mensaje
+    #             # "datos": data
+    #             }
+    # except Exception as error:
 
-        print('Error al recibir el cuerpo del mensaje de dispatch paris',error)
-        raise HTTPException(status_code=400, detail="Error al recibir el cuerpo del mensaje")
+
+    #     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    #     filename = f"datos_wh_bt_yanez__error_400_{timestamp}.txt"
+
+    #     # Guardar el contenido del JSON en un archivo de texto
+    #     with open(filename, "w") as f:
+    #         json.dump(body, f, indent=4)
+
+    #     print('Error al recibir el cuerpo del mensaje de dispatch paris',error)
+    #     raise HTTPException(status_code=400, detail="Error al recibir el cuerpo del mensaje")
 
 
 
