@@ -147,11 +147,13 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
 
                 print('data, YO PASE')
 
-                body = {
-                    "status": data["status"],
-                    "substatus": data["substatus"],
-                    "substatus_code": data["substatus_code"]
-                }
+                # body = {
+                #     "status": data["status"],
+                #     "substatus": data["substatus"],
+                #     "substatus_code": data["substatus_code"]
+                # }
+
+                body = conn.read_estados_paris(data["status"],data["substatus_code"])
 
                 send_put_request(body, data["guide"])
 
@@ -191,11 +193,13 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
 
                 print('data, YO PASE')
 
-                body = {
-                    "status": data["status"],
-                    "substatus": data["substatus"],
-                    "substatus_code": data["substatus_code"]
-                }
+                body = conn.read_estados_paris(data["status"],data["substatus_code"])
+
+                # body = {
+                #     "status": data["status"],
+                #     "substatus": data["substatus"],
+                #     "substatus_code": data["substatus_code"]
+                # }
 
                 send_put_request(body, data["guide"])
 

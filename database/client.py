@@ -12497,6 +12497,24 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
         self.conn.commit()
 
 
+
+    ### Estado Paris
+
+    def read_estados_paris(self, id_status, id_substatus):
+            with self.conn.cursor() as cur:
+                cur.execute(f"""  
+                    with estados_paris as(
+
+                    select id_estado_destino as "status" , id_subestado_destino as "substatus_code" , glosa_destino as "substatus"  from paris.conversion_estados_beetrack ceb 
+                    where id_estado = {id_status} and id_subestado = {id_substatus}
+                    )
+
+                    select json_agg(estados_paris) from estados_paris
+                    """)
+                return cur.fetchone()
+
+
+
     ### Dashboard pendientes
     def read_clientes_de_paris(self, body):
             with self.conn.cursor() as cur:
