@@ -499,6 +499,8 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         filename = f"datos_wh_bt_yanez_{timestamp}.txt"
 
+
+        body = await request.json()  # Obtener el cuerpo como JSON
         # Guardar el contenido del JSON en un archivo de texto
         with open(filename, "w") as f:
             json.dump(body, f, indent=4)
