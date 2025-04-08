@@ -437,7 +437,7 @@ async def webhook_dispatch_paris(request : Request , headers: tuple = Depends(va
 
                     body_estados = get_update_estados_paris_yanez(data.guide) ## esto es beetrack paris Yanez
 
-                    body = conn.read_estados_paris(body_estados['status_id'],body_estados['substatus_code'],data.is_trunk)
+                    # body = conn.read_estados_paris(body_estados['status_id'],body_estados['substatus_code'],data.is_trunk)
 
                     # send_put_request(body, data.guide)
 
@@ -508,6 +508,15 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
             mensaje = "Recibido Modelo Actualización Guia"
             data = ActualizacionGuia(**body)
 
+            print(data.waypoint)
+
+            if data.waypoint is not None:
+                latitude = data.waypoint.latitude
+                longitude = data.waypoint.longitude
+            else:
+                latitude = ""
+                longitude = ""
+
             if data.is_trunk is None:
                 data.is_trunk = False
 
@@ -518,19 +527,19 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
                 data.substatus_code = "null"
 
             if data.substatus_code is None and data.status == 1:
-                body = conn.read_estados_paris(1,21, data.is_trunk)
+                body = conn.read_estados_paris(1,21, data.is_trunk,latitude,longitude)
 
             elif data.substatus_code == "21" and data.status == 2:
-                body = conn.read_estados_paris(1,21, data.is_trunk)
+                body = conn.read_estados_paris(1,21, data.is_trunk,latitude,longitude)
                 
             else:
-                body = conn.read_estados_paris(data.status,data.substatus_code, data.is_trunk)
+                body = conn.read_estados_paris(data.status,data.substatus_code, data.is_trunk,latitude,longitude)
             
                     # conn.update_estado_dispatch_paris(data.dispatch_id, data.status,data.substatus_code)
 
             # body_estados = get_update_estados_paris_yanez(data.guide) ## esto es beetrack paris Yanez
 
-            print(data.status, data.substatus_code, data.is_trunk)
+            # print(data.status, data.substatus_code, data.is_trunk, data.waypoint.latitude)
 
             
             print(body[0][0])
@@ -554,6 +563,8 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
                 }
     except Exception as error:
 
+
+        print(error)
 
         body = await request.json()  # Obtener el cuerpo como JSON
 

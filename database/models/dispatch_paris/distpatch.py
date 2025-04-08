@@ -23,6 +23,11 @@ class Item(BaseModel):
     extras: Optional[List[Tag]]
 
 
+class Waypoint(BaseModel):
+    latitude : Optional[str]
+    longitude : Optional[str]
+
+
 ## Actualización de Guia
 
 
@@ -64,6 +69,7 @@ class ActualizacionGuia(BaseModel):
     time_of_management: Optional[str]
     management_latitude: Optional[str]
     management_longitude: Optional[str]
+    waypoint: Optional[Waypoint]
 
 
 
