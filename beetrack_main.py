@@ -153,9 +153,9 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
                 #     "substatus_code": data["substatus_code"]
                 # }
 
-                body = conn.read_estados_paris(data["status"],data["substatus_code"])
+                # body = conn.read_estados_paris(data["status"],data["substatus_code"])
 
-                send_put_request(body, data["guide"])
+                # send_put_request(body, data["guide"])
 
 
                 return {
@@ -403,7 +403,7 @@ async def webhook_dispatch_paris(request : Request , headers: tuple = Depends(va
 
                     body_estados = get_update_estados_paris_yanez(data.guide) ## esto es beetrack paris Yanez
 
-                    body = conn.read_estados_paris(body_estados['status_id'],body_estados['substatus_code'])
+                    body = conn.read_estados_paris(body_estados['status_id'],body_estados['substatus_code'],data.is_trunk)
 
                     send_put_request(body, data.guide)
 
@@ -465,11 +465,14 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
             mensaje = "Recibido Modelo Actualización Guia"
             data = ActualizacionGuia(**body)
 
+            if data.is_trunk is None:
+                data.is_trunk = False
+
                     # conn.update_estado_dispatch_paris(data.dispatch_id, data.status,data.substatus_code)
 
             body_estados = get_update_estados_paris_yanez(data.guide) ## esto es beetrack paris Yanez
 
-            body = conn.read_estados_paris(body_estados['status_id'],body_estados['substatus_code'])
+            body = conn.read_estados_paris(body_estados['status_id'],body_estados['substatus_code'], data.is_trunk)
 
             # send_put_request(body, data.guide)
 
