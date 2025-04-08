@@ -453,6 +453,15 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
 
     body = await request.json()  # Obtener el cuerpo como JSON
 
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    filename = f"datos_wh_bt_yanez_inicial_{timestamp}.txt"
+
+
+    # body = await request.json()  # Obtener el cuerpo como JSON
+    # Guardar el contenido del JSON en un archivo de texto
+    with open(filename, "w") as f:
+        json.dump(body, f, indent=4)
+
     try:
 
         if body["resource"] == "dispatch_guide":
@@ -497,7 +506,7 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
 
 
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        filename = f"datos_wh_bt_yanez_{timestamp}.txt"
+        filename = f"datos_wh_bt_yanez_final{timestamp}.txt"
 
 
         body = await request.json()  # Obtener el cuerpo como JSON
