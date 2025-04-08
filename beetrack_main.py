@@ -435,7 +435,7 @@ async def webhook_dispatch_paris(request : Request , headers: tuple = Depends(va
         #     data = data.dict()
 
         #     conn.insert_creacion_ruta_paris(data)
-
+        body = await request.json() 
             # Generar nombre de archivo único usando timestamp
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         filename = f"datos_{timestamp}.txt"
