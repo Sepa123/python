@@ -490,8 +490,8 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
             print(data.status, data.substatus_code, data.is_trunk)
 
             
-            print(body)
-            send_put_request(body, data.guide)
+            print(body[0][0])
+            send_put_request(body[0][0], data.guide)
 
             # send_put_request_paris_yanez(body, data.guide)
 

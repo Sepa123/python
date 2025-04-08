@@ -12502,7 +12502,7 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
 
     def read_estados_paris(self, id_status, id_substatus, is_trunk):
             with self.conn.cursor() as cur:
-                if is_trunk == 'true':
+                if is_trunk == True:
 
                     cur.execute(f"""  
                         with estados_paris as(
