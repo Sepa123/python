@@ -303,68 +303,70 @@ async def webhook_dispatch_paris(request : Request , headers: tuple = Depends(va
     
     body = await request.json()  # Obtener el cuerpo como JSON
 
-    try:
+    # try:
 
-        if body["resource"] == "dispatch_guide":
-            mensaje = "Recibido Modelo Creación Guia"
-            data = CreacionGuia(**body)
-            
-
-
-        if body["resource"] == "dispatch":
-            mensaje = "Recibido Modelo Actualización Guia"
-            data = ActualizacionGuia(**body)
-
-            lista_cartones = conn.get_cartones_despacho_paris(data.dispatch_id)[0]
-
-            for n in range(len(data.items)):
-                carton = [extra.value for extra in data.items[n].extras if extra.name == 'CARTONID'][0]
-                print(carton)
-                if carton not in lista_cartones or lista_cartones:
-                    
-                    ingreso = construct_body_from_actualizacion_guia(data,n)
-                    conn.insert_dispatch_paris(ingreso)
-                    lista_cartones.append(carton)
-
-                else:
-                    print('carton ya existe', carton)
-
-                    conn.update_estado_dispatch_paris(data.dispatch_id, data.status, data.substatus_code)
-
-
-
-        if body["resource"] == "route":
-            mensaje = "Recibido Modelo Creación Ruta"
-            data = CreacionRuta(**body)
-
-            data = data.dict()
-
-            conn.insert_creacion_ruta_paris(data)
-
-            # Generar nombre de archivo único usando timestamp
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        filename = f"datos_{timestamp}.txt"
+    if body["resource"] == "dispatch_guide":
+        mensaje = "Recibido Modelo Creación Guia"
+        data = CreacionGuia(**body)
         
-        # Guardar el contenido del JSON en un archivo de texto
-        with open(filename, "w") as f:
-            json.dump(body, f, indent=4)
-
-        return {
-                "message": mensaje
-                # "datos": data
-                }
-    except Exception as error:
 
 
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        filename = f"datos_por_error_400_{timestamp}.txt"
+    if body["resource"] == "dispatch":
+        mensaje = "Recibido Modelo Actualización Guia"
+        data = ActualizacionGuia(**body)
+
+        lista_cartones = conn.get_cartones_despacho_paris(data.dispatch_id)[0]
+        if lista_cartones is None:
+            lista_cartones = []
+
+        for n in range(len(data.items)):
+            carton = [extra.value for extra in data.items[n].extras if extra.name == 'CARTONID'][0]
+            print(carton)
+            if carton not in lista_cartones :
+                
+                ingreso = construct_body_from_actualizacion_guia(data,n)
+                conn.insert_dispatch_paris(ingreso)
+                lista_cartones.append(carton)
+
+            else:
+                print('carton ya existe', carton)
+
+                conn.update_estado_dispatch_paris(data.dispatch_id, data.status, data.substatus_code)
+
+
+
+    if body["resource"] == "route":
+        mensaje = "Recibido Modelo Creación Ruta"
+        data = CreacionRuta(**body)
+
+        data = data.dict()
+
+        conn.insert_creacion_ruta_paris(data)
+
+        # Generar nombre de archivo único usando timestamp
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    filename = f"datos_{timestamp}.txt"
+    
+    # Guardar el contenido del JSON en un archivo de texto
+    with open(filename, "w") as f:
+        json.dump(body, f, indent=4)
+
+    return {
+            "message": mensaje
+            # "datos": data
+            }
+    # except Exception as error:
+
+
+        # timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        # filename = f"datos_por_error_400_{timestamp}.txt"
         
-        # Guardar el contenido del JSON en un archivo de texto
-        with open(filename, "w") as f:
-            json.dump(body, f, indent=4)
+        # # Guardar el contenido del JSON en un archivo de texto
+        # with open(filename, "w") as f:
+        #     json.dump(body, f, indent=4)
 
-        print('Error al recibir el cuerpo del mensaje de dispatch paris',error)
-        raise HTTPException(status_code=400, detail="Error al recibir el cuerpo del mensaje")
+        # print('Error al recibir el cuerpo del mensaje de dispatch paris',error)
+        # raise HTTPException(status_code=400, detail="Error al recibir el cuerpo del mensaje")
     
 
     
