@@ -341,15 +341,19 @@ async def webhook_dispatch_paris(request : Request , headers: tuple = Depends(va
 
                     conn.update_estado_dispatch_paris(data.dispatch_id, data.status,data.substatus_code)
 
+                    body = conn.read_estados_paris(data.status,data.substatus_code)
+
+                    send_put_request(body, data.guide)
 
 
-        if body["resource"] == "route":
-            mensaje = "Recibido Modelo Creación Ruta"
-            data = CreacionRuta(**body)
 
-            data = data.dict()
+        # if body["resource"] == "route":
+        #     mensaje = "Recibido Modelo Creación Ruta"
+        #     data = CreacionRuta(**body)
 
-            conn.insert_creacion_ruta_paris(data)
+        #     data = data.dict()
+
+        #     conn.insert_creacion_ruta_paris(data)
 
             # Generar nombre de archivo único usando timestamp
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
