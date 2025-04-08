@@ -12531,7 +12531,7 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
         with self.conn.cursor() as cur:
             cur.execute(f"""
             UPDATE paris.dispatch_paris AS tgt
-            SET estado = {estado}, subestado = {subestado}
+            SET estado = {estado}
             WHERE dispatch_id = {id_dispatch}
             """)
             row = cur.rowcount
