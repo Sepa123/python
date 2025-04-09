@@ -14,7 +14,7 @@ import bcrypt  # Importa bcrypt para encriptar contraseñas
 # Cargar las variables de entorno desde el archivo .env
 load_dotenv()
 
-app = FastAPI()
+# app = FastAPI()
 
 router = APIRouter(tags=["Editar_Ruta"], prefix="/api/editar_ruta")
 # Crear los parámetros de conexión usando las variables del .env
@@ -30,13 +30,13 @@ parametros_conexion = {
 origins = ["*"]
 
 # Agregar middleware CORS a la aplicación
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=origins,
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
 
 class Usuario(BaseModel):
     nombre: str
