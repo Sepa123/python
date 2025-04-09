@@ -12520,21 +12520,15 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
         #### UPDATE RUTA PARIS
 
 
-    def read_route_paris(self, id_status, id_substatus, is_trunk,latitude, longitude):
-        with self.conn.cursor() as cur:
-            if is_trunk == True:
 
-                cur.execute(f"""  
-                    select id_estado_destino as "status_id" , glosa_destino as "substatus"
-                    from paris.conversion_estados_beetrack ceb 
-                    where id_estado = {id_status} and id_subestado = {id_substatus}
-                    """)
-            else:
-                cur.execute(f"""  
-                    select id_estado_destino as "status_id" , glosa_destino as "substatus"
-                    from paris.conversion_estados_beetrack ceb 
-                    where id_estado = {id_status} and id_subestado = {id_substatus}
-                    """)
+
+    def read_route_paris(self, identifier):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""  
+                select distinct on(route_id) route_id from paris.dispatch_paris dp 
+                where identifier= '{identifier}'
+                limit 1
+                """)
             return cur.fetchone()
 
 

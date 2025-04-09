@@ -290,7 +290,8 @@ def send_put_request(payload, codigo_guia):
 
 def send_put_update_ruta(payload, route_id):
     # URL del endpoint
-    url = f'https://activationcode.dispatchtrack.com/api/external/v1/routes/{route_id}'
+    url = f'https://cluster-staging.dispatchtrack.com/api/external/v1/routes/{route_id}'
+    print(url)
 
     # Encabezados
     headers = {
@@ -592,10 +593,12 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
             
             # print(body[0][0])
 
+            id_ruta = conn.read_route_paris(data.identifier)[0]
+
             body = {
-                "id": data.route_id,
+                "id": id_ruta,
                 "dispatches": 
-                    {
+                    [{
                     "identifier": data.identifier,
                     "status_id": body_estados[0],
                     "substatus": body_estados[1],
@@ -605,13 +608,15 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
                     "latitude": latitude,
                     "longitude": longitude
                     }
-                }
+                }]
                 }
             
             print(body)
 
+            id_ruta = conn.read_route_paris(data.identifier)[0]
+
             # send_put_request(body[0][0], data.guide)
-            send_put_update_ruta(body, data.route_id)
+            send_put_update_ruta(body, id_ruta)
 
             # send_put_request_paris_yanez(body, data.guide)
 
