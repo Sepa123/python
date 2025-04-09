@@ -12505,25 +12505,40 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
                 if is_trunk == True:
 
                     cur.execute(f"""  
-                        with estados_paris as(
-                            select id_estado_destino as "status_id" , glosa_destino as "substatus", 'CT Transyañez' as "place", {is_trunk} as "is_trunk",
-                            json_build_object('latitude','{latitude}','longitude','{longitude}') as "waypoint"
-                            from paris.conversion_estados_beetrack ceb 
-                            where id_estado = {id_status} and id_subestado = {id_substatus}
-                            )
-                        select json_agg(estados_paris) from estados_paris
+                        select id_estado_destino as "status_id" , glosa_destino as "substatus"
+                    from paris.conversion_estados_beetrack ceb 
+                    where id_estado = {id_status} and id_subestado = {id_substatus}
                         """)
                 else:
                     cur.execute(f"""  
-                        with estados_paris as(
-                            select id_estado_destino as "status_id" , glosa_destino as "substatus",CT Transyañez' as "place",  {is_trunk} as "is_trunk",
-                            json_build_object('latitude','{latitude}','longitude','{longitude}') as "waypoint"
-                            from paris.conversion_estados_beetrack ceb 
-                            where id_estado = {id_status} and id_subestado = {id_substatus}
-                            )
-                        select json_agg(estados_paris) from estados_paris
+                        select id_estado_destino as "status_id" , glosa_destino as "substatus"
+                    from paris.conversion_estados_beetrack ceb 
+                    where id_estado = {id_status} and id_subestado = {id_substatus}
                         """)
                 return cur.fetchone()
+
+        #### UPDATE RUTA PARIS
+
+
+    def read_route_paris(self, id_status, id_substatus, is_trunk,latitude, longitude):
+        with self.conn.cursor() as cur:
+            if is_trunk == True:
+
+                cur.execute(f"""  
+                    select id_estado_destino as "status_id" , glosa_destino as "substatus"
+                    from paris.conversion_estados_beetrack ceb 
+                    where id_estado = {id_status} and id_subestado = {id_substatus}
+                    """)
+            else:
+                cur.execute(f"""  
+                    select id_estado_destino as "status_id" , glosa_destino as "substatus"
+                    from paris.conversion_estados_beetrack ceb 
+                    where id_estado = {id_status} and id_subestado = {id_substatus}
+                    """)
+            return cur.fetchone()
+
+
+    
 
 
     def get_cartones_despacho_paris(self, id_dispatch):

@@ -158,7 +158,7 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
 
             if "paris" in datos_groups_i["Cliente"].lower():
 
-                # print('data, YO PASE')
+                print('data, YO PASE')
 
                 # body = {
                 #     "status": data["status"],
@@ -204,7 +204,7 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
 
             if "paris" in datos_groups["Cliente"].lower():
 
-                # print('data, YO PASE')
+                print('data, YO PASE')
 
                 if data["status"] is None:
                     data["status"] = 0
@@ -286,6 +286,52 @@ def send_put_request(payload, codigo_guia):
 
         print(f"Error en la solicitud PUT: {response.status_code}")
         print(response.text)
+
+
+def send_put_update_ruta(payload, route_id):
+    # URL del endpoint
+    url = f'https://activationcode.dispatchtrack.com/api/external/v1/routes/{route_id}'
+
+    # Encabezados
+    headers = {
+        'Accept': '*/*',
+        'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
+        'X-AUTH-TOKEN': config("SECRET_KEY_PARIS"),
+    }
+
+    # Cuerpo de la solicitud (puedes modificar esto según lo que necesites enviar)
+    payload = payload
+
+    # Realizamos la solicitud PUT
+    with httpx.Client() as client:
+        response = client.put(url, headers=headers, json=payload)
+
+    # Verificamos la respuesta
+    if response.status_code == 200:
+        print("Solicitud PUT exitosa:", response.json())
+        body = response.json()
+
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        filename = f"r_update_route_Paris_{timestamp}.txt"
+
+
+            # body = await request.json()  # Obtener el cuerpo como JSON
+            # Guardar el contenido del JSON en un archivo de texto
+        with open(filename, "w") as f:
+            json.dump(body, f, indent=4)
+    else:
+
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        filename = f"r_update_route_Paris_error_{timestamp}.txt"
+
+            # body = await request.json()  # Obtener el cuerpo como JSON
+            # Guardar el contenido del JSON en un archivo de texto
+        with open(filename, "w") as f:
+            f.write(response.text)
+
+        print(f"Error en la solicitud PUT: {response.status_code}")
+        print(response.text)
+
 
 
 def send_put_request_paris_yanez(payload, codigo_guia):
@@ -527,23 +573,45 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
                 data.substatus_code = "null"
 
             if data.substatus_code is None and data.status == 1:
-                body = conn.read_estados_paris(1,21, data.is_trunk,latitude,longitude)
+                body_estados = conn.read_estados_paris(1,21, data.is_trunk,latitude,longitude)
 
             elif data.substatus_code == "21" and data.status == 2:
-                body = conn.read_estados_paris(1,21, data.is_trunk,latitude,longitude)
+                body_estados = conn.read_estados_paris(1,21, data.is_trunk,latitude,longitude)
                 
             else:
-                body = conn.read_estados_paris(data.status,data.substatus_code, data.is_trunk,latitude,longitude)
+                body_estados = conn.read_estados_paris(data.status,data.substatus_code, data.is_trunk,latitude,longitude)
             
                     # conn.update_estado_dispatch_paris(data.dispatch_id, data.status,data.substatus_code)
 
+
+            print('body_estados', body_estados[0])
             # body_estados = get_update_estados_paris_yanez(data.guide) ## esto es beetrack paris Yanez
 
             # print(data.status, data.substatus_code, data.is_trunk, data.waypoint.latitude)
 
             
-            print(body[0][0])
-            send_put_request(body[0][0], data.guide)
+            # print(body[0][0])
+
+            body = {
+                "id": data.route_id,
+                "dispatches": 
+                    {
+                    "identifier": data.identifier,
+                    "status_id": body_estados[0],
+                    "substatus": body_estados[1],
+                    "place": "CT Transyañez",
+                    "is_trunk":  data.is_trunk,
+                    "waypoint": {
+                    "latitude": latitude,
+                    "longitude": longitude
+                    }
+                }
+                }
+            
+            print(body)
+
+            # send_put_request(body[0][0], data.guide)
+            send_put_update_ruta(body, data.route_id)
 
             # send_put_request_paris_yanez(body, data.guide)
 
