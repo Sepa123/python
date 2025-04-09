@@ -1,4 +1,5 @@
 import json
+import time
 from fastapi import  Request, status,HTTPException,Header,Depends,FastAPI
 from typing import List , Dict ,Union
 import re
@@ -716,7 +717,7 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
 
             else: ## si el troncal viene como false, entonces se actualiza de la forma culera
 
-                ### cre crea primero el vehiculo en paris
+                ### se crea primero el vehiculo en paris
 
                 crear_vehiculo_paris(data.truck_identifier)
                 
@@ -736,7 +737,7 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
                     body_started = {"started": True}
                     send_put_update_ruta(body_started, id_ruta_creada)
 
-
+                    time.sleep(0.2)
 
                     body = {
                         "id": id_ruta_creada,
