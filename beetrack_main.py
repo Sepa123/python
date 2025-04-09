@@ -703,8 +703,8 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
                         "place": "CT Transyañez",
                         "is_trunk":  data.is_trunk,
                         "waypoint": {
-                        "latitude": latitude,
-                        "longitude": longitude
+                            "latitude": latitude,
+                            "longitude": longitude
                         }
                     }]
                     }
@@ -755,15 +755,6 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
                         }
                     
                     send_put_update_ruta(body, id_ruta_creada)
-
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        filename = f"datos_wh_bt_yanez_final{timestamp}.txt"
-
-
-        body = await request.json()  # Obtener el cuerpo como JSON
-        # Guardar el contenido del JSON en un archivo de texto
-        with open(filename, "w") as f:
-            json.dump(body, f, indent=4)
 
         return {
                 "message": mensaje
