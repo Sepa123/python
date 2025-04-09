@@ -12519,7 +12519,16 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
 
         #### UPDATE RUTA PARIS
 
+    def guardar_patente_paris(self, id_patente, ppu, id_beetrack):
 
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            INSERT INTO paris.patente_paris_beetrack
+            (id_patente, ppu)
+            VALUES({int(id_patente)}, '{ppu}');
+        """)
+            
+        self.conn.commit()
 
 
     def read_route_paris(self, identifier):
