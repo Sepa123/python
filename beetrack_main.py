@@ -241,6 +241,153 @@ async def post_route(body : Route , headers: tuple = Depends(validar_encabezados
             "body" : body
             }
 
+### endpoints paris
+
+def crear_vehiculo_paris(patente): ### esto es para crear un vehiculo en paris
+    # URL del endpoint
+    url = f'https://cluster-staging.dispatchtrack.com/api/external/v1/trucks'
+
+    # Encabezados
+    headers = {
+        'Accept': '*/*',
+        'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
+        'X-AUTH-TOKEN': config("SECRET_KEY_PARIS"),
+    }
+
+    # Cuerpo de la solicitud (puedes modificar esto según lo que necesites enviar)
+    payload = {
+        "identifier": patente
+    }
+
+    # Realizamos la solicitud PUT
+    with httpx.Client() as client:
+        response = client.post(url, headers=headers, json=payload)
+
+    # Verificamos la respuesta
+    if response.status_code == 200:
+        print("Solicitud POST exitosa:", response.json())
+
+        body = response.json()
+        response_data = body.get("response", {})  # Usamos .get() para evitar errores si no existe la clave
+
+        # Extraemos los datos de interés
+        vehicle_id = response_data.get("id")
+        truck = response_data.get("truck")
+        vehicle_type = response_data.get("vehicle_type")
+        truck_created = response_data.get("truck_created")
+        created = response_data.get("created")
+
+        conn.guardar_patente_paris(vehicle_id,truck)
+
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        filename = f"POST_vehiculo_Paris_{timestamp}.txt"
+
+            # body = await request.json()  # Obtener el cuerpo como JSON
+            # Guardar el contenido del JSON en un archivo de texto
+        with open(filename, "w") as f:
+            json.dump(body, f, indent=4)
+    else:
+
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        filename = f"rPOST_vehiculo_Paris_error_{timestamp}.txt"
+
+            # body = await request.json()  # Obtener el cuerpo como JSON
+            # Guardar el contenido del JSON en un archivo de texto
+        with open(filename, "w") as f:
+            f.write(response.text)
+
+        print(f"Error en la solicitud POST: {response.status_code}")
+        print(response.text)
+
+def crear_ruta_paris(payload): ### esto es para crear una ruta en paris
+    # URL del endpoint
+    url = f'https://cluster-staging.dispatchtrack.com/api/external/v1/routes'
+
+    # Encabezados
+    headers = {
+        'Accept': '*/*',
+        'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
+        'X-AUTH-TOKEN': config("SECRET_KEY_PARIS"),
+    }
+
+    # Cuerpo de la solicitud (puedes modificar esto según lo que necesites enviar)
+    payload = payload
+
+    # Realizamos la solicitud PUT
+    with httpx.Client() as client:
+        response = client.post(url, headers=headers, json=payload)
+
+    # Verificamos la respuesta
+    if response.status_code == 200:
+        print("Solicitud POST exitosa:", response.json())
+
+        body = response.json()
+        response_data = body.get("response", {})  # Usamos .get() para evitar errores si no existe la clave
+
+        # Extraemos los datos de interés
+        route_id = response_data.get("route_id")
+
+        return route_id
+
+    else:
+
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        filename = f"rPOST_vehiculo_Paris_error_{timestamp}.txt"
+
+            # body = await request.json()  # Obtener el cuerpo como JSON
+            # Guardar el contenido del JSON en un archivo de texto
+        with open(filename, "w") as f:
+            f.write(response.text)
+
+        print(f"Error en la solicitud POST: {response.status_code}")
+        print(response.text)
+
+        return None
+
+def send_put_update_ruta(payload, route_id): ### esto es para actualizar una ruta en paris
+    # URL del endpoint
+    url = f'https://cluster-staging.dispatchtrack.com/api/external/v1/routes/{route_id}'
+    print(url)
+
+    # Encabezados
+    headers = {
+        'Accept': '*/*',
+        'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
+        'X-AUTH-TOKEN': config("SECRET_KEY_PARIS"),
+    }
+
+    # Cuerpo de la solicitud (puedes modificar esto según lo que necesites enviar)
+    payload = payload
+
+    # Realizamos la solicitud PUT
+    with httpx.Client() as client:
+        response = client.put(url, headers=headers, json=payload)
+
+    # Verificamos la respuesta
+    if response.status_code == 200:
+        print("Solicitud PUT exitosa:", response.json())
+        body = response.json()
+
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        filename = f"r_update_route_Paris_{timestamp}.txt"
+
+
+            # body = await request.json()  # Obtener el cuerpo como JSON
+            # Guardar el contenido del JSON en un archivo de texto
+        with open(filename, "w") as f:
+            json.dump(body, f, indent=4)
+    else:
+
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        filename = f"r_update_route_Paris_error_{timestamp}.txt"
+
+            # body = await request.json()  # Obtener el cuerpo como JSON
+            # Guardar el contenido del JSON en un archivo de texto
+        with open(filename, "w") as f:
+            f.write(response.text)
+
+        print(f"Error en la solicitud PUT: {response.status_code}")
+        print(response.text)
 
 
 def send_put_request(payload, codigo_guia):
@@ -287,51 +434,6 @@ def send_put_request(payload, codigo_guia):
         print(f"Error en la solicitud PUT: {response.status_code}")
         print(response.text)
 
-
-def send_put_update_ruta(payload, route_id):
-    # URL del endpoint
-    url = f'https://cluster-staging.dispatchtrack.com/api/external/v1/routes/{route_id}'
-    print(url)
-
-    # Encabezados
-    headers = {
-        'Accept': '*/*',
-        'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
-        'X-AUTH-TOKEN': config("SECRET_KEY_PARIS"),
-    }
-
-    # Cuerpo de la solicitud (puedes modificar esto según lo que necesites enviar)
-    payload = payload
-
-    # Realizamos la solicitud PUT
-    with httpx.Client() as client:
-        response = client.put(url, headers=headers, json=payload)
-
-    # Verificamos la respuesta
-    if response.status_code == 200:
-        print("Solicitud PUT exitosa:", response.json())
-        body = response.json()
-
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        filename = f"r_update_route_Paris_{timestamp}.txt"
-
-
-            # body = await request.json()  # Obtener el cuerpo como JSON
-            # Guardar el contenido del JSON en un archivo de texto
-        with open(filename, "w") as f:
-            json.dump(body, f, indent=4)
-    else:
-
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        filename = f"r_update_route_Paris_error_{timestamp}.txt"
-
-            # body = await request.json()  # Obtener el cuerpo como JSON
-            # Guardar el contenido del JSON en un archivo de texto
-        with open(filename, "w") as f:
-            f.write(response.text)
-
-        print(f"Error en la solicitud PUT: {response.status_code}")
-        print(response.text)
 
 
 
@@ -586,40 +688,73 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
 
 
             print('body_estados', body_estados[0])
-            # body_estados = get_update_estados_paris_yanez(data.guide) ## esto es beetrack paris Yanez
 
-            # print(data.status, data.substatus_code, data.is_trunk, data.waypoint.latitude)
+            if data.is_trunk == True: ## si el troncal viene como true, entonces se crea la ruta en paris
 
-            
-            # print(body[0][0])
+                id_ruta = conn.read_route_paris(data.identifier)[0]
 
-            id_ruta = conn.read_route_paris(data.identifier)[0]
-
-            body = {
-                "id": id_ruta,
-                "dispatches": 
-                    [{
-                    "identifier": data.identifier,
-                    "status_id": body_estados[0],
-                    "substatus": body_estados[1],
-                    "place": "CT Transyañez",
-                    "is_trunk":  data.is_trunk,
-                    "waypoint": {
-                    "latitude": latitude,
-                    "longitude": longitude
+                body = {
+                    "id": id_ruta,
+                    "dispatches": 
+                        [{
+                        "identifier": data.identifier,
+                        "status_id": body_estados[0],
+                        "substatus": body_estados[1],
+                        "place": "CT Transyañez",
+                        "is_trunk":  data.is_trunk,
+                        "waypoint": {
+                        "latitude": latitude,
+                        "longitude": longitude
+                        }
+                    }]
                     }
-                }]
+                
+                print(body)
+
+                # send_put_request(body[0][0], data.guide)
+                send_put_update_ruta(body, id_ruta)
+
+            else: ## si el troncal viene como false, entonces se actualiza de la forma culera
+
+                ### cre crea primero el vehiculo en paris
+
+                crear_vehiculo_paris(data.truck_identifier)
+                
+                date_actual = datetime.now().strftime("%Y-%m-%d")
+
+                ### luego se crea la ruta en paris
+                body_ruta = {
+                    "truck_identifier":data.truck_identifier,
+                    "date": date_actual,
+                    "dispatches": [{"identifier": data.identifier}]
                 }
-            
-            print(body)
 
-            id_ruta = conn.read_route_paris(data.identifier)[0]
+                id_ruta_creada = crear_ruta_paris(body_ruta)
 
-            # send_put_request(body[0][0], data.guide)
-            send_put_update_ruta(body, id_ruta)
+                if id_ruta_creada is not None:
+                    ### se usa send_put_update_ruta para actualizar la ruta a started : true
+                    body_started = {"started": True}
+                    send_put_update_ruta(body_started, id_ruta_creada)
 
-            # send_put_request_paris_yanez(body, data.guide)
 
+
+                    body = {
+                        "id": id_ruta_creada,
+                        "dispatches": 
+                            [{
+                            "identifier": data.identifier,
+                            "status_id": body_estados[0],
+                            "substatus": body_estados[1],
+                            "place": "CT Transyañez",
+                            "is_trunk":  data.is_trunk,
+                            "waypoint": {
+                                "latitude": latitude,
+                                "longitude": longitude
+                            }
+                            }]
+                        }
+                    
+                    send_put_update_ruta(body, id_ruta_creada)
 
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         filename = f"datos_wh_bt_yanez_final{timestamp}.txt"
