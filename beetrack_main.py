@@ -159,7 +159,7 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
 
             if "paris" in datos_groups_i["Cliente"].lower():
 
-                print('data, YO PASE')
+                # print('data, YO PASE')
 
                 # body = {
                 #     "status": data["status"],
@@ -205,7 +205,7 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
 
             if "paris" in datos_groups["Cliente"].lower():
 
-                print('data, YO PASE')
+                # print('data, YO PASE')
 
                 if data["status"] is None:
                     data["status"] = 0
