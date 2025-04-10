@@ -366,7 +366,7 @@ def send_put_update_ruta(payload, route_id): ### esto es para actualizar una rut
         body = response.json()
 
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        filename = f"r_update_route_Paris_{timestamp}.txt"
+        filename = f"r_update_route_Paris_route_id_{route_id}_{timestamp}.txt"
 
 
             # body = await request.json()  # Obtener el cuerpo como JSON
@@ -376,7 +376,7 @@ def send_put_update_ruta(payload, route_id): ### esto es para actualizar una rut
     else:
 
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        filename = f"r_update_route_Paris_error_{timestamp}.txt"
+        filename = f"r_update_route_Paris_error_route_id_{route_id}_{timestamp}.txt"
 
             # body = await request.json()  # Obtener el cuerpo como JSON
             # Guardar el contenido del JSON en un archivo de texto
@@ -421,7 +421,7 @@ def send_put_request(payload, codigo_guia):
     else:
 
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        filename = f"r_update_dispatch_Paris_error_{timestamp}.txt"
+        filename = f"r_update_dispatch_Paris_error_codigo_{codigo_guia}_{timestamp}.txt"
 
             # body = await request.json()  # Obtener el cuerpo como JSON
             # Guardar el contenido del JSON en un archivo de texto
@@ -621,7 +621,7 @@ async def webhook_dispatch_paris(request : Request , headers: tuple = Depends(va
 
         # Guardar el contenido del JSON en un archivo de texto
         with open(filename, "w") as f:
-            json.dump(body, f, indent=4)
+            f.write(str(error))
 
         print('Error al recibir el cuerpo del mensaje de dispatch paris',error)
         raise HTTPException(status_code=400, detail="Error al recibir el cuerpo del mensaje")
@@ -807,7 +807,7 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
 
         # Guardar el contenido del JSON en un archivo de texto
         with open(filename, "w") as f:
-            json.dump(body, f, indent=4)
+            f.write(str(error))
 
         print('Error al recibir el cuerpo del mensaje de dispatch paris',error)
         raise HTTPException(status_code=400, detail="Error al recibir el cuerpo del mensaje")
