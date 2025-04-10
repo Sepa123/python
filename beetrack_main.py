@@ -696,6 +696,8 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
                 print("trunk : true")
                 id_ruta = conn.read_route_paris(data.identifier)[0]
 
+                
+
                 body = {
                     "id": id_ruta,
                     "dispatches": 
@@ -722,9 +724,9 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
                 ### se crea primero el vehiculo en paris
 
 
-                if data.truck_identifier is None:
-                    print('se debe crearr vehiculo en paris')
-                    crear_vehiculo_paris(data.truck_identifier)  
+                # if data.truck_identifier is None:
+                print('se debe crearr vehiculo en paris')
+                crear_vehiculo_paris(data.truck_identifier)  
                 
                 date_actual = datetime.now().strftime("%Y-%m-%d")
 
@@ -735,16 +737,16 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
                     "dispatches": [{"identifier": data.identifier}]
                 }
 
-                if data.route_id is None:
-                    id_ruta_creada = crear_ruta_paris(body_ruta)
-                    print(' rUTA NUEVA')
-                    time.sleep(0.8)
+                # if data.route_id is None:
+                id_ruta_creada = crear_ruta_paris(body_ruta)
+                print(' rUTA NUEVA')
+                time.sleep(0.8)
 
-                else:
+                # else:
                     # id_ruta_creada = crear_ruta_paris(body_ruta)
                     # print(' rUTA NUEVA')
                     # time.sleep(0.8)
-                    id_ruta_creada =  None
+                # id_ruta_creada =  None
 
 
                 no_ejecutar = True
@@ -761,7 +763,7 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
 
 
                 print(no_ejecutar)
-                id_ruta_creada = data.route_id
+                # id_ruta_creada = data.route_id
 
                 time.sleep(0.8)
 
