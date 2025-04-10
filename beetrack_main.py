@@ -787,7 +787,7 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
                     print(body)
                         
                     print('actualizar ruta existente')
-                    send_put_update_ruta(body,id_ruta)
+                    send_put_update_ruta(body,id_ruta_creada)
 
         return {
                 "message": mensaje
