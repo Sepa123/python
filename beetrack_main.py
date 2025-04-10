@@ -653,6 +653,7 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
         if body["resource"] == "dispatch":
             mensaje = "Recibido Modelo Actualización Guia"
             data = ActualizacionGuia(**body)
+            body_estados = None
 
             # print(data.waypoint)
 
@@ -672,6 +673,8 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
             if data.substatus_code is None:
                 data.substatus_code = "null"
 
+                
+            
             # if data.substatus_code is None and data.status == 1:
             #     body_estados = conn.read_estados_paris(1,21, data.is_trunk,latitude,longitude)
 
