@@ -658,7 +658,7 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
             mensaje = "Recibido Modelo Actualización Guia"
             data = ActualizacionGuia(**body)
 
-            print(data.waypoint)
+            print('data waypoint',data.waypoint)
 
             if data.waypoint is not None:
                 latitude = data.waypoint.latitude
@@ -688,7 +688,7 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
                     # conn.update_estado_dispatch_paris(data.dispatch_id, data.status,data.substatus_code)
 
 
-            print('body_estados', body_estados[0])
+            # print('body_estados', body_estados[0])
 
             if data.is_trunk == True: ## si el troncal viene como true, entonces se crea la ruta en paris
 
@@ -744,8 +744,8 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
                         "dispatches": 
                             [{
                             "identifier": data.identifier,
-                            "status_id": body_estados[0],
-                            "substatus": body_estados[1],
+                            "status_id": 1,
+                            "substatus": None,
                             "place": "CT Transyañez",
                             "is_trunk":  data.is_trunk,
                             "waypoint": {
