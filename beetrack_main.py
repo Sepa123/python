@@ -678,13 +678,15 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
             # if data.substatus_code is None and data.status == 1:
             #     body_estados = conn.read_estados_paris(1,21, data.is_trunk,latitude,longitude)
 
-            elif data.substatus_code == "21" and data.status == 2:
-                body_estados = conn.read_estados_paris(1,1, data.is_trunk,latitude,longitude)
+            # elif data.substatus_code == "21" and data.status == 2:
+            #     body_estados = conn.read_estados_paris(1,1, data.is_trunk,latitude,longitude)
                 
-            else:
-                body_estados = conn.read_estados_paris(data.status,data.substatus_code, data.is_trunk,latitude,longitude)
-            
-                    # conn.update_estado_dispatch_paris(data.dispatch_id, data.status,data.substatus_code)
+            # else:
+            body_estados = conn.read_estados_paris(data.status,data.substatus_code, data.is_trunk,latitude,longitude)
+
+            # print("Body", body_estados)
+
+            # conn.update_estado_dispatch_paris(data.dispatch_id, data.status,data.substatus_code)
             if body_estados is None:
                 body_estados = [1,None]
 
