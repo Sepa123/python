@@ -658,7 +658,7 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
             mensaje = "Recibido Modelo Actualización Guia"
             data = ActualizacionGuia(**body)
 
-            print('data waypoint',data.waypoint)
+            # print('data waypoint',data.waypoint)
 
             if data.waypoint is not None:
                 latitude = data.waypoint.latitude
