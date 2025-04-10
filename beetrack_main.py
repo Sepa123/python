@@ -729,32 +729,47 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
                     "dispatches": [{"identifier": data.identifier}]
                 }
 
-                id_ruta_creada = crear_ruta_paris(body_ruta)
+                if data.route_id is None:
+                    id_ruta_creada = crear_ruta_paris(body_ruta)
+
+                else:
+                    id_ruta_creada =  None
+
+                no_ejecutar = True
 
                 if id_ruta_creada is not None:
                     ### se usa send_put_update_ruta para actualizar la ruta a started : true
                     body_started = {"started": True}
                     send_put_update_ruta(body_started, id_ruta_creada)
+                    no_ejecutar = False
+                    
 
-                    time.sleep(0.2)
 
+                id_ruta_creada = data.route_id
+
+                time.sleep(0.8)
+
+                if no_ejecutar == True:
+                    pass
+                else:
+                
                     body = {
-                        "id": id_ruta_creada,
-                        "dispatches": 
-                            [{
-                            "identifier": data.identifier,
-                            "status_id": body_estados[0],
-                            "substatus": body_estados[1],
-                            "place": "CT Transyañez",
-                            "is_trunk":  data.is_trunk,
-                            "waypoint": {
-                                "latitude": latitude,
-                                "longitude": longitude
+                            "id": id_ruta_creada,
+                            "dispatches": 
+                                [{
+                                "identifier": data.identifier,
+                                "status_id": body_estados[0],
+                                "substatus": body_estados[1],
+                                "place": "CT Transyañez",
+                                "is_trunk":  data.is_trunk,
+                                "waypoint": {
+                                    "latitude": latitude,
+                                    "longitude": longitude
+                                }
+                                }]
                             }
-                            }]
-                        }
-                    
-                    
+                        
+                        
                     send_put_update_ruta(body, id_ruta_creada)
 
         return {
