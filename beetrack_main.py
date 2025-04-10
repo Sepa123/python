@@ -717,8 +717,9 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
                 ### se crea primero el vehiculo en paris
 
 
-
-                crear_vehiculo_paris(data.truck_identifier)
+                if data.truck_identifier is None:
+                    print('se debe crearr vehiculo en paris')
+                    crear_vehiculo_paris(data.truck_identifier)  
                 
                 date_actual = datetime.now().strftime("%Y-%m-%d")
 
@@ -731,15 +732,19 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
 
                 if data.route_id is None:
                     id_ruta_creada = crear_ruta_paris(body_ruta)
+                    print(' rUTA NUEVA')
+                    time.sleep(0.8)
 
                 else:
                     id_ruta_creada =  None
+
 
                 no_ejecutar = True
 
                 if id_ruta_creada is not None:
                     ### se usa send_put_update_ruta para actualizar la ruta a started : true
                     body_started = {"started": True}
+                    print('empezar RUTA NUEVA')
                     send_put_update_ruta(body_started, id_ruta_creada)
                     no_ejecutar = False
                     
@@ -769,7 +774,7 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
                                 }]
                             }
                         
-                        
+                    print('actualizar ruta existente')
                     send_put_update_ruta(body, id_ruta_creada)
 
         return {
