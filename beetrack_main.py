@@ -748,6 +748,8 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
 
                 time.sleep(0.2)
 
+            body_estados = [1, None]
+
 
             if data.substatus_code is None and data.status == 1:
                 body_estados = [1, None]
@@ -757,13 +759,19 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
                 
             else:
                 print('estados y subestados recibidos')
-                print(data.status,data.substatus_code,)
                 
-                if (data.status == 2  and data.substatus_code == '1'):
+                
+                if data.status == 2  and data.substatus_code == '1':
                     body_estados = conn.read_estados_paris(1,1, data.is_trunk,latitude,longitude)
                 else:
                     body_estados = conn.read_estados_paris(data.status,data.substatus_code, data.is_trunk,latitude,longitude)
+
+                
+            if body_estados is None:
+                body_estados = [1, None]
             
+            
+
 
             body = {
                 "id": id_ruta_creada,
