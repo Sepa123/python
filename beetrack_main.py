@@ -733,8 +733,8 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
                 ### luego se crea la ruta en paris
                 body_ruta = {
                     "truck_identifier":data.truck_identifier,
-                    "date": date_actual,
-                    "dispatches": [{"identifier": data.identifier}]
+                    "date": date_actual
+                    # "dispatches": [{"identifier": data.identifier}]
                 }
 
                 # if data.route_id is None:
@@ -751,12 +751,12 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
 
                 no_ejecutar = True
 
-                if id_ruta_creada is not None:
+                # if id_ruta_creada is not None:
                     ### se usa send_put_update_ruta para actualizar la ruta a started : true
-                    body_started = {"started": True}
-                    print('empezar RUTA NUEVA')
-                    send_put_update_ruta(body_started, id_ruta_creada)
-                    no_ejecutar = False
+                body_started = {"started": True}
+                print('empezar RUTA NUEVA')
+                send_put_update_ruta(body_started, id_ruta_creada)
+                no_ejecutar = False
                     
 
 
@@ -771,29 +771,29 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
                 #     pass
                 # else:
 
-                id_ruta = conn.read_route_paris(data.identifier)[0]
-                print(id_ruta)
+                # id_ruta = conn.read_route_paris(data.identifier)[0]
+                # print(id_ruta)
             
-                body = {
-                        "id": id_ruta,
-                        "dispatches": 
-                            [{
-                            "identifier": data.identifier,
-                            "status_id": body_estados[0],
-                            "substatus": body_estados[1],
-                            "place": "CT Transyañez",
-                            "is_trunk":  data.is_trunk,
-                            "waypoint": {
-                                "latitude": latitude,
-                                "longitude": longitude
-                            }
-                            }]
-                        }
+                # body = {
+                #         "id": id_ruta,
+                #         "dispatches": 
+                #             [{
+                #             "identifier": data.identifier,
+                #             "status_id": body_estados[0],
+                #             "substatus": body_estados[1],
+                #             "place": "CT Transyañez",
+                #             "is_trunk":  data.is_trunk,
+                #             "waypoint": {
+                #                 "latitude": latitude,
+                #                 "longitude": longitude
+                #             }
+                #             }]
+                #         }
                 
-                print(body)
+                # print(body)
                     
-                print('actualizar ruta existente')
-                send_put_update_ruta(body,id_ruta)
+                # print('actualizar ruta existente')
+                # send_put_update_ruta(body,id_ruta)
 
         return {
                 "message": mensaje
