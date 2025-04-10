@@ -688,6 +688,9 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
                 # conn.update_estado_dispatch_paris(data.dispatch_id, data.status,data.substatus_code)
 
 
+        if body_estados is None:
+                body_estados = [1, None]
+
         # print('body_estados', body_estados[0])
 
         if data.is_trunk == True: ## si el troncal viene como true, entonces se crea la ruta en paris
