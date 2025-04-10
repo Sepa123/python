@@ -159,8 +159,6 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
 
             if "paris" in datos_groups_i["Cliente"].lower():
 
-                # print('data, YO PASE')
-
                 # body = {
                 #     "status": data["status"],
                 #     "substatus": data["substatus"],
@@ -204,8 +202,6 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
 
 
             if "paris" in datos_groups["Cliente"].lower():
-
-                # print('data, YO PASE')
 
                 if data["status"] is None:
                     data["status"] = 0
@@ -278,7 +274,7 @@ def crear_vehiculo_paris(patente): ### esto es para crear un vehiculo en paris
         truck_created = response_data.get("truck_created")
         created = response_data.get("created")
 
-        conn.guardar_patente_paris(vehicle_id,truck)
+        # conn.guardar_patente_paris(vehicle_id,truck)
 
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         filename = f"POST_vehiculo_Paris_{timestamp}.txt"
@@ -646,84 +642,81 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
     with open(filename, "w") as f:
         json.dump(body, f, indent=4)
 
-    # try:
+    try:
 
-    if body["resource"] == "dispatch_guide":
-        mensaje = "Recibido Modelo Creación Guia"
-        data = CreacionGuia(**body)
+        if body["resource"] == "dispatch_guide":
+            mensaje = "Recibido Modelo Creación Guia"
+            data = CreacionGuia(**body)
 
 
 
-    if body["resource"] == "dispatch":
-        mensaje = "Recibido Modelo Actualización Guia"
-        data = ActualizacionGuia(**body)
+        if body["resource"] == "dispatch":
+            mensaje = "Recibido Modelo Actualización Guia"
+            data = ActualizacionGuia(**body)
 
-        # print('data waypoint',data.waypoint)
+            # print(data.waypoint)
 
-        if data.waypoint is not None:
-            latitude = data.waypoint.latitude
-            longitude = data.waypoint.longitude
-        else:
-            latitude = ""
-            longitude = ""
+            if data.waypoint is not None:
+                latitude = data.waypoint.latitude
+                longitude = data.waypoint.longitude
+            else:
+                latitude = ""
+                longitude = ""
 
-        if data.is_trunk is None:
-            data.is_trunk = False
+            if data.is_trunk is None:
+                data.is_trunk = False
 
-        if data.status is None:
-            data.status = 0
+            if data.status is None:
+                data.status = 0
 
-        if data.substatus_code is None:
-            data.substatus_code = "null"
+            if data.substatus_code is None:
+                data.substatus_code = "null"
 
-        if data.substatus_code is None and data.status == 1:
-            body_estados = conn.read_estados_paris(1,21, data.is_trunk,latitude,longitude)
+            if data.substatus_code is None and data.status == 1:
+                body_estados = conn.read_estados_paris(1,21, data.is_trunk,latitude,longitude)
 
-        elif data.substatus_code == "21" and data.status == 2:
-            body_estados = conn.read_estados_paris(1,21, data.is_trunk,latitude,longitude)
+            elif data.substatus_code == "21" and data.status == 2:
+                body_estados = conn.read_estados_paris(1,21, data.is_trunk,latitude,longitude)
+                
+            else:
+                body_estados = conn.read_estados_paris(data.status,data.substatus_code, data.is_trunk,latitude,longitude)
             
-        else:
-            body_estados = conn.read_estados_paris(data.status,data.substatus_code, data.is_trunk,latitude,longitude)
-        
-                # conn.update_estado_dispatch_paris(data.dispatch_id, data.status,data.substatus_code)
+                    # conn.update_estado_dispatch_paris(data.dispatch_id, data.status,data.substatus_code)
+            if body_estados is None:
+                body_estados = [1,None]
 
+            print('body_estados', body_estados[0])
 
-        if body_estados is None:
-                body_estados = [1, None]
+            if data.is_trunk == True: ## si el troncal viene como true, entonces se crea la ruta en paris
 
-        # print('body_estados', body_estados[0])
+                id_ruta = conn.read_route_paris(data.identifier)[0]
 
-        if data.is_trunk == True: ## si el troncal viene como true, entonces se crea la ruta en paris
-
-            id_ruta = conn.read_route_paris(data.identifier)[0]
-
-            body = {
-                "id": id_ruta,
-                "dispatches": 
-                    [{
-                    "identifier": data.identifier,
-                    "status_id": body_estados[0],
-                    "substatus": body_estados[1],
-                    "place": "CT Transyañez",
-                    "is_trunk":  data.is_trunk,
-                    "waypoint": {
-                        "latitude": latitude,
-                        "longitude": longitude
+                body = {
+                    "id": id_ruta,
+                    "dispatches": 
+                        [{
+                        "identifier": data.identifier,
+                        "status_id": body_estados[0],
+                        "substatus": body_estados[1],
+                        "place": "CT Transyañez",
+                        "is_trunk":  data.is_trunk,
+                        "waypoint": {
+                            "latitude": latitude,
+                            "longitude": longitude
+                        }
+                    }]
                     }
-                }]
-                }
-            
-            print(body)
+                
+                print(body)
 
-            # send_put_request(body[0][0], data.guide)
-            send_put_update_ruta(body, id_ruta)
+                # send_put_request(body[0][0], data.guide)
+                send_put_update_ruta(body, id_ruta)
 
-        else: ## si el troncal viene como false, entonces se actualiza de la forma culera
+            else: ## si el troncal viene como false, entonces se actualiza de la forma culera
 
-            ### se crea primero el vehiculo en paris
+                ### se crea primero el vehiculo en paris
 
-            if data.truck_identifier is None:
-            
+
 
                 crear_vehiculo_paris(data.truck_identifier)
                 
@@ -735,86 +728,55 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
                     "date": date_actual,
                     "dispatches": [{"identifier": data.identifier}]
                 }
-            
-            if data.route_id is None:
 
                 id_ruta_creada = crear_ruta_paris(body_ruta)
-            else:
-                id_ruta_creada = None
 
-            print('id_ruta_creada',id_ruta_creada)
+                if id_ruta_creada is not None:
+                    ### se usa send_put_update_ruta para actualizar la ruta a started : true
+                    body_started = {"started": True}
+                    send_put_update_ruta(body_started, id_ruta_creada)
 
-            if id_ruta_creada is not None:
-                ### se usa send_put_update_ruta para actualizar la ruta a started : true
-                body_started = {"started": True}
-                send_put_update_ruta(body_started, id_ruta_creada)
+                    time.sleep(0.2)
 
-                time.sleep(0.2)
+                    body = {
+                        "id": id_ruta_creada,
+                        "dispatches": 
+                            [{
+                            "identifier": data.identifier,
+                            "status_id": body_estados[0],
+                            "substatus": body_estados[1],
+                            "place": "CT Transyañez",
+                            "is_trunk":  data.is_trunk,
+                            "waypoint": {
+                                "latitude": latitude,
+                                "longitude": longitude
+                            }
+                            }]
+                        }
+                    
+                    
+                    send_put_update_ruta(body, id_ruta_creada)
 
-            body_estados = [1, None]
-
-
-            if data.substatus_code is None and data.status == 1:
-                body_estados = [1, None]
-
-            elif data.substatus_code == "21" and data.status == 2:
-                body_estados = conn.read_estados_paris(1,21, data.is_trunk,latitude,longitude)
-                
-            else:
-                print('estados y subestados recibidos')
-                
-                
-                if data.status == 2  and data.substatus_code == '1':
-                    body_estados = conn.read_estados_paris(1,1, data.is_trunk,latitude,longitude)
-                else:
-                    body_estados = conn.read_estados_paris(data.status,data.substatus_code, data.is_trunk,latitude,longitude)
-
-                
-            if body_estados is None:
-                body_estados = [1, None]
-            
-            
-
-
-            body = {
-                "id": id_ruta_creada,
-                "dispatches": 
-                    [{
-                    "identifier": data.identifier,
-                    "status_id": body_estados[0],
-                    "substatus": body_estados[1],
-                    "place": "CT Transyañez",
-                    "is_trunk":  data.is_trunk,
-                    "waypoint": {
-                        "latitude": latitude,
-                        "longitude": longitude
-                    }
-                    }]
+        return {
+                "message": mensaje
+                # "datos": data
                 }
-            
-            if data.route_id is not None:
-                send_put_update_ruta(body, data.route_id)
-
-    return {
-            "message": mensaje
-            # "datos": data
-            }
-    # except Exception as error:
+    except Exception as error:
 
 
-    #     print(error)
+        print(error)
 
-    #     body = await request.json()  # Obtener el cuerpo como JSON
+        body = await request.json()  # Obtener el cuerpo como JSON
 
-    #     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    #     filename = f"datos_wh_bt_yanez__error_400_{timestamp}.txt"
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        filename = f"datos_wh_bt_yanez__error_400_{timestamp}.txt"
 
-    #     # Guardar el contenido del JSON en un archivo de texto
-    #     with open(filename, "w") as f:
-    #         json.dump(body, f, indent=4)
+        # Guardar el contenido del JSON en un archivo de texto
+        with open(filename, "w") as f:
+            json.dump(body, f, indent=4)
 
-    #     print('Error al recibir el cuerpo del mensaje de dispatch paris',error)
-    #     raise HTTPException(status_code=400, detail="Error al recibir el cuerpo del mensaje")
+        print('Error al recibir el cuerpo del mensaje de dispatch paris',error)
+        raise HTTPException(status_code=400, detail="Error al recibir el cuerpo del mensaje")
 
 
 
