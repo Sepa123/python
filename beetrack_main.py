@@ -672,11 +672,11 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
             if data.substatus_code is None:
                 data.substatus_code = "null"
 
-            if data.substatus_code is None and data.status == 1:
-                body_estados = conn.read_estados_paris(1,21, data.is_trunk,latitude,longitude)
+            # if data.substatus_code is None and data.status == 1:
+            #     body_estados = conn.read_estados_paris(1,21, data.is_trunk,latitude,longitude)
 
             elif data.substatus_code == "21" and data.status == 2:
-                body_estados = conn.read_estados_paris(1,21, data.is_trunk,latitude,longitude)
+                body_estados = conn.read_estados_paris(1,1, data.is_trunk,latitude,longitude)
                 
             else:
                 body_estados = conn.read_estados_paris(data.status,data.substatus_code, data.is_trunk,latitude,longitude)
@@ -688,7 +688,7 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
             print('body_estados', body_estados[0])
 
             if data.is_trunk == True: ## si el troncal viene como true, entonces se crea la ruta en paris
-
+                print("trunk : true")
                 id_ruta = conn.read_route_paris(data.identifier)[0]
 
                 body = {
@@ -753,34 +753,40 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
                     
 
 
+
+
+                print(no_ejecutar)
                 id_ruta_creada = data.route_id
 
                 time.sleep(0.8)
 
-                if no_ejecutar == True:
-                    pass
-                else:
+                # if no_ejecutar == True:
+                #     pass
+                # else:
 
-                    id_ruta = conn.read_route_paris(data.identifier)[0]
-                
-                    body = {
-                            "id": id_ruta,
-                            "dispatches": 
-                                [{
-                                "identifier": data.identifier,
-                                "status_id": body_estados[0],
-                                "substatus": body_estados[1],
-                                "place": "CT Transyañez",
-                                "is_trunk":  data.is_trunk,
-                                "waypoint": {
-                                    "latitude": latitude,
-                                    "longitude": longitude
-                                }
-                                }]
+                id_ruta = conn.read_route_paris(data.identifier)[0]
+                print(id_ruta)
+            
+                body = {
+                        "id": id_ruta,
+                        "dispatches": 
+                            [{
+                            "identifier": data.identifier,
+                            "status_id": body_estados[0],
+                            "substatus": body_estados[1],
+                            "place": "CT Transyañez",
+                            "is_trunk":  data.is_trunk,
+                            "waypoint": {
+                                "latitude": latitude,
+                                "longitude": longitude
                             }
-                        
-                    print('actualizar ruta existente')
-                    send_put_update_ruta(body, id_ruta_creada)
+                            }]
+                        }
+                
+                print(body)
+                    
+                print('actualizar ruta existente')
+                send_put_update_ruta(body,id_ruta)
 
         return {
                 "message": mensaje

@@ -12507,13 +12507,13 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
                     cur.execute(f"""  
                         select id_estado_destino as "status_id" , glosa_destino as "substatus"
                     from paris.conversion_estados_beetrack ceb 
-                    where id_estado = {id_status} and id_subestado = {id_substatus}
+                    where id_subestado = {id_substatus}
                         """)
                 else:
                     cur.execute(f"""  
                         select id_estado_destino as "status_id" , glosa_destino as "substatus"
                     from paris.conversion_estados_beetrack ceb 
-                    where id_estado = {id_status} and id_subestado = {id_substatus}
+                    where id_subestado = {id_substatus}
                         """)
                 return cur.fetchone()
 
