@@ -734,7 +734,7 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
 
             # conn.update_estado_dispatch_paris(data.dispatch_id, data.status,data.substatus_code)
 
-            
+
             if body_estados is None:
                 body_estados = [1,None]
 
@@ -921,7 +921,7 @@ async def post_dispatch_guide(dispatch_id :int):
             }
 
 
-@app.get("/api/v2/dispatch/paris/actualizacion")
+@app.post("/api/v2/dispatch/paris/actualizacion")
 async def post_dispatch_guide(request : Request , headers: tuple = Depends(validar_encabezados)):
 
     body = await request.json()  # Obtener el cuerpo como JSON
