@@ -945,8 +945,8 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
             filename = os.path.join(folder, f"datos_guia_despacho_{timestamp}.txt")
 
-        with open(filename, "w") as f:
-            json.dump(body, f, indent=4)
+            with open(filename, "w") as f:
+                json.dump(body, f, indent=4)
 
 
 
@@ -961,6 +961,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
             os.makedirs(folder, exist_ok=True)
             
             filename = os.path.join(folder, f"datos_despacho_{timestamp}.txt")
+
 
             with open(filename, "w") as f:
                 json.dump(body, f, indent=4)
