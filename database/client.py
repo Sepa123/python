@@ -12541,6 +12541,20 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
             return cur.fetchone()
 
 
+    def guardar_informacion_de_rutas_paris(self, ppu, id_route_ty, id_route_paris,is_trunk):
+
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            INSERT INTO paris.ppu_tracking
+            (ppu, id_route_ty, id_route_paris, is_trunk)
+            VALUES('{ppu}', {id_route_ty}, {id_route_paris}, {is_trunk});
+                """)
+            
+        self.conn.commit()
+
+    
+
+
     
 
 
