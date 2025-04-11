@@ -671,16 +671,16 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
 
     body = await request.json()  # Obtener el cuerpo como JSON
 
-    date_actual = datetime.now().strftime("%Y-%m-%d")
+    # date_actual = datetime.now().strftime("%Y-%m-%d")
 
-    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    filename = f"datos_wh_bt_yanez_inicial_{timestamp}.txt"
+    # timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    # filename = f"datos_wh_bt_yanez_inicial_{timestamp}.txt"
 
 
-    # body = await request.json()  # Obtener el cuerpo como JSON
-    # Guardar el contenido del JSON en un archivo de texto
-    with open(filename, "w") as f:
-        json.dump(body, f, indent=4)
+    # # body = await request.json()  # Obtener el cuerpo como JSON
+    # # Guardar el contenido del JSON en un archivo de texto
+    # with open(filename, "w") as f:
+    #     json.dump(body, f, indent=4)
 
     
 
@@ -900,12 +900,12 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
 
         body = await request.json()  # Obtener el cuerpo como JSON
 
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        filename = f"datos_wh_bt_yanez__error_400_{timestamp}.txt"
+        # timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        # filename = f"datos_wh_bt_yanez__error_400_{timestamp}.txt"
 
-        # Guardar el contenido del JSON en un archivo de texto
-        with open(filename, "w") as f:
-            f.write(str(error))
+        # # Guardar el contenido del JSON en un archivo de texto
+        # with open(filename, "w") as f:
+        #     f.write(str(error))
 
         print('Error al recibir el cuerpo del mensaje de dispatch paris',error)
         raise HTTPException(status_code=400, detail="Error al recibir el cuerpo del mensaje")
