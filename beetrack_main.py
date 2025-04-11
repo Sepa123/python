@@ -776,7 +776,7 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
 
                 if verificar_info_ruta is None:
 
-                    if data.truck_identifier is None:
+                    if data.truck_identifier is not None:
                         print('se debe crearr vehiculo en paris')
                         crear_vehiculo_paris(data.truck_identifier)  
                         
