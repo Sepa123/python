@@ -12496,6 +12496,18 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
             
         self.conn.commit()
 
+    
+    # def update_ruta_paris(self, body):
+
+    #     with self.conn.cursor() as cur:
+    #         cur.execute("""
+    #         UPDATE paris.route
+    #         SET resource= %(resource)s, evento= %(event)s, account_name=%(account_name)s, route=0, account_id=0, fecha='', truck='', truck_driver='', started=true, started_at='', ended=false, ended_at='', nombre_ruta_ty='', id_razon_social=0
+    #         WHERE id=nextval('paris.route_id_seq'::regclass);
+    #     """, body)
+            
+    #     self.conn.commit()
+
 
 
     ### Estado Paris
