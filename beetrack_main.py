@@ -1119,11 +1119,11 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
                     if id_ruta_creada is not None:
                         ### se usa send_put_update_ruta para actualizar la ruta a started : true
-                        pass
-                        # body_started = {"started": True}
-                        # print('empezar RUTA NUEVA')
-                        # send_put_update_ruta(body_started, id_ruta_creada)
-                        # no_ejecutar = False
+                    
+                        body_started = {"started": True}
+                        print('empezar RUTA NUEVA')
+                        send_put_update_ruta(body_started, id_ruta_creada)
+                        no_ejecutar = False
 
                     else:
 
@@ -1171,9 +1171,8 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
                         id_ruta = conn.read_route_paris(data.identifier)[0]
 
-                        # if verificar_info_ruta is None:
-                        # conn.guardar_informacion_de_rutas_paris(data.truck_identifier,id_ruta,id_ruta_creada,data.is_trunk)
-
+                        if verificar_info_ruta is None:
+                             conn.guardar_informacion_de_rutas_paris(data.truck_identifier,id_ruta,id_ruta_creada,data.is_trunk)
                         send_put_update_ruta(body_started, id_ruta_creada)
 
    
