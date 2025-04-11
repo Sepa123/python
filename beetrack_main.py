@@ -679,6 +679,8 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
     with open(filename, "w") as f:
         json.dump(body, f, indent=4)
 
+    
+
     try:
 
         if body["resource"] == "dispatch_guide":
@@ -691,6 +693,11 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
             mensaje = "Recibido Modelo Actualización Guia"
             data = ActualizacionGuia(**body)
             body_estados = None
+
+            if data.route_id is None:
+                verificar_info_ruta = None
+            else:
+                verificar_info_ruta = conn.verificar_informacion_ruta_paris(data.route_id)
 
             # print(data.waypoint)
 
@@ -753,6 +760,8 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
                 
                 print(body)
 
+                
+
                 conn.guardar_informacion_de_rutas_paris(data.truck_identifier,id_ruta,id_ruta,data.is_trunk)
 
                 # send_put_request(body[0][0], data.guide)
@@ -762,94 +771,96 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
 
                 ### se crea primero el vehiculo en paris
 
+                if verificar_info_ruta is None:
 
-                if data.truck_identifier is None:
-                    print('se debe crearr vehiculo en paris')
-                    crear_vehiculo_paris(data.truck_identifier)  
-                    
-                    date_actual = datetime.now().strftime("%Y-%m-%d")
+                    if data.truck_identifier is None:
+                        print('se debe crearr vehiculo en paris')
+                        crear_vehiculo_paris(data.truck_identifier)  
+                        
+                        date_actual = datetime.now().strftime("%Y-%m-%d")
 
-                ### luego se crea la ruta en paris
-                body_ruta = {
-                    "truck_identifier":data.truck_identifier,
-                    "date": date_actual
-                    # "dispatches": [{"identifier": data.identifier}]
-                }
+                    ### luego se crea la ruta en paris
+                    body_ruta = {
+                        "truck_identifier":data.truck_identifier,
+                        "date": date_actual
+                        # "dispatches": [{"identifier": data.identifier}]
+                    }
 
-                if data.route_id is None:
-                    id_ruta_creada = crear_ruta_paris(body_ruta)
-                    print(' rUTA NUEVA')
-                    time.sleep(0.8)
+                    if data.route_id is None:
+                        id_ruta_creada = crear_ruta_paris(body_ruta)
+                        print(' rUTA NUEVA')
+                        time.sleep(0.8)
 
-                else:
-                    id_ruta_creada =  None
+                    else:
+                        id_ruta_creada =  None
 
-                no_ejecutar = True
+                    no_ejecutar = True
 
-                if id_ruta_creada is not None:
-                    ### se usa send_put_update_ruta para actualizar la ruta a started : true
-                    pass
-                    # body_started = {"started": True}
-                    # print('empezar RUTA NUEVA')
-                    # send_put_update_ruta(body_started, id_ruta_creada)
-                    # no_ejecutar = False
+                    if id_ruta_creada is not None:
+                        ### se usa send_put_update_ruta para actualizar la ruta a started : true
+                        pass
+                        # body_started = {"started": True}
+                        # print('empezar RUTA NUEVA')
+                        # send_put_update_ruta(body_started, id_ruta_creada)
+                        # no_ejecutar = False
 
-                else:
+                    else:
 
-                    print(data.route_id)
-                    # id_ruta_creada = data.route_id
+                        print(data.route_id)
+                        # id_ruta_creada = data.route_id
 
-                    time.sleep(0.8)
+                        time.sleep(0.8)
 
-                    # if no_ejecutar == True:
-                    #     pass
-                    # else:
+                        # if no_ejecutar == True:
+                        #     pass
+                        # else:
 
-                    # id_ruta = conn.read_route_paris(data.identifier)[0]
-                    # print(id_ruta)
+                        # id_ruta = conn.read_route_paris(data.identifier)[0]
+                        # print(id_ruta)
 
-                    ruta_id = verificar_si_ruta_paris_existe(data.route_id)
+                        ruta_id = verificar_si_ruta_paris_existe(data.route_id)
 
                     if ruta_id is None:
                         ### luego se crea la ruta en paris
-                            body_ruta = {
-                                "truck_identifier":data.truck_identifier,
-                                "date": date_actual
-                                # "dispatches": [{"identifier": data.identifier}]
-                            }
+                        body_ruta = {
+                            "truck_identifier":data.truck_identifier,
+                            "date": date_actual
+                            # "dispatches": [{"identifier": data.identifier}]
+                        }
 
-                            id_ruta_creada = crear_ruta_paris(body_ruta)
-                            print(' RUTA NUEVA ',id_ruta_creada)
-                            time.sleep(0.8)
-                            body_started = {
-                                "id": id_ruta_creada,
-                                "dispatches": 
-                                    [{
-                                    "identifier": data.identifier,
-                                    "status_id": body_estados[0],
-                                    "substatus": body_estados[1],
-                                    "place": "CT Transyañez",
-                                    "is_trunk":  data.is_trunk,
-                                    "waypoint": {
-                                        "latitude": latitude,
-                                        "longitude": longitude
-                                    }
-                                    }]
+                        id_ruta_creada = crear_ruta_paris(body_ruta)
+                        print(' RUTA NUEVA ',id_ruta_creada)
+                        time.sleep(0.8)
+                        body_started = {
+                            "id": id_ruta_creada,
+                            "dispatches": 
+                                [{
+                                "identifier": data.identifier,
+                                "status_id": body_estados[0],
+                                "substatus": body_estados[1],
+                                "place": "CT Transyañez",
+                                "is_trunk":  data.is_trunk,
+                                "waypoint": {
+                                    "latitude": latitude,
+                                    "longitude": longitude
                                 }
-                            print('empezar RUTA NUEVA')
+                                }]
+                            }
+                        print('empezar RUTA NUEVA')
 
-                            id_ruta = conn.read_route_paris(data.identifier)[0]
+                        id_ruta = conn.read_route_paris(data.identifier)[0]
 
-                            conn.guardar_informacion_de_rutas_paris(data.truck_identifier,id_ruta,id_ruta_creada,data.is_trunk)
+                        conn.guardar_informacion_de_rutas_paris(data.truck_identifier,id_ruta,id_ruta_creada,data.is_trunk)
 
-                            send_put_update_ruta(body_started, id_ruta_creada)
+                        send_put_update_ruta(body_started, id_ruta_creada)
 
    
                     else:
+                        pass
 
-
-
-                        body = {
+                else:
+                    ### se hacce la actualizacion de la ruta existente
+                    body = {
                                 "id": data.route_id,
                                 "dispatches": 
                                     [{
@@ -865,10 +876,10 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
                                     }]
                                 }
                         
-                        print(body)
+                    print(body)
                             
-                        print('actualizar ruta existente')
-                        send_put_update_ruta(body,data.route_id)
+                    print('actualizar ruta existente')
+                    send_put_update_ruta(body,data.route_id)
 
         return {
                 "message": mensaje
