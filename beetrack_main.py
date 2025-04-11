@@ -943,7 +943,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
             # Asegúrate de que la carpeta exista
             os.makedirs(folder, exist_ok=True)
 
-            filename = os.path.join(folder, f"datos_guia_despacho_{timestamp}.txt")
+            filename = os.path.join(folder, f"datos_guia_despacho_{data.dispatch_guide.guide}_{timestamp}.txt")
 
             with open(filename, "w") as f:
                 json.dump(body, f, indent=4)
@@ -960,7 +960,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
             # Asegúrate de que la carpeta exista
             os.makedirs(folder, exist_ok=True)
             
-            filename = os.path.join(folder, f"datos_despacho_{timestamp}.txt")
+            filename = os.path.join(folder, f"datos_despacho_{data.dispatch_id}_{timestamp}.txt")
 
 
             with open(filename, "w") as f:
@@ -977,7 +977,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
             # Asegúrate de que la carpeta exista
             os.makedirs(folder, exist_ok=True)
 
-            filename = os.path.join(folder, f"datos_despacho_{timestamp}.txt")
+            filename = os.path.join(folder, f"datos_ruta_{data.route}_{timestamp}.txt")
 
             with open(filename, "w") as f:
                 json.dump(body, f, indent=4)
