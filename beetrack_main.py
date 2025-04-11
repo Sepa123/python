@@ -733,6 +733,8 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
             # print("Body", body_estados)
 
             # conn.update_estado_dispatch_paris(data.dispatch_id, data.status,data.substatus_code)
+
+            
             if body_estados is None:
                 body_estados = [1,None]
 
@@ -764,8 +766,8 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
 
 
                 if verificar_info_ruta is None:
-                    pass
-                    # conn.guardar_informacion_de_rutas_paris(data.truck_identifier,id_ruta,id_ruta,data.is_trunk)
+                    
+                    conn.guardar_informacion_de_rutas_paris(data.truck_identifier,id_ruta,id_ruta,data.is_trunk)
 
                 # send_put_request(body[0][0], data.guide)
                 send_put_update_ruta(body, id_ruta)
@@ -917,6 +919,81 @@ async def post_dispatch_guide(dispatch_id :int):
     return {
             "body" : lista_cartones[0]
             }
+
+
+@app.get("/api/v2/dispatch/paris/actualizacion")
+async def post_dispatch_guide(request : Request , headers: tuple = Depends(validar_encabezados)):
+
+    body = await request.json()  # Obtener el cuerpo como JSON
+
+    try:
+
+        if body["resource"] == "dispatch_guide":
+            mensaje = "Recibido Modelo Creación Guia"
+            data = CreacionGuia(**body)
+
+
+
+        if body["resource"] == "dispatch":
+            mensaje = "Recibido Modelo Actualización Guia"
+            data = ActualizacionGuia(**body)
+
+            lista_cartones = conn.get_cartones_despacho_paris(data.guide)[0]
+
+            # print (data.route_id)
+            if lista_cartones is None:
+                lista_cartones = []
+
+            for n in range(len(data.items)):
+                carton = [extra.value for extra in data.items[n].extras if extra.name == 'CARTONID'][0]
+                # print(carton)
+                if carton not in lista_cartones :
+
+                    ingreso = construct_body_from_actualizacion_guia(data,n)
+                    conn.insert_dispatch_paris(ingreso)
+                    lista_cartones.append(carton)
+
+                else:
+                    print('carton ya existe', carton)
+
+
+                    if data.status is None:
+                        data.status = 0
+
+                    if data.substatus_code is None:
+                        data.substatus_code = 0
+
+
+
+        if body["resource"] == "route":
+            mensaje = "Recibido Modelo Creación Ruta"
+            data = CreacionRuta(**body)
+
+            data = data.dict()
+
+            conn.insert_creacion_ruta_paris(data)
+
+            print("data rutacreada", data)
+
+
+
+        body = await request.json() 
+            # Generar nombre de archivo único usando timestamp
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        filename = f"datos_{timestamp}.txt"
+
+        # Guardar el contenido del JSON en un archivo de texto
+        with open(filename, "w") as f:
+            json.dump(body, f, indent=4)
+
+        return {
+                "message": mensaje
+                # "datos": data
+                }
+    except Exception as error:
+
+        print('Error al recibir el cuerpo del mensaje de dispatch paris',error)
+        raise HTTPException(status_code=400, detail="Error al recibir el cuerpo del mensaje")
 
 ########### esto es el login migrado para no sufra por las c aidas
 from database.models.user import loginSchema
