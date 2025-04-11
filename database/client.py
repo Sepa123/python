@@ -12578,6 +12578,16 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
                     """)
                 return cur.fetchone()
 
+    def update_campos_dispatch_paris(self, id_dispatch,estado,subestado):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            UPDATE paris.dispatch_paris AS tgt
+            SET estado = {estado}, subestado = {subestado}
+            WHERE dispatch_id = {id_dispatch}
+            """)
+            row = cur.rowcount
+        self.conn.commit()
+
     
     def update_estado_dispatch_paris(self, id_dispatch,estado,subestado):
         with self.conn.cursor() as cur:
