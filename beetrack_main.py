@@ -929,7 +929,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
     date_actual = datetime.now().strftime("%Y-%m-%d")
 
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    filename = f"archivosActualizacion_{timestamp}.txt"
+    filename = f"datos_wh_bt_yanez_inicial_{timestamp}.txt"
 
 
     # body = await request.json()  # Obtener el cuerpo como JSON
@@ -939,66 +939,41 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
     try:
 
-        # if body["resource"] == "dispatch_guide":
-        #     mensaje = "Recibido Modelo Creación Guia"
-        #     data = CreacionGuia(**body)
+        if body["resource"] == "dispatch_guide":
+            mensaje = "Recibido Modelo Creación Guia"
+            data = CreacionGuia(**body)
+
+            filename = f"datos_guia_despacho_{timestamp}.txt"
+
+        with open(filename, "w") as f:
+            json.dump(body, f, indent=4)
 
 
 
-        # if body["resource"] == "dispatch":
-        #     mensaje = "Recibido Modelo Actualización Guia"
-        #     data = ActualizacionGuia(**body)
+        if body["resource"] == "dispatch":
+            
+            mensaje = "Recibido Modelo Actualización Guia"
+            data = ActualizacionGuia(**body)
+            
+            filename = f"datos_despacho_{timestamp}.txt"
 
-        #     lista_cartones = conn.get_cartones_despacho_paris(data.guide)[0]
+            with open(filename, "w") as f:
+                json.dump(body, f, indent=4)
 
-        #     # print (data.route_id)
-        #     if lista_cartones is None:
-        #         lista_cartones = []
+        
 
-        #     for n in range(len(data.items)):
-        #         carton = [extra.value for extra in data.items[n].extras if extra.name == 'CARTONID'][0]
-        #         # print(carton)
-        #         if carton not in lista_cartones :
+        if body["resource"] == "route":
+            mensaje = "Recibido Modelo Creación Ruta"
+            data = CreacionRuta(**body)
 
-        #             ingreso = construct_body_from_actualizacion_guia(data,n)
-        #             conn.insert_dispatch_paris(ingreso)
-        #             lista_cartones.append(carton)
+            filename = f"datos_despacho_{timestamp}.txt"
 
-        #         else:
-        #             print('carton ya existe', carton)
+            with open(filename, "w") as f:
+                json.dump(body, f, indent=4)
 
-
-        #             if data.status is None:
-        #                 data.status = 0
-
-        #             if data.substatus_code is None:
-        #                 data.substatus_code = 0
-
-
-
-        # if body["resource"] == "route":
-        #     mensaje = "Recibido Modelo Creación Ruta"
-        #     data = CreacionRuta(**body)
-
-        #     data = data.dict()
-
-        #     conn.insert_creacion_ruta_paris(data)
-
-        #     print("data rutacreada", data)
-
-
-
-        # body = await request.json() 
-        #     # Generar nombre de archivo único usando timestamp
-        # timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        # filename = f"datos_{timestamp}.txt"
-
-        # # Guardar el contenido del JSON en un archivo de texto
-        # with open(filename, "w") as f:
-        #     json.dump(body, f, indent=4)
 
         return {
-                "message": "data recibida"
+                "message": mensaje
                 # "datos": data
                 }
     except Exception as error:
