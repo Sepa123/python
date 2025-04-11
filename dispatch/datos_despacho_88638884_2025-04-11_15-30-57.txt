@@ -1,0 +1,58 @@
+{
+    "resource": "dispatch",
+    "event": "update",
+    "account_name": "Transya\u00f1ez",
+    "account_id": 2097,
+    "guide": "397690",
+    "identifier": "397690",
+    "beecode": "3b8155b28e656272b99db504",
+    "mode": 0,
+    "position": 1,
+    "route_id": 5145648,
+    "dispatch_id": 88638884,
+    "truck_identifier": "AAAA01",
+    "truck_type": "Cami\u00f3n",
+    "status": 2,
+    "estimated_at": "2025-04-11T10:38:39.000-04:00",
+    "max_delivery_time": null,
+    "min_delivery_time": null,
+    "is_pickup": false,
+    "is_trunk": true,
+    "locked": false,
+    "substatus": "Entregado",
+    "substatus_code": "1",
+    "contact_name": "Enzo Parra Ibarr",
+    "contact_phone": "+56994255964",
+    "contact_identifier": "17.429.539-5",
+    "contact_email": "enzo.parraibarra@paris.cl",
+    "contact_address": "Av.El Golf 203, LAS CONDES, SANTIAGO",
+    "tags": [],
+    "items": [
+        {
+            "id": 114399715,
+            "name": "BOX SPRING W 16006130",
+            "description": "BOX SPRING W 16006130",
+            "quantity": 1,
+            "original_quantity": 1,
+            "delivered_quantity": 1,
+            "code": "318474999",
+            "extras": []
+        }
+    ],
+    "groups": [
+        {
+            "name": "Paris",
+            "group_category": "Cliente",
+            "group_category_id": 462658,
+            "associated_at": "2025-04-11T10:10:16-04:00"
+        }
+    ],
+    "arrived_at": "2025-04-11 10:31:58-0400",
+    "evaluation_answers": [],
+    "truck_groups": [],
+    "kpi_distance": 0.0868638,
+    "real_distance": 0,
+    "time_of_management": "2025-04-11T10:31:58-04:00",
+    "management_latitude": null,
+    "management_longitude": null
+}

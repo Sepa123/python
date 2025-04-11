@@ -12497,16 +12497,17 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
         self.conn.commit()
 
     
-    # def update_ruta_paris(self, body):
+    def update_ruta_paris(self, body):
 
-    #     with self.conn.cursor() as cur:
-    #         cur.execute("""
-    #         UPDATE paris.route
-    #         SET resource= %(resource)s, evento= %(event)s, account_name=%(account_name)s, route=0, account_id=0, fecha='', truck='', truck_driver='', started=true, started_at='', ended=false, ended_at='', nombre_ruta_ty='', id_razon_social=0
-    #         WHERE id=nextval('paris.route_id_seq'::regclass);
-    #     """, body)
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            UPDATE paris.route
+            SET resource= %(resource)s, evento= %(event)s, account_name=%(account_name)s,  account_id=%(account_id)s, fecha=%(date)s, truck=%(truck)s, 
+                truck_driver=%(truck_driver)s, started=%(started)s, started_at=%(started_at)s, ended=%(ended)s, ended_at= %(ended_at)s
+            WHERE route=%(route)s;
+        """, body)
             
-    #     self.conn.commit()
+        self.conn.commit()
 
 
 
@@ -12553,14 +12554,14 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
             return cur.fetchone()
 
 
-    def guardar_informacion_de_rutas_paris(self, ppu, id_route_ty, id_route_paris,is_trunk):
+    def guardar_informacion_de_rutas_paris(self, body):
 
         with self.conn.cursor() as cur:
-            cur.execute(f"""
+            cur.execute("""
             INSERT INTO paris.ppu_tracking
             (ppu, id_route_ty, id_route_paris, is_trunk)
-            VALUES('{ppu}', {id_route_ty}, {id_route_paris}, {is_trunk});
-                """)
+            VALUES(%(ppu)s, %(id_route_ty)s, %(id_route_paris)s, %(is_trunk)s);
+                """,body)
             
         self.conn.commit()
 
