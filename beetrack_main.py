@@ -1,4 +1,5 @@
 import json
+import os
 import time
 from fastapi import  Request, status,HTTPException,Header,Depends,FastAPI
 from typing import List , Dict ,Union
@@ -929,13 +930,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
     date_actual = datetime.now().strftime("%Y-%m-%d")
 
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    filename = f"datos_wh_bt_yanez_inicial_{timestamp}.txt"
 
-
-    # body = await request.json()  # Obtener el cuerpo como JSON
-    # Guardar el contenido del JSON en un archivo de texto
-    with open(filename, "w") as f:
-        json.dump(body, f, indent=4)
 
     try:
 
@@ -943,7 +938,12 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
             mensaje = "Recibido Modelo Creación Guia"
             data = CreacionGuia(**body)
 
-            filename = f"datos_guia_despacho_{timestamp}.txt"
+            folder = "dispatch_guide"
+
+            # Asegúrate de que la carpeta exista
+            os.makedirs(folder, exist_ok=True)
+
+            filename = os.path.join(folder, f"datos_guia_despacho_{timestamp}.txt")
 
         with open(filename, "w") as f:
             json.dump(body, f, indent=4)
@@ -954,8 +954,13 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
             
             mensaje = "Recibido Modelo Actualización Guia"
             data = ActualizacionGuia(**body)
+
+            folder = "dispatch"
+
+            # Asegúrate de que la carpeta exista
+            os.makedirs(folder, exist_ok=True)
             
-            filename = f"datos_despacho_{timestamp}.txt"
+            filename = os.path.join(folder, f"datos_despacho_{timestamp}.txt")
 
             with open(filename, "w") as f:
                 json.dump(body, f, indent=4)
@@ -966,7 +971,12 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
             mensaje = "Recibido Modelo Creación Ruta"
             data = CreacionRuta(**body)
 
-            filename = f"datos_despacho_{timestamp}.txt"
+            folder = "route"
+
+            # Asegúrate de que la carpeta exista
+            os.makedirs(folder, exist_ok=True)
+
+            filename = os.path.join(folder, f"datos_despacho_{timestamp}.txt")
 
             with open(filename, "w") as f:
                 json.dump(body, f, indent=4)
