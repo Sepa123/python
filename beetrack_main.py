@@ -538,9 +538,11 @@ def obtener_info_despacho(distpach):
 
     # Verificamos la respuesta
     if response.status_code == 200:
-        print("Solicitud GET exitosa:", response.json())
 
-        return distpach
+        data = response.json()
+        # print("Solicitud GET exitosa:", response.json())
+        route_id = data["response"]["route_id"]
+        return route_id
 
         # body = response.json()
 
@@ -1050,10 +1052,10 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                 print("trunk : true")
                 # id_ruta = conn.read_route_paris(data.identifier)[0]
 
-                
+                id_ruta_paris = obtener_info_despacho(data.identifier)
 
                 body_put_request = {
-                    "id": data.route_id,
+                    "id": id_ruta_paris,
                     "dispatches": 
                         [{
                         "identifier": data.identifier,
@@ -1074,20 +1076,21 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
 
                 if verificar_info_ruta is None:
-    
+
+
                     body_info_ruta = {
                         "ppu" : data.truck_identifier, 
                         "id_route_ty" : data.route_id, 
-                        "id_route_paris" : data.route_id, 
+                        "id_route_paris" : id_ruta_paris, 
                         "is_trunk" : True
                     }
 
                     print(body_info_ruta)
-                    
+            
                     conn.guardar_informacion_de_rutas_paris(body_info_ruta)
 
                 # send_put_request(body[0][0], data.guide)
-                send_put_update_ruta(body_put_request, data.truck_identifier)
+                send_put_update_ruta(body_put_request, id_ruta_paris)
 
             else: ## si el troncal viene como false, entonces se actualiza de la forma culera
                 print('troncal : false')
