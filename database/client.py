@@ -12555,7 +12555,7 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
     def verificar_informacion_ruta_paris(self, id_route_ty):
         with self.conn.cursor() as cur:
             cur.execute(f"""  
-                select   from paris.ppu_tracking
+                select  id_route_ty, id_route_paris from paris.ppu_tracking
                 where id_route_ty = {id_route_ty} 
                 """)
             return cur.fetchone()
