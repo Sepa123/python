@@ -854,7 +854,7 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
                         id_ruta = conn.read_route_paris(data.identifier)[0]
 
                         # if verificar_info_ruta is None:
-                        conn.guardar_informacion_de_rutas_paris(data.truck_identifier,id_ruta,id_ruta_creada,data.is_trunk)
+                        # conn.guardar_informacion_de_rutas_paris(data.truck_identifier,id_ruta,id_ruta_creada,data.is_trunk)
 
                         send_put_update_ruta(body_started, id_ruta_creada)
 

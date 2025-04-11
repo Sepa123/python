@@ -1,0 +1,17 @@
+{
+    "status": "ok",
+    "response": {
+        "id": 92446,
+        "truck": "AAAA01",
+        "vehicle_type": "truck",
+        "groups": [
+            {
+                "group_category_id": 462657,
+                "group_category": "AGRUPACIONES DE TRANSPORTES",
+                "name": "Transya\u00f1ez"
+            }
+        ],
+        "truck_created": true,
+        "created": true
+    }
+}
