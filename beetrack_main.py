@@ -670,6 +670,8 @@ async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(va
 
     body = await request.json()  # Obtener el cuerpo como JSON
 
+    date_actual = datetime.now().strftime("%Y-%m-%d")
+
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     filename = f"datos_wh_bt_yanez_inicial_{timestamp}.txt"
 
