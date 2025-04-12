@@ -1249,16 +1249,16 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                 pass
 
             else:
-                print('la ruta ya existe en paris', ruta_paris)
+                print('la ruta ya existe en paris', ruta_paris[1])
 
                 body_put_request = {
                     "started": data.started
                 }
 
-                send_put_update_ruta(body_put_request, id_ruta_creada)
+                send_put_update_ruta(body_put_request, ruta_paris[1])
 
 
-                
+
 
             
             #### evento de create route
