@@ -1113,25 +1113,36 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
             else: ## si el troncal viene como false, entonces se actualiza de la forma culera
                 print('troncal : false')
 
-                if verificar_info_ruta is None:
+                if verificar_info_ruta is None: ### no recibo nada es porque la ruta no se ha creado aun
 
-                    if data.truck_identifier is not None:
+                    if data.truck_identifier is not None: ## si no hay patente, no utlilizar
                         print('se debe crearr vehiculo en paris')
                         crear_vehiculo_paris(data.truck_identifier)  
                         
                         date_actual = datetime.now().strftime("%Y-%m-%d")
 
-                    ### luego se crea la ruta en paris
-                    body_ruta = {
-                        "truck_identifier":data.truck_identifier,
-                        "date": date_actual
-                        # "dispatches": [{"identifier": data.identifier}]
-                    }
+                        ### luego se crea la ruta en paris
+                        body_ruta = {
+                            "truck_identifier":data.truck_identifier,
+                            "date": date_actual
+                            # "dispatches": [{"identifier": data.identifier}]
+                        }
 
-                    if data.route_id is None:
+                        # if data.route_id is None:
                         id_ruta_creada = crear_ruta_paris(body_ruta)
                         print(' rUTA NUEVA')
                         time.sleep(0.8)
+
+                        body_info_ruta = {
+                        "ppu" : data.truck_identifier, 
+                        "id_route_ty" : data.route_id, 
+                        "id_route_paris" : id_ruta_creada, 
+                        "is_trunk" : True
+                        }
+
+                        print(body_info_ruta)
+                
+                        conn.guardar_informacion_de_rutas_paris(body_info_ruta)
 
                     else:
                         id_ruta_creada =  None
@@ -1140,11 +1151,11 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
                     if id_ruta_creada is not None:
                         ### se usa send_put_update_ruta para actualizar la ruta a started : true
-                    
-                        body_started = {"started": True}
-                        print('empezar RUTA NUEVA')
-                        send_put_update_ruta(body_started, id_ruta_creada)
-                        no_ejecutar = False
+                        pass
+                        # body_started = {"started": True}
+                        # print('empezar RUTA NUEVA')
+                        # send_put_update_ruta(body_started, id_ruta_creada)
+                        # no_ejecutar = False
 
                     else:
 
@@ -1152,13 +1163,6 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                         # id_ruta_creada = data.route_id
 
                         time.sleep(0.8)
-
-                        # if no_ejecutar == True:
-                        #     pass
-                        # else:
-
-                        # id_ruta = conn.read_route_paris(data.identifier)[0]
-                        # print(id_ruta)
 
                         ruta_id = verificar_si_ruta_paris_existe(data.route_id)
 
@@ -1192,8 +1196,6 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
                         id_ruta = conn.read_route_paris(data.identifier)[0]
 
-                        if verificar_info_ruta is None:
-                             conn.guardar_informacion_de_rutas_paris(data.truck_identifier,id_ruta,id_ruta_creada,data.is_trunk)
                         send_put_update_ruta(body_started, id_ruta_creada)
 
    
@@ -1203,7 +1205,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                 else:
                     ### se hacce la actualizacion de la ruta existente
                     body = {
-                                "id": data.route_id,
+                                "id": verificar_info_ruta[1],
                                 "dispatches": 
                                     [{
                                     "identifier": data.identifier,
