@@ -12570,6 +12570,7 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
             cur.execute(f"""  
                 select  id_route_ty, id_route_paris from paris.ppu_tracking
                 where id_route_ty = {id_route_ty} 
+                order by created_at desc
                 """)
             return cur.fetchone()
 

@@ -990,12 +990,6 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                 json.dump(body, f, indent=4)
 
 
-            
-
-            
-
-
-
         if body["resource"] == "dispatch":
             
             mensaje = "Recibido Modelo Actualización Guia"
@@ -1052,10 +1046,43 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                 print("trunk : true")
                 # id_ruta = conn.read_route_paris(data.identifier)[0]
 
-                id_ruta_paris = obtener_info_despacho(data.identifier)
+                #####  primero hay que verificar la ruta de paris, si existe o no existe
+                #### en base a lo que reciba de la tabla de ppu_tracking
+
+                if verificar_info_ruta is None: ### no recibo nada es porque la ruta no se ha creado aun
+
+                    ### luego se crea la ruta en paris
+                    body_ruta = {
+                        "truck_identifier":data.truck_identifier,
+                        "date": date_actual
+                        # "dispatches": [{"identifier": data.identifier}]
+                    }
+
+                    # if data.route_id is None:
+                    id_ruta_creada = crear_ruta_paris(body_ruta)
+
+                    body_info_ruta = {
+                        "ppu" : data.truck_identifier, 
+                        "id_route_ty" : data.route_id, 
+                        "id_route_paris" : id_ruta_creada, 
+                        "is_trunk" : True
+                    }
+
+                    print(body_info_ruta)
+            
+                    conn.guardar_informacion_de_rutas_paris(body_info_ruta)
+
+                else: ### si la ruta existe, entonces se debe actualizar el id de la ruta en paris
+                    print('la ruta ya existe')
+                    id_ruta_creada = verificar_info_ruta[1]
+
+                    print("id paris existente",id_ruta_creada)
+
+                    id_ruta_paris = obtener_info_despacho(data.identifier)
+                    
 
                 body_put_request = {
-                    "id": id_ruta_paris,
+                    "id": id_ruta_creada,
                     "dispatches": 
                         [{
                         "identifier": data.identifier,
@@ -1075,22 +1102,13 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                 print('verificar info ruta',verificar_info_ruta)
 
 
-                if verificar_info_ruta is None:
+                # if verificar_info_ruta is None:
 
 
-                    body_info_ruta = {
-                        "ppu" : data.truck_identifier, 
-                        "id_route_ty" : data.route_id, 
-                        "id_route_paris" : id_ruta_paris, 
-                        "is_trunk" : True
-                    }
-
-                    print(body_info_ruta)
-            
-                    conn.guardar_informacion_de_rutas_paris(body_info_ruta)
+                    
 
                 # send_put_request(body[0][0], data.guide)
-                send_put_update_ruta(body_put_request, id_ruta_paris)
+                send_put_update_ruta(body_put_request, id_ruta_creada)
 
             else: ## si el troncal viene como false, entonces se actualiza de la forma culera
                 print('troncal : false')
@@ -1186,7 +1204,6 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                     ### se hacce la actualizacion de la ruta existente
                     body = {
                                 "id": data.route_id,
-                                
                                 "dispatches": 
                                     [{
                                     "identifier": data.identifier,
@@ -1210,7 +1227,6 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                 pass
 
 
-
         if body["resource"] == "route":
             mensaje = "Recibido Modelo Creación Ruta"
             data = CreacionRuta(**body)
@@ -1224,6 +1240,25 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
             with open(filename, "w") as f:
                 json.dump(body, f, indent=4)
+
+
+            ruta_paris = conn.verificar_informacion_ruta_paris(data.route)
+
+
+            if ruta_paris is None:
+                pass
+
+            else:
+                print('la ruta ya existe en paris', ruta_paris)
+
+                body_put_request = {
+                    "started": data.started
+                }
+
+                send_put_update_ruta(body_put_request, id_ruta_creada)
+
+
+                
 
             
             #### evento de create route
