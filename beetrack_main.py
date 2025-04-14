@@ -529,7 +529,7 @@ def obtener_info_despacho(distpach):
     headers = {
         'Accept': '*/*',
         'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
-        'X-AUTH-TOKEN': config("SECRET_KEY_PARIS"),
+        'X-AUTH-TOKEN': config("SECRET_KEY_PARIS_YANEZ"),
     }
 
     # Realizamos la solicitud PUT
@@ -542,7 +542,33 @@ def obtener_info_despacho(distpach):
         data = response.json()
         # print("Solicitud GET exitosa:", response.json())
         route_id = data["response"]["route_id"]
-        return route_id
+
+        # print("evaluation", data['response']['evaluation_answers'])
+
+        if data.get('response', {}).get('evaluation_answers'):
+            print('no hay evaluacion')
+
+            img_url = []
+
+            for info in data['response']['evaluation_answers']:
+                img_url.append(info['value'])
+
+            body_form = {
+                "img_url": img_url
+            }
+            # return None
+
+        else:
+            print('no hay evaluacion')
+            img_url = []
+
+        print(img_url)
+
+        body_form = {
+            "img_url": img_url
+        }
+
+        return route_id, body_form
 
         # body = response.json()
 
@@ -1078,24 +1104,49 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
                     print("id paris existente",id_ruta_creada)
 
-                    id_ruta_paris = obtener_info_despacho(data.identifier)
-                    
+                    # id_ruta_paris = obtener_info_despacho(data.identifier)
 
-                body_put_request = {
-                    "id": id_ruta_creada,
-                    "dispatches": 
-                        [{
-                        "identifier": data.identifier,
-                        "status_id": body_estados[0],
-                        "substatus": body_estados[1],
-                        "place": "CT Transyañez",
-                        "is_trunk":  data.is_trunk,
-                        "waypoint": {
-                            "latitude": latitude,
-                            "longitude": longitude
+                url_img =  []
+                
+                if data.evaluation_answers is not None:
+
+                    for imagen in data.evaluation_answers:
+                        url_img.append(imagen.value)
+
+                    body_put_request = {
+                        "id": id_ruta_creada,
+                        "dispatches": 
+                            [{
+                            "identifier": data.identifier,
+                            "status_id": body_estados[0],
+                            "substatus": body_estados[1],
+                            "place": "CT Transyañez",
+                            "is_trunk":  data.is_trunk,
+                            "waypoint": {
+                                "latitude": latitude,
+                                "longitude": longitude
+                            },
+                            "form":{
+                                "img_url": url_img
+                                    }
+                        }]
                         }
-                    }]
-                    }
+                else:
+                    body_put_request = {
+                        "id": id_ruta_creada,
+                        "dispatches": 
+                            [{
+                            "identifier": data.identifier,
+                            "status_id": body_estados[0],
+                            "substatus": body_estados[1],
+                            "place": "CT Transyañez",
+                            "is_trunk":  data.is_trunk,
+                            "waypoint": {
+                                "latitude": latitude,
+                                "longitude": longitude
+                            }
+                        }]
+                        }
                 
                 print(body)
 
@@ -1206,21 +1257,49 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
                 else:
                     ### se hacce la actualizacion de la ruta existente
-                    body = {
-                                "id": verificar_info_ruta[1],
-                                "dispatches": 
-                                    [{
-                                    "identifier": data.identifier,
-                                    "status_id": body_estados[0],
-                                    # "substatus": body_estados[1],
-                                    "place": "CT Transyañez",
-                                    "is_trunk":  data.is_trunk,
-                                    "waypoint": {
-                                        "latitude": latitude,
-                                        "longitude": longitude
+
+
+                    if data.evaluation_answers is not None:
+
+                        for imagen in data.evaluation_answers:
+                            url_img.append(imagen.value)
+
+                        body = {
+                                    "id": verificar_info_ruta[1],
+                                    "dispatches": 
+                                        [{
+                                        "identifier": data.identifier,
+                                        "status_id": body_estados[0],
+                                        # "substatus": body_estados[1],
+                                        "place": "CT Transyañez",
+                                        "is_trunk":  data.is_trunk,
+                                        "waypoint": {
+                                            "latitude": latitude,
+                                            "longitude": longitude
+                                        },
+                                        "form":{
+                                            "img_url": url_img
+                                                }
+                                        }]
                                     }
-                                    }]
-                                }
+                    else:
+                        body = {
+                                    "id": verificar_info_ruta[1],
+                                    "dispatches": 
+                                        [{
+                                        "identifier": data.identifier,
+                                        "status_id": body_estados[0],
+                                        # "substatus": body_estados[1],
+                                        "place": "CT Transyañez",
+                                        "is_trunk":  data.is_trunk,
+                                        "waypoint": {
+                                            "latitude": latitude,
+                                            "longitude": longitude
+                                        }
+
+                                        }]
+                                    }
+
                         
                     print(body)
                             
@@ -1442,6 +1521,14 @@ async def get_campos_registro():
 
     return resultado_dict
 
+
+
+@app.get("/api/v2/externo/")
+async def get_campos_registro():
+
+    return "resultado_dict"
+
+# obtener_info_despacho
 
 # # Definir tres modelos distintos
 # class ModeloA(BaseModel):
