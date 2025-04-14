@@ -489,6 +489,48 @@ def get_update_estados_paris_yanez( codigo_guia):
         print(response.text)
 
 
+
+def verificar_si_ruta_paris_existe_despachos(ruta_id):
+
+     # URL del endpoint
+    url = f'https://cluster-staging.dispatchtrack.com/api/external/v1/routes/{ruta_id}'
+
+    # Encabezados
+    headers = {
+        'Accept': '*/*',
+        'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
+        'X-AUTH-TOKEN': config("SECRET_KEY_PARIS"),
+    }
+
+    # Realizamos la solicitud PUT
+    with httpx.Client() as client:
+        response = client.get(url, headers=headers)
+
+    # Verificamos la respuesta
+    if response.status_code == 200:
+        # print("Solicitud GET exitosa:", response.json())
+
+        data = response.json()
+
+        info_despachos = []
+
+        for despachos in data['response']['route']['dispatches']:
+
+            info_despachos.append(despachos['identifier'])
+              
+
+        return info_despachos
+
+        # body = response.json()
+
+    else:
+        print(f"Error en la solicitud GET: {response.status_code}")
+        print(response.text)
+
+        return None
+
+
+
 def verificar_si_ruta_paris_existe(ruta_id):
 
      # URL del endpoint
@@ -1338,17 +1380,48 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
                 if data.event == 'start':
                     print('actualizar a ruta iniciada', ruta_paris[1])
+
+                    despachos = verificar_si_ruta_paris_existe_despachos(ruta_paris[1])
+
+                    for despacho in despachos:
+
+                        print(despacho)
+
+                        body_despacho = {
+                            "started": True,
+                        }   
+                        
+                        print(body_despacho)
+
+                        send_put_request(body_despacho, despacho)
+
+
+
+
+
+
+                    # get_update_estados_paris_yanez(data.route_id)
+
+
                     # row = conn.update_ruta_paris(data.dict())
                     # print(row)
 
-                    body_put_request = {
-                        "started": True,
-                        "started_at": data.started_at
-                    }
+                    # body_put_request = {
+                    #     "started": True,
+                    #     "started_at": data.started_at,
+                    #     "dispatch": [{
+                    #         "identifier": "397684",
 
-                    print(body_put_request)
+                    #     }
+                            
+                    #     ]
+                    # }
 
-                    send_put_update_ruta(body_put_request, ruta_paris[1])
+                    # print(body_put_request)
+
+
+
+                    # send_put_update_ruta(body_put_request, ruta_paris[1])
 
                 else:
                 
