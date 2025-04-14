@@ -769,7 +769,7 @@ async def webhook_dispatch_paris(request : Request , headers: tuple = Depends(va
 
 
 
-@app.post("/api/v2/dispatch/yanez")
+@app.post("/api/v2/dispatch/yanez/erai")
 async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(validar_encabezados)):
 
     body = await request.json()  # Obtener el cuerpo como JSON
