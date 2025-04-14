@@ -1263,7 +1263,8 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                     # print(row)
 
                     body_put_request = {
-                        "started": True
+                        "started": True,
+                        "started_at": data.started_at
                     }
 
                     send_put_update_ruta(body_put_request, ruta_paris[1])
