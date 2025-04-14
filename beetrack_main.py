@@ -1225,7 +1225,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                     print(body)
                             
                     print('actualizar ruta existente')
-                    send_put_update_ruta(body,data.route_id)
+                    send_put_update_ruta(body,verificar_info_ruta[1])
 
 
                 pass
