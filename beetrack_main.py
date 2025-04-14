@@ -1267,6 +1267,8 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                         "started_at": data.started_at
                     }
 
+                    print(body_put_request)
+
                     send_put_update_ruta(body_put_request, ruta_paris[1])
 
                 else:
@@ -1274,11 +1276,11 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                     print('la ruta ya existe en paris', ruta_paris[1])
                     print(data.started)
 
-                    body_put_request = {
-                        "started": data.started
-                    }
+                    # body_put_request = {
+                    #     "started": data.started
+                    # }
 
-                    send_put_update_ruta(body_put_request, ruta_paris[1])
+                    # send_put_update_ruta(body_put_request, ruta_paris[1])
 
 
 
