@@ -992,14 +992,14 @@ async def post_dispatch_guide(dispatch_id :int):
 @app.post("/api/v2/dispatch/paris/actualizacion")
 async def post_dispatch_guide(request : Request , headers: tuple = Depends(validar_encabezados)):
 
-    body = await request.json()  # Obtener el cuerpo como JSON
+        body = await request.json()  # Obtener el cuerpo como JSON
 
-    date_actual = datetime.now().strftime("%Y-%m-%d")
+        date_actual = datetime.now().strftime("%Y-%m-%d")
 
-    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
 
-    try:
+    # try:
 
         if body["resource"] == "dispatch_guide":
             mensaje = "Recibido Modelo Creación Guia"
@@ -1257,7 +1257,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
                 else:
                     ### se hacce la actualizacion de la ruta existente
-
+                    url_img =  []
 
                     if data.evaluation_answers is not None:
 
@@ -1387,10 +1387,10 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                 "message": mensaje
                 # "datos": data
                 }
-    except Exception as error:
+    # except Exception as error:
 
-        print('Error al recibir el cuerpo del mensaje de dispatch paris',error)
-        raise HTTPException(status_code=400, detail="Error al recibir el cuerpo del mensaje")
+    #     print('Error al recibir el cuerpo del mensaje de dispatch paris',error)
+    #     raise HTTPException(status_code=400, detail="Error al recibir el cuerpo del mensaje")
     
 
 

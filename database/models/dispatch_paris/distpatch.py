@@ -27,6 +27,20 @@ class Waypoint(BaseModel):
     latitude : Optional[str]
     longitude : Optional[str]
 
+class ID(BaseModel):
+    oid: Optional[int]
+
+class EvaluationAnswer(BaseModel):
+    id: Optional[ID]
+    cast: Optional[str]
+    code: Optional[str]
+    name: Optional[str]
+    value: Optional[str]
+    web: Optional[bool]
+    evaluation_answer_id: Optional[int]
+    created_at: Optional[str]
+    updated_at: Optional[str]
+
 
 ## Actualización de Guia
 
@@ -62,7 +76,7 @@ class ActualizacionGuia(BaseModel):
     tags: Optional[List[Tag]]
     items: Optional[List[Item]]
     groups: Optional[List[Any]]
-    evaluation_answers: Optional[List[Any]]
+    evaluation_answers: Optional[List[EvaluationAnswer]]
     truck_groups: Optional[List[Any]]
     kpi_distance: Optional[str]
     real_distance: Optional[str]
