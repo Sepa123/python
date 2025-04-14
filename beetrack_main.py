@@ -1113,6 +1113,8 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
             else: ## si el troncal viene como false, entonces se actualiza de la forma culera
                 print('troncal : false')
 
+                print(verificar_info_ruta)
+
                 if verificar_info_ruta is None: ### no recibo nada es porque la ruta no se ha creado aun
 
                     if data.truck_identifier is not None: ## si no hay patente, no utlilizar
@@ -1228,6 +1230,8 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
                 pass
 
+
+        body = await request.json()  # Obtener el cuerpo como JSON
 
         if body["resource"] == "route":
             mensaje = "Recibido Modelo Creación Ruta"
