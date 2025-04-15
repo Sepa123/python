@@ -11981,8 +11981,14 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
     def campos_bitacora_tienda_toc(self):
         with self.conn.cursor() as cur:
             cur.execute(f""" 
-             select 'Estados' as nombre, json_agg(json_build_object('Id_estado',estado ,'Descripcion',descripcion)) as campo 
-				from areati.estado_entregas ee
+             with clientes_ty as (
+                select c.id as "Id_cliente", c.nombre as "Nombre_cliente"
+                from rutas.clientes c 
+                where c.activo = true
+            )
+
+            select 'Estados' as nombre, json_agg(json_build_object('Id_estado',estado ,'Descripcion',descripcion)) as campo 
+                from areati.estado_entregas ee
                 where estado not in  (3)
             union all
             select 'Subestados' as nombre, json_agg(json_build_object('Id_subestado',code ,'Id_estado',parent_code,'Descripcion',name)) as campo 
@@ -11992,8 +11998,7 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
             select 'Codigo1' as nombre, json_agg(json_build_object('Id',id ,'Descripcion',descripcion)) as campo 
                             from rutas.def_codigo1
             union all
-            select 'Clientes' as nombre, json_agg(json_build_object('Id',id ,'Clientes',cliente)) as campo 
-                from rutas.toc_clientes
+            select 'Clientes' as nombre,json_agg(clientes_ty) from clientes_ty
                       """)
             return cur.fetchall()
 
