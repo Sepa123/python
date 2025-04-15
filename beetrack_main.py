@@ -1418,7 +1418,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
                     print(body_put_request)
 
-                    # send_put_update_ruta(body_put_request, ruta_paris[1])
+                    send_put_update_ruta(body_put_request, ruta_paris[1])
 
 
                 if data.event == 'finish':
