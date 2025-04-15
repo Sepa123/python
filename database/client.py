@@ -12454,6 +12454,19 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
     #### Dispatch_paris
 
 
+    def recuperar_ruta_registrada_paris(self,  id_despacho : str) :
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select distinct on (dp.route_id)
+                dp.route_id
+            from paris.dispatch_paris dp
+            where dp.guide = '{id_despacho}'
+
+            """)
+
+            return cur.fetchone()
+
+
     def insert_dispatch_paris(self, body):
 
         with self.conn.cursor() as cur:
@@ -12515,7 +12528,8 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
 
     def read_estados_paris(self, id_status, id_substatus, is_trunk,latitude, longitude):
             with self.conn.cursor() as cur:
-                if is_trunk == True:
+
+                if is_trunk == True :
 
                     cur.execute(f"""  
                         select id_estado_destino as "status_id" , glosa_destino as "substatus"
@@ -12528,6 +12542,9 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
                     from paris.conversion_estados_beetrack ceb 
                     where id_subestado = {id_substatus}
                         """)
+
+                
+                
                 return cur.fetchone()
 
         #### UPDATE RUTA PARIS

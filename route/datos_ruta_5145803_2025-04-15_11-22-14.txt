@@ -1,0 +1,15 @@
+{
+    "resource": "route",
+    "event": "start",
+    "account_name": "Transya\u00f1ez",
+    "route": 5145803,
+    "account_id": 2097,
+    "date": "2025-04-15",
+    "truck": "AAAA01",
+    "truck_driver": "LastMile 1",
+    "started": true,
+    "started_at": "2025-04-15T11:18:23.000-04:00",
+    "ended": false,
+    "ended_at": null,
+    "start_form_answers": []
+}

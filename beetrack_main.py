@@ -1161,7 +1161,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                             [{
                             "identifier": data.identifier,
                             "status_id": body_estados[0],
-                            # "substatus": body_estados[1],
+                            "substatus": body_estados[1],
                             "place": "CT Transyañez",
                             "is_trunk":  data.is_trunk,
                             "waypoint": {
@@ -1180,7 +1180,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                             [{
                             "identifier": data.identifier,
                             "status_id": body_estados[0],
-                            # "substatus": body_estados[1],
+                            "substatus": body_estados[1],
                             "place": "CT Transyañez",
                             "is_trunk":  data.is_trunk,
                             "waypoint": {
