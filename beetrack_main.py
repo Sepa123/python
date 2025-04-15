@@ -1348,6 +1348,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
                     if data.substatus_code == "45" or data.substatus_code == "46":
                          
+                         
                          print('substatus 45 o 46, no se envia nada')
                         #  body = {
                         #             "id": verificar_info_ruta[1],
