@@ -11982,7 +11982,7 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
         with self.conn.cursor() as cur:
             cur.execute(f""" 
              with clientes_ty as (
-                select c.id as "Id_cliente", c.nombre as "Nombre_cliente"
+                select c.id as "Id", c.nombre as "Clientes"
                 from rutas.clientes c 
                 where c.activo = true
             )
