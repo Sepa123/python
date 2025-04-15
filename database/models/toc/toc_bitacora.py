@@ -27,6 +27,7 @@ class BitacoraToc(BaseModel):
     Alerta: Optional[bool]
     Codigo1Str: Optional[str]
     Codigo1: Optional[int]
+    Cliente_id_ty: Optional[int]
 
 
 class BitacoraTiendaToc(BaseModel):

@@ -4144,9 +4144,9 @@ class reportesConnection():
         with self.conn.cursor() as cur:
             cur.execute("""
             INSERT INTO rutas.toc_bitacora_mae
-(fecha, ppu, guia, cliente, region, estado, subestado, driver, nombre_cliente, fec_compromiso, comuna, direccion_correcta, comuna_correcta, fec_reprogramada, observacion, subestado_esperado, id_transyanez, ids_transyanez, id_usuario, ids_usuario, alerta, codigo1)
+(fecha, ppu, guia, cliente, region, estado, subestado, driver, nombre_cliente, fec_compromiso, comuna, direccion_correcta, comuna_correcta, fec_reprogramada, observacion, subestado_esperado, id_transyanez, ids_transyanez, id_usuario, ids_usuario, alerta, codigo1,id_cliente)
 VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Subestado)s, %(Driver)s, %(Nombre_cliente)s, %(Fecha_compromiso)s, %(Comuna)s, %(Direccion_correcta)s, %(Comuna_correcta)s
-      , %(Fecha_reprogramada)s, %(Observacion)s, %(Subestado_esperado)s, %(Id_transyanez)s, %(Ids_transyanez)s, %(Id_usuario)s, %(Ids_usuario)s, %(Alerta)s, %(Codigo1)s);
+      , %(Fecha_reprogramada)s, %(Observacion)s, %(Subestado_esperado)s, %(Id_transyanez)s, %(Ids_transyanez)s, %(Id_usuario)s, %(Ids_usuario)s, %(Alerta)s, %(Codigo1)s,%(Cliente_id_ty)s);
             """,data)
         self.conn.commit()
 

@@ -132,6 +132,9 @@ async def buscar_producto(body : BitacoraToc):
         if body.Comuna == "":
              body.Comuna = None
 
+        if body.Cliente_id_ty == "":
+             body.Cliente_id_ty = None
+
         id_transyanez = conn.id_transyanez_bitacora()[0]
         body.Id_transyanez = id_transyanez
         if body.Comuna is None and body.Comuna_correcta is None :
