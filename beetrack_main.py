@@ -1345,8 +1345,29 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                         
                     print(body)
 
-                    print('actualizar ruta existente')
-                    send_put_update_ruta(body,verificar_info_ruta[1])
+
+                    if data.substatus_code == "45" or data.substatus_code == "46":
+                         
+                         print('substatus 45 o 46, no se envia nada')
+                        #  body = {
+                        #             "id": verificar_info_ruta[1],
+                        #             "dispatches": 
+                        #                 [{
+                        #                 "identifier": data.identifier,
+                        #                 "status_id": body_estados[0],
+                        #                 "substatus": body_estados[1],
+                        #                 "place": "CT Transyañez",
+                        #                 "is_trunk":  True,
+                        #                 "waypoint": {
+                        #                     "latitude": latitude,
+                        #                     "longitude": longitude
+                        #                 }
+                        #                 }]
+                        #             }
+                    else:
+      
+                        print('actualizar ruta existente')
+                        send_put_update_ruta(body,verificar_info_ruta[1])
 
 
                 pass
