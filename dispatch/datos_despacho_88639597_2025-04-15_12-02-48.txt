@@ -1,0 +1,116 @@
+{
+    "resource": "dispatch",
+    "event": "update",
+    "account_name": "Transya\u00f1ez",
+    "account_id": 2097,
+    "guide": "397917",
+    "identifier": "397917",
+    "beecode": "295340628b4f70dc8b3d25a5",
+    "mode": 0,
+    "position": 1,
+    "route_id": 5145805,
+    "dispatch_id": 88639597,
+    "truck_identifier": "BBBB02",
+    "truck_type": "Cami\u00f3n",
+    "status": 3,
+    "estimated_at": "2025-04-15T11:55:01.000-04:00",
+    "max_delivery_time": null,
+    "min_delivery_time": null,
+    "is_pickup": false,
+    "is_trunk": false,
+    "locked": false,
+    "trigger": "Management",
+    "substatus": "Reingresado Bodega TY",
+    "substatus_code": "45",
+    "contact_name": "Enzo Parra Ibarra",
+    "contact_phone": "+56994255964",
+    "contact_identifier": "17.429.539-5",
+    "contact_email": "enzo.parraibarra@paris.cl",
+    "contact_address": "Av.El Golf 203, LAS CONDES, SANTIAGO",
+    "tags": [],
+    "items": [
+        {
+            "id": 114400745,
+            "name": "BOX SPRING W 16006130",
+            "description": "BOX SPRING W 16006130",
+            "quantity": 1,
+            "original_quantity": 1,
+            "delivered_quantity": 0,
+            "code": "318474999",
+            "extras": []
+        }
+    ],
+    "groups": [
+        {
+            "name": "Paris",
+            "group_category": "Cliente",
+            "group_category_id": 462658,
+            "associated_at": "2025-04-15T11:16:09-04:00"
+        }
+    ],
+    "arrived_at": "2025-04-15 12:00:42-0400",
+    "waypoint": {
+        "latitude": "-33.424697",
+        "longitude": "-70.61521"
+    },
+    "evaluation_answers": [
+        {
+            "_id": {
+                "$oid": "225765"
+            },
+            "cast": "photo",
+            "code": "90d92fa0-f08e-013d-0487-0f443abfcfda",
+            "name": "Foto Domicilio",
+            "value": "https://cdn.beetrack.com/mobile_evaluations/images/COMP_IMG_20250415_113628_6488353155785887449.jpg",
+            "web": false,
+            "evaluation_answer_id": 98322,
+            "created_at": "2025-04-15T11:37:00-04:00",
+            "updated_at": "2025-04-15T11:37:00-04:00"
+        },
+        {
+            "_id": {
+                "$oid": "225766"
+            },
+            "cast": "text",
+            "code": "b0fab580-f08e-013d-6abf-0f57793dd82f",
+            "name": "Nombre Ejecutivo",
+            "value": "Prueba",
+            "web": false,
+            "evaluation_answer_id": 98322,
+            "created_at": "2025-04-15T11:37:00-04:00",
+            "updated_at": "2025-04-15T11:37:00-04:00"
+        },
+        {
+            "_id": {
+                "$oid": "225767"
+            },
+            "cast": "text",
+            "code": "ce2b94c0-f08e-013d-f1eb-13175f29945f",
+            "name": "Codigo",
+            "value": "TY02",
+            "web": false,
+            "evaluation_answer_id": 98322,
+            "created_at": "2025-04-15T11:37:00-04:00",
+            "updated_at": "2025-04-15T11:37:00-04:00"
+        },
+        {
+            "_id": {
+                "$oid": "225768"
+            },
+            "cast": "text",
+            "code": "2b69d210-f08f-013d-20cb-0592bb152bb1",
+            "name": "Observaci\u00f3n",
+            "value": "direcci\u00f3n erronea",
+            "web": false,
+            "evaluation_answer_id": 98322,
+            "created_at": "2025-04-15T11:37:00-04:00",
+            "updated_at": "2025-04-15T11:37:00-04:00"
+        }
+    ],
+    "truck_groups": [],
+    "kpi_distance": 0.0,
+    "real_distance": 0,
+    "time_of_management": "2025-04-15T12:00:42-04:00",
+    "management_latitude": "-33.424697",
+    "management_longitude": "-70.61521"
+}
