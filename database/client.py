@@ -11190,6 +11190,19 @@ SELECT *
 
 ### TOC
 
+    def recuperar_clientes_transyanez(self):
+                with self.conn.cursor() as cur:
+                    cur.execute(f"""   
+                with clientes_ty as (
+                    select c.id as "Id_cliente", c.nombre as "Nombre_cliente"
+                    from rutas.clientes c 
+                    where c.activo = true
+                )
+
+                select json_agg(clientes_ty) from clientes_ty     
+                                """)
+                    return cur.fetchone()
+
     def recupera_productos_adelanto(self):
             with self.conn.cursor() as cur:
                 cur.execute(f"""   
