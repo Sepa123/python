@@ -516,7 +516,11 @@ def verificar_si_ruta_paris_existe_despachos(ruta_id):
 
         for despachos in data['response']['route']['dispatches']:
 
-            info_despachos.append(despachos['identifier'])
+            body = {
+                "identifier": despachos['identifier']
+            }
+
+            info_despachos.append(body)
               
 
         return info_despachos
@@ -1348,7 +1352,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
                     if data.substatus_code == "45" or data.substatus_code == "46":
                          
-                         
+
                          print('substatus 45 o 46, no se envia nada')
                         #  body = {
                         #             "id": verificar_info_ruta[1],
@@ -1399,83 +1403,35 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
             else:
 
-
                 if data.event == 'start':
                     print('actualizar a ruta iniciada', ruta_paris[1])
 
                     despachos = verificar_si_ruta_paris_existe_despachos(ruta_paris[1])
 
-                    for despacho in despachos:
-
-                        print(despacho)
-
-                        body_despacho = {
-                            "started": True,
-                        }   
+                    body_put_request = {
+                        "id": ruta_paris[1],
+                        # "started": True,
+                        "started_at": data.started_at,
+                        "dispatches": despachos  
                         
-                        print(body_despacho)
+                    }
 
-                        send_put_request(body_despacho, despacho)
-
-
-
-
-
-
-                    # get_update_estados_paris_yanez(data.route_id)
-
-
-                    # row = conn.update_ruta_paris(data.dict())
-                    # print(row)
-
-                    # body_put_request = {
-                    #     "started": True,
-                    #     "started_at": data.started_at,
-                    #     "dispatch": [{
-                    #         "identifier": "397684",
-
-                    #     }
-                            
-                    #     ]
-                    # }
-
-                    # print(body_put_request)
-
-
+                    print(body_put_request)
 
                     # send_put_update_ruta(body_put_request, ruta_paris[1])
+
+
+                if data.event == 'finish':
+
+                    body_put_request = {
+                        "ended": True
+                    }
+
+                    send_put_update_ruta(body_put_request, ruta_paris[1])
 
                 else:
-                
+
                     print('la ruta ya existe en paris', ruta_paris[1])
-                    print(data.started)
-
-                    # body_put_request = {
-                    #     "started": data.started
-                    # }
-
-                    # send_put_update_ruta(body_put_request, ruta_paris[1])
-
-
-
-
-            
-            #### evento de create route
-
-
-            # if  data.event == 'create':
-            #     print('crear ruta')
-            #     conn.insert_creacion_ruta_paris(data.dict())
-
-            # if data.event != 'create':
-            #     print('actualizar ruta')
-            #     row = conn.update_ruta_paris(data.dict())
-            #     print(row)
-
-
-
-
-        
 
 
         return {

@@ -1,0 +1,15 @@
+{
+    "resource": "route",
+    "event": "start",
+    "account_name": "Transya\u00f1ez",
+    "route": 5145811,
+    "account_id": 2097,
+    "date": "2025-04-15",
+    "truck": "PPFP59",
+    "truck_driver": "Troncal",
+    "started": true,
+    "started_at": "2025-04-15T12:31:22.000-04:00",
+    "ended": false,
+    "ended_at": null,
+    "start_form_answers": []
+}
