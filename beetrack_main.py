@@ -1116,22 +1116,22 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
             if data.is_trunk == True: ## si el troncal viene como true, entonces se crea la ruta en paris
                 print("trunk : true")
-                # id_ruta = conn.read_route_paris(data.identifier)[0]
+                id_ruta_creada = conn.recuperar_ruta_registrada_paris(data.guide)[0]
 
                 #####  primero hay que verificar la ruta de paris, si existe o no existe
                 #### en base a lo que reciba de la tabla de ppu_tracking
 
                 if verificar_info_ruta is None: ### no recibo nada es porque la ruta no se ha creado aun
 
-                    ### luego se crea la ruta en paris
-                    body_ruta = {
-                        "truck_identifier":data.truck_identifier,
-                        "date": date_actual
-                        # "dispatches": [{"identifier": data.identifier}]
-                    }
+                    # ### luego se crea la ruta en paris
+                    # body_ruta = {
+                    #     "truck_identifier":data.truck_identifier,
+                    #     "date": date_actual
+                    #     # "dispatches": [{"identifier": data.identifier}]
+                    # }
 
-                    # if data.route_id is None:
-                    id_ruta_creada = crear_ruta_paris(body_ruta)
+                    # # if data.route_id is None:
+                    # id_ruta_creada = crear_ruta_paris(body_ruta)
 
                     body_info_ruta = {
                         "ppu" : data.truck_identifier, 
