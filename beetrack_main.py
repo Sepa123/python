@@ -776,7 +776,7 @@ async def webhook_dispatch_paris(request : Request , headers: tuple = Depends(va
 
         # Guardar el contenido del JSON en un archivo de texto
         with open(filename, "w") as f:
-            f.write(str(error))
+            json.dump(body, f, indent=4)
 
         print('Error al recibir el cuerpo del mensaje de dispatch paris',error)
         raise HTTPException(status_code=400, detail="Error al recibir el cuerpo del mensaje")
