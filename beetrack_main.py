@@ -512,18 +512,28 @@ def verificar_si_ruta_paris_existe_despachos(ruta_id):
 
         data = response.json()
 
+        troncales = []
+
         info_despachos = []
 
         for despachos in data['response']['route']['dispatches']:
 
-            body = {
-                "identifier": despachos['identifier']
-            }
+            if despachos["is_trunk"] == True:
 
-            info_despachos.append(body)
+                troncales.append(despachos["is_trunk"])
+            else:
+
+                troncales.append(despachos["is_trunk"])
+
+                body = {
+                    "identifier": despachos['identifier']
+                }
+
+                info_despachos.append(body)
+
+        
               
-
-        return info_despachos
+        return info_despachos, troncales
 
         # body = response.json()
 
@@ -1406,19 +1416,33 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                 if data.event == 'start':
                     print('actualizar a ruta iniciada', ruta_paris[1])
 
-                    despachos = verificar_si_ruta_paris_existe_despachos(ruta_paris[1])
+                    despachos, troncales = verificar_si_ruta_paris_existe_despachos(ruta_paris[1])
 
-                    body_put_request = {
-                        "id": ruta_paris[1],
-                        # "started": True,
-                        "started_at": data.started_at,
-                        "dispatches": despachos  
-                        
-                    }
 
-                    print(body_put_request)
+                    print(despachos)
+                    print(troncales)
 
-                    send_put_update_ruta(body_put_request, ruta_paris[1])
+
+                    if any(troncales):
+                        print("Al menos un troncal es True")
+                        pass
+                    else:
+                        print("Todos son False")
+
+
+                        fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+                        body_put_request = {
+                            "id": ruta_paris[1],
+                            # "started": True,
+                            "started_at": fecha_actual,
+                            "dispatches": despachos  
+                            
+                        }
+
+                        print(body_put_request)
+
+                        send_put_update_ruta(body_put_request, ruta_paris[1])
 
 
                 if data.event == 'finish':
