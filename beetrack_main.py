@@ -1430,12 +1430,12 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                         print("Todos son False")
 
 
-                        fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                        # fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
                         body_put_request = {
                             "id": ruta_paris[1],
                             # "started": True,
-                            "started_at": fecha_actual,
+                            "started_at": data.started_at,
                             "dispatches": despachos  
                             
                         }
