@@ -1447,11 +1447,20 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
                 if data.event == 'finish':
 
-                    body_put_request = {
-                        "ended": True
-                    }
+                    despachos, troncales = verificar_si_ruta_paris_existe_despachos(ruta_paris[1])
 
-                    send_put_update_ruta(body_put_request, ruta_paris[1])
+
+                    if any(troncales):
+                        print("Al menos un troncal es True")
+                        pass
+                    else:
+                        print("Todos son False")
+
+                        body_put_request = {
+                            "ended": True
+                        }
+
+                        send_put_update_ruta(body_put_request, ruta_paris[1])
 
                 else:
 
