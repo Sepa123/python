@@ -10326,7 +10326,7 @@ SELECT *
         SELECT u.id, u.nombre ,mail, imagen_perfil ,
             operacion.obtener_centros_por_portal('hela-' || u.id) AS centros
         FROM hela.usuarios u
-        where rol_id in ('80','81') and activate = true
+        where rol_id in ('80','81','91') and activate = true
                          """)
             return cur.fetchall()
 
