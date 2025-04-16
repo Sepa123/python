@@ -1054,8 +1054,84 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
+        # try:
 
-    # try:
+
+        if body["resource"] == "route":
+            mensaje = "Recibido Modelo Creación Ruta"
+            data = CreacionRuta(**body)
+
+            folder = "route"
+
+            # Asegúrate de que la carpeta exista
+            os.makedirs(folder, exist_ok=True)
+
+            filename = os.path.join(folder, f"datos_ruta_{data.route}_{timestamp}.txt")
+
+            with open(filename, "w") as f:
+                json.dump(body, f, indent=4)
+
+
+            ruta_paris = conn.verificar_informacion_ruta_paris(data.route)
+
+
+            if ruta_paris is None:
+                pass
+
+            else:
+
+                if data.event == 'start':
+                    print('actualizar a ruta iniciada', ruta_paris[1])
+
+                    despachos, troncales = verificar_si_ruta_paris_existe_despachos(ruta_paris[1])
+
+
+                    print(despachos)
+                    print(troncales)
+
+
+                    if any(troncales):
+                        print("Al menos un troncal es True")
+                        pass
+                    else:
+                        print("Todos son False")
+
+
+                        # fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+                        body_put_request = {
+                            "id": ruta_paris[1],
+                            # "started": True,
+                            "started_at": data.started_at,
+                            "dispatches": despachos  
+                            
+                        }
+
+                        print(body_put_request)
+
+                        send_put_update_ruta(body_put_request, ruta_paris[1])
+
+
+                if data.event == 'finish':
+
+                    despachos, troncales = verificar_si_ruta_paris_existe_despachos(ruta_paris[1])
+
+
+                    if any(troncales):
+                        print("Al menos un troncal es True")
+                        pass
+                    else:
+                        print("Todos son False")
+
+                        body_put_request = {
+                            "ended": True
+                        }
+
+                        send_put_update_ruta(body_put_request, ruta_paris[1])
+
+                else:
+
+                    print('la ruta ya existe en paris', ruta_paris[1])
 
         if body["resource"] == "dispatch_guide":
             mensaje = "Recibido Modelo Creación Guia"
@@ -1132,16 +1208,6 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                 #### en base a lo que reciba de la tabla de ppu_tracking
 
                 if verificar_info_ruta is None: ### no recibo nada es porque la ruta no se ha creado aun
-
-                    # ### luego se crea la ruta en paris
-                    # body_ruta = {
-                    #     "truck_identifier":data.truck_identifier,
-                    #     "date": date_actual
-                    #     # "dispatches": [{"identifier": data.identifier}]
-                    # }
-
-                    # # if data.route_id is None:
-                    # id_ruta_creada = crear_ruta_paris(body_ruta)
 
                     body_info_ruta = {
                         "ppu" : data.truck_identifier, 
@@ -1403,86 +1469,6 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
 
                 pass
-
-
-        body = await request.json()  # Obtener el cuerpo como JSON
-
-        if body["resource"] == "route":
-            mensaje = "Recibido Modelo Creación Ruta"
-            data = CreacionRuta(**body)
-
-            folder = "route"
-
-            # Asegúrate de que la carpeta exista
-            os.makedirs(folder, exist_ok=True)
-
-            filename = os.path.join(folder, f"datos_ruta_{data.route}_{timestamp}.txt")
-
-            with open(filename, "w") as f:
-                json.dump(body, f, indent=4)
-
-
-            ruta_paris = conn.verificar_informacion_ruta_paris(data.route)
-
-
-            if ruta_paris is None:
-                pass
-
-            else:
-
-                if data.event == 'start':
-                    print('actualizar a ruta iniciada', ruta_paris[1])
-
-                    despachos, troncales = verificar_si_ruta_paris_existe_despachos(ruta_paris[1])
-
-
-                    print(despachos)
-                    print(troncales)
-
-
-                    if any(troncales):
-                        print("Al menos un troncal es True")
-                        pass
-                    else:
-                        print("Todos son False")
-
-
-                        # fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-                        body_put_request = {
-                            "id": ruta_paris[1],
-                            # "started": True,
-                            "started_at": data.started_at,
-                            "dispatches": despachos  
-                            
-                        }
-
-                        print(body_put_request)
-
-                        send_put_update_ruta(body_put_request, ruta_paris[1])
-
-
-                if data.event == 'finish':
-
-                    despachos, troncales = verificar_si_ruta_paris_existe_despachos(ruta_paris[1])
-
-
-                    if any(troncales):
-                        print("Al menos un troncal es True")
-                        pass
-                    else:
-                        print("Todos son False")
-
-                        body_put_request = {
-                            "ended": True
-                        }
-
-                        send_put_update_ruta(body_put_request, ruta_paris[1])
-
-                else:
-
-                    print('la ruta ya existe en paris', ruta_paris[1])
-
 
         return {
                 "message": mensaje
