@@ -1228,37 +1228,25 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
                     # id_ruta_paris = obtener_info_despacho(data.identifier)
 
-                url_img =  []
-                
-                if data.evaluation_answers is not None:
-
-                    for imagen in data.evaluation_answers:
-                        url_img.append(imagen.value)
+                    # body_put_request = {
+                    #     "id": id_ruta_creada,
+                    #     "dispatches": 
+                    #         [{
+                    #         "identifier": data.identifier,
+                    #         "status_id": body_estados[0],
+                    #         "substatus": body_estados[1],
+                    #         "place": "CT Transyañez",
+                    #         "is_trunk":  data.is_trunk,
+                    #         "waypoint": {
+                    #             "latitude": latitude,
+                    #             "longitude": longitude
+                    #         }
+                    #     }]
+                    #     }
 
                     body_put_request = {
-                        "id": id_ruta_creada,
-                        "dispatches": 
-                            [{
-                            "identifier": data.identifier,
-                            "status_id": body_estados[0],
-                            "substatus": body_estados[1],
-                            "place": "CT Transyañez",
-                            "is_trunk":  data.is_trunk,
-                            "waypoint": {
-                                "latitude": latitude,
-                                "longitude": longitude
-                            },
-                            "form":{
-                                "img_url": url_img
-                                    }
-                        }]
-                        }
-                else:
-                    body_put_request = {
-                        "id": id_ruta_creada,
-                        "dispatches": 
-                            [{
-                            "identifier": data.identifier,
+
+                            # "identifier": data.identifier,
                             "status_id": body_estados[0],
                             "substatus": body_estados[1],
                             "place": "CT Transyañez",
@@ -1267,21 +1255,28 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                                 "latitude": latitude,
                                 "longitude": longitude
                             }
-                        }]
+
                         }
-                
-                print(body)
 
-                print('verificar info ruta',verificar_info_ruta)
+                    print(body)
 
-
-                # if verificar_info_ruta is None:
+                    print('verificar info ruta',verificar_info_ruta)
 
 
+                    # if verificar_info_ruta is None:
+                    # send_put_request(body, data.guide)
+
+                    ### update dispatch
+
+                    send_put_request(body_put_request, data.guide)
+
+                    ### update ruta
+
+                    # send_put_update_ruta(body_put_request, id_ruta_creada)
                     
-
-                # send_put_request(body[0][0], data.guide)
-                send_put_update_ruta(body_put_request, id_ruta_creada)
+                    
+                
+                
 
             else: ## si el troncal viene como false, entonces se actualiza de la forma culera
                 print('troncal : false')
