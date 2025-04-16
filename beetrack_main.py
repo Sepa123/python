@@ -1320,24 +1320,41 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                         for imagen in data.evaluation_answers:
                             url_img.append(imagen.value)
 
-                        body = {
-                                    "id": verificar_info_ruta[1],
-                                    "dispatches": 
-                                        [{
-                                        "identifier": data.identifier,
-                                        "status_id": body_estados[0],
-                                        "substatus": body_estados[1],
-                                        "place": "CT Transyañez",
-                                        "is_trunk":  data.is_trunk,
-                                        "waypoint": {
-                                            "latitude": latitude,
-                                            "longitude": longitude
-                                        },
-                                        "form":{
-                                            "img_url": url_img
-                                                }
-                                        }]
-                                    }
+                        if url_img == []:
+                            body = {
+                                        "id": verificar_info_ruta[1],
+                                        "dispatches": 
+                                            [{
+                                            "identifier": data.identifier,
+                                            "status_id": body_estados[0],
+                                            "substatus": body_estados[1],
+                                            "place": "CT Transyañez",
+                                            "is_trunk":  data.is_trunk,
+                                            "waypoint": {
+                                                "latitude": latitude,
+                                                "longitude": longitude
+                                            }
+                                            }]
+                                        }
+                        else:
+                            body = {
+                                        "id": verificar_info_ruta[1],
+                                        "dispatches": 
+                                            [{
+                                            "identifier": data.identifier,
+                                            "status_id": body_estados[0],
+                                            "substatus": body_estados[1],
+                                            "place": "CT Transyañez",
+                                            "is_trunk":  data.is_trunk,
+                                            "waypoint": {
+                                                "latitude": latitude,
+                                                "longitude": longitude
+                                            },
+                                            "form":{
+                                                "img_url": url_img
+                                                    }
+                                            }]
+                                        }
                     else:
                         body = {
                                     "id": verificar_info_ruta[1],
