@@ -778,6 +778,9 @@ async def webhook_dispatch_paris(request : Request , headers: tuple = Depends(va
         with open(filename, "w") as f:
             json.dump(body, f, indent=4)
 
+            f.write(" ")
+            f.write(str(error))
+
         print('Error al recibir el cuerpo del mensaje de dispatch paris',error)
         raise HTTPException(status_code=400, detail="Error al recibir el cuerpo del mensaje")
 
