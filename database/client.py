@@ -3193,7 +3193,7 @@ class reportesConnection():
                     select json_agg(resumen_hora_oc) from resumen_hora_oc
                         """)
             
-            return cur.fetchall()
+            return cur.fetchone()
 
     def read_datos_descarga_beetrack(self, id_ruta : str):
         with self.conn.cursor() as cur:
