@@ -506,16 +506,18 @@ def verificar_si_ruta_paris_existe_despachos(ruta_id):
     with httpx.Client() as client:
         response = client.get(url, headers=headers)
 
+    
+    troncales = []
+
+    info_despachos = []
+
     # Verificamos la respuesta
     if response.status_code == 200:
         # print("Solicitud GET exitosa:", response.json())
 
         data = response.json()
 
-        troncales = []
-
-        info_despachos = []
-
+        
         for despachos in data['response']['route']['dispatches']:
 
             if despachos["is_trunk"] == True:
@@ -532,6 +534,9 @@ def verificar_si_ruta_paris_existe_despachos(ruta_id):
                 info_despachos.append(body)
 
         
+        print(info_despachos,troncales)
+
+        
               
         return info_despachos, troncales
 
@@ -541,7 +546,7 @@ def verificar_si_ruta_paris_existe_despachos(ruta_id):
         print(f"Error en la solicitud GET: {response.status_code}")
         print(response.text)
 
-        return None
+        return info_despachos, troncales
 
 
 
