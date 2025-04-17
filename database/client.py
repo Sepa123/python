@@ -3176,130 +3176,23 @@ class reportesConnection():
         with self.conn.cursor() as cur:
             # ### original oscar
             cur.execute("""
-                select * from areati.resumen_hora_productos_oc();
+                with resumen_hora_oc as (
+                    select 
+                    "Fecha" as "Fecha",
+                    "Hora Ingreso" as "Hora",
+                    "id_cliente" as "Id_cliente",
+                    "imagen_cliente" as "Imagen_cliente",
+                    "N° Carga" as "Nro_carga",
+                    "Entregas" as "Entregas",
+                    "Bultos" as "Bultos",
+                    "Verificados" as "Verificados",
+                    "Sin Verificar"  as "No_verificados"
+                    from areati.resumen_hora_productos_oc() 
+                    )
+
+                    select json_agg(resumen_hora_oc) from resumen_hora_oc
                         """)
             
-            ### original mio
-            ###No hay mucha diferencia
-
-            # cur.execute("""
-            #     with aux_opl as(
-            #     select
-            #     id_ruta,
-            #     COUNT(DISTINCT o.id_entrega) AS "Entregas",
-            #     COUNT(*) AS "Bultos",
-            #     COUNT(*) FILTER (WHERE o.verified = true) AS "Verificados",
-            #     COUNT(*) FILTER (WHERE o.verified = false) AS "Sin Verificar"
-            #     FROM
-            #     areati.ti_carga_easy_go_opl o
-            #     group by 1
-            #     ),
-            #     aux_elux as (
-            #         select e.ruta,
-            #             count(distinct(e.numero_guia)) AS "Entregas",
-            #             COUNT(*) AS "Bultos",
-            #             COUNT(*) FILTER (WHERE e.verified = true) AS "Verificados",
-            #             COUNT(*) FILTER (WHERE e.verified = false) AS "Sin Verificar"
-            #         from areati.ti_wms_carga_electrolux e 
-            #         group by 1
-            #     ),
-            #     aux_spo as (
-            #     select
-            #             COUNT(*) FILTER (WHERE s.verified = true) AS "Verificados",
-            #             COUNT(*) FILTER (WHERE s.verified = false) AS "Sin Verificar"
-            #     from areati.ti_wms_carga_sportex s
-            #     where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
-            #     ),
-            #     aux_cd as (
-            #     select
-            #         e.nro_carga,
-            #         COUNT(DISTINCT e.entrega) AS "Entregas",
-            #         COUNT(*) AS "Bultos",
-            #         COUNT(*) FILTER (WHERE e.verified = true) AS "Verificados",
-            #         COUNT(*) FILTER (WHERE e.verified = false) AS "Sin Verificar"
-            #     FROM
-            #         areati.ti_wms_carga_easy e
-            #     group by 1
-            #     )
-                
-            #     ----------------
-            #     --aqui empieza--
-            #     ----------------
-                
-            #     ---------------------------------------------------------------------------------------
-            #     --  (1) Cuenta Easy CD
-            #     ---------------------------------------------------------------------------------------
-            #     select to_char(created_at,'yyyy-mm-dd') as "Fecha",
-            #     to_char(created_at,'HH24:mi') as "Hora Ingreso", 
-            #     'Easy CD' as "Cliente",
-            #     easy.nro_carga as "N° Carga",
-            #     acd."Entregas",
-            #     acd."Bultos",
-            #     acd."Verificados",
-            #     acd."Sin Verificar"
-            #     from areati.ti_wms_carga_easy easy 
-            #     left join aux_cd acd on easy.nro_carga = acd.nro_carga
-            #     WHERE to_char(created_at,'yyyy-mm-dd hh24:mi')  >= to_char((obtener_dia_anterior() + INTERVAL '17 hours 30 minutes'),'yyyy-mm-dd hh24:mi')
-            #     AND to_char(created_at,'yyyy-mm-dd') <= to_char(CURRENT_DATE,'yyyy-mm-dd')
-            #     group by 1,2,3,4,5,6,7,8
-            #     ---------------------------------------------------------------------------------------
-            #     --  (2) Cuenta Sportex
-            #     ---------------------------------------------------------------------------------------
-            #     union all
-            #     select to_char(created_at,'yyyy-mm-dd') as "Fecha",
-            #     to_char(created_at,'HH24:mi') as "Hora Ingreso", 
-            #     'Sportex' as "Cliente",
-            #     'Carga Unica' as "N° Carga",
-            #     count(*) as "Entregas",
-            #     count(*) as "Bultos",
-            #     aspo."Verificados",
-            #     aspo."Sin Verificar"
-            #     --(select count(*) from areati.ti_wms_carga_sportex s where verified=true and to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')) as "Verificados",
-            #     --(select count(*) from areati.ti_wms_carga_sportex s where verified=false and to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')) as "Sin Verificar"
-            #     from areati.ti_wms_carga_sportex twcs
-            #     left join aux_spo aspo on true
-            #     where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
-            #     group by 1,2,3,4,7,8
-            #     ---------------------------------------------------------------------------------------
-            #     --  (3) Cuenta Electrolux
-            #     ---------------------------------------------------------------------------------------
-            #     union all
-            #     select to_char(created_at,'yyyy-mm-dd') as "Fecha",
-            #     to_char(created_at,'HH24:mi') as "Hora Ingreso",  
-            #     'Electrolux' as "Cliente",
-            #     twce.ruta as "N° Carga",
-            #     aelux."Entregas",
-            #     aelux."Bultos",
-            #     aelux."Verificados",
-            #     aelux."Sin Verificar"
-            #     from areati.ti_wms_carga_electrolux twce 
-            #     left join aux_elux aelux on twce.ruta = aelux.ruta
-            #     where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
-            #     group by 1,2,3,4,5,6,7,8
-
-            #     ---------------------------------------------------------------------------------------
-            #     --  (4) Cuenta Easy OPL
-            #     ---------------------------------------------------------------------------------------
-            #     union all
-            #     select to_char(opl.created_at,'yyyy-mm-dd') as "Fecha",
-            #     to_char(opl.created_at,'HH24:mi') as "Hora Ingreso", 
-            #     'Easy Tienda' as "Cliente",
-            #     opl.id_ruta as "N° Carga",
-            #     aopl."Entregas",
-            #     aopl."Bultos",
-            #     aopl."Verificados",
-            #     aopl."Sin Verificar"
-            #     from areati.ti_carga_easy_go_opl opl 
-            #     left join aux_opl aopl on opl.id_ruta = aopl.id_ruta
-            #     where to_char(created_at,'yyyymmdd')=to_char(current_date,'yyyymmdd')
-            #     group by 1,2,3,4,5,6,7,8
-            #     ---------------------------------------------------------------------------------------
-            #     -- Orden por Hora de ingreso de productos al sistema
-            #     ---------------------------------------------------------------------------------------
-            #     order by 1 asc, 2 asc
-            #             """)
-            
-
             return cur.fetchall()
 
     def read_datos_descarga_beetrack(self, id_ruta : str):
@@ -12616,9 +12509,9 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
             return cur.fetchone()
 
 
-
-
     
+
+
 
 
     def get_cartones_despacho_paris(self, id_dispatch):

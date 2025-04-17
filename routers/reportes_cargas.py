@@ -500,7 +500,8 @@ async def producto_picking_id(producto_id : str):
 async def cargas_por_hora():
     results = conn.get_carga_hora()
 
-    return nro_cargas_hora_schema(results)
+    # return nro_cargas_hora_schema(results)
+    return results[0]
 
 
 @router.get("/ns/verificados",status_code=status.HTTP_202_ACCEPTED)
