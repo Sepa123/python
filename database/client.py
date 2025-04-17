@@ -4002,10 +4002,30 @@ class reportesConnection():
                         """)
             return cur.fetchone()
         
-    def buscar_producto_toc(self, codigo):
+    def buscar_producto_toc(self, codigo,id_cliente):
         with self.conn.cursor() as cur:
+
+            print(f"from rutas.toc_buscar_producto('{codigo}',{id_cliente})")
             cur.execute(f"""
-            select * from rutas.toc_buscar_producto('{codigo}')
+           with producto_toc as (
+                select
+                        "Fecha" as "Fecha" ,
+                        "Patente" as "Patente" ,
+                        "Guia" as "Guia",
+                        "Cliente" as "Cliente",
+                        "id_cliente" as "Id_cliente",
+                        "Region" as "Region",
+                        "Estado" as "Estado",
+                        "Subestado" as "Subestado",
+                        "Usuario Movil" as "Usuario_movil",
+                        "Nombre Cliente" as "Nombre_cliente",
+                        "F. Compromiso" as "Fecha_compromiso",
+                        "Comuna" as "Comuna",
+                        "Correo" as "Correo",
+                        "Teléfono" as "Telefono"
+                from rutas.toc_buscar_producto('{codigo}',{id_cliente})
+                )
+                select json_agg(producto_toc) from producto_toc
                         """)
             return cur.fetchone() 
         
@@ -11878,6 +11898,8 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
                 select c.id as "Id", c.nombre as "Clientes"
                 from rutas.clientes c 
                 where c.activo = true
+                union all
+                select 0 as "Id", 'Retiro/Cliente' as "Clientes"
             )
 
             select 'Estados' as nombre, json_agg(json_build_object('Id_estado',estado ,'Descripcion',descripcion)) as campo 

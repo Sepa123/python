@@ -56,11 +56,18 @@ async def buscar_clientes_transyanez():
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error, codigo no encontrado")
 
 
-@router.get("/buscar_producto/{cod_producto}")
-async def buscar_producto(cod_producto : str):
+@router.get("/buscar_producto")
+async def buscar_producto(cod_producto : str,id_cliente : int):
     try:
-        result = conn.buscar_producto_toc(cod_producto)
-        return buscar_producto_toc_schema(result)
+        
+        if id_cliente == 0:
+           id_cliente = 'null'
+
+     
+        result = conn.buscar_producto_toc(cod_producto.strip(),id_cliente)
+
+        print(result)
+        return result[0][0]
     except:
           print("error en toc//buscar_producto/cod_producto")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error, codigo no encontrado")
