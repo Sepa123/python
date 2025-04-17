@@ -1175,6 +1175,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
             if data.route_id is None:
                 verificar_info_ruta = None
             else:
+                print('id_ty',data.route_id)
                 verificar_info_ruta = conn.verificar_informacion_ruta_paris(data.route_id)
 
             # print(data.waypoint)
@@ -1210,68 +1211,75 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                 #####  primero hay que verificar la ruta de paris, si existe o no existe
                 #### en base a lo que reciba de la tabla de ppu_tracking
 
-                if verificar_info_ruta is None: ### no recibo nada es porque la ruta no se ha creado aun
+                print(verificar_info_ruta)
 
-                    body_info_ruta = {
-                        "ppu" : data.truck_identifier, 
-                        "id_route_ty" : data.route_id, 
-                        "id_route_paris" : id_ruta_creada, 
-                        "is_trunk" : True
-                    }
+                #### el siguiente código fue comentado por motivo de que
+                ### la funcion guardar_informacion_de_rutas_paris() me golpea por error de duplicate key 
+                ### al tratar de guardar el id_ruta_paris, ademas de no utilizarse el update ruta, se usa el update de dispatch
+                
 
-                    print(body_info_ruta)
+                # if verificar_info_ruta is None: ### no recibo nada es porque la ruta no se ha creado aun
+
+                #     body_info_ruta = {
+                #         "ppu" : data.truck_identifier, 
+                #         "id_route_ty" : data.route_id, 
+                #         "id_route_paris" : id_ruta_creada, 
+                #         "is_trunk" : True
+                #     }
+
+                #     print(body_info_ruta)
             
-                    conn.guardar_informacion_de_rutas_paris(body_info_ruta)
+                #     conn.guardar_informacion_de_rutas_paris(body_info_ruta)
 
-                else: ### si la ruta existe, entonces se debe actualizar el id de la ruta en paris
-                    print('la ruta ya existe')
-                    id_ruta_creada = verificar_info_ruta[1]
+                # else: ### si la ruta existe, entonces se debe actualizar el id de la ruta en paris
+                #     print('la ruta ya existe')
+                #     id_ruta_creada = verificar_info_ruta[1]
 
-                    print("id paris existente",id_ruta_creada)
+                #     print("id paris existente",id_ruta_creada)
 
-                    # id_ruta_paris = obtener_info_despacho(data.identifier)
+                #     # id_ruta_paris = obtener_info_despacho(data.identifier)
 
-                    # body_put_request = {
-                    #     "id": id_ruta_creada,
-                    #     "dispatches": 
-                    #         [{
-                    #         "identifier": data.identifier,
-                    #         "status_id": body_estados[0],
-                    #         "substatus": body_estados[1],
-                    #         "place": "CT Transyañez",
-                    #         "is_trunk":  data.is_trunk,
-                    #         "waypoint": {
-                    #             "latitude": latitude,
-                    #             "longitude": longitude
-                    #         }
-                    #     }]
-                    #     }
+                #     # body_put_request = {
+                #     #     "id": id_ruta_creada,
+                #     #     "dispatches": 
+                #     #         [{
+                #     #         "identifier": data.identifier,
+                #     #         "status_id": body_estados[0],
+                #     #         "substatus": body_estados[1],
+                #     #         "place": "CT Transyañez",
+                #     #         "is_trunk":  data.is_trunk,
+                #     #         "waypoint": {
+                #     #             "latitude": latitude,
+                #     #             "longitude": longitude
+                #     #         }
+                #     #     }]
+                #     #     }
 
-                    body_put_request = {
+                body_put_request = {
 
-                            # "identifier": data.identifier,
-                            "status_id": body_estados[0],
-                            "substatus": body_estados[1],
-                            "place": "CT Transyañez",
-                            "is_trunk":  data.is_trunk,
-                            "waypoint": {
-                                "latitude": latitude,
-                                "longitude": longitude
-                            }
-
+                        # "identifier": data.identifier,
+                        "status_id": body_estados[0],
+                        "substatus": body_estados[1],
+                        "place": "CT Transyañez",
+                        "is_trunk":  data.is_trunk,
+                        "waypoint": {
+                            "latitude": latitude,
+                            "longitude": longitude
                         }
 
-                    print(body)
+                    }
 
-                    print('verificar info ruta',verificar_info_ruta)
+                print(body)
+
+                print('verificar info ruta',verificar_info_ruta)
 
 
-                    # if verificar_info_ruta is None:
-                    # send_put_request(body, data.guide)
+                # if verificar_info_ruta is None:
+                # send_put_request(body, data.guide)
 
-                    ### update dispatch
+                ### update dispatch
 
-                    send_put_request(body_put_request, data.guide)
+                send_put_request(body_put_request, data.guide)
 
                     ### update ruta
 
