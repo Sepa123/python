@@ -12613,6 +12613,62 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
                 return cur.fetchone()
 
 
+    #### guardar datos de clientes en tabla temporal beetrack
+
+    def insert_tabla_temporal_ruta_beetrack(self,rutas, id_usuario : int,ids_usuario: str):
+
+       
+        with self.conn.cursor() as cur:
+            query = """
+            INSERT INTO beetrack.ruta_manual_transyanez_temp
+            (id_user, ids_user, identificador_ruta, identificador, guia, lugar_de_trabajo, servicio, region_de_despacho, origen_de_la_entrega, 
+            fecha_estimada, fecha_llegada, estado, subestado, usuario_movil, telefono_usuario, id_cliente, nombre_cliente, direccion_cliente, 
+            telefono_cliente, correo_electronico_cliente, tiempo_en_destino, n_intentos, distancia_km, fechahr, tipo, email, conductor, 
+            fechaentrega, peso, cmn, cuenta, volumen, bultos, entrega, factura, oc, ruta, tienda, nombre_ejecutivo, codigo, observacion, 
+            valor_ruta)            
+            
+            VALUES %s
+            """
+            values = [
+                (   id_usuario,ids_usuario,
+                    body['id Ruta'], body['PPU'], body['N° Guía'], body['Lugar de Trabajo'], body['Servicio'], body['Región Despacho'],
+                    body['Origen Entrega'], body['Fecha Estimada'], body['Fec. Llegada'], body['Estado '], body['Subestado'],
+                    body['Driver'], body['telefono Driver'], body['rut Cliente'], body['Nombre Cliente'], body['Direccion Destino'],
+                    body['teléfono Cliente'], body['Correo Cliente'], body['Tiempo en Destino'], body['N° Intentos'], body['Km'],
+                    body['Fecha'], body['tipo'], body['e-mail'], body['conductor'], body['fecha Entrega'], body['peso'],
+                    body['Comuna'], body['cuenta'], body['volumen'], body['bultos'], body['entrega'], body['factura'],
+                    body['Orden Compra'], body['ruta'], body['tienda'], body['nombre Ejecutivo'], body['Codigo'],
+                    body['observacion'], body['Valor Ruta']
+                )
+                for body in rutas
+            ]
+            execute_values(cur, query, values)
+
+            print(values)
+
+        self.conn.commit()
+
+
+    # def insert_tabla_temporal_ruta_beetrack(self, id_dispatch,estado,subestado):
+    #     with self.conn.cursor() as cur:
+    #         cur.execute("""
+    #         INSERT INTO beetrack.ruta_manual_transyanez_temp
+    #         (id_user, ids_user, identificador_ruta, identificador, guia, id_cliente_base, cliente_base, lugar_de_trabajo, 
+    #         servicio, region_de_despacho, origen_de_la_entrega, fecha_estimada, fecha_llegada, estado, subestado, usuario_movil, telefono_usuario,
+    #         id_cliente, nombre_cliente, direccion_cliente, telefono_cliente, correo_electronico_cliente, tiempo_en_destino, n_intentos, distancia_km, 
+    #         fechahr, tipo, email, conductor, fechaentrega, peso, cmn, cuenta, volumen, bultos, entrega, factura, oc, ruta, tienda, nombre_ejecutivo, codigo,
+    #         observacion, valor_ruta)
+    #         VALUES(
+                    
+    #         )
+                        
+
+    #         """)
+    #         row = cur.rowcount
+    #     self.conn.commit()
+
+
+
 
 class transyanezConnection():
     conn = None

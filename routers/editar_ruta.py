@@ -50,6 +50,9 @@ class Usuario(BaseModel):
     area_id: str
     cargo: str
     id_supervisor: Optional[int] = None
+    carga_manual: Optional[bool] = None
+    id_operacion: Optional[int] = None
+    id_centro_op: Optional[int] = None
 
 class Cliente(BaseModel):
     id_usuario: int
@@ -65,6 +68,9 @@ class Cliente(BaseModel):
     activo: bool
     esquema_destino: str
     tabla_destino: str
+    carga_manual: bool
+    id_operacion: int
+    id_centro_op: int
 
 class ClienteUpdate(BaseModel):
     id_usuario: Optional[int] = None
@@ -80,6 +86,10 @@ class ClienteUpdate(BaseModel):
     activo: Optional[bool] = None
     esquema_destino: Optional[str] = None
     tabla_destino: Optional[str] = None
+    carga_manual: Optional[bool] = None
+    id_operacion: Optional[int] = None
+    id_centro_op: Optional[int] = None
+    
 
 class Bitacora(BaseModel):
     id_user: str
@@ -150,6 +160,9 @@ async def Obtener_datos():
                                 "representante": fila[12],
                                 "activo": fila[13],
                                 "logo_img" : fila[14],
+                                "carga_manual": fila[20],
+                                "id_operacion": fila[21],
+                                "id_centro_op": fila[22],
                             } 
                             for fila in datos]
         return datos_formateados
@@ -177,6 +190,9 @@ async def User_data(id: str):
                                 "representante": fila[12],
                                 "activo": fila[13],
                                 "logo_img" : fila[14],
+                                "carga_manual": fila[20],
+                                "id_operacion": fila[21],
+                                "id_centro_op": fila[22],
                             } 
                             for fila in datos]
         return datos_formateados
@@ -222,7 +238,42 @@ async def Obtener_datos():
     else:
         raise HTTPException(status_code=404, detail="No se encontraron datos")
 
-
+@router.get("/api/Op/")
+async def Obtener_Op():
+      # Consulta SQL para obtener datos (por ejemplo)
+     consulta = """select * from operacion.modalidad_operacion mo """
+     # Ejecutar la consulta utilizando nuestra función
+     datos = ejecutar_consulta(consulta)
+     # Verificar si hay datos
+     if datos:
+         datos_formateados = [{
+                                 "id" : fila[0],
+                                 "centro": fila[4],
+                                                 
+                             } 
+                             for fila in datos]
+         return datos_formateados
+     else:
+         raise HTTPException(status_code=404, detail="No se encontraron datos")
+     
+@router.get("/api/Cop/")
+async def Obtener_Cop():
+      # Consulta SQL para obtener datos (por ejemplo)
+     consulta = """select * from operacion.centro_operacion co  """
+     # Ejecutar la consulta utilizando nuestra función
+     datos = ejecutar_consulta(consulta)
+     # Verificar si hay datos
+     if datos:
+         datos_formateados = [{
+                                 "id" : fila[0],
+                                 "id_op": fila[4],
+                                 "centro": fila[5],
+                                                 
+                             } 
+                             for fila in datos]
+         return datos_formateados
+     else:
+         raise HTTPException(status_code=404, detail="No se encontraron datos")
 
     
 
@@ -327,5 +378,34 @@ async def actualizar_cliente(cliente_id: int, body: ClienteUpdate):
         cursor.close()
         conexion.close()
 
+
+
+@router.post("/api/Agregar/Cliente/")
+async def agregar_cliente(body: Cliente):
+     """
+     Endpoint para insertar un registro en la tabla rutas.clientes.
+     """
+     try:
+         conexion = psycopg2.connect(**parametros_conexion)
+         cursor = conexion.cursor()
+         consulta = """
+             INSERT INTO rutas.clientes
+                 (id_usuario, ids_usuario, nombre, rut, direccion, ciudad, region, telefono, correo, representante, activo, esquema_destino, tabla_destino, carga_manual, id_operacion, id_centro_op)
+             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+         """
+         # Parámetros en el mismo orden que los placeholders
+         parametros = (
+             body.id_usuario, body.ids_usuario, body.nombre, body.rut, body.direccion,
+             body.ciudad, body.region, body.telefono, body.correo, body.representante,
+             body.activo, body.esquema_destino, body.tabla_destino, body.carga_manual,
+             body.id_operacion, body.id_centro_op
+         )
+         cursor.execute(consulta, parametros)
+         conexion.commit()
+         cursor.close()
+         conexion.close()
+         return {"message": "Cliente agregado correctamente"}
+     except Exception as e:
+         raise HTTPException(status_code=500, detail=f"Error al insertar cliente: {str(e)}")
 # if __name__ == "__main__":
 #  uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -1438,3 +1438,40 @@ async def download_file():
 
     # Retorna el archivo como respuesta
     return FileResponse(file_path, filename='prueba carga masiva.xlsx')
+
+
+
+#### subir rutas manuales archivos
+
+@router.post("/subir-archivo/rutas_manuales", status_code=status.HTTP_202_ACCEPTED)
+async def subir_archivo_ruta_manual(id_usuario : int, ids_usuario : str, file: UploadFile = File(...)):
+
+    # select quadminds.convierte_en_ruta_manual(1,'202308021040');
+
+    directorio  = os.path.abspath("excel")
+
+    ruta = os.path.join(directorio,file.filename)
+
+    with open(ruta, "wb") as f:
+        contents = await file.read()
+        # print("pase por aqui")
+        f.write(contents)
+
+    df = pd.read_excel(ruta)
+
+    lista = df.to_dict(orient='records')
+
+    print(lista)
+
+    for i, data in enumerate(lista):
+        # cantidad_encontrada = conn.get_pedido_planificados_quadmind_by_cod_pedido()
+        # if cantidad_encontrada[0] >= 1:
+        #     print("Producto ya esta registrado") 
+        # else:
+        print(data['identificador_ruta'])
+        print('posicion',i+1)
+        # print(posicion)
+
+    return {
+        'message': len(lista)
+    }
