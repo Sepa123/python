@@ -5,7 +5,7 @@ import re, json
 
 from fastapi.responses import FileResponse
 import psycopg2
-from database.models.finanza.descuento import ActualizarDescuento, DescuentoManual
+from database.models.finanza.descuento import ActualizarDescuento, DescuentoManual, UpdateColumnRequest
 import lib.excel_generico as excel
 
 ##Conexiones
@@ -528,3 +528,23 @@ def download_file(name_file: str):
     # print(nombre_file)
     
     return FileResponse(name_file)
+
+
+@router.patch("/api/ActualizarAplica/")
+async def actualizar_columna(body: UpdateColumnRequest):
+    """
+    Actualiza una columna específica en una tabla de la base de datos.
+    """
+    try:
+        row = conn.update_aplica_descuentos(body.id, body.nuevo_valor)    
+        
+        if row == 0:
+            raise HTTPException(status_code=404, detail="Registro no encontrado")
+        
+        return {"message": "Columna actualizada correctamente"}
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al actualizar la columna: {str(e)}")
+    
+
+

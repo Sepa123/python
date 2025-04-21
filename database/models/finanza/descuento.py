@@ -41,3 +41,9 @@ class ActualizarDescuento(BaseModel):
     Cobrado: Optional[bool]
     Oc_cobro: Optional[str]
 
+
+
+# Modelo para la solicitud
+class UpdateColumnRequest(BaseModel):
+    id: int  # ID del registro a actualizar
+    nuevo_valor: bool  # Nuevo valor para la columna

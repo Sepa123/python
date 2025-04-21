@@ -11435,6 +11435,11 @@ SELECT *
         self.conn.commit()
 
 
+    #### 
+
+    
+
+
     def obtener_datos_reclutamiento(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
@@ -12168,6 +12173,24 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
 
                           """)
         self.conn.commit()
+
+
+    ### actualizarAplica
+
+    def update_aplica_descuentos(self,id, aplica):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+             UPDATE finanzas.descuentos_manuales dm 
+            SET aplica = {aplica}
+            WHERE id = {id}
+
+                          """)
+            
+            row = cur.rowcount
+            
+        self.conn.commit()
+
+        return row
 
 
     def get_max_id_descuentos_manuales(self) :
