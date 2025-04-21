@@ -1,6 +1,0 @@
-{
-    "status": "ok",
-    "response": {
-        "route_id": 5145717
-    }
-}

@@ -1,6 +1,0 @@
-{
-    "status": "ok",
-    "response": {
-        "identifier": "397688"
-    }
-}
