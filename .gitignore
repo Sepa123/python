@@ -39,3 +39,7 @@ save_prefactura_mensual.py
 testtoken.py
 excel/rutas/backend-error.log
 excel/rutas/backend-out.log
+/archivos
+/dispatch
+/route
+/excel
