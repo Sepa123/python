@@ -590,7 +590,7 @@ def obtener_info_despacho(distpach):
     headers = {
         'Accept': '*/*',
         'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
-        'X-AUTH-TOKEN': config("SECRET_KEY_PARIS_YANEZ"),
+        'X-AUTH-TOKEN': config("SECRET_KEY_PARIS"),
     }
 
     # Realizamos la solicitud PUT
@@ -604,32 +604,7 @@ def obtener_info_despacho(distpach):
         # print("Solicitud GET exitosa:", response.json())
         route_id = data["response"]["route_id"]
 
-        # print("evaluation", data['response']['evaluation_answers'])
-
-        if data.get('response', {}).get('evaluation_answers'):
-            print('no hay evaluacion')
-
-            img_url = []
-
-            for info in data['response']['evaluation_answers']:
-                img_url.append(info['value'])
-
-            body_form = {
-                "img_url": img_url
-            }
-            # return None
-
-        else:
-            print('no hay evaluacion')
-            img_url = []
-
-        print(img_url)
-
-        body_form = {
-            "img_url": img_url
-        }
-
-        return route_id, body_form
+        return route_id
 
         # body = response.json()
 
@@ -1214,7 +1189,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
             if data.is_trunk == True: ## si el troncal viene como true, entonces se crea la ruta en paris
                 print("trunk : true")
-                id_ruta_creada = conn.recuperar_ruta_registrada_paris(data.guide)[0]
+                # id_ruta_creada = conn.recuperar_ruta_registrada_paris(data.guide)[0]
 
                 #####  primero hay que verificar la ruta de paris, si existe o no existe
                 #### en base a lo que reciba de la tabla de ppu_tracking
@@ -1247,47 +1222,64 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
                 #     # id_ruta_paris = obtener_info_despacho(data.identifier)
 
-                #     # body_put_request = {
-                #     #     "id": id_ruta_creada,
-                #     #     "dispatches": 
-                #     #         [{
-                #     #         "identifier": data.identifier,
-                #     #         "status_id": body_estados[0],
-                #     #         "substatus": body_estados[1],
-                #     #         "place": "CT Transyañez",
-                #     #         "is_trunk":  data.is_trunk,
-                #     #         "waypoint": {
-                #     #             "latitude": latitude,
-                #     #             "longitude": longitude
-                #     #         }
-                #     #     }]
-                #     #     }
 
-                body_put_request = {
+                
 
-                        # "identifier": data.identifier,
-                        "status_id": body_estados[0],
-                        "substatus": body_estados[1],
-                        "place": "CT Transyañez",
-                        "is_trunk":  data.is_trunk,
-                        "waypoint": {
-                            "latitude": latitude,
-                            "longitude": longitude
+
+                ############Body para update dispatch paris
+
+                # body_put_request = {
+
+                #         "identifier": data.identifier,
+                #         "status_id": body_estados[0],
+                #         "substatus": body_estados[1],
+                #         "place": "CT Transyañez",
+                #         "is_trunk":  data.is_trunk,
+                #         "waypoint": {
+                #             "latitude": latitude,
+                #             "longitude": longitude
+                #         }
+
+                #     }
+
+                # send_put_request(body_put_request, data.guide)
+
+
+                if data.substatus_code == None or data.substatus_code == "null" :### si el substatus es nulo, entonces no se actualiza nada
+                    #### logica para actualizar la ruta de paris
+
+                    print("es substatus es nulo sos")
+                else:
+                    ##### body update ruta
+
+                    id_ruta_creada = obtener_info_despacho(data.identifier)
+
+                    body_put_request = {
+                        "id": id_ruta_creada,
+                        "dispatches": 
+                            [{
+                            "identifier": data.identifier,
+                            "status_id": body_estados[0],
+                            # "substatus": body_estados[1],
+                            "place": "CT Transyañez",
+                            "is_trunk":  data.is_trunk,
+                            "waypoint": {
+                                "latitude": latitude,
+                                "longitude": longitude
+                            }
+                        }]
                         }
-
-                    }
-
-                print(body)
-
-                print('verificar info ruta',verificar_info_ruta)
-
+                    
+                    print(body_put_request)
+                
+                    send_put_update_ruta(body_put_request, id_ruta_creada)
 
                 # if verificar_info_ruta is None:
                 # send_put_request(body, data.guide)
 
                 ### update dispatch
 
-                send_put_request(body_put_request, data.guide)
+                # send_put_request(body_put_request, data.guide)
 
                     ### update ruta
 
