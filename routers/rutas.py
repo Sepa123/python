@@ -1457,21 +1457,22 @@ async def subir_archivo_ruta_manual(id_usuario : int, ids_usuario : str, file: U
         # print("pase por aqui")
         f.write(contents)
 
-    df = pd.read_excel(ruta)
+    df = pd.read_excel(ruta,skiprows=1)
 
     lista = df.to_dict(orient='records')
 
     print(lista)
 
-    for i, data in enumerate(lista):
-        # cantidad_encontrada = conn.get_pedido_planificados_quadmind_by_cod_pedido()
-        # if cantidad_encontrada[0] >= 1:
-        #     print("Producto ya esta registrado") 
-        # else:
-        print(data['identificador_ruta'])
-        print('posicion',i+1)
-        # print(posicion)
+    conn.insert_tabla_temporal_ruta_beetrack(lista,id_usuario,ids_usuario)
 
     return {
         'message': len(lista)
     }
+
+
+@router.get("/cargas/campos")
+async def get_campos_de_carga():
+    datos = conn.campos_de_carga_rutas_manuales()
+    resultado_dict = {titulo : cant for titulo, cant in datos}
+
+    return resultado_dict

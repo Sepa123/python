@@ -12649,23 +12649,18 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
         self.conn.commit()
 
 
-    # def insert_tabla_temporal_ruta_beetrack(self, id_dispatch,estado,subestado):
-    #     with self.conn.cursor() as cur:
-    #         cur.execute("""
-    #         INSERT INTO beetrack.ruta_manual_transyanez_temp
-    #         (id_user, ids_user, identificador_ruta, identificador, guia, id_cliente_base, cliente_base, lugar_de_trabajo, 
-    #         servicio, region_de_despacho, origen_de_la_entrega, fecha_estimada, fecha_llegada, estado, subestado, usuario_movil, telefono_usuario,
-    #         id_cliente, nombre_cliente, direccion_cliente, telefono_cliente, correo_electronico_cliente, tiempo_en_destino, n_intentos, distancia_km, 
-    #         fechahr, tipo, email, conductor, fechaentrega, peso, cmn, cuenta, volumen, bultos, entrega, factura, oc, ruta, tienda, nombre_ejecutivo, codigo,
-    #         observacion, valor_ruta)
-    #         VALUES(
-                    
-    #         )
-                        
+    def campos_de_carga_rutas_manuales(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+             with clientes_ty as (
+                select c.id as "Id_cliente",c.nombre as "Cliente"
+                from rutas.clientes c 
+                where c.activo = true and c.carga_manual = true
+            )
 
-    #         """)
-    #         row = cur.rowcount
-    #     self.conn.commit()
+            select 'Clientes_ty' as nombre,json_agg(clientes_ty) from clientes_ty
+                      """)
+            return cur.fetchall()
 
 
 
