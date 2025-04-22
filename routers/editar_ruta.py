@@ -238,7 +238,7 @@ async def Obtener_datos():
     else:
         raise HTTPException(status_code=404, detail="No se encontraron datos")
 
-@router.get("/api/Op/")
+@router.get("/Op/")
 async def Obtener_Op():
       # Consulta SQL para obtener datos (por ejemplo)
      consulta = """select * from operacion.modalidad_operacion mo """
@@ -256,7 +256,7 @@ async def Obtener_Op():
      else:
          raise HTTPException(status_code=404, detail="No se encontraron datos")
      
-@router.get("/api/Cop/")
+@router.get("/Cop/")
 async def Obtener_Cop():
       # Consulta SQL para obtener datos (por ejemplo)
      consulta = """select * from operacion.centro_operacion co  """
