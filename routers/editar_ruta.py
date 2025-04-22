@@ -380,7 +380,7 @@ async def actualizar_cliente(cliente_id: int, body: ClienteUpdate):
 
 
 
-@router.post("/api/Agregar/Cliente/")
+@router.post("/Agregar/Cliente/")
 async def agregar_cliente(body: Cliente):
      """
      Endpoint para insertar un registro en la tabla rutas.clientes.
