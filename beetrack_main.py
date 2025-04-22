@@ -1246,10 +1246,8 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
 
                 if data.substatus_code == None or data.substatus_code == "null" :### si el substatus es nulo, entonces no se actualiza nada
-                    #### logica para actualizar la ruta de paris
-
-                    print("es substatus es nulo sos")
-                else:
+                    print("es substatus es nulo")
+                else: ##### se usa el metodo put para update de rutas
                     ##### body update ruta
 
                     id_ruta_creada = obtener_info_despacho(data.identifier)
