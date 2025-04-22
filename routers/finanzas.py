@@ -530,7 +530,7 @@ def download_file(name_file: str):
     return FileResponse(name_file)
 
 
-@router.patch("/api/ActualizarAplica/")
+@router.patch("/ActualizarAplica/")
 async def actualizar_columna(body: UpdateColumnRequest):
     """
     Actualiza una columna específica en una tabla de la base de datos.
