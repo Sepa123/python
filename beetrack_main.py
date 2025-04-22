@@ -1265,7 +1265,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
                 body_put_request = {
 
-                        "identifier": data.identifier,
+                        # "identifier": data.identifier,
                         "status_id": body_estados[0],
                         "substatus": body_estados[1],
                         "place": "CT Transyañez",
