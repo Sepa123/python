@@ -505,7 +505,68 @@ def get_update_estados_paris_yanez( codigo_guia):
 
 
 
-def verificar_si_ruta_paris_existe_despachos(ruta_id):
+
+
+def verificar_si_ruta_yanez_existe_despachos(ruta_id):
+
+     # URL del endpoint
+    url = f'https://cluster-staging.dispatchtrack.com/api/external/v1/routes/{ruta_id}'
+
+    # Encabezados
+    headers = {
+        'Accept': '*/*',
+        'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
+        'X-AUTH-TOKEN': config("SECRET_KEY_PARIS_YANEZ"),
+    }
+
+    # Realizamos la solicitud PUT
+    with httpx.Client() as client:
+        response = client.get(url, headers=headers)
+
+    
+    troncales = []
+
+    info_despachos = []
+
+    # Verificamos la respuesta
+    if response.status_code == 200:
+        # print("Solicitud GET exitosa:", response.json())
+
+        data = response.json()
+
+        
+        for despachos in data['response']['route']['dispatches']:
+
+            if despachos["is_trunk"] == True:
+
+                troncales.append(despachos["is_trunk"])
+            else:
+
+                troncales.append(despachos["is_trunk"])
+
+                body = {
+                    "identifier": despachos['identifier']
+                }
+
+                info_despachos.append(body)
+
+        
+        print(info_despachos,troncales)
+
+              
+        return info_despachos, troncales
+
+        # body = response.json()
+
+    else:
+        print(f"Error en la solicitud GET: {response.status_code}")
+        print(response.text)
+
+        return info_despachos, troncales
+
+
+
+def verificar_si_ruta_paris_existe_despachos(ruta_id,ruta_id_yanez):
 
      # URL del endpoint
     url = f'https://cluster-staging.dispatchtrack.com/api/external/v1/routes/{ruta_id}'
@@ -550,6 +611,15 @@ def verificar_si_ruta_paris_existe_despachos(ruta_id):
 
         
         print(info_despachos,troncales)
+
+
+
+        if not despachos and not troncales:
+            print("No hay despachos ni troncales")
+
+            despachos, troncales = verificar_si_ruta_yanez_existe_despachos(ruta_id_yanez)
+
+            
 
         
               
@@ -1081,10 +1151,12 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                 if data.event == 'start':
                     print('actualizar a ruta iniciada', ruta_paris[1])
 
-                    despachos, troncales = verificar_si_ruta_paris_existe_despachos(ruta_paris[1])
+                    despachos, troncales = verificar_si_ruta_paris_existe_despachos(ruta_paris[1], ruta_paris[0])
 
                     if not despachos and not troncales:
                         print("NO HAY QUEEEEEEEEEEEEEEEESOOOO")
+
+                    
 
 
                     if any(troncales):
@@ -1111,7 +1183,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
                 if data.event == 'finish':
 
-                    despachos, troncales = verificar_si_ruta_paris_existe_despachos(ruta_paris[1])
+                    despachos, troncales = verificar_si_ruta_paris_existe_despachos(ruta_paris[1],ruta_paris[0])
 
 
                     if not despachos and not troncales:
