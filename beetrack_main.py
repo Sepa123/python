@@ -610,19 +610,6 @@ def verificar_si_ruta_paris_existe_despachos(ruta_id,ruta_id_yanez):
                 info_despachos.append(body)
 
         
-        print(info_despachos,troncales)
-
-
-
-        if not despachos and not troncales:
-            print("No hay despachos ni troncales")
-
-            despachos, troncales = verificar_si_ruta_yanez_existe_despachos(ruta_id_yanez)
-
-            
-
-        
-              
         return info_despachos, troncales
 
         # body = response.json()
@@ -1154,10 +1141,10 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                     despachos, troncales = verificar_si_ruta_paris_existe_despachos(ruta_paris[1], ruta_paris[0])
 
                     if not despachos and not troncales:
-                        print("NO HAY QUEEEEEEEEEEEEEEEESOOOO")
 
-                    
+                        print("No hay despachos ni troncales")
 
+                        despachos, troncales = verificar_si_ruta_yanez_existe_despachos(ruta_paris[0])
 
                     if any(troncales):
                         print("Al menos un troncal es True")
@@ -1178,7 +1165,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
                         print(body_put_request)
 
-                        send_put_update_ruta(body_put_request, ruta_paris[1])
+                        # send_put_update_ruta(body_put_request, ruta_paris[1])
 
 
                 if data.event == 'finish':
@@ -1187,7 +1174,10 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
 
                     if not despachos and not troncales:
-                        print("NO HAY QUEEEEEEEEEEEEEEEESOOOO")
+
+                        print("No hay despachos ni troncales")
+
+                        despachos, troncales = verificar_si_ruta_yanez_existe_despachos(ruta_paris[0])
 
 
                     if any(troncales):
