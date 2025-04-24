@@ -374,6 +374,8 @@ def send_put_update_ruta(payload, route_id): ### esto es para actualizar una rut
             # Guardar el contenido del JSON en un archivo de texto
         with open(filename, "w") as f:
             json.dump(body, f, indent=4)
+            f.write("\n")
+            json.dump(payload, f, indent=4)
     else:
 
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -766,7 +768,7 @@ async def webhook_dispatch_paris(request : Request , headers: tuple = Depends(va
 
 
 
-@app.post("/api/v2/dispatch/yanez/erai")
+@app.post("/api/v2/dispatch/yanez")
 async def webhook_dispatch_yanez(request : Request , headers: tuple = Depends(validar_encabezados)):
 
     body = await request.json()  # Obtener el cuerpo como JSON
@@ -1388,6 +1390,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                     if data.evaluation_answers is not None:
 
                         for imagen in data.evaluation_answers:
+                            # if imagen.cast == "photo":
                             url_img.append(imagen.value)
 
                         if url_img == []:
