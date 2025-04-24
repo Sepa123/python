@@ -1144,7 +1144,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
                         print("No hay despachos ni troncales")
 
-                        despachos, troncales = verificar_si_ruta_yanez_existe_despachos(ruta_paris[0])
+                        # despachos, troncales = verificar_si_ruta_yanez_existe_despachos(ruta_paris[0])
 
                     if any(troncales):
                         print("Al menos un troncal es True")
@@ -1170,14 +1170,11 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
                 if data.event == 'finish':
 
-                    despachos, troncales = verificar_si_ruta_paris_existe_despachos(ruta_paris[1],ruta_paris[0])
+                    despachos, troncales = verificar_si_ruta_paris_existe_despachos(ruta_paris[1])
 
 
                     if not despachos and not troncales:
-
-                        print("No hay despachos ni troncales")
-
-                        despachos, troncales = verificar_si_ruta_yanez_existe_despachos(ruta_paris[0])
+                        print("NO HAY QUEEEEEEEEEEEEEEEESOOOO")
 
 
                     if any(troncales):
