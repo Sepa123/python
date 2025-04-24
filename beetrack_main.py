@@ -1259,7 +1259,9 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                             "id": ruta_paris[1],
                             "started": True,
                             # "started_at": data.started_at,
-                            "dispatches": despachos  
+                            "dispatches": [{
+                                "identifier": data.identifier,
+                            }]  
                             
                         }
 
