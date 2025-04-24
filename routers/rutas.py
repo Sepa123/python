@@ -5,6 +5,7 @@ from openpyxl import Workbook
 from openpyxl.styles import Font , PatternFill, Border ,Side, Alignment
 from datetime import datetime, timedelta
 from openpyxl.worksheet.page import PageMargins , PrintPageSetup
+import psycopg2
 from database.schema.operaciones.lista_vehiculos import vehiculos_disponibles_op_schema
 import lib.excel_generico as excel
 import time
@@ -1444,30 +1445,42 @@ async def download_file():
 #### subir rutas manuales archivos
 
 @router.post("/subir-archivo/rutas_manuales", status_code=status.HTTP_202_ACCEPTED)
-async def subir_archivo_ruta_manual(id_usuario : int, ids_usuario : str, file: UploadFile = File(...)):
+async def subir_archivo_ruta_manual(id_usuario : int, ids_usuario : str,cliente : str,id_cliente : str, file: UploadFile = File(...)):
+    try:
 
-    # select quadminds.convierte_en_ruta_manual(1,'202308021040');
+        directorio  = os.path.abspath("excel")
 
-    directorio  = os.path.abspath("excel")
+        ruta = os.path.join(directorio,file.filename)
 
-    ruta = os.path.join(directorio,file.filename)
+        with open(ruta, "wb") as f:
+            contents = await file.read()
+            # print("pase por aqui")
+            f.write(contents)
 
-    with open(ruta, "wb") as f:
-        contents = await file.read()
-        # print("pase por aqui")
-        f.write(contents)
+        df = pd.read_excel(ruta,skiprows=1)
 
-    df = pd.read_excel(ruta,skiprows=1)
+        df = df.applymap(lambda x: None if pd.isna(x) else x)
 
-    lista = df.to_dict(orient='records')
+        lista = df.to_dict(orient='records')
 
-    print(lista)
+        print(lista)
 
-    conn.insert_tabla_temporal_ruta_beetrack(lista,id_usuario,ids_usuario)
+        conn.insert_tabla_temporal_ruta_beetrack(lista,id_usuario,ids_usuario,cliente,id_cliente)
 
-    return {
-        'message': len(lista)
-    }
+        return {
+            'message': len(lista)
+        }
+    
+
+    except psycopg2.errors.UniqueViolation as error:
+            # Manejar la excepción UniqueViolation específica
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error: identificador de ruta,la guia, y el id del cliente se encuentran duplicados")
+    
+    except Exception as e:
+
+        # Manejo de excepciones
+        print(f"Error al subir el archivo: {e}")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error al subir el archivo")
 
 
 @router.get("/cargas/campos")
@@ -1476,3 +1489,36 @@ async def get_campos_de_carga():
     resultado_dict = {titulo : cant for titulo, cant in datos}
 
     return resultado_dict
+
+@router.get("/lista/rutas_manuales/temp")
+async def get_lista_rutas_manuales_temp(id_usuario : int):
+    datos = conn.obtener_lista_ids_rutas_y_pantes_temp(id_usuario)
+    return datos[0]
+
+
+
+@router.get("/lista/rutas_manuales")
+async def get_lista_rutas_manuales_temp(fecha_ini:str,fecha_fin: str,bloque : int):
+
+    fecha_ini = fecha_ini.replace("-","")
+    fecha_fin = fecha_fin.replace("-","")
+
+    datos = conn.obtener_datos_rutas_manuales_por_bloque(fecha_ini,fecha_fin,bloque)
+    return datos[0]
+
+### ejemplo de carga masiva rutas manuales
+
+@router.get("/archivo_ejemplo/rutas_manuales/descargar")
+async def download_file():
+    # Ruta completa del archivo
+
+    directorio  = os.path.abspath(f"excel/rutas")
+
+    file_path = os.path.join(directorio, 'Excel base Ruta manual.xlsx')
+
+    # Verifica si el archivo existe
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="File not found")
+
+    # Retorna el archivo como respuesta
+    return FileResponse(file_path, filename='Excel base Ruta manual.xlsx')

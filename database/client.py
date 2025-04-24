@@ -12615,9 +12615,9 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
 
     #### guardar datos de clientes en tabla temporal beetrack
 
-    def insert_tabla_temporal_ruta_beetrack(self,rutas, id_usuario : int,ids_usuario: str):
+    def insert_tabla_temporal_ruta_beetrack(self,rutas, id_usuario : int,ids_usuario: str,cliente:str,id_cliente:int):
 
-       
+    
         with self.conn.cursor() as cur:
             query = """
             INSERT INTO beetrack.ruta_manual_transyanez_temp
@@ -12625,7 +12625,7 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
             fecha_estimada, fecha_llegada, estado, subestado, usuario_movil, telefono_usuario, id_cliente, nombre_cliente, direccion_cliente, 
             telefono_cliente, correo_electronico_cliente, tiempo_en_destino, n_intentos, distancia_km, fechahr, tipo, email, conductor, 
             fechaentrega, peso, cmn, cuenta, volumen, bultos, entrega, factura, oc, ruta, tienda, nombre_ejecutivo, codigo, observacion, 
-            valor_ruta)            
+            valor_ruta,cliente_base,id_cliente_base)            
             
             VALUES %s
             """
@@ -12638,7 +12638,7 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
                     body['Fecha'], body['tipo'], body['e-mail'], body['conductor'], body['fecha Entrega'], body['peso'],
                     body['Comuna'], body['cuenta'], body['volumen'], body['bultos'], body['entrega'], body['factura'],
                     body['Orden Compra'], body['ruta'], body['tienda'], body['nombre Ejecutivo'], body['Codigo'],
-                    body['observacion'], body['Valor Ruta']
+                    body['observacion'], body['Valor Ruta'],cliente,id_cliente
                 )
                 for body in rutas
             ]
@@ -12649,6 +12649,7 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
         self.conn.commit()
 
 
+    
     def campos_de_carga_rutas_manuales(self):
         with self.conn.cursor() as cur:
             cur.execute(f""" 
@@ -12661,6 +12662,102 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
             select 'Clientes_ty' as nombre,json_agg(clientes_ty) from clientes_ty
                       """)
             return cur.fetchall()
+
+
+    def obtener_lista_ids_rutas_y_pantes_temp(self,id_user:int):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+             with lista_ids as (
+
+                    SELECT string_agg(id::text, ',') AS ids          
+                    from beetrack.ruta_manual_transyanez_temp rmtt 
+                    ---where rmtt.created_at::date = current_date and rmtt.id_user = {id_user}   
+                    where rmtt.id_user = {id_user}   
+
+                    )
+
+                    SELECT json_agg(t) AS resultado
+                    from(
+                    SELECT 	id_salida as "Id",
+                            identificador_ruta as "Ruta",
+                            identificador as "Ppu",
+                            guia as "Guia",
+                            mensaje_ppu as "Mensaje_ppu",
+                            proceder_ppu as "Proceder_ppu",
+                            mensaje_ruta as "Mensaje_ruta",
+                            proceder_ruta as "Proceder_ruta",
+                            proceder as "Proceder"
+                    FROM beetrack.fnc_valida_rutas_y_patentes_temp(
+                    string_to_array((SELECT ids FROM lista_ids), ',')::int[]
+                    )
+                    ) t;
+      
+                      """)
+            return cur.fetchone()
+
+
+    def obtener_lista_ids_rutas_y_pantes_temp(self,id_user:int):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+             with lista_ids as (
+
+                    SELECT string_agg(id::text, ',') AS ids          
+                    from beetrack.ruta_manual_transyanez_temp rmtt 
+                    ---where rmtt.created_at::date = current_date and rmtt.id_user = {id_user}   
+                    where rmtt.id_user = {id_user}   
+
+                    )
+
+                    SELECT json_agg(t) AS resultado
+                    from(
+                    SELECT 	id_salida as "Id",
+                            identificador_ruta as "Ruta",
+                            identificador as "Ppu",
+                            guia as "Guia",
+                            mensaje_ppu as "Mensaje_ppu",
+                            proceder_ppu as "Proceder_ppu",
+                            mensaje_ruta as "Mensaje_ruta",
+                            proceder_ruta as "Proceder_ruta",
+                            proceder as "Proceder"
+                    FROM beetrack.fnc_valida_rutas_y_patentes_temp(
+                    string_to_array((SELECT ids FROM lista_ids), ',')::int[]
+                    )
+                    ) t;
+      
+                      """)
+            return cur.fetchone()
+
+
+    def obtener_datos_rutas_y_pantes_temp(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+             SELECT 	id_salida as id,
+                    identificador_ruta as ruta,
+                    identificador as ppu,
+                    guia as guia,
+                    mensaje_ppu,
+                    proceder_ppu,
+                    mensaje_ruta,
+                    proceder_ruta,
+                    proceder
+            FROM beetrack.fnc_valida_rutas_y_patentes_temp(ARRAY[1]);
+                      """)
+            return cur.fetchall()
+
+
+
+        #### obtener lista de rutas manuales por bloques
+    
+    def obtener_datos_rutas_manuales_por_bloque(self,fecha_ini,fecha_fin,bloque):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            SELECT json_agg(rutas) AS ruta_manual_bloques
+                from
+                (
+                    select * from beetrack.fn_listar_ruta_manual_bloques('{fecha_ini}','{fecha_fin}',{bloque})
+                ) as rutas
+                      """)
+            return cur.fetchone()
 
 
 
