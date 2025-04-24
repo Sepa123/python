@@ -325,6 +325,19 @@ def crear_ruta_paris(payload): ### esto es para crear una ruta en paris
         # Extraemos los datos de interés
         route_id = response_data.get("route_id")
 
+
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        filename = f"POST_Ruta_Paris_{timestamp}.txt"
+
+            # body = await request.json()  # Obtener el cuerpo como JSON
+            # Guardar el contenido del JSON en un archivo de texto
+        with open(filename, "w") as f:
+            json.dump(body, f, indent=4)
+            f.write("\n")
+            json.dump(payload, f, indent=4)
+
+        
+
         return route_id
 
     else:
