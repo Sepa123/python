@@ -1224,7 +1224,54 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                 json.dump(body, f, indent=4)
 
 
+
+            
+
+            ###### logica para evento de on_route_from_mobile
+
+
+            if data.event == 'on_route_from_mobile':
+                    
+
+                    ruta_paris = conn.verificar_informacion_ruta_paris(data.route)
+
+
+                    print('actualizar a ruta iniciada', ruta_paris[1])
+
+                    despachos, troncales = verificar_si_ruta_paris_existe_despachos(ruta_paris[1], ruta_paris[0])
+
+                    if not despachos and not troncales:
+
+                        print("No hay despachos ni troncales")
+
+                        # despachos, troncales = verificar_si_ruta_yanez_existe_despachos(ruta_paris[0])
+
+                    if any(troncales):
+                        print("Al menos un troncal es True")
+                        pass
+                    else:
+                        print("Todos son False")
+
+
+                        # fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+                        body_put_request = {
+                            "id": ruta_paris[1],
+                            "started": True,
+                            # "started_at": data.started_at,
+                            "dispatches": despachos  
+                            
+                        }
+
+                        print(body_put_request)
+
+                        # send_put_update_ruta(body_put_request, ruta_paris[1])
+
+
             ### aqui se empieza a hacer la logica de actualizacion de guia en dispatchtrack paris
+
+
+
 
 
             body_estados = None
