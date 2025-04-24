@@ -1170,7 +1170,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
                 if data.event == 'finish':
 
-                    despachos, troncales = verificar_si_ruta_paris_existe_despachos(ruta_paris[1])
+                    despachos, troncales = verificar_si_ruta_paris_existe_despachos(ruta_paris[1], ruta_paris[0])
 
 
                     if not despachos and not troncales:
