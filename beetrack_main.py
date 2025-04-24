@@ -1233,7 +1233,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
             if data.event == 'on_route_from_mobile':
                     
 
-                    ruta_paris = conn.verificar_informacion_ruta_paris(data.route)
+                    ruta_paris = conn.verificar_informacion_ruta_paris(data.route_id)
 
 
                     print('actualizar a ruta iniciada', ruta_paris[1])
@@ -1260,7 +1260,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                             "started": True,
                             # "started_at": data.started_at,
                             "dispatches": [{
-                                "identifier": data.identifier,
+                                "identifier": data.identifier
                             }]  
                             
                         }
