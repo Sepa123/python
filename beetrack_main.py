@@ -1467,7 +1467,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
                 ######## lo que se hace es verificar si la ruta existe o no existe en dispatchtrack paris
 
-                if verificar_info_ruta[1] is None:
+                if verificar_info_ruta is None:
                     print('la ruta no existe en el dispatchtrack paris')
 
                     ######  print('se debe crear vehiculo en paris')
