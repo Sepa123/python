@@ -548,7 +548,15 @@ def verificar_si_ruta_yanez_existe_despachos(ruta_id):
 
                     troncales.append(despachos["is_trunk"])
 
-                    body = despachos
+                    # body = despachos
+
+                    body = {
+                    "identifier": despachos['identifier'],
+                    "status_id": 1,
+                    "substatus": None
+                    }
+
+                    # info_despachos.append(body)
 
                     info_despachos.append(body)
 
@@ -1131,6 +1139,57 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
             ruta_paris = conn.verificar_informacion_ruta_paris(data.route)
 
+            if data.event == 'update' and data.started == True:
+                
+                print('actualizar ruta existente')
+
+                # despachos, troncales = verificar_si_ruta_paris_existe_despachos(verificar_info_ruta[1], verificar_info_ruta[0])
+                despachos, troncales = verificar_si_ruta_yanez_existe_despachos(ruta_paris[0])
+
+                if not despachos and not troncales:
+
+                    print("No hay despachos ni troncales")
+
+                    return { "message": "no hay despachos ni troncales"}
+
+                    # despachos, troncales = verificar_si_ruta_yanez_existe_despachos(ruta_paris[0])
+
+                if any(troncales):
+                    print("Al menos un troncal es True")
+                    pass
+                else:
+                    print("Todos son False")
+
+                    fecha_formateada = datetime.now() - timedelta(minutes=3)
+
+                    # Formatear con milisegundos .000 y zona horaria fija -04:00
+                    fecha_actual = fecha_formateada.strftime("%Y-%m-%dT%H:%M:%S.000-04:00")
+
+
+                    # fecha_actual = datetime.now().strftime("%Y-%m-%dT%H:%M:%S.000-04:00")
+
+                    body_put_request = {
+                        "id": verificar_info_ruta[1],
+                        # "started": True,
+                        "started_at": fecha_actual,
+                        "dispatches": despachos
+                        # "dispatches": [{
+                        #     "identifier": str(data.identifier),
+                        #     "status_id": 1,
+                        #     "substatus": None
+                        # }]  
+                        
+                    }
+
+                    print(body_put_request)
+                    print(despachos)
+
+                    # send_put_update_ruta(body_put_request, verificar_info_ruta[1])
+
+
+                    return { "message": "esta ruta es iniciada"}
+
+
             # if data.event == 'create':
 
 
@@ -1549,7 +1608,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                         print(body_put_request)
                         print(despachos)
 
-                        send_put_update_ruta(body_put_request, verificar_info_ruta[1])
+                        # send_put_update_ruta(body_put_request, verificar_info_ruta[1])
 
 
                         return { "message": "esta ruta es iniciada"}
