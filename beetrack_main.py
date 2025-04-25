@@ -1384,7 +1384,11 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                         "ended": True
                     }
 
+                    conn.actualizar_estado_ruta_paris(ruta_paris[0],'finished')
+
                     send_put_update_ruta(body_put_request, ruta_paris[1])
+
+
 
             else:
 
