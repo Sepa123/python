@@ -1225,6 +1225,19 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
             ### aqui se empieza a hacer la logica de actualizacion de guia en dispatchtrack paris
 
+            #### para empezar se confirma si el dispatch pertenece a paris
+
+            # Obtener el name del group_category "Cliente"
+            cliente_name = next((item["name"] for item in data.groups if item["group_category"] == "Cliente"), None)
+
+            # "paris" in datos_groups["Cliente"].lower()
+            if "paris" in cliente_name.lower():
+                print("El dispatch pertenece a Paris")
+            else:
+                return {"message": "El dispatch no pertenece a Paris"}
+
+
+
             body_estados = None
 
             if data.route_id is None:
