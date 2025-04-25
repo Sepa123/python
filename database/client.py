@@ -12547,9 +12547,20 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
     def verificar_informacion_ruta_paris(self, id_route_ty):
         with self.conn.cursor() as cur:
             cur.execute(f"""  
-                select  id_route_ty, id_route_paris from paris.ppu_tracking
+                select  id_route_ty, id_route_paris, COALESCE(evento, '') AS evento  from paris.ppu_tracking
                 where id_route_ty = {id_route_ty} 
                 order by created_at desc
+                """)
+            return cur.fetchone()
+        
+
+    def actualizar_estado_ruta_paris(self, id_route_ty, evento):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""  
+                UPDATE paris.ppu_tracking
+                SET evento = '{evento}'
+                WHERE id_route_ty = {id_route_ty}
+
                 """)
             return cur.fetchone()
 

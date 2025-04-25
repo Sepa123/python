@@ -1142,6 +1142,13 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
             if data.event == 'update' and data.started == True:
                 
                 print('actualizar ruta existente')
+                estado_ruta = ruta_paris[2]
+
+                if estado_ruta == 'started':
+                    print('la ruta ya esta iniciada')
+                    return { "message": "la ruta ya esta iniciada"}
+
+                
 
                 # despachos, troncales = verificar_si_ruta_paris_existe_despachos(verificar_info_ruta[1], verificar_info_ruta[0])
                 despachos, troncales = verificar_si_ruta_yanez_existe_despachos(ruta_paris[0])
@@ -1180,6 +1187,8 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                         # }]  
                         
                     }
+
+                    conn.actualizar_estado_ruta_paris(ruta_paris[0],'started')
 
                     print(body_put_request)
                     print(despachos)
