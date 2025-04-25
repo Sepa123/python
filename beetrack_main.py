@@ -1339,51 +1339,56 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
                 if data.status == 1 and data.substatus_code == "null": ### si el status es 1 y el substatus es 21, entonces se inicia la ruta en dispatchtrack paris
 
-                    ruta_paris = conn.verificar_informacion_ruta_paris(data.route_id)
+                    if ruta_paris[1] is None:
+                        ruta_paris = conn.verificar_informacion_ruta_paris(data.route_id)
 
-                    print('actualizar a ruta iniciada', ruta_paris[1])
+                        print('actualizar a ruta iniciada', ruta_paris[1])
 
-                    despachos, troncales = verificar_si_ruta_paris_existe_despachos(ruta_paris[1], ruta_paris[0])
-
-                    if not despachos and not troncales:
-
-                        print("No hay despachos ni troncales")
-
-                        # despachos, troncales = verificar_si_ruta_yanez_existe_despachos(ruta_paris[0])
-
-                    if any(troncales):
-                        print("Al menos un troncal es True")
-                        pass
-                    else:
-                        print("Todos son False")
-
-                        fecha_formateada = datetime.now() - timedelta(minutes=3)
-
-                        # Formatear con milisegundos .000 y zona horaria fija -04:00
-                        fecha_actual = fecha_formateada.strftime("%Y-%m-%dT%H:%M:%S.000-04:00")
+                        # if ruta_paris[1] is None:
 
 
-                        # fecha_actual = datetime.now().strftime("%Y-%m-%dT%H:%M:%S.000-04:00")
 
-                        body_put_request = {
-                            "id": ruta_paris[1],
-                            # "started": True,
-                            "started_at": fecha_actual,
-                            "dispatches": [{
-                                "identifier": str(data.identifier),
-                                "status_id": 1,
-                                "substatus": None
-                            }]  
-                            
-                        }
+                        despachos, troncales = verificar_si_ruta_paris_existe_despachos(ruta_paris[1], ruta_paris[0])
 
-                        print(body_put_request)
-                        print(despachos)
+                        if not despachos and not troncales:
 
-                        send_put_update_ruta(body_put_request, ruta_paris[1])
+                            print("No hay despachos ni troncales")
+
+                            # despachos, troncales = verificar_si_ruta_yanez_existe_despachos(ruta_paris[0])
+
+                        if any(troncales):
+                            print("Al menos un troncal es True")
+                            pass
+                        else:
+                            print("Todos son False")
+
+                            fecha_formateada = datetime.now() - timedelta(minutes=3)
+
+                            # Formatear con milisegundos .000 y zona horaria fija -04:00
+                            fecha_actual = fecha_formateada.strftime("%Y-%m-%dT%H:%M:%S.000-04:00")
 
 
-                        return { "message": "esta ruta es iniciada"}
+                            # fecha_actual = datetime.now().strftime("%Y-%m-%dT%H:%M:%S.000-04:00")
+
+                            body_put_request = {
+                                "id": ruta_paris[1],
+                                # "started": True,
+                                "started_at": fecha_actual,
+                                "dispatches": [{
+                                    "identifier": str(data.identifier),
+                                    "status_id": 1,
+                                    "substatus": None
+                                }]  
+                                
+                            }
+
+                            print(body_put_request)
+                            print(despachos)
+
+                            send_put_update_ruta(body_put_request, ruta_paris[1])
+
+
+                            return { "message": "esta ruta es iniciada"}
 
                 if verificar_info_ruta is None: ### no recibo nada es porque la ruta no se ha creado aun
 
