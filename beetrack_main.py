@@ -1750,11 +1750,6 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
 
 
-
-
-
-
-
 ########### esto es el login migrado para no sufra por las c aidas
 from database.models.user import loginSchema
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
