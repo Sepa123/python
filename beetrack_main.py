@@ -1405,7 +1405,9 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                             # "started": True,
                             "started_at": fecha_actual,
                             "dispatches": [{
-                                "identifier": str(data.identifier)
+                                "identifier": str(data.identifier),
+                                "status_id": 1,
+                                "substatus": None
                             }]  
                             
                         }
