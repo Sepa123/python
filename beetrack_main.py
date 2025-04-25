@@ -1466,7 +1466,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                             }
                         print('empezar RUTA NUEVA')
 
-                        id_ruta = conn.read_route_paris(data.identifier)[0]
+                        # id_ruta = conn.read_route_paris(data.identifier)[0]
 
                         send_put_update_ruta(body_started, id_ruta_creada)
 
