@@ -1165,7 +1165,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
                         print(body_put_request)
 
-                        # send_put_update_ruta(body_put_request, ruta_paris[1])
+                        send_put_update_ruta(body_put_request, ruta_paris[1])
 
 
                 if data.event == 'finish':
@@ -1223,58 +1223,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
             with open(filename, "w") as f:
                 json.dump(body, f, indent=4)
 
-
-
-            
-
-            ###### logica para evento de on_route_from_mobile
-
-
-            if data.event == 'on_route_from_mobile':
-                    
-
-                    ruta_paris = conn.verificar_informacion_ruta_paris(data.route_id)
-
-
-                    print('actualizar a ruta iniciada', ruta_paris[1])
-
-                    despachos, troncales = verificar_si_ruta_paris_existe_despachos(ruta_paris[1], ruta_paris[0])
-
-                    if not despachos and not troncales:
-
-                        print("No hay despachos ni troncales")
-
-                        # despachos, troncales = verificar_si_ruta_yanez_existe_despachos(ruta_paris[0])
-
-                    if any(troncales):
-                        print("Al menos un troncal es True")
-                        pass
-                    else:
-                        print("Todos son False")
-
-
-                        # fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-                        body_put_request = {
-                            "id": ruta_paris[1],
-                            "started": True,
-                            # "started_at": data.started_at,
-                            "dispatches": [{
-                                "identifier": data.identifier
-                            }]  
-                            
-                        }
-
-                        print(body_put_request)
-
-                        # send_put_update_ruta(body_put_request, ruta_paris[1])
-
-
             ### aqui se empieza a hacer la logica de actualizacion de guia en dispatchtrack paris
-
-
-
-
 
             body_estados = None
 
@@ -1414,6 +1363,60 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                 print('troncal : false')
 
                 print(verificar_info_ruta)
+
+
+                ##### logica para iniciar ruta 
+
+                print("logica para iniciar ruta")
+                print(data.status)
+                print(data.substatus_code)
+
+
+                if data.status == 1 and data.substatus_code == "null": ### si el status es 1 y el substatus es 21, entonces se inicia la ruta en dispatchtrack paris
+
+                    ruta_paris = conn.verificar_informacion_ruta_paris(data.route_id)
+
+                    print('actualizar a ruta iniciada', ruta_paris[1])
+
+                    despachos, troncales = verificar_si_ruta_paris_existe_despachos(ruta_paris[1], ruta_paris[0])
+
+                    if not despachos and not troncales:
+
+                        print("No hay despachos ni troncales")
+
+                        # despachos, troncales = verificar_si_ruta_yanez_existe_despachos(ruta_paris[0])
+
+                    if any(troncales):
+                        print("Al menos un troncal es True")
+                        pass
+                    else:
+                        print("Todos son False")
+
+                        fecha_formateada = datetime.now() - timedelta(minutes=3)
+
+                        # Formatear con milisegundos .000 y zona horaria fija -04:00
+                        fecha_actual = fecha_formateada.strftime("%Y-%m-%dT%H:%M:%S.000-04:00")
+
+
+                        # fecha_actual = datetime.now().strftime("%Y-%m-%dT%H:%M:%S.000-04:00")
+
+                        body_put_request = {
+                            "id": ruta_paris[1],
+                            # "started": True,
+                            "started_at": fecha_actual,
+                            "dispatches": [{
+                                "identifier": str(data.identifier)
+                            }]  
+                            
+                        }
+
+                        print(body_put_request)
+                        print(despachos)
+
+                        send_put_update_ruta(body_put_request, ruta_paris[1])
+
+
+                        return { "message": "esta ruta es iniciada"}
 
                 if verificar_info_ruta is None: ### no recibo nada es porque la ruta no se ha creado aun
 
