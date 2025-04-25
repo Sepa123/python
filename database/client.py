@@ -12562,7 +12562,7 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
                 WHERE id_route_ty = {id_route_ty}
 
                 """)
-            return cur.fetchone()
+        self.conn.commit()
 
 
     
