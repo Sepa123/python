@@ -1135,6 +1135,69 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
             else:
 
+                #### logica para  asignar ruta
+
+                if data.event == 'update' and data.started == False:
+
+                    print('se debe crearr vehiculo en paris')
+
+                    crear_vehiculo_paris(data.truck)  
+
+                    date_actual = datetime.now().strftime("%Y-%m-%d")
+
+                    ### luego se crea la ruta en paris
+                    body_ruta = {
+                        "truck_identifier":data.truck,
+                        "date": date_actual
+                        # "dispatches": [{"identifier": data.identifier}]
+                    }
+
+                    body_info_ruta = {
+                        "ppu" : data.truck, 
+                        "id_route_ty" : data.route, 
+                        "id_route_paris" : id_ruta_creada, 
+                        "is_trunk" : True
+                        }
+
+                    conn.guardar_informacion_de_rutas_paris(body_info_ruta)
+
+                    
+                        # crear_vehiculo_paris(data.truck_identifier)  
+                        
+                        # date_actual = datetime.now().strftime("%Y-%m-%d")
+
+                        # ### luego se crea la ruta en paris
+                        # body_ruta = {
+                        #     "truck_identifier":data.truck_identifier,
+                        #     "date": date_actual
+                        #     # "dispatches": [{"identifier": data.identifier}]
+                        # }
+
+                        # # if data.route_id is None:
+                        # id_ruta_creada = crear_ruta_paris(body_ruta)
+                        # print(' rUTA NUEVA')
+                        # time.sleep(0.8)
+
+                        # body_info_ruta = {
+                        # "ppu" : data.truck_identifier, 
+                        # "id_route_ty" : data.route_id, 
+                        # "id_route_paris" : id_ruta_creada, 
+                        # "is_trunk" : True
+                        # }
+
+                        # print(body_info_ruta)
+                
+                        # conn.guardar_informacion_de_rutas_paris(body_info_ruta)
+                    
+
+                    body_put_request = {
+
+                    }
+
+
+                    # send_put_update_ruta(body_put_request, ruta_paris[1])
+
+
                 if data.event == 'start':
                     print('actualizar a ruta iniciada', ruta_paris[1])
 
