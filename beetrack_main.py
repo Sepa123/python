@@ -1281,54 +1281,6 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
                 print(verificar_info_ruta)
 
-                #### el siguiente código fue comentado por motivo de que
-                ### la funcion guardar_informacion_de_rutas_paris() me golpea por error de duplicate key 
-                ### al tratar de guardar el id_ruta_paris, ademas de no utilizarse el update ruta, se usa el update de dispatch
-                
-
-                # if verificar_info_ruta is None: ### no recibo nada es porque la ruta no se ha creado aun
-
-                #     body_info_ruta = {
-                #         "ppu" : data.truck_identifier, 
-                #         "id_route_ty" : data.route_id, 
-                #         "id_route_paris" : id_ruta_creada, 
-                #         "is_trunk" : True
-                #     }
-
-                #     print(body_info_ruta)
-            
-                #     conn.guardar_informacion_de_rutas_paris(body_info_ruta)
-
-                # else: ### si la ruta existe, entonces se debe actualizar el id de la ruta en paris
-                #     print('la ruta ya existe')
-                #     id_ruta_creada = verificar_info_ruta[1]
-
-                #     print("id paris existente",id_ruta_creada)
-
-                #     # id_ruta_paris = obtener_info_despacho(data.identifier)
-
-
-                
-
-
-                ############Body para update dispatch paris
-
-                # body_put_request = {
-
-                #         "identifier": data.identifier,
-                #         "status_id": body_estados[0],
-                #         "substatus": body_estados[1],
-                #         "place": "CT Transyañez",
-                #         "is_trunk":  data.is_trunk,
-                #         "waypoint": {
-                #             "latitude": latitude,
-                #             "longitude": longitude
-                #         }
-
-                #     }
-
-                # send_put_request(body_put_request, data.guide)
-
 
                 if data.substatus_code == None or data.substatus_code == "null" :### si el substatus es nulo, entonces no se actualiza nada
                     print("es substatus es nulo")
