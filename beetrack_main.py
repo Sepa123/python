@@ -537,18 +537,20 @@ def verificar_si_ruta_yanez_existe_despachos(ruta_id):
         
         for despachos in data['response']['route']['dispatches']:
 
-            if despachos["is_trunk"] == True:
+            cliente_name = next((item["name"] for item in despachos["groups"] if item["group_category"] == "Cliente"), None)
 
-                troncales.append(despachos["is_trunk"])
-            else:
+            if "paris" in cliente_name.lower():
 
-                troncales.append(despachos["is_trunk"])
+                if despachos["is_trunk"] == True:
 
-                body = {
-                    "identifier": despachos['identifier']
-                }
+                    troncales.append(despachos["is_trunk"])
+                else :
 
-                info_despachos.append(body)
+                    troncales.append(despachos["is_trunk"])
+
+                    body = despachos
+
+                    info_despachos.append(body)
 
         
         print(info_despachos,troncales)
@@ -1129,10 +1131,16 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
             ruta_paris = conn.verificar_informacion_ruta_paris(data.route)
 
-            if data.event == 'update' and data.started == False:
+            if data.event == 'create':
 
-                    print('se debe crearr vehiculo en paris')
+                despachos, troncales = verificar_si_ruta_yanez_existe_despachos(data.route)
 
+                print('se debe crearr vehiculo en paris')
+
+                if despachos is None or despachos == []:
+                    
+                    print('no hay despachos')
+                else:
                     crear_vehiculo_paris(data.truck)  
 
                     date_actual = datetime.now().strftime("%Y-%m-%d")
@@ -1140,9 +1148,13 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                     ### luego se crea la ruta en paris
                     body_ruta = {
                         "truck_identifier":data.truck,
-                        "date": date_actual
+                        "date": date_actual,
+                        "dispatches": despachos 
+                        
                         # "dispatches": [{"identifier": data.identifier}]
                     }
+
+                    print('crear ruta paris', body_ruta)
 
                     id_ruta_creada = crear_ruta_paris(body_ruta)
                     
@@ -1157,6 +1169,40 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                     print(body_info_ruta)
 
                     conn.guardar_informacion_de_rutas_paris(body_info_ruta)
+
+                    print("")
+
+
+
+            # if data.event == 'update' and data.started == False:
+
+            #         print('se debe crearr vehiculo en paris')
+
+            #         crear_vehiculo_paris(data.truck)  
+
+            #         date_actual = datetime.now().strftime("%Y-%m-%d")
+
+            #         ### luego se crea la ruta en paris
+            #         body_ruta = {
+            #             "truck_identifier":data.truck,
+            #             "date": date_actual
+                        
+            #             # "dispatches": [{"identifier": data.identifier}]
+            #         }
+
+            #         id_ruta_creada = crear_ruta_paris(body_ruta)
+                    
+
+            #         body_info_ruta = {
+            #             "ppu" : data.truck, 
+            #             "id_route_ty" : data.route, 
+            #             "id_route_paris" : id_ruta_creada, 
+            #             "is_trunk" : True
+            #             }
+
+            #         print(body_info_ruta)
+
+            #         conn.guardar_informacion_de_rutas_paris(body_info_ruta)
 
 
             if ruta_paris is None:
