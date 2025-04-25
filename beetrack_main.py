@@ -1320,7 +1320,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
             else:
 
-                    print('la ruta ya existe en paris', ruta_paris[1])
+                    print('no pasa nada')
 
         if body["resource"] == "dispatch_guide":
             mensaje = "Recibido Modelo Creación Guia"
