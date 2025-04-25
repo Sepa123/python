@@ -1169,7 +1169,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                     # fecha_actual = datetime.now().strftime("%Y-%m-%dT%H:%M:%S.000-04:00")
 
                     body_put_request = {
-                        "id": verificar_info_ruta[1],
+                        "id": ruta_paris[1],
                         # "started": True,
                         "started_at": fecha_actual,
                         "dispatches": despachos
@@ -1184,7 +1184,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                     print(body_put_request)
                     print(despachos)
 
-                    # send_put_update_ruta(body_put_request, verificar_info_ruta[1])
+                    send_put_update_ruta(body_put_request, ruta_paris[1])
 
 
                     return { "message": "esta ruta es iniciada"}
