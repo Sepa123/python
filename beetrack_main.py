@@ -1156,7 +1156,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
                     print(body_info_ruta)
 
-                    # conn.guardar_informacion_de_rutas_paris(body_info_ruta)
+                    conn.guardar_informacion_de_rutas_paris(body_info_ruta)
 
 
             if ruta_paris is None:
