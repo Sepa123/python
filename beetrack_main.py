@@ -1123,8 +1123,8 @@ def convertir_items_a_formato(item : Item, datos_obtenidos):
             "code": item_code,
             # "quantity": item.quantity,
             # "quantity_ref": item.delivered_quantity,
-            "quantity": item.delivered_quantity,
-            "quantity_ref": item.quantity,
+            "quantity": item.quantity,
+            "quantity_ref": item.delivered_quantity,
         } 
 
 
