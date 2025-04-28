@@ -11444,7 +11444,7 @@ SELECT *
         with self.conn.cursor() as cur:
             cur.execute(f"""   
            with reclutas as (
-            SELECT distinct on (r.id)  r.id as  Id_reclutamiento, TO_CHAR(r.created_at, 'YYYY-MM-DD') as Fecha_creacion, coalesce(r.region,1) as Region,coalesce(r.comuna,1) as Comuna, r.operacion_postula as Operacion_postula,r.nombre_contacto as Nombre,
+            SELECT distinct on (r.id)  r.id as  Id_reclutamiento, TO_CHAR(r.created_at, 'YYYY-MM-DD') as Fecha_creacion, coalesce(r.region,1) as Region,coalesce(r.comuna,1) as Comuna, r.operacion_postula as Operacion_postula,trim(r.nombre_contacto) as Nombre,
                     r.telefono as Telefono,r.tipo_vehiculo as Tipo_vehiculo,coalesce(r.origen_contacto, 4) as Origen_contacto,coalesce(r.estado_contacto, 3) as Estado_contacto,coalesce(r.motivo_subestado, 7) as Motivo_subestado, r.contacto_ejecutivo as Contacto_ejecutivo,
                     r.razon_social as Razon_social, r.rut_empresa as Rut_empresa,r.internalizado as Internalizado, re.region_name as Region_nombre,mo.nombre as Operacion_nombre,coalesce(oc.origen, 'Página web') as Nombre_origen , coalesce(ec.estado, 'En espera') as Nombre_estados,coalesce(mv.motivo, 'En espera') as Nombre_motivo,
                     u.nombre as Nombre_contacto, r.pais as Pais,coalesce(r.inicio_actividades_factura, false) as Inicio_actividades_factura,coalesce(r.giro, 1) as Giro,coalesce(r.cant_vehiculos,0) as Cantidad_vehiculo,
