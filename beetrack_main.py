@@ -29,7 +29,7 @@ from database.models.token import TokenPayload
 from database.models.beetrack.dispatch_guide import DistpatchGuide
 from database.models.beetrack.dispatch import Dispatch , DispatchInsert
 from database.models.beetrack.route import Route
-from database.models.dispatch_paris.distpatch import CreacionGuia, CreacionRuta, ActualizacionGuia
+from database.models.dispatch_paris.distpatch import CreacionGuia, CreacionRuta, ActualizacionGuia ,Item
 
 
 # app = APIRouter(tags=["Beetrack"], prefix="/api/beetrack")
@@ -1110,6 +1110,23 @@ async def post_dispatch_guide(dispatch_id :int):
             }
 
 
+def convertir_items_a_formato(item : Item, datos_obtenidos):
+
+    # print(item)
+
+    item_code = next((item_obtenido["item_code"] for item_obtenido in datos_obtenidos if item_obtenido["item_carton"] == item.code), None)
+
+
+
+    return {
+            "description": item.description,
+            "code": item_code,
+            "quantity": item.quantity,
+            "quantity_ref": item.delivered_quantity,
+        } 
+
+
+
 @app.post("/api/v2/dispatch/paris/actualizacion")
 async def post_dispatch_guide(request : Request , headers: tuple = Depends(validar_encabezados)):
 
@@ -1722,8 +1739,21 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                     if data.evaluation_answers is not None:
 
                         for imagen in data.evaluation_answers:
-                            # if imagen.cast == "photo":
-                            url_img.append(imagen.value)
+                            if imagen.cast == "photo":
+                               url_img.append(imagen.value)
+
+
+                        cartones = [item.code for item in data.items]
+                        result = ",".join(f"'{code}'" for code in cartones)
+
+                        datos_obtenidos = conn.obtener_codigos_cartones_paris(result)[0]
+
+
+                        itemes = [ convertir_items_a_formato(item,datos_obtenidos) for item in data.items]
+                        # print("itemes")
+
+                        # print(itemes)
+
 
                         if url_img == []:
                             body = {
@@ -1735,6 +1765,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                                             "substatus": body_estados[1],
                                             # "place": "CT Transyañez",
                                             "is_trunk":  data.is_trunk,
+                                            "items": itemes,
                                             "waypoint": {
                                                 "latitude": latitude,
                                                 "longitude": longitude
@@ -1750,6 +1781,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                                             "status_id": body_estados[0],
                                             "substatus": body_estados[1],
                                             # "place": "CT Transyañez",
+                                            "items": itemes,
                                             "is_trunk":  data.is_trunk,
                                             "waypoint": {
                                                 "latitude": latitude,
@@ -1805,6 +1837,11 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
       
                         print('actualizar ruta existente')
                         send_put_update_ruta(body,verificar_info_ruta[1])
+                        # print('codigos carton')
+                        
+
+                        ### esto se comenta para que no se actualice la ruta en dispatchtrack paris
+                         
 
 
                 pass
@@ -1818,6 +1855,9 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
     #     print('Error al recibir el cuerpo del mensaje de dispatch paris',error)
     #     raise HTTPException(status_code=400, detail="Error al recibir el cuerpo del mensaje")
     
+
+
+
 
 
 

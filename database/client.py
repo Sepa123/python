@@ -12769,6 +12769,20 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
                 ) as rutas
                       """)
             return cur.fetchone()
+        
+
+
+    def obtener_codigos_cartones_paris(self,cartones):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            with cartone as (
+                select dp.item_carton, item_code,dp.item_id  from paris.dispatch_paris dp 
+                where dp.item_carton  in ({cartones})
+            )
+
+            select json_agg(cartone) from cartone
+                      """)
+            return cur.fetchone()
 
 
 
