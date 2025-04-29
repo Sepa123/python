@@ -771,7 +771,7 @@ async def webhook_dispatch_paris(request : Request , headers: tuple = Depends(va
             for n in range(len(data.items)):
                 carton = [extra.value for extra in data.items[n].extras if extra.name == 'CARTONID'][0]
                 # print(carton)
-                if carton not in lista_cartones :
+                if carton not in lista_cartones or carton == "RETORNO":
 
                     ingreso = construct_body_from_actualizacion_guia(data,n)
                     conn.insert_dispatch_paris(ingreso)
