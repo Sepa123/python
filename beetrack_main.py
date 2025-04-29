@@ -385,10 +385,10 @@ def send_put_update_ruta(payload, route_id): ### esto es para actualizar una rut
 
             # body = await request.json()  # Obtener el cuerpo como JSON
             # Guardar el contenido del JSON en un archivo de texto
-        with open(filename, "w") as f:
-            json.dump(body, f, indent=4)
+        with open(filename, "w", encoding="utf-8") as f:
+            json.dump(body, f, indent=4,ensure_ascii=False)
             f.write("\n")
-            json.dump(payload, f, indent=4)
+            json.dump(payload, f, indent=4,ensure_ascii=False)
     else:
 
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -1440,8 +1440,8 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
             
             filename = os.path.join(folder, f"datos_despacho_{data.dispatch_id}_{timestamp}.txt")
 
-            with open(filename, "w") as f:
-                json.dump(body, f, indent=4)
+            with open(filename, "w",encoding="utf-8") as f:
+                json.dump(body, f, indent=4,ensure_ascii=False)
 
             ### aqui se empieza a hacer la logica de actualizacion de guia en dispatchtrack paris
 
