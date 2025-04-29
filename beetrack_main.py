@@ -1111,10 +1111,7 @@ async def post_dispatch_guide(dispatch_id :int):
 
 
 def convertir_items_a_formato(item : Item, datos_obtenidos):
-    print("sosssssssss")
 
-    # print(item)
-    # print(datos_obtenidos)
     if datos_obtenidos is None:
         return {
             "description": item.description,
