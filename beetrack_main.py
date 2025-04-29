@@ -1756,7 +1756,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
                         # print(itemes)
 
-
+                       
                         if url_img == []:
                             body = {
                                         "id": verificar_info_ruta[1],
@@ -1774,6 +1774,31 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                                             }
                                             }]
                                         }
+                            
+                            #### esta condición es para las entregas parciales sin imagenes
+                            if data.status == 4:
+                                body = {
+                                        "id": verificar_info_ruta[1],
+                                        "dispatches": 
+                                            [{
+                                            "identifier": data.identifier,
+                                            "status_id": body_estados[0],
+                                            "substatus": body_estados[1],
+                                            "is_pickup": True,
+                                            "is_trunk":  data.is_trunk,
+                                            "items": itemes,
+                                            "waypoint": {
+                                                "latitude": latitude,
+                                                "longitude": longitude
+                                            }
+                                            }]
+                                        }
+                                send_put_update_ruta(body,verificar_info_ruta[1])
+
+                                return {
+                                    "message": "actualizar ruta existente"
+                                }
+
                         else:
                             body = {
                                         "id": verificar_info_ruta[1],
@@ -1794,6 +1819,34 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                                                     }
                                             }]
                                         }
+                            
+                            #### esta condición es para las entregas parciales con imagenes
+                            if data.status == 4:
+                                body = {
+                                        "id": verificar_info_ruta[1],
+                                        "dispatches": 
+                                            [{
+                                            "identifier": data.identifier,
+                                            "status_id": body_estados[0],
+                                            "substatus": body_estados[1],
+                                            "is_pickup": True,
+                                            # "place": "CT Transyañez",
+                                            "is_trunk":  data.is_trunk,
+                                            "items": itemes,
+                                            "waypoint": {
+                                                "latitude": latitude,
+                                                "longitude": longitude
+                                            },
+                                            "form":{
+                                                "img_url": url_img
+                                                    }
+                                            }]
+                                        }
+                                send_put_update_ruta(body,verificar_info_ruta[1])
+
+                                return {
+                                    "message": "actualizar ruta existente"
+                                }
                     else:
                         body = {
                                     "id": verificar_info_ruta[1],
