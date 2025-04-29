@@ -1118,7 +1118,7 @@ def convertir_items_a_formato(item : Item, datos_obtenidos):
     if datos_obtenidos is None:
         return {
             "description": item.description,
-            # "code": item_code,
+            "code": item.code,
             # "quantity": item.quantity,
             # "quantity_ref": item.delivered_quantity,
             "quantity": item.quantity,
