@@ -1111,11 +1111,21 @@ async def post_dispatch_guide(dispatch_id :int):
 
 
 def convertir_items_a_formato(item : Item, datos_obtenidos):
+    print("sosssssssss")
 
     # print(item)
+    # print(datos_obtenidos)
+    if datos_obtenidos is None:
+        return {
+            "description": item.description,
+            # "code": item_code,
+            # "quantity": item.quantity,
+            # "quantity_ref": item.delivered_quantity,
+            "quantity": item.quantity,
+            "quantity_ref": item.delivered_quantity,
+        } 
 
     item_code = next((item_obtenido["item_code"] for item_obtenido in datos_obtenidos if item_obtenido["item_carton"] == item.code), None)
-
 
 
     return {
