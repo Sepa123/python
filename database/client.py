@@ -12705,6 +12705,9 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
       
                       """)
             return cur.fetchone()
+        
+
+    #### Obtener lista de rutas manuales por bloques
 
 
     def obtener_lista_ids_rutas_y_pantes_temp(self,id_user:int):
@@ -12737,11 +12740,25 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
       
                       """)
             return cur.fetchone()
+        
+
+    #### Obtener lista de rutas manuales temporales
 
 
-    def obtener_datos_rutas_y_pantes_temp(self):
+    def obtener_datos_rutas_y_pantes_temp(self,id_user):
         with self.conn.cursor() as cur:
             cur.execute(f""" 
+
+            with lista_ids as (
+
+                    SELECT string_agg(id::text, ',') AS ids          
+                    from beetrack.ruta_manual_transyanez_temp rmtt 
+                    ---where rmtt.created_at::date = current_date and rmtt.id_user = {id_user}   
+                    where rmtt.id_user = {id_user}   
+
+            )                
+
+
              SELECT 	id_salida as id,
                     identificador_ruta as ruta,
                     identificador as ppu,
@@ -12751,9 +12768,54 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
                     mensaje_ruta,
                     proceder_ruta,
                     proceder
-            FROM beetrack.fnc_valida_rutas_y_patentes_temp(ARRAY[1]);
+            FROM beetrack.fnc_valida_rutas_y_patentes_temp(string_to_array((SELECT ids FROM lista_ids), ',')::int[]);
                       """)
             return cur.fetchall()
+        
+
+    
+
+     #### Procesar las rutas manuales temporales, pasandoles las ids de las rutas temporales
+
+    def procesar_carga_manual(self, id_user):
+
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+                        
+            with lista_ids as (
+
+                    SELECT string_agg(id::text, ',') AS ids          
+                    from beetrack.ruta_manual_transyanez_temp rmtt 
+                    ---where rmtt.created_at::date = current_date and rmtt.id_user = {id_user}   
+                    where rmtt.id_user = {id_user}   
+
+            )       
+
+
+            select * from beetrack.procesar_carga_manual(string_to_array((SELECT ids FROM lista_ids), ',')::int[]);
+                      """)
+            return cur.fetchone()
+        
+
+
+    #### eliminar las rutas manuales temporales,, pasandoles las ids de las rutas temporales como array
+
+    def limpiar_ruta_manual_temp(self, id_user):
+
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+                        
+            with lista_ids as (
+
+                    SELECT string_agg(id::text, ',') AS ids          
+                    from beetrack.ruta_manual_transyanez_temp rmtt 
+                    ---where rmtt.created_at::date = current_date and rmtt.id_user = {id_user}   
+                    where rmtt.id_user = {id_user}   
+
+            )       
+            select * from beetrack.limpiar_ruta_manual_temp(string_to_array((SELECT ids FROM lista_ids), ',')::int[]);
+                      """)
+            return cur.fetchone()
 
 
 

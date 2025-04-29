@@ -1791,6 +1791,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                                             "identifier": data.identifier,
                                             "status_id": body_estados[0],
                                             "substatus": body_estados[1],
+                                            "substatus_code": body_estados[2],
                                             "is_pickup": True,
                                             "is_trunk":  data.is_trunk,
                                             "items": itemes,
@@ -1800,6 +1801,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                                             }
                                             }]
                                         }
+                                
                                 send_put_update_ruta(body,verificar_info_ruta[1])
 
                                 return {
@@ -1827,6 +1829,8 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                                             }]
                                         }
                             
+                            
+                            
                             #### esta condición es para las entregas parciales con imagenes
                             if data.status == 4:
                                 body = {
@@ -1836,6 +1840,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                                             "identifier": data.identifier,
                                             "status_id": body_estados[0],
                                             "substatus": body_estados[1],
+                                            "substatus_code": body_estados[2],
                                             "is_pickup": True,
                                             # "place": "CT Transyañez",
                                             "is_trunk":  data.is_trunk,
@@ -1849,6 +1854,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                                                     }
                                             }]
                                         }
+                                
                                 send_put_update_ruta(body,verificar_info_ruta[1])
 
                                 return {
