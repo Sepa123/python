@@ -1789,7 +1789,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                                         "dispatches": 
                                             [{
                                             "identifier": data.identifier,
-                                            "status_id": body_estados[0],
+                                            "status": body_estados[0],
                                             "substatus": body_estados[1],
                                             "substatus_code": body_estados[2],
                                             # "is_pickup": True,
@@ -1838,7 +1838,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                                         "dispatches": 
                                             [{
                                             "identifier": data.identifier,
-                                            "status_id": body_estados[0],
+                                            "status": body_estados[0],
                                             "substatus": body_estados[1],
                                             "substatus_code": body_estados[2],
                                             # "is_pickup": True,
