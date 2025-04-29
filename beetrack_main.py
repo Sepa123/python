@@ -1950,7 +1950,7 @@ def login_user(user_data:loginSchema):
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="El usuario no existe")
 
     if not verify_password(data["password"],user_db[3]):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="la contraseña no es correcto")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="la contraseña no es correcta")
 
     if not user_db[4]:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="El usuario esta inactivo")
