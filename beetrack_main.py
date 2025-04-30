@@ -1791,7 +1791,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                                             "identifier": data.identifier,
                                             "status": body_estados[0],
                                             "substatus": body_estados[1],
-                                            "substatus_code": body_estados[2],
+                                            "substatus_code": int(body_estados[2]),
                                             # "is_pickup": True,
                                             "is_trunk":  data.is_trunk,
                                             "items": itemes,
@@ -1840,7 +1840,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                                             "identifier": data.identifier,
                                             "status": body_estados[0],
                                             "substatus": body_estados[1],
-                                            "substatus_code": body_estados[2],
+                                            "substatus_code":  int(body_estados[2]),
                                             # "is_pickup": True,
                                             # "place": "CT Transyañez",
                                             "is_trunk":  data.is_trunk,
@@ -1854,6 +1854,8 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                                                     }
                                             }]
                                         }
+                                
+                                # print(body)
                                 
                                 send_put_update_ruta(body,verificar_info_ruta[1])
 
