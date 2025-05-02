@@ -12682,8 +12682,8 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
 
                     SELECT string_agg(id::text, ',') AS ids          
                     from beetrack.ruta_manual_transyanez_temp rmtt 
-                    ---where rmtt.created_at::date = current_date and rmtt.id_user = {id_user}   
-                    where rmtt.id_user = {id_user}   
+                    where rmtt.created_at::date = current_date and rmtt.id_user = {id_user}   
+                    ---where rmtt.id_user = {id_user}   
 
                     )
 

@@ -1490,10 +1490,35 @@ async def get_campos_de_carga():
 
     return resultado_dict
 
+
+
+####TODO: DESCOMENTAR EL WHERE DONDE APARECE LA FECHA DE COMO CURRENT DATE
+
 @router.get("/lista/rutas_manuales/temp")
 async def get_lista_rutas_manuales_temp(id_usuario : int):
     datos = conn.obtener_lista_ids_rutas_y_pantes_temp(id_usuario)
     return datos[0]
+
+
+#### LIMPIAR RUTA MANUAL TEMP
+
+
+@router.get("/limpiar/rutas_manuales/temp")
+async def limpiar_rutas_manuales_temp(id_usuario : int):
+    datos = conn.limpiar_ruta_manual_temp(id_usuario)
+    # return datos[0]
+    return {
+        "message" : "Rutas manuales temporales eliminadas"
+    }
+
+##### procesar rutas manuales
+@router.get("/procesar/rutas_manuales/temp")
+async def procesar_rutas_manuales_temp(id_usuario : int):
+    datos = conn.procesar_carga_manual(id_usuario)
+    # return datos[0]
+    return {
+        "message" : "Rutas manuales procesadas"
+    }
 
 
 
