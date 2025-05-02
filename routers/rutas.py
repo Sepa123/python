@@ -46,7 +46,7 @@ from database.models.geolocalizacion.latlong import Latlong
 
 from database.schema.rutas.archivo_descarga_beetrack import datos_descarga_beetracks_schema
 
-from database.models.rutas.armar_rutas import ArmarRutaBloque
+from database.models.rutas.armar_rutas import ArmarRutaBloque, UpdateValorRuta
 
 from database.models.rutas.lista_eliminar import ListaEliminar
 from database.schema.rutas.buscar_producto_ruta import buscar_productos_ruta_schema
@@ -1547,3 +1547,19 @@ async def download_file():
 
     # Retorna el archivo como respuesta
     return FileResponse(file_path, filename='Excel base Ruta manual.xlsx')
+
+
+
+
+#### editar Valor rutas manuales
+
+@router.put("/actualizar/valor/ruta_manual",status_code=status.HTTP_202_ACCEPTED)
+async def update_valor_ruta_manual( body : UpdateValorRuta ):
+     try:
+
+          conn.update_valor_ruta_manual(body.ruta,body.guia,body.valor_ruta)
+        
+          return { "message": "Ruta actualizado correctamente" }
+     except:
+          print("error en /actualizar/estado/")
+          raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")

@@ -12847,6 +12847,17 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
             return cur.fetchone()
 
 
+    def update_valor_ruta_manual(self, ruta,guia,valor_ruta):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            UPDATE beetrack.ruta_manual_transyanez
+            SET  valor_ruta={valor_ruta}
+            WHERE identificador_ruta = {ruta} and guia = '{guia}'
+            """)
+            row = cur.rowcount
+        self.conn.commit()
+
+
 
 
 class transyanezConnection():
