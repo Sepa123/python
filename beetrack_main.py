@@ -1119,7 +1119,7 @@ def convertir_items_a_formato(item : Item, datos_obtenidos):
             # "quantity": item.quantity,
             # "quantity_ref": item.delivered_quantity,
             "quantity": item.quantity,
-            "delivered_quantity": item.delivered_quantity,
+            "quantity_ref": item.delivered_quantity,
         } 
 
     item_code = next((item_obtenido["item_code"] for item_obtenido in datos_obtenidos if item_obtenido["item_carton"] == item.code), None)
@@ -1131,7 +1131,7 @@ def convertir_items_a_formato(item : Item, datos_obtenidos):
             # "quantity": item.quantity,
             # "quantity_ref": item.delivered_quantity,
             "quantity": item.quantity,
-            "delivered_quantity": item.delivered_quantity,
+            "quantity_ref": item.delivered_quantity,
         } 
 
 
