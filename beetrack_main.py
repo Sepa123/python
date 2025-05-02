@@ -1790,7 +1790,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                                             [{
                                             "identifier": data.identifier,
                                             "status": body_estados[0],
-                                            "substatus": body_estados[1],
+                                            # "substatus": body_estados[1],
                                             "substatus_code": int(body_estados[2]),
                                             # "is_pickup": True,
                                             "is_trunk":  data.is_trunk,
@@ -1839,7 +1839,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                                             [{
                                             "identifier": data.identifier,
                                             "status": body_estados[0],
-                                            "substatus": body_estados[1],
+                                            # "substatus": body_estados[1],
                                             "substatus_code":  int(body_estados[2]),
                                             # "is_pickup": True,
                                             # "place": "CT Transyañez",
