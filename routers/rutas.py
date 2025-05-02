@@ -1508,7 +1508,7 @@ async def limpiar_rutas_manuales_temp(id_usuario : int):
     datos = conn.limpiar_ruta_manual_temp(id_usuario)
     # return datos[0]
     return {
-        "message" : "Rutas manuales temporales eliminadas"
+        "message" : datos[1]
     }
 
 ##### procesar rutas manuales
@@ -1517,7 +1517,7 @@ async def procesar_rutas_manuales_temp(id_usuario : int):
     datos = conn.procesar_carga_manual(id_usuario)
     # return datos[0]
     return {
-        "message" : "Rutas manuales procesadas"
+        "message" : datos[1]
     }
 
 
