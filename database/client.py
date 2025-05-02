@@ -12710,36 +12710,36 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
     #### Obtener lista de rutas manuales por bloques
 
 
-    def obtener_lista_ids_rutas_y_pantes_temp(self,id_user:int):
-        with self.conn.cursor() as cur:
-            cur.execute(f""" 
-             with lista_ids as (
+    # def obtener_lista_ids_rutas_y_pantes_temp(self,id_user:int):
+    #     with self.conn.cursor() as cur:
+    #         cur.execute(f""" 
+    #          with lista_ids as (
 
-                    SELECT string_agg(id::text, ',') AS ids          
-                    from beetrack.ruta_manual_transyanez_temp rmtt 
-                    ---where rmtt.created_at::date = current_date and rmtt.id_user = {id_user}   
-                    where rmtt.id_user = {id_user}   
+    #                 SELECT string_agg(id::text, ',') AS ids          
+    #                 from beetrack.ruta_manual_transyanez_temp rmtt 
+    #                 where rmtt.created_at::date = current_date and rmtt.id_user = {id_user}   
+    #                 -----where rmtt.id_user = {id_user}   
 
-                    )
+    #                 )
 
-                    SELECT json_agg(t) AS resultado
-                    from(
-                    SELECT 	id_salida as "Id",
-                            identificador_ruta as "Ruta",
-                            identificador as "Ppu",
-                            guia as "Guia",
-                            mensaje_ppu as "Mensaje_ppu",
-                            proceder_ppu as "Proceder_ppu",
-                            mensaje_ruta as "Mensaje_ruta",
-                            proceder_ruta as "Proceder_ruta",
-                            proceder as "Proceder"
-                    FROM beetrack.fnc_valida_rutas_y_patentes_temp(
-                    string_to_array((SELECT ids FROM lista_ids), ',')::int[]
-                    )
-                    ) t;
+    #                 SELECT json_agg(t) AS resultado
+    #                 from(
+    #                 SELECT 	id_salida as "Id",
+    #                         identificador_ruta as "Ruta",
+    #                         identificador as "Ppu",
+    #                         guia as "Guia",
+    #                         mensaje_ppu as "Mensaje_ppu",
+    #                         proceder_ppu as "Proceder_ppu",
+    #                         mensaje_ruta as "Mensaje_ruta",
+    #                         proceder_ruta as "Proceder_ruta",
+    #                         proceder as "Proceder"
+    #                 FROM beetrack.fnc_valida_rutas_y_patentes_temp(
+    #                 string_to_array((SELECT ids FROM lista_ids), ',')::int[]
+    #                 )
+    #                 ) t;
       
-                      """)
-            return cur.fetchone()
+    #                   """)
+    #         return cur.fetchone()
         
 
     #### Obtener lista de rutas manuales temporales
@@ -12753,8 +12753,8 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
 
                     SELECT string_agg(id::text, ',') AS ids          
                     from beetrack.ruta_manual_transyanez_temp rmtt 
-                    ---where rmtt.created_at::date = current_date and rmtt.id_user = {id_user}   
-                    where rmtt.id_user = {id_user}   
+                    where rmtt.created_at::date = current_date and rmtt.id_user = {id_user}   
+                    --- where rmtt.id_user = {id_user}   
 
             )                
 
@@ -12786,8 +12786,8 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
 
                     SELECT string_agg(id::text, ',') AS ids          
                     from beetrack.ruta_manual_transyanez_temp rmtt 
-                    ---where rmtt.created_at::date = current_date and rmtt.id_user = {id_user}   
-                    where rmtt.id_user = {id_user}   
+                    where rmtt.created_at::date = current_date and rmtt.id_user = {id_user}   
+                    ----where rmtt.id_user = {id_user}   
 
             )       
 
@@ -12809,8 +12809,8 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
 
                     SELECT string_agg(id::text, ',') AS ids          
                     from beetrack.ruta_manual_transyanez_temp rmtt 
-                    ---where rmtt.created_at::date = current_date and rmtt.id_user = {id_user}   
-                    where rmtt.id_user = {id_user}   
+                    where rmtt.created_at::date = current_date and rmtt.id_user = {id_user}   
+                    ----where rmtt.id_user = {id_user}   
 
             )       
             select * from beetrack.limpiar_ruta_manual_temp(string_to_array((SELECT ids FROM lista_ids), ',')::int[]);
