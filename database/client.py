@@ -12857,6 +12857,16 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
             row = cur.rowcount
         self.conn.commit()
 
+    
+    def eliminar_ruta_manual(self, id_ruta,guia):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            DELETE FROM beetrack.ruta_manual_transyanez
+            WHERE identificador_ruta = {id_ruta} and guia = '{guia}'
+            """)
+            row = cur.rowcount
+        self.conn.commit()
+
 
 
 

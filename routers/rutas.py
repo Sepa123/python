@@ -1563,3 +1563,20 @@ async def update_valor_ruta_manual( body : UpdateValorRuta ):
      except:
           print("error en /actualizar/estado/")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
+     
+
+
+
+@router.delete("/eliminar/ruta_manual") 
+async def delete_producto_ruta_activa(ruta : str, guia : str):
+     try:
+          
+          print(ruta,guia)
+
+        #   conn.eliminar_ruta_manual(ruta,guia)
+        #   results = conn.delete_producto_ruta_activa(cod_producto, nombre_ruta)
+        #   if (results == 0): print("El producto no existe en ninguna ruta")
+          return { "message" : "ruta eliminado"}
+     except:
+          print("error en /eliminar/producto/cod_producto/nombre_ruta")
+          raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
