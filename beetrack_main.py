@@ -1146,6 +1146,12 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
+
+        filename = os.path.join(folder, f"datos_ruta_parasabersillegan_{timestamp}.txt")
+
+        with open(filename, "w") as f:
+            json.dump(body, f, indent=4)
+
         # try:
 
 
@@ -1165,6 +1171,14 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
 
             ruta_paris = conn.verificar_informacion_ruta_paris(data.route)
+
+            ### Primer filtro: verificar si la ruta existe en paris
+
+            if ruta_paris is None:
+                print('no existe la ruta en paris')
+                return { "message": "no existe la ruta en paris"}
+            
+
 
             if data.event == 'update' and data.started == True:
                 
@@ -1224,6 +1238,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
 
                     return { "message": "esta ruta es iniciada"}
+
 
             if data.event == 'finish':
 
