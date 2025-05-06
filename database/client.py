@@ -12604,7 +12604,8 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
         self.conn.commit()
 
 
-   
+
+
 
 
 
