@@ -75,7 +75,8 @@ def validar_encabezados(content_type: str = Header(None), x_auth_token: str = He
     if content_type != "application/json":
         raise HTTPException(status_code=400, detail="Content-Type debe ser application/json")
     if x_auth_token != config("SECRET_KEY"):
-        print("error con token")
+        print("error con token ",x_auth_token)
+        # print(x_auth_token)
         raise HTTPException(status_code=401, detail="X-AUTH-TOKEN inválido")
     return content_type, x_auth_token
 
