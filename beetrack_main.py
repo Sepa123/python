@@ -108,6 +108,19 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
     data = body.dict()
 
 
+    # date_actual = datetime.now().strftime("%Y-%m-%d")
+
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+
+
+    filename = os.path.join(f"datos_ruta_parasabersillegan_{timestamp}.txt")
+
+    with open(filename, "w") as f:
+        json.dump(data, f, indent=4)
+
+
+
+
     
 
     if data["resource"] == 'route' and data["event"] == 'create':
