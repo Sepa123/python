@@ -111,9 +111,10 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
     # date_actual = datetime.now().strftime("%Y-%m-%d")
 
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    folder = "dispatch_guide"
 
 
-    filename = os.path.join(f"datos_ruta_parasabersillegan_{timestamp}.txt")
+    filename = os.path.join(folder, f"datos_ruta_parasabersillegan_{timestamp}.txt")
 
     with open(filename, "w") as f:
         json.dump(data, f, indent=4)
@@ -1162,8 +1163,10 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
+        folder = "dispatch_guide"
 
-        filename = os.path.join(f"datos_ruta_parasabersillegan_{timestamp}.txt")
+
+        filename = os.path.join(folder, f"datos_ruta_parasabersillegan_{timestamp}.txt")
 
         with open(filename, "w") as f:
             json.dump(body, f, indent=4)
