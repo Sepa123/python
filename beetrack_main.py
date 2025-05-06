@@ -107,6 +107,9 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
     # Lista de nombres que deseas buscar
     data = body.dict()
 
+
+    
+
     if data["resource"] == 'route' and data["event"] == 'create':
 
         datos_insert_ruta = data_beetrack.generar_data_insert_creacion_ruta(data)
@@ -1147,7 +1150,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
 
-        filename = os.path.join(folder, f"datos_ruta_parasabersillegan_{timestamp}.txt")
+        filename = os.path.join(f"datos_ruta_parasabersillegan_{timestamp}.txt")
 
         with open(filename, "w") as f:
             json.dump(body, f, indent=4)
