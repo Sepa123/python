@@ -114,7 +114,7 @@ async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabe
     folder = "dispatch_guide"
 
 
-    filename = os.path.join(folder, f"datos_ruta_parasabersillegan_{timestamp}.txt")
+    filename = os.path.join(folder, f"datos_ruta_parasabersillegan_ORIGINAL{timestamp}.txt")
 
     with open(filename, "w") as f:
         json.dump(data, f, indent=4)
@@ -1166,7 +1166,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
         folder = "dispatch_guide"
 
 
-        filename = os.path.join(folder, f"datos_ruta_parasabersillegan_{timestamp}.txt")
+        filename = os.path.join(folder, f"datos_ruta_parasabersillegan_ACTUALIZACION{timestamp}.txt")
 
         with open(filename, "w") as f:
             json.dump(body, f, indent=4)
