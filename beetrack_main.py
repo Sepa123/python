@@ -236,11 +236,7 @@ async def post_dispatch(request : Request, headers: tuple = Depends(validar_enca
 
             if "paris" in datos_groups["Cliente"].lower():
 
-                if data["status"] is None:
-                    data["status"] = 0
-
-                if data["substatus_code"] is None:
-                    data["substatus_code"] = 0
+                procesar_datos_despachos_paris(body_p)
 
                 # body = conn.read_estados_paris(data["status"],data["substatus_code"])
 
@@ -275,7 +271,7 @@ async def post_route(body : Route , headers: tuple = Depends(validar_encabezados
 
 def crear_vehiculo_paris(patente): ### esto es para crear un vehiculo en paris
     # URL del endpoint
-    url = f'https://cluster-staging.dispatchtrack.com/api/external/v1/trucks'
+    url = f'https://paris.dispatchtrack.com/api/external/v1/trucks'
 
     # Encabezados
     headers = {
@@ -331,7 +327,7 @@ def crear_vehiculo_paris(patente): ### esto es para crear un vehiculo en paris
 
 def crear_ruta_paris(payload): ### esto es para crear una ruta en paris
     # URL del endpoint
-    url = f'https://cluster-staging.dispatchtrack.com/api/external/v1/routes'
+    url = f'https://paris.dispatchtrack.com/api/external/v1/routes'
 
     # Encabezados
     headers = {
@@ -389,7 +385,7 @@ def crear_ruta_paris(payload): ### esto es para crear una ruta en paris
 
 def send_put_update_ruta(payload, route_id): ### esto es para actualizar una ruta en paris
     # URL del endpoint
-    url = f'https://cluster-staging.dispatchtrack.com/api/external/v1/routes/{route_id}'
+    url = f'https://paris.dispatchtrack.com/api/external/v1/routes/{route_id}'
     print(url)
 
     # Encabezados
@@ -437,7 +433,7 @@ def send_put_update_ruta(payload, route_id): ### esto es para actualizar una rut
 
 def send_put_request(payload, codigo_guia):
     # URL del endpoint
-    url = f'https://cluster-staging.dispatchtrack.com/api/external/v1/dispatches/{codigo_guia}'
+    url = f'https://paris.dispatchtrack.com/api/external/v1/dispatches/{codigo_guia}'
 
     # Encabezados
     headers = {
@@ -611,7 +607,7 @@ def verificar_si_ruta_yanez_existe_despachos(ruta_id):
 def verificar_si_ruta_paris_existe_despachos(ruta_id,ruta_id_yanez):
 
      # URL del endpoint
-    url = f'https://cluster-staging.dispatchtrack.com/api/external/v1/routes/{ruta_id}'
+    url = f'https://paris.dispatchtrack.com/api/external/v1/routes/{ruta_id}'
 
     # Encabezados
     headers = {
@@ -667,7 +663,7 @@ def verificar_si_ruta_paris_existe_despachos(ruta_id,ruta_id_yanez):
 def verificar_si_ruta_paris_existe(ruta_id):
 
      # URL del endpoint
-    url = f'https://cluster-staging.dispatchtrack.com/api/external/v1/routes/{ruta_id}'
+    url = f'https://paris.dispatchtrack.com/api/external/v1/routes/{ruta_id}'
 
     # Encabezados
     headers = {
@@ -698,7 +694,7 @@ def verificar_si_ruta_paris_existe(ruta_id):
 def obtener_info_despacho(distpach):
 
      # URL del endpoint
-    url = f'https://cluster-staging.dispatchtrack.com/api/external/v1/dispatches/{distpach}?evaluations=true'
+    url = f'https://paris.dispatchtrack.com/api/external/v1/dispatches/{distpach}?evaluations=true'
 
     # Encabezados
     headers = {
@@ -1453,7 +1449,333 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
     
 
 
+########## FUNCION PARA LOS DISPATCH PARIS
 
+def procesar_datos_despachos_paris(body):
+
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+
+    if body["resource"] == "dispatch":
+            
+            mensaje = "Recibido Modelo Actualización Guia"
+            data = ActualizacionGuia(**body)
+
+            folder = "dispatch"
+
+            # Asegúrate de que la carpeta exista
+            os.makedirs(folder, exist_ok=True)
+            
+            filename = os.path.join(folder, f"datos_despacho_{data.dispatch_id}_{timestamp}.txt")
+
+            with open(filename, "w",encoding="utf-8") as f:
+                json.dump(body, f, indent=4,ensure_ascii=False)
+
+            ### aqui se empieza a hacer la logica de actualizacion de guia en dispatchtrack paris
+
+            #### para empezar se confirma si el dispatch pertenece a paris
+
+            # Obtener el name del group_category "Cliente"
+            cliente_name = next((item["name"] for item in data.groups if item["group_category"] == "Cliente"), None)
+
+            # "paris" in datos_groups["Cliente"].lower()
+            if "paris" in cliente_name.lower():
+                print("El dispatch pertenece a Paris")
+            else:
+                return {"message": "El dispatch no pertenece a Paris"}
+
+
+
+            body_estados = None
+
+            if data.route_id is None:
+                verificar_info_ruta = None
+            else:
+                print('id_ty',data.route_id)
+                verificar_info_ruta = conn.verificar_informacion_ruta_paris(data.route_id)
+
+            # print(data.waypoint)
+
+            if data.waypoint is not None:
+                latitude = data.waypoint.latitude
+                longitude = data.waypoint.longitude
+            else:
+                latitude = ""
+                longitude = ""
+
+            if data.is_trunk is None:
+                data.is_trunk = False
+
+            if data.status is None:
+                data.status = 0
+
+            if data.substatus_code is None:
+                data.substatus_code = "null"
+
+                
+            body_estados = conn.read_estados_paris(data.status,data.substatus_code, data.is_trunk,latitude,longitude)
+
+            if body_estados is None:
+                body_estados = [1,None]
+
+            print('body_estados', body_estados)
+
+            if data.is_trunk == True: ## si el troncal viene como true, entonces se crea la ruta en paris
+                print("trunk : true")
+                # id_ruta_creada = conn.recuperar_ruta_registrada_paris(data.guide)[0]
+
+                #####  primero hay que verificar la ruta de paris, si existe o no existe
+                #### en base a lo que reciba de la tabla de ppu_tracking
+
+                print(verificar_info_ruta)
+
+
+                if data.substatus_code == None or data.substatus_code == "null" :### si el substatus es nulo, entonces no se actualiza nada
+                    print("es substatus es nulo")
+                else: ##### se usa el metodo put para update de rutas
+                    ##### body update ruta
+
+                    id_ruta_creada = obtener_info_despacho(data.identifier)
+
+                    body_put_request = {
+                        "id": id_ruta_creada,
+                        "dispatches": 
+                            [{
+                            "identifier": data.identifier,
+                            "status_id": body_estados[0],
+                            # "substatus": body_estados[1],
+                            "place": "CT Transyañez",
+                            "is_trunk":  data.is_trunk,
+                            "waypoint": {
+                                "latitude": latitude,
+                                "longitude": longitude
+                            }
+                        }]
+                        }
+                    
+                    print(body_put_request)
+                
+                    send_put_update_ruta(body_put_request, id_ruta_creada)
+
+
+            else: ## si el troncal viene como false, entonces se actualiza de la forma 
+                print('troncal : false')
+
+                print(verificar_info_ruta)
+
+                ##### logica para iniciar ruta 
+
+                print("logica para iniciar ruta")
+                print(data.status)
+                print(data.substatus_code)
+
+
+                ######## lo que se hace es verificar si la ruta existe o no existe en dispatchtrack paris
+
+                if verificar_info_ruta is None:
+                    print('la ruta no existe en el dispatchtrack paris')
+
+                    ######  print('se debe crear vehiculo en paris')
+                    crear_vehiculo_paris(data.truck_identifier)  
+                    
+                    date_actual = datetime.now().strftime("%Y-%m-%d")
+
+                    ### luego se crea la ruta en paris
+                    body_ruta = {
+                        "truck_identifier":data.truck_identifier,
+                        "date": date_actual,
+                        "dispatches": [{"identifier": data.identifier}]
+                    }
+
+                    # if data.route_id is None:
+                    id_ruta_creada = crear_ruta_paris(body_ruta)
+                    print(' rUTA NUEVA')
+                    time.sleep(0.8)
+
+                    body_info_ruta = {
+                    "ppu" : data.truck_identifier, 
+                    "id_route_ty" : data.route_id, 
+                    "id_route_paris" : id_ruta_creada, 
+                    "is_trunk" : True
+                    }
+
+                    print(body_info_ruta)
+            
+                    conn.guardar_informacion_de_rutas_paris(body_info_ruta)
+
+
+                    return { "message": "la ruta no existe en dispatchtrack paris"}
+
+                else:
+                    ### se hacce la actualizacion de la ruta existente
+                    url_img =  []
+
+                    if data.evaluation_answers is not None:
+
+                        for imagen in data.evaluation_answers:
+                            if imagen.cast == "photo":
+                               url_img.append(imagen.value)
+
+
+                        cartones = [item.code for item in data.items]
+                        result = ",".join(f"'{code}'" for code in cartones)
+
+                        datos_obtenidos = conn.obtener_codigos_cartones_paris(result)[0]
+
+
+                        itemes = [ convertir_items_a_formato(item,datos_obtenidos) for item in data.items]
+                        # print("itemes")
+
+                        # print(itemes)
+
+                       
+                        if url_img == []:
+                            body = {
+                                        "id": verificar_info_ruta[1],
+                                        "dispatches": 
+                                            [{
+                                            "identifier": data.identifier,
+                                            "status_id": body_estados[0],
+                                            "substatus": body_estados[1],
+                                            # "place": "CT Transyañez",
+                                            "is_trunk":  data.is_trunk,
+                                            "items": itemes,
+                                            "waypoint": {
+                                                "latitude": latitude,
+                                                "longitude": longitude
+                                            }
+                                            }]
+                                        }
+                            
+                            #### esta condición es para las entregas parciales sin imagenes
+                            if data.status == 4:
+                                body = {
+                                        "id": verificar_info_ruta[1],
+                                        "dispatches": 
+                                            [{
+                                            "identifier": data.identifier,
+                                            "status": body_estados[0],
+                                            # "substatus": body_estados[1],
+                                            "substatus_code": int(body_estados[2]),
+                                            # "is_pickup": True,
+                                            "is_trunk":  data.is_trunk,
+                                            "items": itemes,
+                                            "waypoint": {
+                                                "latitude": latitude,
+                                                "longitude": longitude
+                                            }
+                                            }]
+                                        }
+                                
+                                send_put_update_ruta(body,verificar_info_ruta[1])
+
+                                return {
+                                    "message": "actualizar ruta existente"
+                                }
+
+                        else:
+                            body = {
+                                        "id": verificar_info_ruta[1],
+                                        "dispatches": 
+                                            [{
+                                            "identifier": data.identifier,
+                                            "status_id": body_estados[0],
+                                            "substatus": body_estados[1],
+                                            # "place": "CT Transyañez",
+                                            "items": itemes,
+                                            "is_trunk":  data.is_trunk,
+                                            "waypoint": {
+                                                "latitude": latitude,
+                                                "longitude": longitude
+                                            },
+                                            "form":{
+                                                "img_url": url_img
+                                                    }
+                                            }]
+                                        }
+                            
+                            
+                            
+                            #### esta condición es para las entregas parciales con imagenes
+                            if data.status == 4:
+                                body = {
+                                        "id": verificar_info_ruta[1],
+                                        "dispatches": 
+                                            [{
+                                            "identifier": data.identifier,
+                                            "status": body_estados[0],
+                                            # "substatus": body_estados[1],
+                                            "substatus_code":  int(body_estados[2]),
+                                            # "is_pickup": True,
+                                            # "place": "CT Transyañez",
+                                            "is_trunk":  data.is_trunk,
+                                            "items": itemes,
+                                            "waypoint": {
+                                                "latitude": latitude,
+                                                "longitude": longitude
+                                            },
+                                            "form":{
+                                                "img_url": url_img
+                                                    }
+                                            }]
+                                        }
+                                
+                                # print(body)
+                                
+                                send_put_update_ruta(body,verificar_info_ruta[1])
+
+                                return {
+                                    "message": "actualizar ruta existente"
+                                }
+                    else:
+                        body = {
+                                    "id": verificar_info_ruta[1],
+                                    "dispatches": 
+                                        [{
+                                        "identifier": data.identifier,
+                                        "status_id": body_estados[0],
+                                        "substatus": body_estados[1],
+                                        # "place": "CT Transyañez",
+                                        "is_trunk":  data.is_trunk,
+                                        "waypoint": {
+                                            "latitude": latitude,
+                                            "longitude": longitude
+                                        }
+
+                                        }]
+                                    }
+
+                        
+                    print(body)
+
+
+                    if data.substatus_code == "45" or data.substatus_code == "46":
+                         
+
+                         print('substatus 45 o 46, no se envia nada')
+                        #  body = {
+                        #             "id": verificar_info_ruta[1],
+                        #             "dispatches": 
+                        #                 [{
+                        #                 "identifier": data.identifier,
+                        #                 "status_id": body_estados[0],
+                        #                 "substatus": body_estados[1],
+                        #                 "place": "CT Transyañez",
+                        #                 "is_trunk":  True,
+                        #                 "waypoint": {
+                        #                     "latitude": latitude,
+                        #                     "longitude": longitude
+                        #                 }
+                        #                 }]
+                        #             }
+                    else:
+      
+                        print('actualizar ruta existente')
+                        send_put_update_ruta(body,verificar_info_ruta[1])
+
+                pass
+    
+    
+    return True
 
 
 
@@ -1577,35 +1899,3 @@ async def get_campos_registro():
     resultado_dict = {titulo : cant for titulo, cant in datos}
 
     return resultado_dict
-
-
-
-@app.get("/api/v2/externo/")
-async def get_campos_registro():
-
-    return "resultado_dict"
-
-# obtener_info_despacho
-
-# # Definir tres modelos distintos
-# class ModeloA(BaseModel):
-#     campo1: str
-#     campo2: int
-
-# class ModeloB(BaseModel):
-#     campo3: float
-#     campo4: bool
-
-# class ModeloC(BaseModel):
-#     campo5: str
-#     campo6: list[int]
-
-# # Ruta que puede recibir cualquiera de los tres modelos
-# @app.post("/api/v2/reconocer/")
-# async def reconocer(modelo: ModeloA | ModeloB | ModeloC):
-#     if isinstance(modelo, ModeloA):
-#         return {"mensaje": "Recibido Modelo A", "datos": modelo}
-#     elif isinstance(modelo, ModeloB):
-#         return {"mensaje": "Recibido Modelo B", "datos": modelo}
-#     elif isinstance(modelo, ModeloC):
-#         return {"mensaje": "Recibido Modelo C", "datos": modelo}
