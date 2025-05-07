@@ -29,7 +29,7 @@ from database.models.token import TokenPayload
 from database.models.beetrack.dispatch_guide import DistpatchGuide
 from database.models.beetrack.dispatch import Dispatch , DispatchInsert
 from database.models.beetrack.route import Route
-from database.models.dispatch_paris.distpatch import CreacionGuia, CreacionRuta, ActualizacionGuia ,Item
+from database.models.dispatch_paris.distpatch import ActualizacionGuiaStr, CreacionGuia, CreacionRuta, ActualizacionGuia ,Item
 
 
 # app = APIRouter(tags=["Beetrack"], prefix="/api/beetrack")
@@ -1831,7 +1831,7 @@ async def post_dispatch(request : Request, headers: tuple = Depends(validar_enca
 
             #### proceso para guardar imagenes en la base de datos
 
-            guia_update = ActualizacionGuia(**body_p)
+            guia_update = ActualizacionGuiaStr(**body_p)
 
             url_img = []
 
@@ -1871,6 +1871,8 @@ async def post_dispatch(request : Request, headers: tuple = Depends(validar_enca
 
 
             if "paris" in datos_groups["Cliente"].lower():
+
+                # print("el cliente es paris")
 
                 # procesar_datos_despachos_paris(body_p)
 
