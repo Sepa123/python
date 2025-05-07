@@ -5248,6 +5248,8 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 """,data)
             self.conn.commit()
 
+    #### actualizar ruta transyanez
+
     def update_ruta_ty_event(self ,data):
         with self.conn.cursor() as cur:
             cur.execute("""        
@@ -5278,6 +5280,20 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 tienda = %(tienda)s
             WHERE guia = %(guide)s AND identificador_ruta = %(route_id)s;
             """, data)
+            row = cur.rowcount
+        self.conn.commit()
+        return row
+    
+
+    ### actualizar fotos entrega rutas transyanez
+
+    def update_fotos_entrega_ruta_ty_event(self ,arrays_fotos, guide, route_id):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""        
+            UPDATE beetrack.ruta_transyanez
+            SET imagenes = {arrays_fotos}
+            WHERE guia = '{guide}' AND identificador_ruta = {route_id}
+            """)
             row = cur.rowcount
         self.conn.commit()
         return row
