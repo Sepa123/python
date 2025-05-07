@@ -101,163 +101,6 @@ async def post_dispatch_guide():
 
     return datos[0]
 
-@app.post("/api/v2/beetrack/dispatch")
-# async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabezados)):
-async def post_dispatch(request : Request, headers: tuple = Depends(validar_encabezados)):
-    content_type, x_auth_token = headers
-    # Lista de nombres que deseas buscar
-    body_p = await request.json()  # Obtener el cuerpo como JSON
-
-    body = Dispatch(**body_p)
-
-    data = body.dict()
-
-    # date_actual = datetime.now().strftime("%Y-%m-%d")
-
-    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    folder = "dispatch_guide"
-
-
-    filename = os.path.join(folder, f"datos_ruta_parasabersillegan_ORIGINAL{timestamp}.txt")
-
-    with open(filename, "w") as f:
-        json.dump(data, f, indent=4)
-
-
-    if data["resource"] == 'route' and data["event"] == 'create':
-
-        datos_insert_ruta = data_beetrack.generar_data_insert_creacion_ruta(data)
-        conn.insert_beetrack_creacion_ruta(datos_insert_ruta)
-
-    if data["resource"] == 'route' and data["event"] in ['start', 'finish']:
-        datos_insert_ruta = data_beetrack.generar_data_insert_creacion_ruta(data)
-        row = conn.update_route_beetrack_event(datos_insert_ruta)
-
-        return {
-            "message" : "data recibida correctamente"
-            }
-
-    if data["resource"] == 'dispatch' and data["event"] == 'update':
-        datos_create = {
-                        "ruta_id" : data["route_id"],
-                        "guia" : data["guide"]
-                        }
-        
-        resultado = conn.verificar_si_ruta_existe(datos_create)
-
-        if len(resultado) == 0:
-            datos_tags_i = data_beetrack.obtener_datos_tags(data["tags"])
-            datos_groups_i = data_beetrack.obtener_datos_groups(data["groups"])
-            datos_insert_ruta_ty = data_beetrack.generar_data_update_ruta_transyanez(data,datos_tags_i,datos_groups_i)
-            conn.insert_beetrack_data_ruta_transyanez(datos_insert_ruta_ty)
-
-            if datos_groups_i["Cliente"] == "Electrolux":
-                patron = r'\D+'
-                factura = re.sub(patron, '', datos_tags_i["FACTURA"])
-                ahora = datetime.now()
-
-                datos = {
-                    "Numero" : factura,
-                    "Hora_registro": str(ahora)
-                }
-
-                guardar_json.guardar_datos_a_archivo_existente_cf(datos,ahora,'info_factura')
-
-            if "paris" in datos_groups_i["Cliente"].lower():
-
-                # body = {
-                #     "status": data["status"],
-                #     "substatus": data["substatus"],
-                #     "substatus_code": data["substatus_code"]
-                # }
-
-                # body = conn.read_estados_paris(data["status"],data["substatus_code"])
-
-                # send_put_request(body, data["guide"])
-
-
-                return {
-                    "message" : "data recibida correctamente"
-                }
-
-
-
-            return {
-                "message" : "data recibida correctamente"
-                }
-        else :
-            # print("total datos de update",data)
-            datos_tags = data_beetrack.obtener_datos_tags(data["tags"])
-            datos_groups = data_beetrack.obtener_datos_groups(data["groups"])
-            ## insertar en ruta transyanez
-            dato_ruta_ty = data_beetrack.generar_data_update_ruta_transyanez(data,datos_tags,datos_groups)
-            rows = conn.update_ruta_ty_event(dato_ruta_ty)
-
-            #### proceso para guardar imagenes en la base de datos
-
-            guia_update = ActualizacionGuia(**body_p)
-
-            url_img = []
-
-            if guia_update.evaluation_answers is not None:
-
-                for imagen in guia_update.evaluation_answers:
-                    # if imagen.cast == "photo":
-                        url_img.append(imagen.value)
-
-                if url_img == []:
-                    pass
-                else:
-
-                    # Expandir y limpiar
-                    flat_urls = []
-                    for item in url_img:
-                        urls = item.split(',')
-                        flat_urls.extend([url.strip() for url in urls if url.strip()])
-
-                    # Construir string para el UPDATE
-                    sql_array = "ARRAY[\n  " + ",\n  ".join(f"'{url}'" for url in flat_urls) + "\n]"
-
-                    respon = conn.update_fotos_entrega_ruta_ty_event(sql_array,guia_update.guide,guia_update.route_id)
-
-            if datos_groups["Cliente"] == "Electrolux":
-                patron = r'\D+'
-                factura = re.sub(patron, '', datos_tags["FACTURA"])
-
-                ahora = datetime.now()
-
-                datos = {
-                    "Numero" : factura,
-                    "Hora_registro": str(ahora)
-                }
-
-                guardar_json.guardar_datos_a_archivo_existente_cf(datos,ahora,'info_factura')
-
-
-            if "paris" in datos_groups["Cliente"].lower():
-
-                procesar_datos_despachos_paris(body_p)
-
-                # body = conn.read_estados_paris(data["status"],data["substatus_code"])
-
-                # body = {
-                #     "status": data["status"],
-                #     "substatus": data["substatus"],
-                #     "substatus_code": data["substatus_code"]
-                # }
-
-                # send_put_request(body, data["guide"])
-
-                # cliente_paris = conn.read_clientes_de_paris(dato_ruta_ty)[0]
-
-
-                return {
-                    "message" : "data recibida correctamente"
-                }
-
-    return {
-            "message" : "data recibida correctamente"
-            }
 
 @app.post("/api/v2/beetrack/route")
 async def post_route(body : Route , headers: tuple = Depends(validar_encabezados)):
@@ -1899,3 +1742,165 @@ async def get_campos_registro():
     resultado_dict = {titulo : cant for titulo, cant in datos}
 
     return resultado_dict
+
+
+
+
+
+@app.post("/api/v2/beetrack/dispatch")
+# async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabezados)):
+async def post_dispatch(request : Request, headers: tuple = Depends(validar_encabezados)):
+    content_type, x_auth_token = headers
+    # Lista de nombres que deseas buscar
+    body_p = await request.json()  # Obtener el cuerpo como JSON
+
+    body = Dispatch(**body_p)
+
+    data = body.dict()
+
+    # date_actual = datetime.now().strftime("%Y-%m-%d")
+
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    folder = "dispatch_guide"
+
+
+    filename = os.path.join(folder, f"datos_ruta_parasabersillegan_ORIGINAL{timestamp}.txt")
+
+    with open(filename, "w") as f:
+        json.dump(data, f, indent=4)
+
+
+    if data["resource"] == 'route' and data["event"] == 'create':
+
+        datos_insert_ruta = data_beetrack.generar_data_insert_creacion_ruta(data)
+        conn.insert_beetrack_creacion_ruta(datos_insert_ruta)
+
+    if data["resource"] == 'route' and data["event"] in ['start', 'finish']:
+        datos_insert_ruta = data_beetrack.generar_data_insert_creacion_ruta(data)
+        row = conn.update_route_beetrack_event(datos_insert_ruta)
+
+        return {
+            "message" : "data recibida correctamente"
+            }
+
+    if data["resource"] == 'dispatch' and data["event"] == 'update':
+        datos_create = {
+                        "ruta_id" : data["route_id"],
+                        "guia" : data["guide"]
+                        }
+        
+        resultado = conn.verificar_si_ruta_existe(datos_create)
+
+        if len(resultado) == 0:
+            datos_tags_i = data_beetrack.obtener_datos_tags(data["tags"])
+            datos_groups_i = data_beetrack.obtener_datos_groups(data["groups"])
+            datos_insert_ruta_ty = data_beetrack.generar_data_update_ruta_transyanez(data,datos_tags_i,datos_groups_i)
+            conn.insert_beetrack_data_ruta_transyanez(datos_insert_ruta_ty)
+
+            if datos_groups_i["Cliente"] == "Electrolux":
+                patron = r'\D+'
+                factura = re.sub(patron, '', datos_tags_i["FACTURA"])
+                ahora = datetime.now()
+
+                datos = {
+                    "Numero" : factura,
+                    "Hora_registro": str(ahora)
+                }
+
+                guardar_json.guardar_datos_a_archivo_existente_cf(datos,ahora,'info_factura')
+
+            if "paris" in datos_groups_i["Cliente"].lower():
+
+                # body = {
+                #     "status": data["status"],
+                #     "substatus": data["substatus"],
+                #     "substatus_code": data["substatus_code"]
+                # }
+
+                # body = conn.read_estados_paris(data["status"],data["substatus_code"])
+
+                # send_put_request(body, data["guide"])
+
+
+                return {
+                    "message" : "data recibida correctamente"
+                }
+
+
+
+            return {
+                "message" : "data recibida correctamente"
+                }
+        else :
+            # print("total datos de update",data)
+            datos_tags = data_beetrack.obtener_datos_tags(data["tags"])
+            datos_groups = data_beetrack.obtener_datos_groups(data["groups"])
+            ## insertar en ruta transyanez
+            dato_ruta_ty = data_beetrack.generar_data_update_ruta_transyanez(data,datos_tags,datos_groups)
+            rows = conn.update_ruta_ty_event(dato_ruta_ty)
+
+            #### proceso para guardar imagenes en la base de datos
+
+            guia_update = ActualizacionGuia(**body_p)
+
+            url_img = []
+
+            if guia_update.evaluation_answers is not None:
+
+                for imagen in guia_update.evaluation_answers:
+                    # if imagen.cast == "photo":
+                        url_img.append(imagen.value)
+
+                if url_img == []:
+                    pass
+                else:
+
+                    # Expandir y limpiar
+                    flat_urls = []
+                    for item in url_img:
+                        urls = item.split(',')
+                        flat_urls.extend([url.strip() for url in urls if url.strip()])
+
+                    # Construir string para el UPDATE
+                    sql_array = "ARRAY[\n  " + ",\n  ".join(f"'{url}'" for url in flat_urls) + "\n]"
+
+                    respon = conn.update_fotos_entrega_ruta_ty_event(sql_array,guia_update.guide,guia_update.route_id)
+
+            if datos_groups["Cliente"] == "Electrolux":
+                patron = r'\D+'
+                factura = re.sub(patron, '', datos_tags["FACTURA"])
+
+                ahora = datetime.now()
+
+                datos = {
+                    "Numero" : factura,
+                    "Hora_registro": str(ahora)
+                }
+
+                guardar_json.guardar_datos_a_archivo_existente_cf(datos,ahora,'info_factura')
+
+
+            if "paris" in datos_groups["Cliente"].lower():
+
+                procesar_datos_despachos_paris(body_p)
+
+                # body = conn.read_estados_paris(data["status"],data["substatus_code"])
+
+                # body = {
+                #     "status": data["status"],
+                #     "substatus": data["substatus"],
+                #     "substatus_code": data["substatus_code"]
+                # }
+
+                # send_put_request(body, data["guide"])
+
+                # cliente_paris = conn.read_clientes_de_paris(dato_ruta_ty)[0]
+
+
+                return {
+                    "message" : "data recibida correctamente"
+                }
+
+    return {
+            "message" : "data recibida correctamente"
+            }
