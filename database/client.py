@@ -12582,6 +12582,30 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
         self.conn.commit()
 
 
+
+    ##### obtener los campos las guias troncales
+
+
+    def obtener_guias_troncales_paris(self, id_route_ty):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""  
+                SELECT jsonb_agg(
+                    jsonb_build_object(
+                        'identifier', guia,
+                        'status_id', 1,
+                        'substatus', NULL
+                    )
+                ) AS resultados
+                FROM beetrack.ruta_transyanez
+                WHERE identificador_ruta = {id_route_ty} 
+                AND cliente ILIKE '%paris%'
+                AND is_trunk = true;
+                """)
+            return cur.fetchone()
+
+
+
+
     
 
 

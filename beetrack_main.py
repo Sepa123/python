@@ -380,70 +380,93 @@ def get_update_estados_paris_yanez( codigo_guia): ### creo que no la utilizo
 
 def verificar_si_ruta_yanez_existe_despachos(ruta_id): 
 
-     # URL del endpoint
-    url = f'https://cluster-staging.dispatchtrack.com/api/external/v1/routes/{ruta_id}'
 
-    # Encabezados
-    headers = {
-        'Accept': '*/*',
-        'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
-        'X-AUTH-TOKEN': config("SECRET_KEY_PARIS_YANEZ"),
-    }
 
-    # Realizamos la solicitud PUT
-    with httpx.Client() as client:
-        response = client.get(url, headers=headers)
+    ##### version por bd
 
-    
     troncales = []
 
     info_despachos = []
 
-    # Verificamos la respuesta
-    if response.status_code == 200:
-        # print("Solicitud GET exitosa:", response.json())
 
-        data = response.json()
+    info_despachos = conn.obtener_guias_troncales_paris(ruta_id)[0]
+
+    print(info_despachos)
+
+    if info_despachos is not None:
+        troncales = [True]
+    else:
+        troncales = [False]
+
+    return info_despachos, troncales
+
+
+
+
+    #  # URL del endpoint
+    # url = f'https://cluster-staging.dispatchtrack.com/api/external/v1/routes/{ruta_id}'
+
+    # # Encabezados
+    # headers = {
+    #     'Accept': '*/*',
+    #     'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
+    #     'X-AUTH-TOKEN': config("SECRET_KEY_PARIS_YANEZ"),
+    # }
+
+    # # Realizamos la solicitud PUT
+    # with httpx.Client() as client:
+    #     response = client.get(url, headers=headers)
+
+    
+    # troncales = []
+
+    # info_despachos = []
+
+    # # Verificamos la respuesta
+    # if response.status_code == 200:
+    #     # print("Solicitud GET exitosa:", response.json())
+
+    #     data = response.json()
 
         
-        for despachos in data['response']['route']['dispatches']:
+    #     for despachos in data['response']['route']['dispatches']:
 
-            cliente_name = next((item["name"] for item in despachos["groups"] if item["group_category"] == "Cliente"), None)
+    #         cliente_name = next((item["name"] for item in despachos["groups"] if item["group_category"] == "Cliente"), None)
 
-            if "paris" in cliente_name.lower():
+    #         if "paris" in cliente_name.lower():
 
-                if despachos["is_trunk"] == True:
+    #             if despachos["is_trunk"] == True:
 
-                    troncales.append(despachos["is_trunk"])
-                else :
+    #                 troncales.append(despachos["is_trunk"])
+    #             else :
 
-                    troncales.append(despachos["is_trunk"])
+    #                 troncales.append(despachos["is_trunk"])
 
-                    # body = despachos
+    #                 # body = despachos
 
-                    body = {
-                    "identifier": despachos['identifier'],
-                    "status_id": 1,
-                    "substatus": None
-                    }
+    #                 body = {
+    #                 "identifier": despachos['identifier'],
+    #                 "status_id": 1,
+    #                 "substatus": None
+    #                 }
 
-                    # info_despachos.append(body)
+    #                 # info_despachos.append(body)
 
-                    info_despachos.append(body)
+    #                 info_despachos.append(body)
 
         
-        print(info_despachos,troncales)
+    #     print(info_despachos,troncales)
 
               
-        return info_despachos, troncales
+    #     return info_despachos, troncales
 
-        # body = response.json()
+    #     # body = response.json()
 
-    else:
-        print(f"Error en la solicitud GET: {response.status_code}")
-        print(response.text)
+    # else:
+    #     print(f"Error en la solicitud GET: {response.status_code}")
+    #     print(response.text)
 
-        return info_despachos, troncales
+    #     return info_despachos, troncales
 
 
 
@@ -1755,12 +1778,12 @@ async def post_dispatch(request : Request, headers: tuple = Depends(validar_enca
 
     if data["resource"] == 'route' and data["event"] == 'update' and data["started"] == True:
         pass
-        # procesar_datos_rutas_paris(body_p)
+        procesar_datos_rutas_paris(body_p)
 
 
     if data["resource"] == 'route' and data["event"] == 'finish':
         pass
-        # procesar_datos_rutas_paris(body_p)
+        procesar_datos_rutas_paris(body_p)
 
     if data["resource"] == 'route' and data["event"] in ['start', 'finish']:
         datos_insert_ruta = data_beetrack.generar_data_insert_creacion_ruta(data)
@@ -1800,6 +1823,9 @@ async def post_dispatch(request : Request, headers: tuple = Depends(validar_enca
                 guardar_json.guardar_datos_a_archivo_existente_cf(datos,ahora,'info_factura')
 
             if "paris" in datos_groups_i["Cliente"].lower():
+
+
+                procesar_datos_despachos_paris(body_p)
 
                 # body = {
                 #     "status": data["status"],
@@ -1874,7 +1900,7 @@ async def post_dispatch(request : Request, headers: tuple = Depends(validar_enca
 
                 # print("el cliente es paris")
 
-                # procesar_datos_despachos_paris(body_p)
+                procesar_datos_despachos_paris(body_p)
 
                 # body = conn.read_estados_paris(data["status"],data["substatus_code"])
 
@@ -2021,4 +2047,9 @@ async def get_campos_registro():
 
 
 
+@app.get("/api/v2/prueba/funcion")
+async def get_campos_registro(id:str):
+    
+    resultado_dict = verificar_si_ruta_yanez_existe_despachos(id)
 
+    return resultado_dict
