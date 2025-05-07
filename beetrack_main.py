@@ -205,16 +205,20 @@ async def post_dispatch(request : Request, headers: tuple = Depends(validar_enca
                     # if imagen.cast == "photo":
                         url_img.append(imagen.value)
 
-                # Expandir y limpiar
-                flat_urls = []
-                for item in url_img:
-                    urls = item.split(',')
-                    flat_urls.extend([url.strip() for url in urls if url.strip()])
+                if url_img == []:
+                    pass
+                else:
 
-                # Construir string para el UPDATE
-                sql_array = "ARRAY[\n  " + ",\n  ".join(f"'{url}'" for url in flat_urls) + "\n]"
+                    # Expandir y limpiar
+                    flat_urls = []
+                    for item in url_img:
+                        urls = item.split(',')
+                        flat_urls.extend([url.strip() for url in urls if url.strip()])
 
-                respon = conn.update_fotos_entrega_ruta_ty_event(sql_array,guia_update.guide,guia_update.route_id)
+                    # Construir string para el UPDATE
+                    sql_array = "ARRAY[\n  " + ",\n  ".join(f"'{url}'" for url in flat_urls) + "\n]"
+
+                    respon = conn.update_fotos_entrega_ruta_ty_event(sql_array,guia_update.guide,guia_update.route_id)
 
             if datos_groups["Cliente"] == "Electrolux":
                 patron = r'\D+'
