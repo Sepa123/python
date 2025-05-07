@@ -1754,11 +1754,13 @@ async def post_dispatch(request : Request, headers: tuple = Depends(validar_enca
 
 
     if data["resource"] == 'route' and data["event"] == 'update' and data["started"] == True:
-        procesar_datos_rutas_paris(body_p)
+        pass
+        # procesar_datos_rutas_paris(body_p)
 
 
     if data["resource"] == 'route' and data["event"] == 'finish':
-        procesar_datos_rutas_paris(body_p)
+        pass
+        # procesar_datos_rutas_paris(body_p)
 
     if data["resource"] == 'route' and data["event"] in ['start', 'finish']:
         datos_insert_ruta = data_beetrack.generar_data_insert_creacion_ruta(data)
@@ -1870,7 +1872,7 @@ async def post_dispatch(request : Request, headers: tuple = Depends(validar_enca
 
             if "paris" in datos_groups["Cliente"].lower():
 
-                procesar_datos_despachos_paris(body_p)
+                # procesar_datos_despachos_paris(body_p)
 
                 # body = conn.read_estados_paris(data["status"],data["substatus_code"])
 
