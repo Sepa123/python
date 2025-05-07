@@ -5242,8 +5242,8 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             with self.conn.cursor() as cur:
                 cur.execute("""
                 INSERT INTO beetrack.ruta_transyanez
-                (identificador_ruta, identificador, guia, cliente, servicio, region_de_despacho , fecha_estimada, fecha_llegada, estado , usuario_movil, id_cliente, nombre_cliente  , direccion_cliente   , telefono_cliente , correo_electronico_cliente, fechahr    ,email, conductor, fechaentrega, cmn, volumen, bultos, factura, oc, ruta, tienda)
-                VALUES( %(route_id)s, %(identifier)s, %(guide)s, %(Cliente)s,  %(Servicio)s, %(Región de despacho)s,  %(estimated_at)s, %(arrived_at)s, %(substatus)s, %(driver)s   ,  %(contact_identifier)s, %(contact_name)s,  %(contact_address)s, %(contact_phone)s, %(contact_email)s         , %(fechahr)s,%(contact_email)s, %(driver)s, %(fechaentrega)s, %(comuna)s, %(volumen)s, %(bultos)s, %(factura)s, %(oc)s, %(ruta)s, %(tienda)s);
+                (identificador_ruta, identificador, guia, cliente, servicio, region_de_despacho , fecha_estimada, fecha_llegada, estado , usuario_movil, id_cliente, nombre_cliente  , direccion_cliente   , telefono_cliente , correo_electronico_cliente, fechahr    ,email, conductor, fechaentrega, cmn, volumen, bultos, factura, oc, ruta, tienda, is_trunk)
+                VALUES( %(route_id)s, %(identifier)s, %(guide)s, %(Cliente)s,  %(Servicio)s, %(Región de despacho)s,  %(estimated_at)s, %(arrived_at)s, %(substatus)s, %(driver)s   ,  %(contact_identifier)s, %(contact_name)s,  %(contact_address)s, %(contact_phone)s, %(contact_email)s         , %(fechahr)s,%(contact_email)s, %(driver)s, %(fechaentrega)s, %(comuna)s, %(volumen)s, %(bultos)s, %(factura)s, %(oc)s, %(ruta)s, %(tienda)s, %(is_trunk)s);
 
                 """,data)
             self.conn.commit()
@@ -5277,7 +5277,8 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 factura = %(factura)s,
                 oc = %(oc)s,
                 ruta = %(ruta)s,
-                tienda = %(tienda)s
+                tienda = %(tienda)s,
+                is_trunk = %(is_trunk)s
             WHERE guia = %(guide)s AND identificador_ruta = %(route_id)s;
             """, data)
             row = cur.rowcount

@@ -71,6 +71,7 @@ def generar_data_update_ruta_transyanez(data,datos_tags,groups):
             "estimated_at": data["estimated_at"],
             "substatus": data["substatus"],
             "driver":  datos_tags["conductor"],
+            "is_trunk": data["is_trunk"],
             "contact_identifier": data["contact_identifier"],
             "contact_name": data["contact_name"],
             "contact_address": data["contact_address"],
