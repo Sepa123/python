@@ -321,7 +321,7 @@ def send_put_request(payload, codigo_guia):
 
 
 
-def send_put_request_paris_yanez(payload, codigo_guia):
+def send_put_request_paris_yanez(payload, codigo_guia): #### No la utilizo
     # URL del endpoint
     url = f'https://cluster-staging.dispatchtrack.com/api/external/v1/dispatches/{codigo_guia}'
 
@@ -347,7 +347,7 @@ def send_put_request_paris_yanez(payload, codigo_guia):
         print(response.text)
 
 
-def get_update_estados_paris_yanez( codigo_guia):
+def get_update_estados_paris_yanez( codigo_guia): ### creo que no la utilizo
     # URL del endpoint
     url = f'https://cluster-staging.dispatchtrack.com/api/external/v1/dispatches/{codigo_guia}'
 
@@ -378,7 +378,7 @@ def get_update_estados_paris_yanez( codigo_guia):
 
 
 
-def verificar_si_ruta_yanez_existe_despachos(ruta_id):
+def verificar_si_ruta_yanez_existe_despachos(ruta_id): 
 
      # URL del endpoint
     url = f'https://cluster-staging.dispatchtrack.com/api/external/v1/routes/{ruta_id}'
@@ -661,7 +661,7 @@ async def webhook_dispatch_paris(request : Request , headers: tuple = Depends(va
 
                     # conn.update_estado_dispatch_paris(data.dispatch_id, data.status,data.substatus_code)
 
-                    body_estados = get_update_estados_paris_yanez(data.guide) ## esto es beetrack paris Yanez
+                    # body_estados = get_update_estados_paris_yanez(data.guide) ## esto es beetrack paris Yanez
 
                     # body = conn.read_estados_paris(body_estados['status_id'],body_estados['substatus_code'],data.is_trunk)
 
@@ -872,8 +872,6 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
                     return { "message": "no hay despachos ni troncales"}
 
-                    # despachos, troncales = verificar_si_ruta_yanez_existe_despachos(ruta_paris[0])
-
                 if any(troncales):
                     print("Al menos un troncal es True")
                     pass
@@ -886,19 +884,11 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                     fecha_actual = fecha_formateada.strftime("%Y-%m-%dT%H:%M:%S.000-04:00")
 
 
-                    # fecha_actual = datetime.now().strftime("%Y-%m-%dT%H:%M:%S.000-04:00")
-
                     body_put_request = {
                         "id": ruta_paris[1],
                         # "started": True,
                         "started_at": fecha_actual,
-                        "dispatches": despachos
-                        # "dispatches": [{
-                        #     "identifier": str(data.identifier),
-                        #     "status_id": 1,
-                        #     "substatus": None
-                        # }]  
-                        
+                        "dispatches": despachos                  
                     }
 
                     conn.actualizar_estado_ruta_paris(ruta_paris[0],'started')
@@ -1621,6 +1611,287 @@ def procesar_datos_despachos_paris(body):
     return True
 
 
+##### FUNCION PARA LAS RUTAS QUE PERTENECEN A PARIS
+
+def procesar_datos_rutas_paris(body):
+
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+
+    if body["resource"] == "route":
+            mensaje = "Recibido Modelo Creación Ruta"
+            data = CreacionRuta(**body)
+
+            folder = "route"
+
+            # Asegúrate de que la carpeta exista
+            os.makedirs(folder, exist_ok=True)
+
+            filename = os.path.join(folder, f"datos_ruta_{data.route}_{timestamp}.txt")
+
+            with open(filename, "w") as f:
+                json.dump(body, f, indent=4)
+
+
+            ruta_paris = conn.verificar_informacion_ruta_paris(data.route)
+
+            ### Primer filtro: verificar si la ruta existe en paris
+
+            if ruta_paris is None:
+                print('no existe la ruta en paris')
+                return { "message": "no existe la ruta en paris"}
+            
+
+
+            if data.event == 'update' and data.started == True:
+                
+                print('actualizar ruta existente')
+                estado_ruta = ruta_paris[2]
+
+                if estado_ruta == 'started':
+                    print('la ruta ya esta iniciada')
+                    return { "message": "la ruta ya esta iniciada"}
+
+                
+
+                # despachos, troncales = verificar_si_ruta_paris_existe_despachos(verificar_info_ruta[1], verificar_info_ruta[0])
+                despachos, troncales = verificar_si_ruta_yanez_existe_despachos(ruta_paris[0])
+
+                if not despachos and not troncales:
+
+                    print("No hay despachos ni troncales")
+
+                    return { "message": "no hay despachos ni troncales"}
+
+                if any(troncales):
+                    print("Al menos un troncal es True")
+                    pass
+                else:
+                    print("Todos son False")
+
+                    fecha_formateada = datetime.now() - timedelta(minutes=3)
+
+                    # Formatear con milisegundos .000 y zona horaria fija -04:00
+                    fecha_actual = fecha_formateada.strftime("%Y-%m-%dT%H:%M:%S.000-04:00")
+
+
+                    body_put_request = {
+                        "id": ruta_paris[1],
+                        # "started": True,
+                        "started_at": fecha_actual,
+                        "dispatches": despachos                  
+                    }
+
+                    conn.actualizar_estado_ruta_paris(ruta_paris[0],'started')
+
+                    print(body_put_request)
+                    print(despachos)
+
+                    send_put_update_ruta(body_put_request, ruta_paris[1])
+
+
+                    return { "message": "esta ruta es iniciada"}
+
+
+            if data.event == 'finish':
+
+                despachos, troncales = verificar_si_ruta_paris_existe_despachos(ruta_paris[1], ruta_paris[0])
+
+
+                if not despachos and not troncales:
+                    print("NO HAY QUEEEEEEEEEEEEEEEESOOOO")
+
+
+                if any(troncales):
+                    print("Al menos un troncal es True")
+                    pass
+                else:
+                    print("Todos son False")
+
+                    body_put_request = {
+                        "ended": True
+                    }
+
+                    conn.actualizar_estado_ruta_paris(ruta_paris[0],'finished')
+
+                    send_put_update_ruta(body_put_request, ruta_paris[1])
+
+            else:
+
+                    print('no pasa nada')
+
+
+
+@app.post("/api/v2/beetrack/dispatch")
+# async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabezados)):
+async def post_dispatch(request : Request, headers: tuple = Depends(validar_encabezados)):
+    content_type, x_auth_token = headers
+    # Lista de nombres que deseas buscar
+    body_p = await request.json()  # Obtener el cuerpo como JSON
+
+    body = Dispatch(**body_p)
+
+    data = body.dict()
+
+    # date_actual = datetime.now().strftime("%Y-%m-%d")
+
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    folder = "dispatch_guide"
+
+
+    filename = os.path.join(folder, f"datos_ruta_parasabersillegan_ORIGINAL{timestamp}.txt")
+
+    with open(filename, "w") as f:
+        json.dump(data, f, indent=4)
+
+    ##### logica para las route
+
+    
+
+    if data["resource"] == 'route' and data["event"] == 'create':
+
+        datos_insert_ruta = data_beetrack.generar_data_insert_creacion_ruta(data)
+        conn.insert_beetrack_creacion_ruta(datos_insert_ruta)
+
+
+    if data["resource"] == 'route' and data["event"] == 'update' and data["started"] == True:
+        procesar_datos_rutas_paris(body_p)
+
+
+    if data["resource"] == 'route' and data["event"] == 'finish':
+        procesar_datos_rutas_paris(body_p)
+
+    if data["resource"] == 'route' and data["event"] in ['start', 'finish']:
+        datos_insert_ruta = data_beetrack.generar_data_insert_creacion_ruta(data)
+        row = conn.update_route_beetrack_event(datos_insert_ruta)
+
+        return {
+            "message" : "data recibida correctamente"
+            }
+    
+
+    ##### logica para los despachos
+
+    if data["resource"] == 'dispatch' and data["event"] == 'update':
+        datos_create = {
+                        "ruta_id" : data["route_id"],
+                        "guia" : data["guide"]
+                        }
+        
+        resultado = conn.verificar_si_ruta_existe(datos_create)
+
+        if len(resultado) == 0:
+            datos_tags_i = data_beetrack.obtener_datos_tags(data["tags"])
+            datos_groups_i = data_beetrack.obtener_datos_groups(data["groups"])
+            datos_insert_ruta_ty = data_beetrack.generar_data_update_ruta_transyanez(data,datos_tags_i,datos_groups_i)
+            conn.insert_beetrack_data_ruta_transyanez(datos_insert_ruta_ty)
+
+            if datos_groups_i["Cliente"] == "Electrolux":
+                patron = r'\D+'
+                factura = re.sub(patron, '', datos_tags_i["FACTURA"])
+                ahora = datetime.now()
+
+                datos = {
+                    "Numero" : factura,
+                    "Hora_registro": str(ahora)
+                }
+
+                guardar_json.guardar_datos_a_archivo_existente_cf(datos,ahora,'info_factura')
+
+            if "paris" in datos_groups_i["Cliente"].lower():
+
+                # body = {
+                #     "status": data["status"],
+                #     "substatus": data["substatus"],
+                #     "substatus_code": data["substatus_code"]
+                # }
+
+                # body = conn.read_estados_paris(data["status"],data["substatus_code"])
+
+                # send_put_request(body, data["guide"])
+
+
+                return {
+                    "message" : "data recibida correctamente"
+                }
+
+
+
+            return {
+                "message" : "data recibida correctamente"
+                }
+        else :
+            # print("total datos de update",data)
+            datos_tags = data_beetrack.obtener_datos_tags(data["tags"])
+            datos_groups = data_beetrack.obtener_datos_groups(data["groups"])
+            ## insertar en ruta transyanez
+            dato_ruta_ty = data_beetrack.generar_data_update_ruta_transyanez(data,datos_tags,datos_groups)
+            rows = conn.update_ruta_ty_event(dato_ruta_ty)
+
+            #### proceso para guardar imagenes en la base de datos
+
+            guia_update = ActualizacionGuia(**body_p)
+
+            url_img = []
+
+            if guia_update.evaluation_answers is not None:
+
+                for imagen in guia_update.evaluation_answers:
+                    # if imagen.cast == "photo":
+                        url_img.append(imagen.value)
+
+                if url_img == []:
+                    pass
+                else:
+
+                    # Expandir y limpiar
+                    flat_urls = []
+                    for item in url_img:
+                        urls = item.split(',')
+                        flat_urls.extend([url.strip() for url in urls if url.strip()])
+
+                    # Construir string para el UPDATE
+                    sql_array = "ARRAY[\n  " + ",\n  ".join(f"'{url}'" for url in flat_urls) + "\n]"
+
+                    respon = conn.update_fotos_entrega_ruta_ty_event(sql_array,guia_update.guide,guia_update.route_id)
+
+            if datos_groups["Cliente"] == "Electrolux":
+                patron = r'\D+'
+                factura = re.sub(patron, '', datos_tags["FACTURA"])
+
+                ahora = datetime.now()
+
+                datos = {
+                    "Numero" : factura,
+                    "Hora_registro": str(ahora)
+                }
+
+                guardar_json.guardar_datos_a_archivo_existente_cf(datos,ahora,'info_factura')
+
+
+            if "paris" in datos_groups["Cliente"].lower():
+
+                procesar_datos_despachos_paris(body_p)
+
+                # body = conn.read_estados_paris(data["status"],data["substatus_code"])
+
+                # body = {
+                #     "status": data["status"],
+                #     "substatus": data["substatus"],
+                #     "substatus_code": data["substatus_code"]
+                # }
+
+                # send_put_request(body, data["guide"])
+
+                # cliente_paris = conn.read_clientes_de_paris(dato_ruta_ty)[0]
+
+
+                return {
+                    "message" : "data recibida correctamente"
+                }
+
+    return {
+            "message" : "data recibida correctamente"
+            }
 
 
 ########### esto es el login migrado para no sufra por las c aidas
@@ -1747,160 +2018,3 @@ async def get_campos_registro():
 
 
 
-@app.post("/api/v2/beetrack/dispatch")
-# async def post_dispatch(body : Dispatch, headers: tuple = Depends(validar_encabezados)):
-async def post_dispatch(request : Request, headers: tuple = Depends(validar_encabezados)):
-    content_type, x_auth_token = headers
-    # Lista de nombres que deseas buscar
-    body_p = await request.json()  # Obtener el cuerpo como JSON
-
-    body = Dispatch(**body_p)
-
-    data = body.dict()
-
-    # date_actual = datetime.now().strftime("%Y-%m-%d")
-
-    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    folder = "dispatch_guide"
-
-
-    filename = os.path.join(folder, f"datos_ruta_parasabersillegan_ORIGINAL{timestamp}.txt")
-
-    with open(filename, "w") as f:
-        json.dump(data, f, indent=4)
-
-
-    if data["resource"] == 'route' and data["event"] == 'create':
-
-        datos_insert_ruta = data_beetrack.generar_data_insert_creacion_ruta(data)
-        conn.insert_beetrack_creacion_ruta(datos_insert_ruta)
-
-    if data["resource"] == 'route' and data["event"] in ['start', 'finish']:
-        datos_insert_ruta = data_beetrack.generar_data_insert_creacion_ruta(data)
-        row = conn.update_route_beetrack_event(datos_insert_ruta)
-
-        return {
-            "message" : "data recibida correctamente"
-            }
-
-    if data["resource"] == 'dispatch' and data["event"] == 'update':
-        datos_create = {
-                        "ruta_id" : data["route_id"],
-                        "guia" : data["guide"]
-                        }
-        
-        resultado = conn.verificar_si_ruta_existe(datos_create)
-
-        if len(resultado) == 0:
-            datos_tags_i = data_beetrack.obtener_datos_tags(data["tags"])
-            datos_groups_i = data_beetrack.obtener_datos_groups(data["groups"])
-            datos_insert_ruta_ty = data_beetrack.generar_data_update_ruta_transyanez(data,datos_tags_i,datos_groups_i)
-            conn.insert_beetrack_data_ruta_transyanez(datos_insert_ruta_ty)
-
-            if datos_groups_i["Cliente"] == "Electrolux":
-                patron = r'\D+'
-                factura = re.sub(patron, '', datos_tags_i["FACTURA"])
-                ahora = datetime.now()
-
-                datos = {
-                    "Numero" : factura,
-                    "Hora_registro": str(ahora)
-                }
-
-                guardar_json.guardar_datos_a_archivo_existente_cf(datos,ahora,'info_factura')
-
-            if "paris" in datos_groups_i["Cliente"].lower():
-
-                # body = {
-                #     "status": data["status"],
-                #     "substatus": data["substatus"],
-                #     "substatus_code": data["substatus_code"]
-                # }
-
-                # body = conn.read_estados_paris(data["status"],data["substatus_code"])
-
-                # send_put_request(body, data["guide"])
-
-
-                return {
-                    "message" : "data recibida correctamente"
-                }
-
-
-
-            return {
-                "message" : "data recibida correctamente"
-                }
-        else :
-            # print("total datos de update",data)
-            datos_tags = data_beetrack.obtener_datos_tags(data["tags"])
-            datos_groups = data_beetrack.obtener_datos_groups(data["groups"])
-            ## insertar en ruta transyanez
-            dato_ruta_ty = data_beetrack.generar_data_update_ruta_transyanez(data,datos_tags,datos_groups)
-            rows = conn.update_ruta_ty_event(dato_ruta_ty)
-
-            #### proceso para guardar imagenes en la base de datos
-
-            guia_update = ActualizacionGuia(**body_p)
-
-            url_img = []
-
-            if guia_update.evaluation_answers is not None:
-
-                for imagen in guia_update.evaluation_answers:
-                    # if imagen.cast == "photo":
-                        url_img.append(imagen.value)
-
-                if url_img == []:
-                    pass
-                else:
-
-                    # Expandir y limpiar
-                    flat_urls = []
-                    for item in url_img:
-                        urls = item.split(',')
-                        flat_urls.extend([url.strip() for url in urls if url.strip()])
-
-                    # Construir string para el UPDATE
-                    sql_array = "ARRAY[\n  " + ",\n  ".join(f"'{url}'" for url in flat_urls) + "\n]"
-
-                    respon = conn.update_fotos_entrega_ruta_ty_event(sql_array,guia_update.guide,guia_update.route_id)
-
-            if datos_groups["Cliente"] == "Electrolux":
-                patron = r'\D+'
-                factura = re.sub(patron, '', datos_tags["FACTURA"])
-
-                ahora = datetime.now()
-
-                datos = {
-                    "Numero" : factura,
-                    "Hora_registro": str(ahora)
-                }
-
-                guardar_json.guardar_datos_a_archivo_existente_cf(datos,ahora,'info_factura')
-
-
-            if "paris" in datos_groups["Cliente"].lower():
-
-                procesar_datos_despachos_paris(body_p)
-
-                # body = conn.read_estados_paris(data["status"],data["substatus_code"])
-
-                # body = {
-                #     "status": data["status"],
-                #     "substatus": data["substatus"],
-                #     "substatus_code": data["substatus_code"]
-                # }
-
-                # send_put_request(body, data["guide"])
-
-                # cliente_paris = conn.read_clientes_de_paris(dato_ruta_ty)[0]
-
-
-                return {
-                    "message" : "data recibida correctamente"
-                }
-
-    return {
-            "message" : "data recibida correctamente"
-            }
