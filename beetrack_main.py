@@ -1777,12 +1777,10 @@ async def post_dispatch(request : Request, headers: tuple = Depends(validar_enca
 
 
     if data["resource"] == 'route' and data["event"] == 'update' and data["started"] == True:
-        pass
         procesar_datos_rutas_paris(body_p)
 
 
     if data["resource"] == 'route' and data["event"] == 'finish':
-        pass
         procesar_datos_rutas_paris(body_p)
 
     if data["resource"] == 'route' and data["event"] in ['start', 'finish']:
