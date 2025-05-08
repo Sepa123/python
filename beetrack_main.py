@@ -380,8 +380,6 @@ def get_update_estados_paris_yanez( codigo_guia): ### creo que no la utilizo
 
 def verificar_si_ruta_yanez_existe_despachos(ruta_id): 
 
-
-
     ##### version por bd
 
     troncales = []
