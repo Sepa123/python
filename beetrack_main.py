@@ -906,6 +906,9 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                     # Formatear con milisegundos .000 y zona horaria fija -04:00
                     fecha_actual = fecha_formateada.strftime("%Y-%m-%dT%H:%M:%S.000-04:00")
 
+                    if despachos is None:
+                        return { "message": "esta ruta no se puede iniciar"}
+
 
                     body_put_request = {
                         "id": ruta_paris[1],
