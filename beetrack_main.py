@@ -269,6 +269,8 @@ def send_put_update_ruta(payload, route_id): ### esto es para actualizar una rut
             # Guardar el contenido del JSON en un archivo de texto
         with open(filename, "w") as f:
             f.write(response.text)
+            f.write("\n")
+            json.dump(payload, f, indent=4,ensure_ascii=False)
 
         print(f"Error en la solicitud PUT: {response.status_code}")
         print(response.text)
@@ -396,7 +398,7 @@ def verificar_si_ruta_yanez_existe_despachos(ruta_id):
     else:
         troncales = [True]
 
-    return info_despachos, troncales
+    return  info_despachos, troncales
 
 
 
