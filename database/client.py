@@ -12599,7 +12599,7 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
                 FROM beetrack.ruta_transyanez
                 WHERE identificador_ruta = {id_route_ty} 
                 AND cliente ILIKE '%paris%'
-                AND is_trunk = true;
+                ----AND is_trunk = true;
                 """)
             return cur.fetchone()
 
