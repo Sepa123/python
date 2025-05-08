@@ -394,9 +394,9 @@ def verificar_si_ruta_yanez_existe_despachos(ruta_id):
     print(info_despachos)
 
     if info_despachos is not None:
-        troncales = [True]
-    else:
         troncales = [False]
+    else:
+        troncales = [True]
 
     return info_despachos, troncales
 
