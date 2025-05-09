@@ -1210,8 +1210,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                                                     }
                                             }]
                                         }
-                            
-                            
+
                             
                             #### esta condición es para las entregas parciales con imagenes
                             if data.status == 4:
