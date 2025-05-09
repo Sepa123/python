@@ -1437,6 +1437,11 @@ def procesar_datos_despachos_paris(body):
                 if verificar_info_ruta is None:
                     print('la ruta no existe en el dispatchtrack paris')
 
+
+                    if data.truck_identifier is None:
+                        print('el vehiculo es nulo')
+                        return { "message": "no existe el vehiculo en dispatchtrack paris"}
+
                     ######  print('se debe crear vehiculo en paris')
                     crear_vehiculo_paris(data.truck_identifier)  
                     
