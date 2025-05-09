@@ -1,9 +1,11 @@
 from datetime import datetime
 from typing import Optional
-from fastapi import APIRouter, status,HTTPException, UploadFile, File
+from fastapi import APIRouter, status,HTTPException, UploadFile, File, Request
 # from typing import List
 import pandas as pd
-import os 
+import os
+
+import psycopg2 
 # import time
 # from datetime import datetime
 ##Modelos 
@@ -168,29 +170,36 @@ async def Obtener_datos(fecha:str):
         raise HTTPException(status_code=404, detail="No se encontraron datos")
     
 @router.get("/citacionOperacionFecha")
-async def Obtener_datos(fecha: str, id : int):
-    # Ejecutar la consulta utilizando nuestra función
-    datos = conn.citacion_operacion_fecha(fecha,id)
-    # Verificar si hay datos 
-    if datos:
-        datos_formateados = [{
-                                "Id_operacion": fila [0],
-                                "operacion": fila[1],
-                                "id_cop": fila[2],
-                                "nombre_cop": fila [3],
-                                "region": fila[4],
-                                "region_name": fila[5],
-                                "citacion": fila[6],
-                                "confirmados": fila[7],
-	                            "pendientes": fila[8],
-	                            "rechazadas": fila[9],
-                                "ambulancia": fila[10]
+async def obtener_citacion_operacion_fecha(fecha: str, id : int):
 
-                            } 
-                            for fila in datos]
-        return datos_formateados
-    else:
-        raise HTTPException(status_code=404, detail="No se encontraron datos")
+    try:
+        # Obtener la fecha actual del sistema
+        fecha_actual = datetime.now().date()  # Convertir a objeto de tipo date
+        
+        # Validar el formato de la fecha proporcionada
+        try:
+            fecha_proporcionada = datetime.strptime(fecha, "%Y-%m-%d").date()
+        except ValueError:
+            raise HTTPException(status_code=400, detail="El formato de la fecha proporcionada es incorrecto. Use el formato YYYY-MM-DD.")
+        
+
+        # Validar si la fecha proporcionada es anterior a la fecha actual
+        if fecha_proporcionada < fecha_actual:
+            raise HTTPException(status_code=400, detail="La fecha proporcionada es anterior a la fecha actual. El API no se ejecutará.")
+
+        # Ejecutar la consulta utilizando nuestra función
+        datos = conn.citacion_operacion_fecha(fecha,id)
+        # Verificar si hay datos 
+        if datos:
+            datos_formateados = [dict(zip(["Id_operacion", "operacion", "id_cop", "nombre_cop", "region", "region_name", "citacion", "confirmados", "pendientes", "rechazadas", "ambulancia"], fila)) for fila in datos]
+            return datos_formateados
+        else:
+            raise HTTPException(status_code=404, detail="No se encontraron datos")
+    
+    except HTTPException as http_exc:
+        raise http_exc
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al ejecutar la consulta: {str(e)}")
      
     
 @router.delete("/borrar")
@@ -898,3 +907,175 @@ async def actualizar_descuentos(data_supervisor : DataSupervisor):
 
         return {"message": "Datos Ingresados Correctamente"}
     except Exception as e: raise HTTPException(status_code=500, detail=str(e))
+
+
+
+
+#### RODRIGO : Carga masiva de dato
+
+parametros_conexion = {
+    "host": os.getenv("DB_HOST"),
+    "database": os.getenv("DB_NAME"),
+    "user": os.getenv("DB_USER"),
+    "password": os.getenv("DB_PASSWORD"),
+    "port": os.getenv("DB_PORT")
+}
+
+
+def ejecutar_consulta(sql):
+    try:
+        conexion = psycopg2.connect(**parametros_conexion)
+        cursor = conexion.cursor()
+        cursor.execute(sql)
+        filas = cursor.fetchall()
+        cursor.close()
+        conexion.close()
+        return filas
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+def ejecutar_consultaMasiva(sql):
+    try:
+        conexion = psycopg2.connect(**parametros_conexion)
+        cursor = conexion.cursor()
+        cursor.execute(sql)
+        filas = cursor.fetchall()
+        conexion.commit()  # Confirmar la transacción
+        cursor.close()
+        conexion.close()
+        return filas
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+def ejecutar_consulta2(sql):
+    try:
+        conexion = psycopg2.connect(**parametros_conexion)
+        cursor = conexion.cursor()
+        cursor.execute(sql)
+        filas = cursor.fetchall()
+        columnas = [desc[0] for desc in cursor.description]  # Obtener nombres de columnas
+        cursor.close()
+        conexion.close()
+        return filas, columnas  # Devolver filas y nombres de columnas
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))   
+    
+
+
+@router.get("/crearCitacionMasiva")
+async def obtener_citacion_masiva(patentes: str, op: int, cop: int, fecha: str):
+    """
+    Ejecuta la consulta para crear una citación masiva en la tabla mercadolibre.crear_citacion_masiva.
+    """
+    try:
+        # Construir la consulta SQL
+        consulta = f""" 
+            SELECT 	fecha,patente,id_ruta,observacion_patente,patente_valida,observacion_ruta,id_ruta_valido,valido	
+            FROM mercadolibre.crear_citacion_masiva_v2('{patentes}', {op}, {cop}, '{fecha}') ccm
+        """
+        # Ejecutar la consulta utilizando la función ejecutar_consulta
+        datos, columnas = ejecutar_consulta2(consulta)  # Obtener filas y columnas
+        
+        # Verificar si hay datos
+        if datos:
+            # Formatear los resultados
+            datos_formateados = [dict(zip(columnas, fila)) for fila in datos]
+            return {"resultados": datos_formateados}
+        else:
+            raise HTTPException(status_code=404, detail="No se encontraron datos")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al ejecutar la consulta: {str(e)}")
+
+@router.get("/Op/")
+async def Obtener_Op():
+     # Consulta SQL para obtener datos (por ejemplo)
+    consulta = """select * from operacion.modalidad_operacion mo """
+    # Ejecutar la consulta utilizando nuestra función
+    datos = ejecutar_consulta(consulta)
+    # Verificar si hay datos
+    if datos:
+        datos_formateados = [{
+                                "id" : fila[0],
+                                "centro": fila[4],
+                                                
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+    
+@router.get("/Cop/")
+async def Obtener_Cop():
+     # Consulta SQL para obtener datos (por ejemplo)
+    consulta = """select * from operacion.centro_operacion co  """
+    # Ejecutar la consulta utilizando nuestra función
+    datos = ejecutar_consulta(consulta)
+    # Verificar si hay datos
+    if datos:
+        datos_formateados = [{
+                                "id" : fila[0],
+                                "id_op": fila[4],
+                                "centro": fila[5],
+                                                
+                            } 
+                            for fila in datos]
+        return datos_formateados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+
+@router.post("/ProcesarCitacionMasiva")
+async def procesar_citacion_masiva(request: Request):
+    try:
+        body_p = await request.json()
+        validar_datos(body_p)  # Validar los datos enviados
+
+        # Construir la consulta SQL
+        consulta = f"""
+            SELECT * 
+            FROM mercadolibre.crear_citacion_masiva_destino(
+                '{body_p['fecha']}', 
+                '{body_p['patentes']}',
+                {body_p['op']}, 
+                {body_p['cop']}, 
+                {body_p['id_user']}
+            )
+        """
+        print(f"Consulta SQL generada: {consulta}")  # 🛠️ Imprime la consulta para depuración
+
+        # Ejecutar la consulta utilizando la función ejecutar_consulta
+        datos = ejecutar_consultaMasiva(consulta)  # Obtener solo las filas
+
+        # Verificar si la función devolvió un resultado
+        if datos:
+            codigo, glosa = datos[0]  # Capturar los valores devueltos por la función
+            print(f"Resultado de la función: código={codigo}, glosa={glosa}")  # 🛠️ Depuración
+            return {"codigo": codigo, "glosa": glosa}
+        else:
+            raise HTTPException(status_code=500, detail="La función no devolvió ningún resultado.")
+    except Exception as e:
+        print(f"Error en la consulta: {e}")  # 🛠️ Muestra el error en consola
+        raise HTTPException(status_code=500, detail=f"Error al ejecutar la consulta: {str(e)}")
+    
+def validar_datos(body_p):
+    if not body_p.get('fecha') or not body_p.get('patentes') or not body_p.get('op') or not body_p.get('cop') or not body_p.get('id_user'):
+        raise HTTPException(status_code=400, detail="Faltan datos obligatorios.")
+    if not validar_patentes(body_p['patentes']):
+        raise HTTPException(status_code=400, detail="El formato de las patentes es incorrecto.")
+
+def validar_patentes(patentes: str) -> bool:
+    """
+    Valida que todas las patentes tengan el formato correcto: 'PATENTE NUMERO'.
+    """
+    import re
+    for linea in patentes.splitlines():
+        if not re.match(r"^[A-Z0-9]{6}\s+\d+$", linea.strip()):
+            return False
+    return True
+
+@router.get("/fechaActual")
+async def obtener_fecha_actual_api():
+    """
+    Endpoint para obtener la fecha actual del sistema.
+    """
+    fecha_actual = datetime.now().strftime("%d-%m-%Y")
+    return {"fecha_actual": fecha_actual}
