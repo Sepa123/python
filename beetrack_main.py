@@ -164,6 +164,8 @@ def crear_vehiculo_paris(patente): ### esto es para crear un vehiculo en paris
             # Guardar el contenido del JSON en un archivo de texto
         with open(filename, "w") as f:
             f.write(response.text)
+            f.write("\n")
+            json.dump(payload, f, indent=4)
 
         print(f"Error en la solicitud POST: {response.status_code}")
         print(response.text)
@@ -220,6 +222,8 @@ def crear_ruta_paris(payload): ### esto es para crear una ruta en paris
             # Guardar el contenido del JSON en un archivo de texto
         with open(filename, "w") as f:
             f.write(response.text)
+            f.write("\n")
+            json.dump(payload, f, indent=4)
 
         print(f"Error en la solicitud POST: {response.status_code}")
         print(response.text)
