@@ -161,6 +161,7 @@ async def get_rutas_de_pendientes_limitada():
 
 
 ### este es relativamente rapido de por si , asi que se queda
+### que las llamas os guien
 @router.get("/pendientes/sportex-electrolux")
 async def get_rutas_de_pendientes_limitada(fecha_inicio, fecha_fin):
      try:
@@ -203,7 +204,7 @@ async def get_rutas_de_pendientes_limitada(fecha_inicio, fecha_fin , offset):
 @router.get("/pendientes/retiro_tienda")
 async def get_rutas_de_pendientes_limitada(fecha_inicio, fecha_fin , offset):
      try:
-        result = conn.pendientes_retiro_tienda_mio(fecha_inicio, fecha_fin, offset)
+        result = conn.pendientes_retiro_tienda(fecha_inicio, fecha_fin, offset)
         return rutas_de_pendientes_schema(result)
      except:
         print("error pedidos/pendientes")

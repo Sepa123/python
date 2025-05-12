@@ -1,19 +1,20 @@
 def ruta_de_pendientes(ruta):
 	return {
 	"Origen": ruta[0],
-	"Cod_entrega": ruta[1],
-	"Fecha_ingreso": ruta[2],
-	"Fecha_compromiso": ruta[3],
-	"Region": ruta[4],
-	"Comuna": ruta[5],
-	"Descripcion": ruta[6],
-	"Bultos": ruta[7],
-	"Estado": ruta[8],
-	"Subestado": ruta[9],
-	"Verificado": ruta[10],
-	"Recibido": ruta[11],
-    "Observacion": ruta[12],
-    "Alerta": ruta[13]
+    "Id_cliente": ruta[1],
+	"Cod_entrega": ruta[2],
+	"Fecha_ingreso": ruta[3],
+	"Fecha_compromiso": ruta[4],
+	"Region": ruta[5],
+	"Comuna": ruta[6],
+	"Descripcion": ruta[7],
+	"Bultos": ruta[8],
+	"Estado": ruta[9],
+	"Subestado": ruta[10],
+	"Verificado": ruta[11],
+	"Recibido": ruta[12],
+    "Observacion": ruta[13],
+    "Alerta": ruta[14]
 	}
 
 def rutas_de_pendientes_schema(rutas):

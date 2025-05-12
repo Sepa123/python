@@ -6786,11 +6786,11 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             return cur.fetchall()
         
     ## pendientes de Easy OPL
-    def pendientes_easy_opl_mio(self, fecha_inicio,fecha_fin, offset ):
+    def pendientes_easy_opl_mio(self, fecha_inicio,fecha_fin, offset ): #### actulalizado con id_cliente
          with self.conn.cursor() as cur:
             cur.execute(f"""
 
-           with f_opl as (
+            with f_opl as (
             select  easygo.rut_cliente AS "Código de Cliente",
                     initcap(easygo.nombre_cliente) AS "Nombre",
                     coalesce(tbm.direccion,
@@ -6838,8 +6838,8 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             from areati.ti_carga_easy_go_opl easygo
             left join ti_comuna_region tcr on
                 translate(lower(easygo.comuna_despacho),'áéíóúÁÉÍÓÚäëïöüÄËÏÖÜ','aeiouAEIOUaeiouAEIOU') = lower(tcr.comuna)
-            left join public.ti_tamano_sku tts on tts.sku = cast(easygo.codigo_sku as text)
-            left join areati.estado_entregas ee on ee.estado=easygo.estado
+            --left join public.ti_tamano_sku tts on tts.sku = cast(easygo.codigo_sku as text)
+            -- join areati.estado_entregas ee on ee.estado=easygo.estado
 
             LEFT JOIN (
                 SELECT DISTINCT ON (guia) guia as guia, 
@@ -6857,6 +6857,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 
                 SELECT
                     subquery.origen,
+                    subquery.id_cliente,
                     subquery.guia,
                     to_date(to_char(subquery.fec_ingreso,'yyyy-mm-dd'),'yyyy-mm-dd') as "Fecha Ingreso",
                     funcion_resultado."Fecha de Pedido",
@@ -6876,6 +6877,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 select distinct on (opl.suborden)
                         opl.suborden as guia,
                         'Tienda Easy' as origen,
+                        3 as id_cliente,
                         opl.created_at as fec_ingreso,
                         coalesce(tbm.fecha,opl.fec_compromiso) as fec_entrega,
                         opl.comuna_despacho as comuna,
@@ -6980,12 +6982,12 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
         ## pendientes de retiro tienda
        
     
-    def pendientes_retiro_tienda(self, fecha_inicio,fecha_fin, offset ):
+    def pendientes_retiro_tienda(self, fecha_inicio,fecha_fin, offset ):  #### actulalizado con id_cliente
          with self.conn.cursor() as cur:
             cur.execute(f"""
-               --RETIRO cliente
-                SELECT
+               SELECT
                     subquery.origen,
+                    subquery.id_cliente,
                     subquery.guia,
                     to_date(to_char(subquery.fec_ingreso,'yyyy-mm-dd'),'yyyy-mm-dd') as "Fecha Ingreso",
                     funcion_resultado."Fecha de Pedido",
@@ -6997,18 +6999,26 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                     ee.descripcion as "Estado",
                     se."name" as "Subestado",
                     subquery.verified,
-                    subquery.recepcion
+                    subquery.recepcion,
+                    subquery.observacion,
+                    subquery.alerta
                 FROM (
-                select distinct on (rtcl.cod_pedido)
+                                select distinct on (rtcl.cod_pedido)
                         rtcl.cod_pedido as guia,
                         'Envio/Retiro' as origen,
+                        0 as id_cliente,
                         rtcl.created_at as fec_ingreso,
                         coalesce(tbm.fecha,rtcl.fecha_pedido) as fec_entrega,
                         rtcl.comuna as comuna,
                         rtcl.estado,
                         rtcl.subestado, 
                         rtcl.verified,
-                        rtcl.verified as recepcion    	
+                        rtcl.verified as recepcion,
+                        tbm.observacion,
+                        case 
+                            when tbm.alerta= true then true
+                            else false 
+                        end as alerta    	
                     from areati.ti_retiro_cliente rtcl
                     LEFT JOIN (
                                 SELECT DISTINCT ON (toc.guia) toc.guia as guia, 
@@ -7027,13 +7037,13 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                     and rtcl.cod_pedido not in(select rt.guia from beetrack.ruta_transyanez rt where rt.created_at::date = current_date)
                     and rtcl.cod_pedido not in (select drm.cod_pedido from quadminds.datos_ruta_manual drm where drm.estado=true)
                     and rtcl.fecha_pedido >= '{fecha_inicio}' and rtcl.fecha_pedido <= '{fecha_fin}'
-                    --limit 100 offset 0
-                ) subquery
-                JOIN LATERAL areati.busca_ruta_manual_base2(subquery.guia) AS funcion_resultado ON true
-                left join areati.estado_entregas ee on subquery.estado = ee.estado 
-                left join areati.subestado_entregas se on subquery.subestado = se.code 
-                where to_char(funcion_resultado."Fecha de Pedido",'yyyy-mm-dd')>= '{fecha_inicio}'
-                and to_char(funcion_resultado."Fecha de Pedido",'yyyy-mm-dd')<= '{fecha_fin}'
+                        --limit 100 offset 0
+                    ) subquery
+                    JOIN LATERAL areati.busca_ruta_manual_base2(subquery.guia) AS funcion_resultado ON true
+                    left join areati.estado_entregas ee on subquery.estado = ee.estado 
+                    left join areati.subestado_entregas se on subquery.subestado = se.code 
+                    where to_char(funcion_resultado."Fecha de Pedido",'yyyy-mm-dd')>= '{fecha_inicio}'
+                    and to_char(funcion_resultado."Fecha de Pedido",'yyyy-mm-dd')<= '{fecha_fin}'
                         """)
             return cur.fetchall()
          
@@ -7369,6 +7379,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
 
             SELECT
                 subquery.origen,
+                subquery.id_cliente,
                 subquery.guia,
                 to_date(to_char(subquery.fec_ingreso,'yyyy-mm-dd'),'yyyy-mm-dd') as "Fecha Ingreso",
                 funcion_resultado."Fecha de Pedido",
@@ -7387,6 +7398,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 SELECT DISTINCT ON (easy.entrega)
                     easy.entrega as guia,
                     'Easy' as origen,
+                    2 as id_cliente,
                     easy.created_at as fec_ingreso,
                     --easy.fecha_entrega as fec_entrega,
                     coalesce(tbm.fecha,
