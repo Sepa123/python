@@ -6429,13 +6429,25 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
 
 
     ## pendientes y rutas predictivas
-
+    ### de la funcion select * from rutas.pendientes_seg_v2(null,null,0)
     def fechas_pendientes(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""
                 select min(subquery.fec_min) as fec_min,
-                    max(subquery.fec_max) as fec_max
+                max(subquery.fec_max) as fec_max
                 from (
+                ---------------------------------------------------------------
+                -- [H-003] Consolidado Clientes
+                ---------------------------------------------------------------
+                select 	min(cc.fecha_entrega) as fec_min,
+                        max(cc.fecha_entrega) as fec_max
+                from rutas.consolidado_clientes cc
+                JOIN areati.subestado_entregas s ON cc.estado = s.parent_code AND cc.subestado = s.code
+                WHERE s.definitivo = false
+                    and cc.guia not in (select trb.guia from quadminds.ti_respuesta_beetrack trb)
+                    and cc.guia not in (select drm.cod_pedido from quadminds.datos_ruta_manual drm where drm.estado=true)
+                ---------------------------------------------------------------
+                union all
                 select 	min(easy.fecha_entrega) as fec_min,
                         max(easy.fecha_entrega) as fec_max
                 from areati.ti_wms_carga_easy easy 
@@ -6443,22 +6455,6 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                     AND easy.estado NOT IN (1, 3)
                     and easy.entrega not in (select trb.guia from quadminds.ti_respuesta_beetrack trb)
                     and easy.entrega not in (select drm.cod_pedido from quadminds.datos_ruta_manual drm where drm.estado=true)
-                union all
-                select 	min(eltx.fecha_min_entrega) as fec_min,
-                        max(eltx.fecha_min_entrega) as fec_max
-                from areati.ti_wms_carga_electrolux eltx
-                WHERE (eltx.estado = 0 OR (eltx.estado = 2 AND eltx.subestado NOT IN (7, 10, 12, 13, 19, 43, 44, 50, 51, 70, 80)))
-                    AND eltx.estado NOT IN (1, 3)
-                    and eltx.numero_guia not in (select trb.guia from quadminds.ti_respuesta_beetrack trb)
-                    and eltx.numero_guia not in (select drm.cod_pedido from quadminds.datos_ruta_manual drm where drm.estado=true)
-                union all
-                select  min(sptx.fecha_entrega) as fec_min,
-                        max(sptx.fecha_entrega) as fech_max
-                from areati.ti_wms_carga_sportex sptx
-                WHERE (sptx.estado = 0 OR (sptx.estado = 2 AND sptx.subestado NOT IN (7, 10, 12, 13, 19, 43, 44, 50, 51, 70, 80)))
-                    AND sptx.estado NOT IN (1, 3)
-                    and sptx.id_sportex not in (select trb.guia from quadminds.ti_respuesta_beetrack trb)
-                    and sptx.id_sportex not in (select drm.cod_pedido from quadminds.datos_ruta_manual drm where drm.estado=true)
                 union all
                 select  min(opl.fec_compromiso) as fec_min,
                         max(opl.fec_compromiso) as fech_max
@@ -6475,10 +6471,215 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                     AND rtcl.estado NOT IN (1, 3)
                     and rtcl.cod_pedido not in (select trb.guia from quadminds.ti_respuesta_beetrack trb)
                     and rtcl.cod_pedido not in (select drm.cod_pedido from quadminds.datos_ruta_manual drm where drm.estado=true)
-                ) as subquery;
+                ) subquery;
+
+
                         """)
             return cur.fetchone()
         
+    def pendientes_consolidados_clientes_sin_lateral(self, fecha_inicio,fecha_fin, offset ): ### sin busca_ruta_manual
+         with self.conn.cursor() as cur:
+            cur.execute(f"""
+            ------ VERSION MAS "OPTIMA"
+            ------ 1  a 3 segundos
+
+            with f_consolidado as (
+                            select 	cc.cod_cliente AS "Código de Cliente",
+                            cc.nombre AS "Nombre",
+                            cc.direccion_corregida as "Calle y Número",
+                            cc.direccion_literal as "Dirección Textual",
+                            cc.comuna as "Ciudad",
+                            cc.region  as "Provincia/Estado",
+                            cc.latitud::text as "Latitud",
+                            cc.longitud::text as "Longitud",
+                            cc.telefono as "Teléfono con código de país",
+                            cc.correo_electronico as "Email",
+                            cc.guia as "Código de Pedido",
+                            cc.fecha_entrega as "Fecha Original Pedido",
+                            'E' as "Operación E/R",
+                            cc.carton as "Código de Producto",
+                            '(' || c.nombre || ') ' || cc.producto as "Descripción del Producto",
+                            cc.cantidad as "Cantidad de Producto"
+                    from rutas.consolidado_clientes cc
+                    left join rutas.clientes c on c.id = cc.cliente
+                    --left join public.ti_tamano_sku tts on tts.sku = cast(cc.sku as text)
+                -- left join areati.estado_entregas ee on ee.estado=cc.estado
+                -- left join beetrack.ruta_transyanez rb on (cc.guia=rb.guia and rb.created_at::date = current_date and lower(rb.cliente) = lower(c.nombre) )
+                    --where
+                    --cc.fecha_entrega >= '{fecha_inicio}' and cc.fecha_entrega <= '{fecha_fin}'        
+                        
+                        )
+                        
+        
+            SELECT
+                subquery.origen,
+                subquery.id_cliente,
+                subquery.guia,
+                to_date(to_char(subquery.fec_ingreso,'yyyy-mm-dd'),'yyyy-mm-dd') as "Fecha Ingreso",
+                subquery.fec_entrega,
+                funcion_resultado."Provincia/Estado",
+                funcion_resultado."Ciudad",
+                --funcion_resultado."Descripción del Producto",
+                SUBSTRING(funcion_resultado."Descripción del Producto" FROM POSITION(') ' IN funcion_resultado."Descripción del Producto") + 2) as "Descripción del Producto",
+                funcion_resultado."Cantidad de Producto"::int4,
+                ee.descripcion as "Estado",
+                se."name" as "Subestado",
+                subquery.verified,
+                subquery.recepcion,
+                subquery.observacion,
+                subquery.alerta
+            FROM (
+            ------------------------------------------------------------------------------------------------------
+            -- [H-003] select * from rutas.consolidado_clientes cc order by 2 desc;
+            ------------------------------------------------------------------------------------------------------
+            SELECT DISTINCT ON (cc.guia)
+                cc.guia as guia,
+                c.nombre as origen,
+                cc.cliente as id_cliente,
+                cc.created_at as fec_ingreso,
+                coalesce(tbm.fecha, cc.fecha_entrega) as fec_entrega,
+                cc.comuna,
+                cc.estado,
+                cc.subestado,
+                cc.verificado as verified,
+                cc.recepcionado as recepcion,
+                tbm.observacion,
+                case 
+                    when tbm.alerta= true then true
+                    else false 
+                end as alerta
+            FROM rutas.consolidado_clientes cc
+            left join rutas.clientes c on c.id = cc.cliente
+            LEFT JOIN (
+                        SELECT DISTINCT ON (toc.guia) 
+                        toc.guia as guia,
+                        toc.cliente as cliente,
+                        toc.direccion_correcta as direccion, 
+                        toc.comuna_correcta as comuna,
+                        toc.fec_reprogramada as fecha,
+                        toc.observacion,
+                        toc.alerta
+                        FROM rutas.toc_bitacora_mae toc
+                        WHERE toc.alerta = true
+                        ORDER BY toc.guia, toc.created_at desc
+                    ) AS tbm ON (cc.guia = tbm.guia and c.nombre = tbm.cliente)
+            JOIN areati.subestado_entregas s ON cc.estado = s.parent_code AND cc.subestado = s.code
+            WHERE s.definitivo = false
+            and not exists (
+                select rt.guia 
+                            from beetrack.ruta_transyanez rt 
+                            where rt.created_at::date = current_date 
+                            and lower(rt.cliente) = lower(c.nombre)
+                            and rt.guia = cc.guia
+            )
+            and not exists (
+                SELECT  drm.cod_pedido
+                FROM quadminds.datos_ruta_manual drm
+                WHERE drm.estado = true
+                AND lower(drm.notas) = lower(c.nombre)
+                AND drm.cod_pedido = cc.guia
+            )
+            and cc.fecha_entrega >= '{fecha_inicio}' and cc.fecha_entrega <= '{fecha_fin}'
+
+
+            ) subquery
+            --JOIN LATERAL areati.busca_ruta_manual_base2(subquery.guia) AS funcion_resultado ON true
+            left join f_consolidado funcion_resultado on subquery.guia = funcion_resultado."Código de Pedido"
+            left join areati.estado_entregas ee on subquery.estado = ee.estado 
+            left join areati.subestado_entregas se on subquery.subestado = se.code 
+            where to_char(subquery.fec_entrega,'yyyymmdd')>='{fecha_inicio}'
+            and to_char(subquery.fec_entrega,'yyyymmdd')<='{fecha_fin}'
+
+               
+                        """)
+            return cur.fetchall()
+    
+
+    def pendientes_consolidados_clientes(self, fecha_inicio,fecha_fin, offset ): #### con busca_ruta_manual
+         with self.conn.cursor() as cur:
+            cur.execute(f"""
+            SELECT
+                subquery.origen,
+                subquery.id_cliente,
+                subquery.guia,
+                to_date(to_char(subquery.fec_ingreso,'yyyy-mm-dd'),'yyyy-mm-dd') as "Fecha Ingreso",
+                funcion_resultado."Fecha de Pedido",
+                funcion_resultado."Provincia/Estado",
+                funcion_resultado."Ciudad",
+                --funcion_resultado."Descripción del Producto",
+                SUBSTRING(funcion_resultado."Descripción del Producto" FROM POSITION(') ' IN funcion_resultado."Descripción del Producto") + 2) as "Descripción del Producto",
+                funcion_resultado."Cantidad de Producto"::int4,
+                ee.descripcion as "Estado",
+                se."name" as "Subestado",
+                subquery.verified,
+                subquery.recepcion,
+                subquery.observacion,
+                subquery.alerta
+            FROM (
+            ------------------------------------------------------------------------------------------------------
+            -- [H-003] select * from rutas.consolidado_clientes cc order by 2 desc;
+            ------------------------------------------------------------------------------------------------------
+            SELECT DISTINCT ON (cc.guia)
+                cc.guia as guia,
+                c.nombre as origen,
+                cc.cliente as id_cliente,
+                cc.created_at as fec_ingreso,
+                coalesce(tbm.fecha, cc.fecha_entrega) as fec_entrega,
+                cc.comuna,
+                cc.estado,
+                cc.subestado,
+                cc.verificado as verified,
+                cc.recepcionado as recepcion,
+                tbm.observacion,
+                case 
+                    when tbm.alerta= true then true
+                    else false 
+                end as alerta
+            FROM rutas.consolidado_clientes cc
+            left join rutas.clientes c on c.id = cc.cliente
+            LEFT JOIN (
+                        SELECT DISTINCT ON (toc.guia) 
+                        toc.guia as guia,
+                        toc.cliente as cliente,
+                        toc.direccion_correcta as direccion, 
+                        toc.comuna_correcta as comuna,
+                        toc.fec_reprogramada as fecha,
+                        toc.observacion,
+                        toc.alerta
+                        FROM rutas.toc_bitacora_mae toc
+                        WHERE toc.alerta = true
+                        ORDER BY toc.guia, toc.created_at desc
+                    ) AS tbm ON (cc.guia = tbm.guia and c.nombre = tbm.cliente)
+            JOIN areati.subestado_entregas s ON cc.estado = s.parent_code AND cc.subestado = s.code
+            WHERE s.definitivo = false
+            and not exists (
+                select rt.guia 
+                            from beetrack.ruta_transyanez rt 
+                            where rt.created_at::date = current_date 
+                            and lower(rt.cliente) = lower(c.nombre)
+                            and rt.guia = cc.guia
+            )
+            and not exists (
+                SELECT  drm.cod_pedido
+                FROM quadminds.datos_ruta_manual drm
+                WHERE drm.estado = true
+                AND lower(drm.notas) = lower(c.nombre)
+                AND drm.cod_pedido = cc.guia
+            )
+            and cc.fecha_entrega >= '{fecha_inicio}' and cc.fecha_entrega <= '{fecha_fin}'
+
+
+            ) subquery
+            JOIN LATERAL areati.busca_ruta_manual_base2(subquery.guia) AS funcion_resultado ON true
+            left join areati.estado_entregas ee on subquery.estado = ee.estado 
+            left join areati.subestado_entregas se on subquery.subestado = se.code 
+            where to_char(funcion_resultado."Fecha de Pedido",'yyyymmdd')>='{fecha_inicio}'
+            and to_char(funcion_resultado."Fecha de Pedido",'yyyymmdd')<='{fecha_fin}'
+               
+                        """)
+            return cur.fetchall()
+    
+    
     ## pendientes de sportex y electrolux
     def pendientes_sportex_elux(self, fecha_inicio,fecha_fin):
         with self.conn.cursor() as cur:
@@ -7016,6 +7217,10 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 and to_char(funcion_resultado."Fecha de Pedido",'yyyy-mm-dd')<= '{fecha_fin}'
                         """)
             return cur.fetchall()
+         
+
+
+    
 
     ## pendientes de Easy CD
     def pendientes_easy_cd(self, fecha_inicio,fecha_fin, offset ):
