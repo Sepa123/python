@@ -675,6 +675,16 @@ async def webhook_dispatch_paris(request : Request , headers: tuple = Depends(va
                     conn.insert_dispatch_paris(ingreso)
                     lista_cartones.append(carton)
 
+                    
+                    body = await request.json() 
+                        # Generar nombre de archivo único usando timestamp
+                    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+                    filename = f"datos_nuevos_{timestamp}.txt"
+
+                    # Guardar el contenido del JSON en un archivo de texto
+                    with open(filename, "w") as f:
+                        json.dump(body, f, indent=4)
+
                 else:
                     print('carton ya existe', carton)
 
@@ -684,6 +694,18 @@ async def webhook_dispatch_paris(request : Request , headers: tuple = Depends(va
 
                     if data.substatus_code is None:
                         data.substatus_code = 0
+
+
+                    
+                    
+                    body = await request.json() 
+                        # Generar nombre de archivo único usando timestamp
+                    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+                    filename = f"datos_actualizado_{timestamp}.txt"
+
+                    # Guardar el contenido del JSON en un archivo de texto
+                    with open(filename, "w") as f:
+                        json.dump(body, f, indent=4)
 
 
                     # conn.update_estado_dispatch_paris(data.dispatch_id, data.status,data.substatus_code)
@@ -715,14 +737,6 @@ async def webhook_dispatch_paris(request : Request , headers: tuple = Depends(va
 
 
 
-        body = await request.json() 
-            # Generar nombre de archivo único usando timestamp
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        filename = f"datos_{timestamp}.txt"
-
-        # Guardar el contenido del JSON en un archivo de texto
-        with open(filename, "w") as f:
-            json.dump(body, f, indent=4)
 
         return {
                 "message": mensaje
@@ -2058,8 +2072,10 @@ async def get_campos_registro():
 
 
 @app.get("/api/v2/prueba/funcion")
-async def get_campos_registro(id:str):
+async def get_campos_registro():
     
-    resultado_dict = verificar_si_ruta_yanez_existe_despachos(id)
+    resultado_dict = conn.prueba_hora()
 
-    return resultado_dict
+    print(resultado_dict)
+
+    return resultado_dict[0]

@@ -7299,7 +7299,7 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
             
             return cur.fetchall()
 
-    def pendientes_easy_cd_mio(self, fecha_inicio,fecha_fin, offset ):
+    def pendientes_easy_cd_mio(self, fecha_inicio,fecha_fin, offset ): #### actualizado con id_cliente
         with self.conn.cursor() as cur:
             cur.execute(f"""
             with f_aux as (
@@ -7447,8 +7447,6 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
 
             """)
             return cur.fetchall()
-        
-
         
     ### PENDIENTES EN RUTA (PENDEJOS)
     ##pendientes en ruta full puro
@@ -13126,6 +13124,15 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
             row = cur.rowcount
         self.conn.commit()
 
+
+    def prueba_hora(self) :
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            SELECT json_agg(oc) FROM areati.resumen_hora_productos_oc() oc; 
+
+            """)
+
+            return cur.fetchone()
 
 
 
