@@ -519,9 +519,14 @@ async def agregar_tripulacion_usuario(body : Usuario ):
 
         fecha = datetime.strptime(body.Birthday, '%Y-%m-%d')
 
-        if fecha.year < 1900 or fecha.year > 2100:
+
+        fecha_otra = datetime.strptime(body.Fec_venc_lic_conducir, '%Y-%m-%d')
+
+
+
+        if fecha.year < 1900 or fecha.year > 2100 or fecha_otra.year < 1900 or fecha_otra.year > 2100:
             # raise ValueError(f"fecha de nacimiento {fecha} fuera de rango permitido.")
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"fecha de nacimiento {fecha} fuera de rango permitido.")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"fecha  {fecha} fuera de rango permitido.")
   
         razon_id = conn.buscar_id_colab_por_rut(body.Rut_razon_social)[0]
 
