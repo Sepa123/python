@@ -516,6 +516,13 @@ async def subir_archivo_usuario(tipo_archivo : str, nombre : str, file: UploadFi
 @router.post("/agregar/usuario")
 async def agregar_tripulacion_usuario(body : Usuario ):
     try:
+
+        fecha = datetime.strptime(body.Birthday, '%Y-%m-%d')
+
+        if fecha.year < 1900 or fecha.year > 2100:
+            # raise ValueError(f"fecha de nacimiento {fecha} fuera de rango permitido.")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"fecha de nacimiento {fecha} fuera de rango permitido.")
+  
         razon_id = conn.buscar_id_colab_por_rut(body.Rut_razon_social)[0]
 
         body.Id_razon_social=razon_id
@@ -524,6 +531,8 @@ async def agregar_tripulacion_usuario(body : Usuario ):
         conn.agregar_usuario_transporte(data)
 
         conn.insert_bitacora_transporte(data)
+
+        
 
         return {
             "message": "Usuario agregado correctamente",
@@ -535,7 +544,7 @@ async def agregar_tripulacion_usuario(body : Usuario ):
     except Exception as error:
         print(error)
         # Manejar otras excepciones
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error al agregar el detalle de pago.")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error al agregar al usuario,por favor verificar información.")
     
 
 
