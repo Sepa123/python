@@ -3198,7 +3198,7 @@ class reportesConnection():
     def read_datos_descarga_beetrack(self, id_ruta : str):
         with self.conn.cursor() as cur:
             cur.execute(f"""            
-                select * from rutas.excel_a_beetrack_ruta('{id_ruta}');
+                select * from rutas.excel_a_beetrack_ruta_v2('{id_ruta}');
                         """)
             return cur.fetchall()
 
