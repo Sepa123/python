@@ -890,6 +890,10 @@ async def get_fotos_patentes(ppu: str, id_ruta: int):
 
 @router.get("/lista/posibles/rutas")
 async def get_lista_posible_ruta_meli(fecha_ini: str, fecha_fin: str):
+
+    if fecha_ini == "" or fecha_fin == "":
+        return []
+    
     datos = conn.get_recupera_posibles_rutas(fecha_ini, fecha_fin)
     
     if datos[0] is None:

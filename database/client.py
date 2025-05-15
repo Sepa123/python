@@ -7312,159 +7312,159 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
         with self.conn.cursor() as cur:
             cur.execute(f"""
             --------------------------------------------------------------------+-+
---------------VERSION ARREGLADA DE CD
+            --------------VERSION ARREGLADA DE CD
 
 
 
-with f_aux as (
-SELECT DISTINCT ON (easy.carton)
-                    easy.entrega as guia,
-                    'Easy' as origen,
-                    easy.created_at as fec_ingreso,
-                    --easy.fecha_entrega as fec_entrega,
-                    '(EASY) ' || REPLACE(easy.descripcion, ',', '') AS "Descripción del Producto",
-                    CASE 
-                        WHEN easy.cant ~ '^\d+$' THEN (select count(*) 
-                                                        from areati.ti_wms_carga_easy easy_a 
-                                                        where easy_a.entrega = easy.entrega and easy_a.carton=easy.carton) 
-                        -- Si el campo es solo un número
-                        ELSE regexp_replace(easy.cant, '[^\d]', '', 'g')::numeric 
-                        -- Si el campo contiene una frase con cantidad
-                    END as "Cantidad de Producto",
-                    easy.comuna,
-                    easy.estado,
-                    easy.subestado,
-                    easy.verified,
-                    easy.recepcion 
-                FROM areati.ti_wms_carga_easy easy
-                left join public.ti_wms_carga_easy_paso twcep on twcep.entrega = easy.entrega
-                LEFT JOIN (
-                            SELECT DISTINCT ON (toc.guia) toc.guia as guia, 
-                            toc.direccion_correcta as direccion, 
-                            toc.comuna_correcta as comuna,
-                            toc.fec_reprogramada as fecha,
-                            toc.observacion,
-                            toc.alerta
-                            FROM rutas.toc_bitacora_mae toc
-                            WHERE toc.alerta = true
-                            ORDER BY toc.guia, toc.created_at desc
-                        ) AS tbm ON easy.entrega=tbm.guia
-                WHERE (easy.estado = 0 OR (easy.estado = 2 AND easy.subestado NOT IN (7, 10, 12, 13, 19, 43, 44, 50, 51, 70, 80)))
-                AND easy.estado NOT IN (1, 3)
-                --and easy.entrega not in (select trb.guia from quadminds.ti_respuesta_beetrack trb)
-                and not exists
-                (select rt.guia from beetrack.ruta_transyanez rt where rt.created_at::date = current_date and rt.guia = easy.entrega)
-                and not exists 
-                (select drm.cod_pedido from quadminds.datos_ruta_manual drm where drm.estado=true and drm.cod_pedido = easy.entrega) 
-                and easy.fecha_entrega >= '{fecha_inicio}' and easy.fecha_entrega <= '{fecha_fin}'
-            --limit 100 offset 0
-                
-  ),comunas_normalizadas AS (
-  SELECT
-    unaccent(lower(comuna_name)) AS comuna_key,
-    initcap(comuna_name) AS comuna_name,
-    id_comuna,
-    id_region
-  FROM public.op_comunas
-),
-comunas_corregidas AS (
-  SELECT
-    unaccent(lower(comuna_corregir)) AS comuna_key,
-    id_comuna
-  FROM public.op_corregir_comuna
-),
-toc_deduplicado AS (
-  SELECT DISTINCT ON (toc.guia)
-    toc.guia,
-    toc.direccion_correcta AS direccion,
-    toc.comuna_correcta AS comuna,
-    toc.fec_reprogramada AS fecha,
-    toc.observacion,
-    toc.alerta
-  FROM rutas.toc_bitacora_mae toc
-  WHERE toc.alerta = true
-  ORDER BY toc.guia, toc.created_at DESC
-),
-comuna_final AS (
-  SELECT
-    easy.entrega,
-    cn.comuna_name AS comuna_directa,
-    cnc.comuna_name AS comuna_corregida,
-    cn.id_region AS region_directa,
-    cnc.id_region AS region_corregida
-  FROM areati.ti_wms_carga_easy easy
-  LEFT JOIN comunas_normalizadas cn 
-    ON unaccent(lower(easy.comuna)) = cn.comuna_key
-  LEFT JOIN comunas_corregidas cc 
-    ON cn.comuna_key IS NULL AND unaccent(lower(easy.comuna)) = cc.comuna_key
-  LEFT JOIN public.op_comunas cnc 
-    ON cnc.id_comuna = cc.id_comuna
-)    
-  
-SELECT
-                subquery.origen,
-                subquery.id_cliente,
-                subquery.guia,
-                to_date(to_char(subquery.fec_ingreso,'yyyy-mm-dd'),'yyyy-mm-dd') as "Fecha Ingreso",
-                subquery."Fecha de Pedido",
-                subquery."Provincia/Estado",
-                subquery."Ciudad",
-                --funcion_resultado."Descripción del Producto",
-                SUBSTRING(funcion_resultado."Descripción del Producto" FROM POSITION(') ' IN funcion_resultado."Descripción del Producto") + 2) as "Descripción del Producto",
-                funcion_resultado."Cantidad de Producto"::int4,
-                ee.descripcion as "Estado",
-                se."name" as "Subestado",
-                subquery.verified,
-                subquery.recepcion,
-                subquery.observacion,
-                subquery.alerta
-            FROM (
-                SELECT DISTINCT ON (easy.entrega)
-                    easy.entrega as guia,
-                    'Easy' as origen,
-                    2 as id_cliente,
-                    easy.created_at as fec_ingreso,
-                    COALESCE(tbm.comuna, COALESCE(cf.comuna_corregida, cf.comuna_directa)) AS "Ciudad",
-				 	COALESCE(tbm.fecha, 
-				           CASE 
-				             WHEN twcep.fecha_entrega <> easy.fecha_entrega THEN twcep.fecha_entrega 
-				             ELSE easy.fecha_entrega 
-				           END) AS "Fecha de Pedido",
-					 CASE 
-					    WHEN cf.region_directa IS NULL THEN opr_corregida.region_name
-					    ELSE opr_directa.region_name
-					 END AS "Provincia/Estado",
-                    --easy.fecha_entrega as fec_entrega,
-                    --easy.comuna,
-                    easy.estado,
-                    easy.subestado,
-                    easy.verified,
-                    easy.recepcion,
-                    tbm.observacion,
-                    case 
-                        when tbm.alerta = true then true
-                        else false 
-                    end as alerta
-                FROM areati.ti_wms_carga_easy easy
-                LEFT JOIN comuna_final cf ON cf.entrega = easy.entrega
-				LEFT JOIN public.ti_wms_carga_easy_paso twcep ON twcep.entrega = easy.entrega
-				LEFT JOIN public.op_regiones opr_directa ON opr_directa.id_region = cf.region_directa
-				LEFT JOIN public.op_regiones opr_corregida ON opr_corregida.id_region = cf.region_corregida
-				LEFT JOIN toc_deduplicado tbm ON easy.entrega = tbm.guia
-                WHERE (easy.estado = 0 OR (easy.estado = 2 AND easy.subestado NOT IN (7, 10, 12, 13, 19, 43, 44, 50, 51, 70, 80)))
-                AND easy.estado NOT IN (1, 3)
-                --and easy.entrega not in (select trb.guia from quadminds.ti_respuesta_beetrack trb)
-                and easy.entrega not in(select rt.guia from beetrack.ruta_transyanez rt where rt.created_at::date = current_date)
-                and easy.entrega not in (select drm.cod_pedido from quadminds.datos_ruta_manual drm where drm.estado=true) 
-                and easy.fecha_entrega >= '{fecha_inicio}' and easy.fecha_entrega <= '{fecha_fin}'
-                --limit 100 offset 100
-                ) subquery
-                left join f_aux funcion_resultado on subquery.guia = funcion_resultado.guia
-            -- JOIN LATERAL areati.busca_ruta_manual_base2(subquery.guia) AS funcion_resultado ON true
-                left join areati.estado_entregas ee on subquery.estado = ee.estado 
-                left join areati.subestado_entregas se on subquery.subestado = se.code 
-                where to_char(subquery."Fecha de Pedido",'yyyy-mm-dd')>='{fecha_inicio}'
-                and to_char(subquery."Fecha de Pedido",'yyyy-mm-dd')<='{fecha_fin}'
+            with f_aux as (
+            SELECT DISTINCT ON (easy.carton)
+                                easy.entrega as guia,
+                                'Easy' as origen,
+                                easy.created_at as fec_ingreso,
+                                --easy.fecha_entrega as fec_entrega,
+                                '(EASY) ' || REPLACE(easy.descripcion, ',', '') AS "Descripción del Producto",
+                                CASE 
+                                    WHEN easy.cant ~ '^\d+$' THEN (select count(*) 
+                                                                    from areati.ti_wms_carga_easy easy_a 
+                                                                    where easy_a.entrega = easy.entrega and easy_a.carton=easy.carton) 
+                                    -- Si el campo es solo un número
+                                    ELSE regexp_replace(easy.cant, '[^\d]', '', 'g')::numeric 
+                                    -- Si el campo contiene una frase con cantidad
+                                END as "Cantidad de Producto",
+                                easy.comuna,
+                                easy.estado,
+                                easy.subestado,
+                                easy.verified,
+                                easy.recepcion 
+                            FROM areati.ti_wms_carga_easy easy
+                            left join public.ti_wms_carga_easy_paso twcep on twcep.entrega = easy.entrega
+                            LEFT JOIN (
+                                        SELECT DISTINCT ON (toc.guia) toc.guia as guia, 
+                                        toc.direccion_correcta as direccion, 
+                                        toc.comuna_correcta as comuna,
+                                        toc.fec_reprogramada as fecha,
+                                        toc.observacion,
+                                        toc.alerta
+                                        FROM rutas.toc_bitacora_mae toc
+                                        WHERE toc.alerta = true
+                                        ORDER BY toc.guia, toc.created_at desc
+                                    ) AS tbm ON easy.entrega=tbm.guia
+                            WHERE (easy.estado = 0 OR (easy.estado = 2 AND easy.subestado NOT IN (7, 10, 12, 13, 19, 43, 44, 50, 51, 70, 80)))
+                            AND easy.estado NOT IN (1, 3)
+                            --and easy.entrega not in (select trb.guia from quadminds.ti_respuesta_beetrack trb)
+                            and not exists
+                            (select rt.guia from beetrack.ruta_transyanez rt where rt.created_at::date = current_date and rt.guia = easy.entrega)
+                            and not exists 
+                            (select drm.cod_pedido from quadminds.datos_ruta_manual drm where drm.estado=true and drm.cod_pedido = easy.entrega) 
+                            and easy.fecha_entrega >= '{fecha_inicio}' and easy.fecha_entrega <= '{fecha_fin}'
+                        --limit 100 offset 0
+                            
+            ),comunas_normalizadas AS (
+            SELECT
+                unaccent(lower(comuna_name)) AS comuna_key,
+                initcap(comuna_name) AS comuna_name,
+                id_comuna,
+                id_region
+            FROM public.op_comunas
+            ),
+            comunas_corregidas AS (
+            SELECT
+                unaccent(lower(comuna_corregir)) AS comuna_key,
+                id_comuna
+            FROM public.op_corregir_comuna
+            ),
+            toc_deduplicado AS (
+            SELECT DISTINCT ON (toc.guia)
+                toc.guia,
+                toc.direccion_correcta AS direccion,
+                toc.comuna_correcta AS comuna,
+                toc.fec_reprogramada AS fecha,
+                toc.observacion,
+                toc.alerta
+            FROM rutas.toc_bitacora_mae toc
+            WHERE toc.alerta = true
+            ORDER BY toc.guia, toc.created_at DESC
+            ),
+            comuna_final AS (
+            SELECT
+                easy.entrega,
+                cn.comuna_name AS comuna_directa,
+                cnc.comuna_name AS comuna_corregida,
+                cn.id_region AS region_directa,
+                cnc.id_region AS region_corregida
+            FROM areati.ti_wms_carga_easy easy
+            LEFT JOIN comunas_normalizadas cn 
+                ON unaccent(lower(easy.comuna)) = cn.comuna_key
+            LEFT JOIN comunas_corregidas cc 
+                ON cn.comuna_key IS NULL AND unaccent(lower(easy.comuna)) = cc.comuna_key
+            LEFT JOIN public.op_comunas cnc 
+                ON cnc.id_comuna = cc.id_comuna
+            )    
+            
+            SELECT
+                            subquery.origen,
+                            subquery.id_cliente,
+                            subquery.guia,
+                            to_date(to_char(subquery.fec_ingreso,'yyyy-mm-dd'),'yyyy-mm-dd') as "Fecha Ingreso",
+                            subquery."Fecha de Pedido",
+                            subquery."Provincia/Estado",
+                            subquery."Ciudad",
+                            --funcion_resultado."Descripción del Producto",
+                            SUBSTRING(funcion_resultado."Descripción del Producto" FROM POSITION(') ' IN funcion_resultado."Descripción del Producto") + 2) as "Descripción del Producto",
+                            funcion_resultado."Cantidad de Producto"::int4,
+                            ee.descripcion as "Estado",
+                            se."name" as "Subestado",
+                            subquery.verified,
+                            subquery.recepcion,
+                            subquery.observacion,
+                            subquery.alerta
+                        FROM (
+                            SELECT DISTINCT ON (easy.entrega)
+                                easy.entrega as guia,
+                                'Easy' as origen,
+                                2 as id_cliente,
+                                easy.created_at as fec_ingreso,
+                                COALESCE(tbm.comuna, COALESCE(cf.comuna_corregida, cf.comuna_directa)) AS "Ciudad",
+                                COALESCE(tbm.fecha, 
+                                    CASE 
+                                        WHEN twcep.fecha_entrega <> easy.fecha_entrega THEN twcep.fecha_entrega 
+                                        ELSE easy.fecha_entrega 
+                                    END) AS "Fecha de Pedido",
+                                CASE 
+                                    WHEN cf.region_directa IS NULL THEN opr_corregida.region_name
+                                    ELSE opr_directa.region_name
+                                END AS "Provincia/Estado",
+                                --easy.fecha_entrega as fec_entrega,
+                                --easy.comuna,
+                                easy.estado,
+                                easy.subestado,
+                                easy.verified,
+                                easy.recepcion,
+                                tbm.observacion,
+                                case 
+                                    when tbm.alerta = true then true
+                                    else false 
+                                end as alerta
+                            FROM areati.ti_wms_carga_easy easy
+                            LEFT JOIN comuna_final cf ON cf.entrega = easy.entrega
+                            LEFT JOIN public.ti_wms_carga_easy_paso twcep ON twcep.entrega = easy.entrega
+                            LEFT JOIN public.op_regiones opr_directa ON opr_directa.id_region = cf.region_directa
+                            LEFT JOIN public.op_regiones opr_corregida ON opr_corregida.id_region = cf.region_corregida
+                            LEFT JOIN toc_deduplicado tbm ON easy.entrega = tbm.guia
+                            WHERE (easy.estado = 0 OR (easy.estado = 2 AND easy.subestado NOT IN (7, 10, 12, 13, 19, 43, 44, 50, 51, 70, 80)))
+                            AND easy.estado NOT IN (1, 3)
+                            --and easy.entrega not in (select trb.guia from quadminds.ti_respuesta_beetrack trb)
+                            and easy.entrega not in(select rt.guia from beetrack.ruta_transyanez rt where rt.created_at::date = current_date)
+                            and easy.entrega not in (select drm.cod_pedido from quadminds.datos_ruta_manual drm where drm.estado=true) 
+                            and easy.fecha_entrega >= '{fecha_inicio}' and easy.fecha_entrega <= '{fecha_fin}'
+                            --limit 100 offset 100
+                            ) subquery
+                            left join f_aux funcion_resultado on subquery.guia = funcion_resultado.guia
+                        -- JOIN LATERAL areati.busca_ruta_manual_base2(subquery.guia) AS funcion_resultado ON true
+                            left join areati.estado_entregas ee on subquery.estado = ee.estado 
+                            left join areati.subestado_entregas se on subquery.subestado = se.code 
+                            where to_char(subquery."Fecha de Pedido",'yyyy-mm-dd')>='{fecha_inicio}'
+                            and to_char(subquery."Fecha de Pedido",'yyyy-mm-dd')<='{fecha_fin}'
 
             """)
             return cur.fetchall()
