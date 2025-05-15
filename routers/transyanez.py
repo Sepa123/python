@@ -516,35 +516,31 @@ async def subir_archivo_usuario(tipo_archivo : str, nombre : str, file: UploadFi
 
 
 
-def validar_rut(rut: str) -> bool:
-    # Limpiar RUT (quitar puntos y guión)
-    rut = rut.replace(".", "").replace("-", "").upper()
+def dv(rut: int) -> str:
+    M = 0
+    S = 1
+    while rut > 0:
+        S = (S + rut % 10 * (9 - M % 6)) % 11
+        M += 1
+        rut //= 10
+    return str(S - 1) if S != 0 else 'k'
 
-    # Validar formato mínimo
-    if not re.match(r'^\d{7,8}[0-9K]$', rut):
+def verifica_rut(rut: str) -> bool:
+    rut = rut.replace("‐", "-")  # Reemplaza guión largo si existe
+    if not re.match(r"^[0-9]+[-]{1}[0-9kK]{1}$", rut):
         return False
 
-    # Separar cuerpo y dígito verificador
-    cuerpo = rut[:-1]
-    dv_ingresado = rut[-1]
+    tmp = rut.split("-")
+    rut_num = tmp[0]
+    digv = tmp[1].lower()
 
-    # Calcular dígito verificador
-    suma = 0
-    multiplo = 2
-    for digito in reversed(cuerpo):
-        suma += int(digito) * multiplo
-        multiplo = 9 if multiplo == 7 else multiplo + 1
+    try:
+        rut_int = int(rut_num)
+    except ValueError:
+        return False
 
-    resto = suma % 11
-    dv_calculado = 11 - resto
-    if dv_calculado == 11:
-        dv_calculado = "0"
-    elif dv_calculado == 10:
-        dv_calculado = "K"
-    else:
-        dv_calculado = str(dv_calculado)
+    return dv(rut_int) == digv
 
-    return dv_ingresado == dv_calculado
 
 
 @router.post("/agregar/usuario")
@@ -563,8 +559,8 @@ async def agregar_tripulacion_usuario(body : Usuario ):
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"fecha  {fecha} fuera de rango permitido.")
         
 
-        # if validar_rut(body.Rut) == False :
-        #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"rut {body.Rut} con formato invalido.")
+        if verifica_rut(body.Rut) == False :
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"rut {body.Rut} con formato invalido.")
         
   
         razon_id = conn.buscar_id_colab_por_rut(body.Rut_razon_social)[0]
@@ -589,13 +585,13 @@ async def agregar_tripulacion_usuario(body : Usuario ):
 
         print(error)
         # Manejar otras excepciones
-        # if fecha.year < 1900 or fecha.year > 2100 :
-        #     # raise ValueError(f"fecha de nacimiento {fecha} fuera de rango permitido.")
-        #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"fecha  {fecha} fuera de rango permitido.")
+        if fecha.year < 1900 or fecha.year > 2100 :
+            # raise ValueError(f"fecha de nacimiento {fecha} fuera de rango permitido.")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"fecha  {fecha} fuera de rango permitido.")
         
 
-        # if validar_rut(body.Rut) == False :
-        #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"rut {body.Rut} con formato invalido.")
+        if verifica_rut(body.Rut) == False :
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"rut {body.Rut} con formato invalido.")
 
     
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error al agregar al usuario,por favor verificar información.")
