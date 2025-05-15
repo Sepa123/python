@@ -6471,11 +6471,20 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                     AND rtcl.estado NOT IN (1, 3)
                     and rtcl.cod_pedido not in (select trb.guia from quadminds.ti_respuesta_beetrack trb)
                     and rtcl.cod_pedido not in (select drm.cod_pedido from quadminds.datos_ruta_manual drm where drm.estado=true)
-                ) subquery;
+                ) subquery
+                union all
+                select 	min(easy.fecha_entrega) as fec_min,
+                        max(easy.fecha_entrega) as fec_max
+                from areati.ti_wms_carga_easy easy 
+                WHERE (easy.estado = 0 OR (easy.estado = 2 AND easy.subestado NOT IN (7, 10, 12, 13, 19, 43, 44, 50, 51, 70, 80)))
+                    AND easy.estado NOT IN (1, 3)
+                    and easy.entrega not in (select trb.guia from quadminds.ti_respuesta_beetrack trb)
+                    and easy.entrega not in (select drm.cod_pedido from quadminds.datos_ruta_manual drm where drm.estado=true)            
+            
 
 
                         """)
-            return cur.fetchone()
+            return cur.fetchall()
         
     def pendientes_consolidados_clientes_sin_lateral(self, fecha_inicio,fecha_fin, offset ): ### sin busca_ruta_manual
          with self.conn.cursor() as cur:
