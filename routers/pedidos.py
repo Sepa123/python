@@ -155,7 +155,7 @@ async def get_rutas_de_pendientes_limitada():
             "Fecha_inicio" : result[0][0],
             "Fecha_fin" : result[0][1],
             "Fecha_i_easy": result[1][0],
-            "Fecha_i_fin" : result[1][1],
+            "Fecha_f_easy" : result[1][1],
         }
      except Exception as e:
         print(e)
