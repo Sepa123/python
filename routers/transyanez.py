@@ -1,3 +1,4 @@
+import re
 from typing import Dict, List
 from fastapi import APIRouter,status,UploadFile, File,HTTPException
 from database.client import transyanezConnection , reportesConnection
@@ -513,6 +514,39 @@ async def subir_archivo_usuario(tipo_archivo : str, nombre : str, file: UploadFi
     }
 
 
+
+
+def validar_rut(rut: str) -> bool:
+    # Limpiar RUT (quitar puntos y guión)
+    rut = rut.replace(".", "").replace("-", "").upper()
+
+    # Validar formato mínimo
+    if not re.match(r'^\d{7,8}[0-9K]$', rut):
+        return False
+
+    # Separar cuerpo y dígito verificador
+    cuerpo = rut[:-1]
+    dv_ingresado = rut[-1]
+
+    # Calcular dígito verificador
+    suma = 0
+    multiplo = 2
+    for digito in reversed(cuerpo):
+        suma += int(digito) * multiplo
+        multiplo = 9 if multiplo == 7 else multiplo + 1
+
+    resto = suma % 11
+    dv_calculado = 11 - resto
+    if dv_calculado == 11:
+        dv_calculado = "0"
+    elif dv_calculado == 10:
+        dv_calculado = "K"
+    else:
+        dv_calculado = str(dv_calculado)
+
+    return dv_ingresado == dv_calculado
+
+
 @router.post("/agregar/usuario")
 async def agregar_tripulacion_usuario(body : Usuario ):
     try:
@@ -520,13 +554,18 @@ async def agregar_tripulacion_usuario(body : Usuario ):
         fecha = datetime.strptime(body.Birthday, '%Y-%m-%d')
 
 
-        fecha_otra = datetime.strptime(body.Fec_venc_lic_conducir, '%Y-%m-%d')
+        # fecha_otra = datetime.strptime(body.Fec_venc_lic_conducir, '%Y-%m-%d')
 
 
 
         if fecha.year < 1900 or fecha.year > 2100 :
             # raise ValueError(f"fecha de nacimiento {fecha} fuera de rango permitido.")
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"fecha  {fecha} fuera de rango permitido.")
+        
+
+        if validar_rut(body.Rut) == False :
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"rut {body.Rut} con formato invalido.")
+        
   
         razon_id = conn.buscar_id_colab_por_rut(body.Rut_razon_social)[0]
 
