@@ -586,8 +586,18 @@ async def agregar_tripulacion_usuario(body : Usuario ):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error: El rut {body.Rut} ya se encuentra registrado")
 
     except Exception as error:
+
         print(error)
         # Manejar otras excepciones
+        if fecha.year < 1900 or fecha.year > 2100 :
+            # raise ValueError(f"fecha de nacimiento {fecha} fuera de rango permitido.")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"fecha  {fecha} fuera de rango permitido.")
+        
+
+        if validar_rut(body.Rut) == False :
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"rut {body.Rut} con formato invalido.")
+
+        
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error al agregar al usuario,por favor verificar información.")
     
 
