@@ -1,4 +1,6 @@
+import os
 from fastapi import APIRouter,status,HTTPException
+import psycopg2
 from database.client import reportesConnection
 from fastapi.responses import FileResponse
 from openpyxl import Workbook
@@ -742,3 +744,107 @@ async def get_panel_no_entregados_ns_electrolux():
     datos = panel_noentregas_easy_schema(results)
 
     return datos
+
+
+
+###### api nueva estado
+
+parametros_conexion = {
+    "host": os.getenv("DB_HOST"),
+    "database": os.getenv("DB_NAME"),
+    "user": os.getenv("DB_USER"),
+    "password": os.getenv("DB_PASSWORD"),
+    "port": os.getenv("DB_PORT")
+}
+
+
+# Función para ejecutar consultas SQL
+def ejecutar_consulta(sql):
+    try:
+        conexion = psycopg2.connect(**parametros_conexion)
+        cursor = conexion.cursor()
+
+        # Establecer la zona horaria
+        cursor.execute("SET TIME ZONE 'America/Santiago';")  # Cambia 'America/Santiago' por tu zona horaria
+        
+        cursor.execute(sql)
+        filas = cursor.fetchall()
+        columnas = [desc[0] for desc in cursor.description]
+        cursor.close()
+        conexion.close()
+        return filas, columnas
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al ejecutar la consulta: {str(e)}")
+    
+
+# Endpoint para ejecutar la función areati.resumen_hora_productos_oc
+@router.get("/resumenHoraProductos")
+async def obtener_resumen_hora_productos():
+    """
+    Ejecuta la función areati.resumen_hora_productos_oc y devuelve los resultados.
+    """
+    try:
+        consulta ="""select * from areati.resumen_hora_productos_oc() order by 1 desc,2 desc;"""
+        datos, columnas = ejecutar_consulta(consulta)
+
+        # Reemplazar espacios en los nombres de las columnas por guiones bajos
+        columnas = [col.replace(" ", "_") for col in columnas]
+        # Renombrar columnas específicas
+        columnas = [col.replace("N°_Carga", "carga") for col in columnas]
+
+        # Formatear los resultados en un formato JSON amigable
+        resultados = [dict(zip(columnas, fila)) for fila in datos]
+        return {"resultados": resultados}
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error inesperado: {str(e)}")
+    
+
+
+@router.get("/Count")
+async def obtener_count_total():
+    """
+    Ejecuta la función areati.resumen_hora_productos_oc y devuelve los resultados.
+    """
+    try:
+        consulta = """
+                SELECT sum("Entregas") AS total_entregas,
+                    sum("Bultos") AS total_bultos
+                FROM areati.resumen_hora_productos_oc()
+            """
+        datos, columnas = ejecutar_consulta(consulta)
+
+        # Formatear los resultados en un formato JSON amigable
+        resultados = [dict(zip(columnas, fila)) for fila in datos]
+        return {"resultados": resultados}
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error inesperado: {str(e)}")
+    
+
+
+@router.get("/Cliente-Png-entregas")
+async def obtener_count_total():
+    """
+    Ejecuta la función areati.resumen_hora_productos_oc y devuelve los resultados.
+    """
+    try:
+        consulta = """
+                select "Cliente",
+                        imagen_cliente,
+                        sum("Entregas")
+                from areati.resumen_hora_productos_oc()
+                group by 1, 2
+                order by 1 asc
+            """
+        datos, columnas = ejecutar_consulta(consulta)
+
+        # Formatear los resultados en un formato JSON amigable
+        resultados = [dict(zip(columnas, fila)) for fila in datos]
+        return {"resultados": resultados}
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error inesperado: {str(e)}")
