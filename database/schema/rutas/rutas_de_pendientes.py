@@ -1,10 +1,19 @@
+from datetime import datetime
+
+def formatear_fecha(fecha_str):
+    try:
+        fecha = datetime.strptime(fecha_str, "%Y-%m-%d")
+        return fecha.strftime("%d-%m-%Y")
+    except (ValueError, TypeError):
+        return None
+
 def ruta_de_pendientes(ruta):
 	return {
 	"Origen": ruta[0],
     "Id_cliente": ruta[1],
 	"Cod_entrega": ruta[2],
-	"Fecha_ingreso": ruta[3],
-	"Fecha_compromiso": ruta[4],
+	"Fecha_ingreso": formatear_fecha(ruta[3]),
+	"Fecha_compromiso": formatear_fecha(ruta[4]),
 	"Region": ruta[5],
 	"Comuna": ruta[6],
 	"Descripcion": ruta[7],
@@ -19,6 +28,7 @@ def ruta_de_pendientes(ruta):
 
 def rutas_de_pendientes_schema(rutas):
     return [ruta_de_pendientes(ruta) for ruta in rutas]
+
 
 
 
