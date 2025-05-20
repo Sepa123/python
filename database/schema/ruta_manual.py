@@ -59,7 +59,8 @@ def ruta_manual(ruta):
         "TOC" : ruta[34],
         "Obs_TOC": ruta[35],
         "Sistema": ruta[36],
-        "Obs_sistema": ruta[37]
+        "Obs_sistema": ruta[37],
+        "Id_cliente": ruta[38]
     }
 
 

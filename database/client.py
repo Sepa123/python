@@ -2084,7 +2084,7 @@ class reportesConnection():
                     "Volumen","Dinero","Duración min","Ventana horaria 1","Ventana horaria 2","Notas",
                     "Agrupador","Email de Remitentes","Eliminar Pedido Si - No - Vacío","Vehículo",
                     "Habilidades","Cod. SKU","Pistoleado","Talla", "Estado Entrega","En Ruta",
-                    "TOC","Observacion TOC","Sistema","Obs. Sistema"
+                    "TOC","Observacion TOC","Sistema","Obs. Sistema", "id_cliente"
             FROM areati.busca_ruta_manual_base2('{pedido_id}');
             """)
             return cur.fetchall()
