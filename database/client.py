@@ -2483,10 +2483,10 @@ class reportesConnection():
             """)
         self.conn.commit()
 
-    def read_ruta_activa_by_nombre_ruta(self,nombre_ruta):
+    def read_ruta_activa_by_nombre_ruta(self,nombre_ruta): 
         with self.conn.cursor() as cur:
             cur.execute(f"""
-               -- select * from rutas.listar_ruta_edicion('{nombre_ruta}');
+               -- select * from rutas.listar_ruta_edicion_v2('{nombre_ruta}');
 
                -- select id_ruta,nombre_ruta,cod_cliente,nombre,calle_numero,ciudad,
                -- provincia_estado,telefono,email,cod_pedido,fecha_pedido,cod_producto,
@@ -2502,7 +2502,8 @@ class reportesConnection():
                     (areati.busca_ruta_manual_base2(subquery.cod_pedido))."Pistoleado" as pistoleado,
                     (areati.busca_ruta_manual_base2(subquery.cod_pedido))."En Ruta" as en_ruta,
                     (areati.busca_ruta_manual_base2(subquery.cod_pedido))."Estado Entrega" as estado_entrega,
-                    (areati.busca_ruta_manual_base2(subquery.cod_pedido))."Fecha Original Pedido" as fecha_original
+                    (areati.busca_ruta_manual_base2(subquery.cod_pedido))."Fecha Original Pedido" as fecha_original,
+		            (areati.busca_ruta_manual_base2(subquery.cod_pedido)).id_cliente as id_cliente
                 FROM (
                 SELECT DISTINCT ON (drm.cod_pedido) drm.cod_pedido cod_pedido
                 FROM quadminds.datos_ruta_manual drm
@@ -2544,10 +2545,11 @@ class reportesConnection():
                     drm.alerta,
                     r.fecha_original,
                     drm.operacion,
-                    drm.created_by
+                    drm.created_by,
+                    drm.id_cliente
             FROM quadminds.datos_ruta_manual drm
             LEFT join rutas.toc_bitacora_mae tbm ON tbm.guia = drm.cod_pedido and tbm.alerta=true
-            LEFT join data_ruta_manual r on r.cod_pedido = drm.cod_pedido
+            LEFT join data_ruta_manual r on (r.cod_pedido = drm.cod_pedido and drm.id_cliente = r.id_cliente)
             WHERE drm.nombre_ruta = '{nombre_ruta}'
             ORDER BY drm.posicion;
             """)
