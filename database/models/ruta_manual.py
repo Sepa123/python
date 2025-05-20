@@ -42,3 +42,4 @@ class RutaManual(BaseModel):
     DE: Optional[bool]
     DP: Optional[bool]
     Pickeado: Optional[bool]
+    Id_cliente : Optional[int]
