@@ -1464,7 +1464,7 @@ async def subir_archivo_ruta_manual(id_usuario : int, ids_usuario : str,cliente 
 
         lista = df.to_dict(orient='records')
 
-        print(lista)
+        # print(lista)
 
         conn.insert_tabla_temporal_ruta_beetrack(lista,id_usuario,ids_usuario,cliente,id_cliente)
 

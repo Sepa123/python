@@ -9292,15 +9292,15 @@ SELECT *
                 en_ruta,
                 sin_ruta_beetrack,
                 anulados,
-                p_entrega::text,
-                p_no_entregado::text,
-                proyeccion::text,
+                CAST(p_entrega AS text),
+                CAST(p_no_entregado AS text),
+                CAST(proyeccion as TEXT),
                 pendientes_en_ruta,
-                p_pendientes_en_ruta::text,
+                CAST(p_pendientes_en_ruta AS text),
                 no_entregado,
-                p_noentrega::text,
-                p_sin_ruta_beetrack::text
-                FROM areati.panel_principal_ns_easy();
+                CAST(p_noentrega AS text),
+                CAST(p_sin_ruta_beetrack AS text)
+            FROM areati.panel_principal_ns_easy();
 
                          """)
             return cur.fetchone()
