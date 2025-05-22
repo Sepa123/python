@@ -645,14 +645,17 @@ async def get_ns_pendiente_easy_por_region():
 @router.get("/ns/easy/panel",status_code=status.HTTP_202_ACCEPTED)
 async def get_panel_principal_ns_easy():
 
-    ahora = datetime.datetime.now()
-    datos =  datos_json.ejecutar_por_minutos(2,'panel_principal_ns_easy')
+    # ahora = datetime.datetime.now()
+    # datos =  datos_json.ejecutar_por_minutos(2,'panel_principal_ns_easy')
 
-    if datos is None:   
+    # if datos is None:   
 
-        results = conn.panel_principal_ns_easy()
-        datos = panel_principal_ns_easy(results)
-        datos_json.guardar_datos(datos,ahora,'panel_principal_ns_easy')
+    #     results = conn.panel_principal_ns_easy()
+    #     datos = panel_principal_ns_easy(results)
+    #     datos_json.guardar_datos(datos,ahora,'panel_principal_ns_easy')
+
+    results = conn.panel_principal_ns_easy()
+    datos = panel_principal_ns_easy(results)
 
     return datos
 
