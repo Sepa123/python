@@ -833,7 +833,7 @@ async def get_experiencia_comentario(fecha_ini: str, fecha_fin: str, usuario: in
 async def get_lista_ppu_con_fotos(fecha_ini: str, fecha_fin: str):
     datos = conn.lista_ppu_con_fotos(fecha_ini, fecha_fin)
 
-    print(datos)
+    # print(datos)
 
     if datos[0] is None or datos[0] == 'null':
         return [{
@@ -1044,7 +1044,7 @@ async def procesar_citacion_masiva(request: Request):
                 {body_p['id_user']}
             )
         """
-        print(f"Consulta SQL generada: {consulta}")  # 🛠️ Imprime la consulta para depuración
+        # print(f"Consulta SQL generada: {consulta}")  # 🛠️ Imprime la consulta para depuración
 
         # Ejecutar la consulta utilizando la función ejecutar_consulta
         datos = ejecutar_consultaMasiva(consulta)  # Obtener solo las filas

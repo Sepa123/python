@@ -108,7 +108,7 @@ async def actualizar_datos_colaborador(body : Colaboradores):
 
         conn.insert_bitacora_transporte(data)
 
-        print(body)
+        # print(body)
         return {
             "message": "Colaborador actualizado correctamente",
             "razon" : id_razon_social[0]
@@ -384,7 +384,7 @@ async def get_lista_colaboradores(filtro : str):
 async def subir_archivo(tipo_archivo : str, nombre : str, file: UploadFile = File(...)):
 
     directorio  = os.path.abspath(f"pdfs/transporte/colaboradores/{tipo_archivo}")
-    print(directorio)
+    # print(directorio)
     nombre_hash = f'{nombre}_'+file.filename
 
     nuevo_nombre = nombre_hash 
@@ -760,7 +760,7 @@ async def buscar_vehiculos_por_operacion(id_op : int, id_co : int):
 @router.post("/vehiculos/descargar")
 async def descargar_vehiculos_filtro(pendientes : List[VehiculosExcel]):
 
-    print(pendientes)
+    # print(pendientes)
 
 
     tupla = excel.objetos_a_tuplas(pendientes)

@@ -66,7 +66,7 @@ async def buscar_producto(cod_producto : str,id_cliente : int):
      
         result = conn.buscar_producto_toc(cod_producto.strip(),id_cliente)
 
-        print(result)
+     #    print(result)
         return result[0][0]
     except:
           print("error en toc//buscar_producto/cod_producto")
