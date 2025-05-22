@@ -53,6 +53,7 @@ class Usuario(BaseModel):
     carga_manual: Optional[bool] = None
     id_operacion: Optional[int] = None
     id_centro_op: Optional[int] = None
+    id_seguimiento: Optional[int] = None
 
 class Cliente(BaseModel):
     id_usuario: int
@@ -71,6 +72,7 @@ class Cliente(BaseModel):
     carga_manual: bool
     id_operacion: int
     id_centro_op: int
+    id_seguimiento: Optional[int] = None
 
 class ClienteUpdate(BaseModel):
     id_usuario: Optional[int] = None
@@ -89,6 +91,7 @@ class ClienteUpdate(BaseModel):
     carga_manual: Optional[bool] = None
     id_operacion: Optional[int] = None
     id_centro_op: Optional[int] = None
+    id_seguimiento: Optional[int] = None
     
 
 class Bitacora(BaseModel):
@@ -163,6 +166,7 @@ async def Obtener_datos():
                                 "carga_manual": fila[20],
                                 "id_operacion": fila[21],
                                 "id_centro_op": fila[22],
+                                "id_seguimiento": fila[23],
                             } 
                             for fila in datos]
         return datos_formateados
@@ -193,6 +197,7 @@ async def User_data(id: str):
                                 "carga_manual": fila[20],
                                 "id_operacion": fila[21],
                                 "id_centro_op": fila[22],
+                                "id_seguimiento": fila[23],
                             } 
                             for fila in datos]
         return datos_formateados
@@ -275,8 +280,29 @@ async def Obtener_Cop():
      else:
          raise HTTPException(status_code=404, detail="No se encontraron datos")
 
-    
-
+@router.get("/Sc/")
+async def obtener_modo_seguimiento_cliente():
+    """
+    Obtiene los modos de seguimiento de clientes desde rutas.modo_seguimiento_cliente.
+    """
+    try:
+        consulta = """select * from rutas.modo_seguimiento_cliente"""
+        datos = ejecutar_consulta(consulta)
+        if datos:
+            # Puedes ajustar los índices según las columnas que devuelve la función
+            resultados = [
+                {
+                    "id": fila[0],
+                    "glosa": fila[1],
+                    "icono": fila[2],
+                }
+                for fila in datos
+            ]
+            return resultados
+        else:
+            raise HTTPException(status_code=404, detail="No se encontraron datos")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al obtener modos de seguimiento: {str(e)}")
 
 
 @router.post("/subir-archivo/fotoPerfil/")
