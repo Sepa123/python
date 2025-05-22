@@ -9285,12 +9285,22 @@ SELECT *
     def panel_principal_ns_easy(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""   
-            select total,total_entregados,entregados_hoy,en_ruta,sin_ruta_beetrack,
-            anulados,p_entrega,p_no_entregado,proyeccion,pendientes_en_ruta,
-            p_pendientes_en_ruta,
-            no_entregado,p_noentrega,p_sin_ruta_beetrack
-
-            from areati.panel_principal_ns_easy()
+            SELECT 
+                total,
+                total_entregados,
+                entregados_hoy,
+                en_ruta,
+                sin_ruta_beetrack,
+                anulados,
+                p_entrega::text,
+                p_no_entregado::text,
+                proyeccion::text,
+                pendientes_en_ruta,
+                p_pendientes_en_ruta::text,
+                no_entregado,
+                p_noentrega::text,
+                p_sin_ruta_beetrack::text
+                FROM areati.panel_principal_ns_easy();
 
                          """)
             return cur.fetchone()
