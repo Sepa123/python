@@ -1691,7 +1691,7 @@ def procesar_datos_rutas_paris(body):
             
 
 
-            if data.event == 'update' and data.started == True:
+            if data.event == 'update' and data.started == True and data.ended == False:
                 
                 print('actualizar ruta existente')
                 estado_ruta = ruta_paris[2]
