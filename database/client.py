@@ -13029,6 +13029,75 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
 
 
 
+    ##### guias externas
+
+    def insert_tabla_temporal_guias_externas(self,guias, id_usuario : int,ids_usuario: str,cliente:str,id_cliente:int):
+
+    
+        with self.conn.cursor() as cur:
+            query = """
+            INSERT INTO rutas.guia_seg_externo_temp
+            (id_user, ids_user, id_ruta,operacion, centro_op, fecha, ppu, driver, telefono_driver, guia, detalle, cantidad, bultos,  fecha_entrega,
+            modo, region, comuna, direccion, dnu_cliente, nombre_cliente, telefono_cliente, correo_electronico_cliente, origen, fecha_estimada, fecha_llegada, 
+            estado, subestado, tiempo_en_destino, n_intentos, distancia_km, peso, volumen, codigo, observacion, cliente, id_cliente)           
+            
+            VALUES %s
+            """
+            values = [
+                        (
+                            id_usuario, ids_usuario, body['Id Ruta'], body['Operacion'], body['Centro Op'], 
+                            body['Fecha'], body['Ppu'], body['Driver'], body['Telefono Driver'],
+                            body['Guia'], body['Detalle'], body['Cantidad'], body['Bultos'],
+                            body['Fecha Entrega'], body['Modo'], body['Region'], body['Comuna'], body['Direccion'],
+                            body['Dnu Cliente'], body['Nombre Cliente'], body['Telefono Cliente'], body['Correo Electronico Cliente'],
+                            body['Origen'], body['Fecha Estimada'], body['Fecha Llegada'], body['Estado'], body['Subestado'],
+                            body['Tiempo En Destino'], body['N Intentos'], body['Distancia Km'],  body['Peso'],
+                            body['Volumen'], body['Codigo'], body['Observacion'],cliente,id_cliente
+                        )
+                        for body in guias
+                    ]
+            execute_values(cur, query, values)
+
+            print(values)
+
+        self.conn.commit()
+
+
+    def obtener_lista_tabla_temporal_guias_externas(self,id_user:int):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+             with lista_ids as (
+                SELECT string_agg(id::text, ',') AS ids          
+                from rutas.guia_seg_externo_temp rmtt 
+                --where rmtt.created_at::date = current_date and rmtt.id_user = {id_user} 
+                where rmtt.id_user = {id_user} 
+                ---where rmtt.id_user = {id_user}   
+            )
+
+            SELECT json_agg(t) AS resultado
+            from(
+            SELECT 
+                    id_salida as "Id",
+                    identificador_ruta as "Ruta",
+                    identificador as "Ppu",
+                    guia as "Guia",
+                    mensaje_op as "Mensaje_op",
+                    proceder_op  as "Proceder_op",
+                    mensaje_guia as "Mensaje_guia",
+                    proceder_guia  as "Proceder_guia",
+                    mensaje_ppu as "Mensaje_ppu",
+                    proceder_ppu  as "Proceder_ppu",
+                    proceder as "Proceder"
+            FROM rutas.fnc_valida_rutas_y_patentes_temp(
+            string_to_array((SELECT ids FROM lista_ids), ',')::int[]
+            )
+            ) t;
+      
+                      """)
+            return cur.fetchone()
+
+
+
 class transyanezConnection():
     conn = None
     def __init__(self) -> None:

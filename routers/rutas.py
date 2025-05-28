@@ -1493,8 +1493,6 @@ async def get_campos_de_carga():
 
 
 
-####TODO: DESCOMENTAR EL WHERE DONDE APARECE LA FECHA DE COMO CURRENT DATE
-
 @router.get("/lista/rutas_manuales/temp")
 async def get_lista_rutas_manuales_temp(id_usuario : int):
     datos = conn.obtener_lista_ids_rutas_y_pantes_temp(id_usuario)
@@ -1581,3 +1579,75 @@ async def delete_producto_ruta_activa(ruta : str, guia : str):
      except:
           print("error en /eliminar/producto/cod_producto/nombre_ruta")
           raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
+     
+
+
+##### guias externos 
+
+@router.post("/subir-archivo/guias_ext", status_code=status.HTTP_202_ACCEPTED)
+async def subir_archivo_guias_externas(id_usuario : int, ids_usuario : str,cliente : str,id_cliente : str, file: UploadFile = File(...)):
+    try:
+
+        directorio  = os.path.abspath("excel")
+
+        ruta = os.path.join(directorio,file.filename)
+
+        with open(ruta, "wb") as f:
+            contents = await file.read()
+            # print("pase por aqui")
+            f.write(contents)
+
+        df = pd.read_excel(ruta,skiprows=0)
+
+        df = df.applymap(lambda x: None if pd.isna(x) else x)
+
+        lista = df.to_dict(orient='records')
+
+        # Eliminar registros duplicados exactamente iguales
+        lista = [dict(t) for t in {tuple(sorted(d.items())) for d in lista}]
+
+        # print(lista)
+
+        conn.insert_tabla_temporal_guias_externas(lista,id_usuario,ids_usuario,cliente,id_cliente)
+
+        return {
+            'message': len(lista)
+        }
+    
+
+    except psycopg2.errors.UniqueViolation as error:
+            # Manejar la excepción UniqueViolation específica
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error: identificador de ruta,la guia, y el id del cliente se encuentran duplicados")
+    
+    except Exception as e:
+
+        # Manejo de excepciones
+        print(f"Error al subir el archivo: {e}")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error al subir el archivo")
+    
+
+
+@router.get("/lista/guias_externas/temp")
+async def get_lista_guias_externas_temp(id_usuario : int):
+    datos = conn.obtener_lista_tabla_temporal_guias_externas(id_usuario)
+    return datos[0]
+
+
+
+
+### ejemplo de carga masiva rutas manuales
+
+@router.get("/archivo_ejemplo/guias_externa/descargar")
+async def download_file():
+    # Ruta completa del archivo
+
+    directorio  = os.path.abspath(f"excel/rutas")
+
+    file_path = os.path.join(directorio, 'Excel base guias externa.xlsx')
+
+    # Verifica si el archivo existe
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="File not found")
+
+    # Retorna el archivo como respuesta
+    return FileResponse(file_path, filename='Excel base guias externa.xlsx')
