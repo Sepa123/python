@@ -306,7 +306,7 @@ async def obtener_modo_seguimiento_cliente():
         raise HTTPException(status_code=500, detail=f"Error al obtener modos de seguimiento: {str(e)}")
 
 
-@router.get("/api/CentrosXmodalidades/")
+@router.get("/CentrosXmodalidades/")
 async def Obtener_centro_modalidades():
     """
     Obtiene los modos de seguimiento de clientes desde rutas.modo_seguimiento_cliente.
@@ -390,7 +390,7 @@ async def subir_archivo(
             conexion.close()
 
 
-@router.post("/api/actualizar-operaciones-permitidas/")
+@router.post("/actualizar-operaciones-permitidas/")
 async def actualizar_operaciones_permitidas(
     id: int = Form(...),
     operaciones_permitidas: List[int] = Form(...)
