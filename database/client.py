@@ -12821,6 +12821,10 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
             )
 
             select 'Clientes_ty' as nombre,json_agg(clientes_ty) from clientes_ty
+            union all
+            select 'Clientes_guias_ty' as nombre, json_agg(json_build_object('Id_cliente',id,'Cliente', nombre)) as campo
+            from  rutas.listar_clientes_guia_externa();
+            
                       """)
             return cur.fetchall()
 
@@ -13069,8 +13073,8 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
              with lista_ids as (
                 SELECT string_agg(id::text, ',') AS ids          
                 from rutas.guia_seg_externo_temp rmtt 
-                --where rmtt.created_at::date = current_date and rmtt.id_user = {id_user} 
-                where rmtt.id_user = {id_user} 
+                where rmtt.created_at::date = current_date and rmtt.id_user = {id_user} 
+                --where rmtt.id_user = {id_user} 
                 ---where rmtt.id_user = {id_user}   
             )
 
@@ -13095,7 +13099,54 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
       
                       """)
             return cur.fetchone()
+        
+    
+     #### Procesar las rutas manuales temporales, pasandoles las ids de las rutas temporales
 
+    def copiar_guias_seg_externo(self, id_user):
+
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+                        
+            with lista_ids as (
+                SELECT string_agg(id::text, ',') AS ids          
+                from rutas.guia_seg_externo_temp rmtt 
+                where rmtt.created_at::date = current_date and rmtt.id_user = {id_user} 
+                --where rmtt.id_user = {id_user} 
+                ---where rmtt.id_user = {id_user}   
+            )      
+
+
+            select * from rutas.fnc_copiar_guias_seg_externo(string_to_array((SELECT ids FROM lista_ids), ',')::int[]);
+                      """)
+            return cur.fetchone()
+        
+    
+    #### eliminar las rutas manuales temporales,, pasandoles las ids de las rutas temporales como array
+
+    def limpiar_guias_externas_temp(self, id_user):
+
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+                        
+            with lista_ids as (
+
+                    SELECT string_agg(id::text, ',') AS ids          
+                    from rutas.guia_seg_externo_temp rmtt 
+                    where rmtt.created_at::date = current_date and rmtt.id_user = {id_user} 
+                    --where rmtt.id_user = {id_user} 
+                    ---where rmtt.id_user = {id_user}  
+
+            )       
+            delete from rutas.guia_seg_externo_temp rmtt 
+            where id = ANY(string_to_array((SELECT ids FROM lista_ids), ',')::int[])
+                      """)
+            
+            self.conn.commit()
+
+            row = cur.rowcount
+
+            return row
 
 
 class transyanezConnection():

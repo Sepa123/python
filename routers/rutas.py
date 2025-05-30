@@ -1603,6 +1603,8 @@ async def subir_archivo_guias_externas(id_usuario : int, ids_usuario : str,clien
 
         lista = df.to_dict(orient='records')
 
+        print(lista)
+
         # Eliminar registros duplicados exactamente iguales
         lista = [dict(t) for t in {tuple(sorted(d.items())) for d in lista}]
 
@@ -1616,6 +1618,7 @@ async def subir_archivo_guias_externas(id_usuario : int, ids_usuario : str,clien
     
 
     except psycopg2.errors.UniqueViolation as error:
+            print(error)
             # Manejar la excepción UniqueViolation específica
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error: identificador de ruta,la guia, y el id del cliente se encuentran duplicados")
     
@@ -1626,7 +1629,7 @@ async def subir_archivo_guias_externas(id_usuario : int, ids_usuario : str,clien
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error al subir el archivo")
     
 
-
+#### TODO: CAMBIAR EL WHERE QUE OBTIENE LOS DATOS A LIMPIAR, YA QUE AHORA SE ESTA OBTENIENDO POR ID_USUARIO
 @router.get("/lista/guias_externas/temp")
 async def get_lista_guias_externas_temp(id_usuario : int):
     datos = conn.obtener_lista_tabla_temporal_guias_externas(id_usuario)
@@ -1651,3 +1654,36 @@ async def download_file():
 
     # Retorna el archivo como respuesta
     return FileResponse(file_path, filename='Excel base guias externa.xlsx')
+
+
+
+##### procesar rutas manuales
+#### TODO: CAMBIAR EL WHERE QUE OBTIENE LOS DATOS A LIMPIAR, YA QUE AHORA SE ESTA OBTENIENDO POR ID_USUARIO
+
+@router.get("/procesar/guias_externas/temp")
+async def procesar_guias_externas_temp(id_usuario : int):
+    datos = conn.copiar_guias_seg_externo(id_usuario)
+    # return datos[0]
+    return {
+        "message" : datos[1]
+    }
+
+
+
+#### LIMPIAR guias externas TEMP
+#### TODO: CAMBIAR EL WHERE QUE OBTIENE LOS DATOS A LIMPIAR, YA QUE AHORA SE ESTA OBTENIENDO POR ID_USUARIO
+
+@router.get("/limpiar/guias_externas/temp")
+async def limpiar_guias_externas_temp(id_usuario : int):
+    datos = conn.limpiar_guias_externas_temp(id_usuario)
+    # return datos[0]
+
+
+    if datos == 0:
+        return {
+            "message" : "No se eliminaron registros."
+        }
+    else:
+        return {
+        "message" : f"Se eliminaron {datos} registros correctamente."
+    }   
