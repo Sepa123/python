@@ -6,7 +6,8 @@ from fastapi import FastAPI, Form, HTTPException, File, UploadFile
 import psycopg2
 import uvicorn
 import os
-from typing import Optional
+from typing import List, Optional
+
 from dotenv import load_dotenv
 from PIL import Image
 from io import BytesIO
@@ -305,6 +306,33 @@ async def obtener_modo_seguimiento_cliente():
         raise HTTPException(status_code=500, detail=f"Error al obtener modos de seguimiento: {str(e)}")
 
 
+@router.get("/api/CentrosXmodalidades/")
+async def Obtener_centro_modalidades():
+    """
+    Obtiene los modos de seguimiento de clientes desde rutas.modo_seguimiento_cliente.
+    """
+    try:
+        consulta = """select * from operacion.fn_modalidades_con_centros();"""
+        datos = ejecutar_consulta(consulta)
+        if datos:
+            # Puedes ajustar los índices según las columnas que devuelve la función
+            resultados = [
+                {
+                    "id": fila[0],
+                    "operacion": fila[1],
+                    "descripcion": fila[2],
+                    "color": fila[3],
+                    "centro_operacion": fila[4],
+                }
+                for fila in datos
+            ]
+            return resultados
+        else:
+            raise HTTPException(status_code=404, detail="No se encontraron datos")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al obtener modos de seguimiento: {str(e)}")
+
+
 @router.post("/subir-archivo/fotoPerfil/")
 async def subir_archivo(
     id_user: str = Form(...),
@@ -360,6 +388,37 @@ async def subir_archivo(
             cursor.close()
         if "conexion" in locals():
             conexion.close()
+
+
+@router.post("/api/actualizar-operaciones-permitidas/")
+async def actualizar_operaciones_permitidas(
+    id: int = Form(...),
+    operaciones_permitidas: List[int] = Form(...)
+):
+    """
+    Actualiza el campo operaciones_permitidas para un cliente específico.
+    """
+    try:
+        conexion = psycopg2.connect(**parametros_conexion)
+        cursor = conexion.cursor()
+        consulta = """
+            UPDATE rutas.clientes
+            SET operaciones_permitidas = %s
+            WHERE id = %s;
+        """
+        cursor.execute(consulta, (operaciones_permitidas, id))
+        conexion.commit()
+        return {"message": "Operaciones permitidas actualizadas correctamente."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al actualizar operaciones permitidas: {str(e)}")
+    finally:
+        if "cursor" in locals():
+            cursor.close()
+        if "conexion" in locals():
+            conexion.close()
+
+
+
 
 @router.patch("/Actualizar/Cliente/{cliente_id}")
 async def actualizar_cliente(cliente_id: int, body: ClienteUpdate):
