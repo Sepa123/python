@@ -13049,10 +13049,10 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
             """
             values = [
                         (
-                            id_usuario, ids_usuario, body['Id Ruta'], body['Operacion'], body['Centro Op'], 
-                            body['Fecha'], body['Ppu'], body['Driver'], body['Telefono Driver'],
+                            id_usuario, ids_usuario, body['Id Ruta*'], body['Operacion*'], body['Centro Op*'], 
+                            body['Fecha*'], body['PPU*'], body['Driver'], body['Telefono Driver'],
                             body['Guia'], body['Detalle'], body['Cantidad'], body['Bultos'],
-                            body['Fecha Entrega'], body['Modo'], body['Region'], body['Comuna'], body['Direccion'],
+                            body['Fecha Compromiso*'], body['Modo'], body['Region'], body['Comuna'], body['Direccion'],
                             body['Dnu Cliente'], body['Nombre Cliente'], body['Telefono Cliente'], body['Correo Electronico Cliente'],
                             body['Origen'], body['Fecha Estimada'], body['Fecha Llegada'], body['Estado'], body['Subestado'],
                             body['Tiempo En Destino'], body['N Intentos'], body['Distancia Km'],  body['Peso'],
@@ -13147,6 +13147,30 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
             row = cur.rowcount
 
             return row
+        
+
+    def obtener_datos_guias_externas_por_bloque(self,fecha_ini,fecha_fin,bloque):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+            SELECT json_agg(guias) AS guias_externas_lista
+                from
+                (
+                        ---- funcion original
+                        --- SELECT * FROM rutas.fn_obtener_guias_segmentadas('{fecha_ini}','{fecha_fin}',null,{bloque})
+                        SELECT 
+                            gse.id_user, gse.ids_user, gse.operacion,gse.id_operacion, gse.centro_op, gse.id_centro_op, gse.id_ruta,gse.fecha,gse.ppu,gse.id_ppu,
+                            gse.driver,gse.id_driver, gse.telefono_driver, gse.guia,gse.detalle,gse.cantidad, gse.bultos,gse.cliente,gse.id_cliente, gse.fecha_entrega,
+                            gse.modo,gse.region,gse.comuna,gse.direccion,gse.dnu_cliente,gse.nombre_cliente, gse.telefono_cliente, gse.correo_electronico_cliente,
+                            gse.origen, gse.fecha_estimada, gse.fecha_llegada, gse.estado, gse.subestado, gse.tiempo_en_destino, gse.n_intentos, gse.distancia_km,
+                            gse.peso,gse.volumen, gse.codigo,gse.observacion, gse.id_razon_social, c.razon_social 
+                        FROM rutas.guia_seg_externo gse 
+                        LEFT JOIN transporte.colaborador c ON c.id = gse.id_razon_social
+                        WHERE gse.fecha BETWEEN '{fecha_ini}' AND '{fecha_fin}'
+                        AND (p_id_cliente_ent IS NULL OR gse.id_cliente = p_id_cliente_ent)
+                        ORDER BY gse.fecha
+                ) as guias
+                      """)
+            return cur.fetchone()
 
 
 class transyanezConnection():

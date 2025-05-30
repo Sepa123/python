@@ -1613,7 +1613,7 @@ async def subir_archivo_guias_externas(id_usuario : int, ids_usuario : str,clien
         conn.insert_tabla_temporal_guias_externas(lista,id_usuario,ids_usuario,cliente,id_cliente)
 
         return {
-            'message': len(lista)
+            'message': f"Datos insertados: {len(lista)} " 
         }
     
 
@@ -1687,3 +1687,13 @@ async def limpiar_guias_externas_temp(id_usuario : int):
         return {
         "message" : f"Se eliminaron {datos} registros correctamente."
     }   
+
+
+@router.get("/lista/guias_externas")
+async def get_lista_guias_externas(fecha_ini:str,fecha_fin: str,bloque : int):
+
+    fecha_ini = fecha_ini.replace("-","")
+    fecha_fin = fecha_fin.replace("-","")
+
+    datos = conn.obtener_datos_guias_externas_por_bloque(fecha_ini,fecha_fin,bloque)
+    return datos[0]
