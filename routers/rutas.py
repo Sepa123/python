@@ -1586,7 +1586,7 @@ async def delete_producto_ruta_activa(ruta : str, guia : str):
 
 @router.post("/subir-archivo/guias_ext", status_code=status.HTTP_202_ACCEPTED)
 async def subir_archivo_guias_externas(id_usuario : int, ids_usuario : str,cliente : str,id_cliente : str, file: UploadFile = File(...)):
-    # try:
+    try:
 
         directorio  = os.path.abspath("excel")
 
@@ -1617,16 +1617,16 @@ async def subir_archivo_guias_externas(id_usuario : int, ids_usuario : str,clien
         }
     
 
-    # except psycopg2.errors.UniqueViolation as error:
-    #         print(error)
-    #         # Manejar la excepción UniqueViolation específica
-    #         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error: identificador de ruta,la guia, y el id del cliente se encuentran duplicados")
+    except psycopg2.errors.UniqueViolation as error:
+            print(error)
+            # Manejar la excepción UniqueViolation específica
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error: identificador de ruta,la guia, y el id del cliente se encuentran duplicados")
     
-    # except Exception as e:
+    except Exception as e:
 
-    #     # Manejo de excepciones
-    #     print(f"Error al subir el archivo: {e}")
-    #     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error al subir el archivo")
+        # Manejo de excepciones
+        print(f"Error al subir el archivo: {e}")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error al subir el archivo")
     
 
 #### TODO: CAMBIAR EL WHERE QUE OBTIENE LOS DATOS A LIMPIAR, YA QUE AHORA SE ESTA OBTENIENDO POR ID_USUARIO
