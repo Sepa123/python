@@ -13049,7 +13049,7 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
             """
             values = [
                         (
-                            id_usuario, ids_usuario, body['Id Ruta*'], body['Operacion*'], body['Centro Op*'], 
+                            id_usuario, ids_usuario, body['Id Ruta*'], body['Operación*'], body['Centro Op*'], 
                             body['Fecha*'], body['PPU*'], body['Driver'], body['Telefono Driver'],
                             body['Guia'], body['Detalle'], body['Cantidad'], body['Bultos'],
                             body['Fecha Compromiso*'], body['Modo'], body['Region'], body['Comuna'], body['Direccion'],
