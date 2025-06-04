@@ -13043,7 +13043,7 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
             INSERT INTO rutas.guia_seg_externo_temp
             (id_user, ids_user, id_ruta,operacion, centro_op, fecha, ppu, driver, telefono_driver, guia, detalle, cantidad, bultos,  fecha_entrega,
             modo, region, comuna, direccion, dnu_cliente, nombre_cliente, telefono_cliente, correo_electronico_cliente, origen, fecha_estimada, fecha_llegada, 
-            estado, subestado, tiempo_en_destino, n_intentos, distancia_km, peso, volumen, codigo, observacion, cliente, id_cliente)           
+            estado, subestado, tiempo_en_destino, n_intentos, distancia_km, peso, volumen, codigo, observacion, cliente, id_cliente, vuelta)           
             
             VALUES %s
             """
@@ -13056,7 +13056,7 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
                             body['Dnu Cliente'], body['Nombre Cliente'], body['Telefono Cliente'], body['Correo Electronico Cliente'],
                             body['Origen'], body['Fecha Estimada'], body['Fecha Llegada'], body['Estado'], body['Subestado'],
                             body['Tiempo En Destino'], body['N Intentos'], body['Distancia Km'],  body['Peso'],
-                            body['Volumen'], body['Codigo'], body['Observacion'],cliente,id_cliente
+                            body['Volumen'], body['Codigo'], body['Observacion'],cliente,id_cliente , body['N° Vuelta']
                         )
                         for body in guias
                     ]
