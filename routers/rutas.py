@@ -1588,6 +1588,8 @@ async def delete_producto_ruta_activa(ruta : str, guia : str):
 async def subir_archivo_guias_externas(id_usuario : int, ids_usuario : str,cliente : str,id_cliente : str, file: UploadFile = File(...)):
     try:
 
+        conn.limpiar_guias_externas_temp(id_usuario)
+
         directorio  = os.path.abspath("excel")
 
         ruta = os.path.join(directorio,file.filename)
@@ -1612,6 +1614,12 @@ async def subir_archivo_guias_externas(id_usuario : int, ids_usuario : str,clien
 
         conn.insert_tabla_temporal_guias_externas(lista,id_usuario,ids_usuario,cliente,id_cliente)
 
+        # time.sleep(1)
+
+        conn.asignar_id_ruta_seg_externo(id_usuario)
+
+
+
         return {
             'message': f"Datos insertados: {len(lista)} " 
         }
@@ -1629,7 +1637,6 @@ async def subir_archivo_guias_externas(id_usuario : int, ids_usuario : str,clien
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error al subir el archivo")
     
 
-#### TODO: CAMBIAR EL WHERE QUE OBTIENE LOS DATOS A LIMPIAR, YA QUE AHORA SE ESTA OBTENIENDO POR ID_USUARIO
 @router.get("/lista/guias_externas/temp")
 async def get_lista_guias_externas_temp(id_usuario : int):
     datos = conn.obtener_lista_tabla_temporal_guias_externas(id_usuario)

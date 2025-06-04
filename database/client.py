@@ -13103,6 +13103,24 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
     
      #### Procesar las rutas manuales temporales, pasandoles las ids de las rutas temporales
 
+    def asignar_id_ruta_seg_externo(self, id_user):
+
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+                        
+            with lista_ids as (
+                SELECT string_agg(id::text, ',') AS ids          
+                from rutas.guia_seg_externo_temp rmtt 
+                where rmtt.created_at::date = current_date and rmtt.id_user = {id_user} 
+                --where rmtt.id_user = {id_user} 
+                ---where rmtt.id_user = {id_user}   
+            )      
+
+
+            select * from rutas.asignar_id_ruta(string_to_array((SELECT ids FROM lista_ids), ',')::int[]);
+                      """)
+            return cur.fetchone()
+
     def copiar_guias_seg_externo(self, id_user):
 
         with self.conn.cursor() as cur:
