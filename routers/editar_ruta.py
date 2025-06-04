@@ -199,6 +199,7 @@ async def User_data(id: str):
                                 "id_operacion": fila[21],
                                 "id_centro_op": fila[22],
                                 "id_seguimiento": fila[23],
+                                "operaciones_permitidas": fila[24],
                             } 
                             for fila in datos]
         return datos_formateados

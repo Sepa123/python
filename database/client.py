@@ -13166,7 +13166,7 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
                         FROM rutas.guia_seg_externo gse 
                         LEFT JOIN transporte.colaborador c ON c.id = gse.id_razon_social
                         WHERE gse.fecha BETWEEN '{fecha_ini}' AND '{fecha_fin}'
-                        AND (p_id_cliente_ent IS NULL OR gse.id_cliente = p_id_cliente_ent)
+                        AND (null IS NULL OR gse.id_cliente = null)
                         ORDER BY gse.fecha
                 ) as guias
                       """)
