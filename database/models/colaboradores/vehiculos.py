@@ -68,6 +68,10 @@ class AsignarOperacion(BaseModel):
     Id_user: Optional[int]
     Ids_user: Optional[str]
     Estado :  Optional[bool]
+    Modificacion: Optional[str]
+    Latitud: Optional[str]
+    Longitud: Optional[str]
+    Origen: Optional[str]
 
 class cambiarEstadoVehiculo(BaseModel):
     id : Optional[int]

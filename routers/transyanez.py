@@ -307,6 +307,8 @@ async def get_lista_vehiculos(vehiculo : int):
 async def actualizar_datos_vehiculo(body : AsignarOperacion):
     data = body.dict()
     conn.asignar_operacion_a_vehiculo(data)
+
+    conn.insert_bitacora_transporte(data)
     
 
     return {
