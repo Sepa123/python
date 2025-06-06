@@ -1616,7 +1616,7 @@ async def subir_archivo_guias_externas(id_usuario : int, ids_usuario : str,clien
 
         # time.sleep(1)
 
-        conn.asignar_id_ruta_seg_externo(id_usuario)
+        
 
 
 
@@ -1639,8 +1639,14 @@ async def subir_archivo_guias_externas(id_usuario : int, ids_usuario : str,clien
 
 @router.get("/lista/guias_externas/temp")
 async def get_lista_guias_externas_temp(id_usuario : int):
+
+    datos_rutas_generadas = conn.asignar_id_ruta_seg_externo(id_usuario)
+
     datos = conn.obtener_lista_tabla_temporal_guias_externas(id_usuario)
-    return datos[0]
+    return {
+            "datos" : datos[0],
+            "rutas_generadas" : datos_rutas_generadas[0]
+        }
 
 
 
