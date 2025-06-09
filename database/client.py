@@ -11573,7 +11573,7 @@ SELECT *
                     r.telefono as Telefono,r.tipo_vehiculo as Tipo_vehiculo,coalesce(r.origen_contacto, 4) as Origen_contacto,coalesce(r.estado_contacto, 3) as Estado_contacto,coalesce(r.motivo_subestado, 7) as Motivo_subestado, r.contacto_ejecutivo as Contacto_ejecutivo,
                     r.razon_social as Razon_social, r.rut_empresa as Rut_empresa,r.internalizado as Internalizado, re.region_name as Region_nombre,mo.nombre as Operacion_nombre,coalesce(oc.origen, 'Página web') as Nombre_origen , coalesce(ec.estado, 'En espera') as Nombre_estados,coalesce(mv.motivo, 'En espera') as Nombre_motivo,
                     u.nombre as Nombre_contacto, r.pais as Pais,coalesce(r.inicio_actividades_factura, false) as Inicio_actividades_factura,coalesce(r.giro, 1) as Giro,coalesce(r.cant_vehiculos,0) as Cantidad_vehiculo,
-                    r.correo as Correo,r.ppu as Ppu, coalesce(r.metros_cubicos, 0) as Metros_cubicos,coalesce(r.capacidad, 0) as Capacidad,
+                    r.correo as Correo, coalesce(r.ppu,'') as Ppu, coalesce(r.metros_cubicos, 0) as Metros_cubicos,coalesce(r.capacidad, 0) as Capacidad,
                     CASE 
                         WHEN r.contacto_ejecutivo is not null THEN 1
                         WHEN r.created_at::date BETWEEN CURRENT_DATE - INTERVAL '6 days' AND CURRENT_DATE - INTERVAL '2 days' THEN 2
