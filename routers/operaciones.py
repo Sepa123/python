@@ -32,7 +32,7 @@ def ejecutar_consulta(sql):
 
 @router.get("/grupo_operaciones/campos")
 async def get_campos_de_carga():
-    datos = conn.campos_de_carga_rutas_manuales()
+    datos = conn.datos_seleccion_grupo_operaciones()
     resultado_dict = {titulo : cant for titulo, cant in datos}
 
     return resultado_dict
