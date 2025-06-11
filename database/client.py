@@ -10004,8 +10004,8 @@ SELECT *
     def datos_seleccion_grupo_operaciones(self):
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            select 'Seguimiento_cliente' as nombre, json_agg(m) as campo
-			from rutas.modo_seguimiento_cliente m
+            select 'Definicion_operacion' as nombre, json_agg(m) as campo
+			from operacion.def_operacion  m
             union all
             select 'Comuna' as nombre, json_agg(json_build_object('Nombre_comuna',comuna_name,'Id_region', id_region,'Id_comuna', id_comuna  )order by id_comuna) as campo
             from public.op_comunas oc 
