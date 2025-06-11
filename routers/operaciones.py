@@ -29,6 +29,15 @@ def ejecutar_consulta(sql):
         raise HTTPException(status_code=500, detail=str(e))
     
 
+
+@router.get("/grupo_operaciones/campos")
+async def get_campos_de_carga():
+    datos = conn.campos_de_carga_rutas_manuales()
+    resultado_dict = {titulo : cant for titulo, cant in datos}
+
+    return resultado_dict
+    
+
 @router.post("/agregar/razonSocial")
 async def Agregar_RazonSocial(body: RazonSocial):
     try:
@@ -39,6 +48,20 @@ async def Agregar_RazonSocial(body: RazonSocial):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
+#### definicion de operaciones de modalidad operacion
+
+@router.get("/def_operacion")
+async def get_definicion_operacion():
+     # Consulta SQL para obtener datos (por ejemplo)
+    datos = conn.buscar_def_operacion()
+    # Verificar si hay datos
+    if datos:
+        return datos[0]
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+    
+
+
 @router.get("/modalidad")
 async def Obtener_datos():
      # Consulta SQL para obtener datos (por ejemplo)

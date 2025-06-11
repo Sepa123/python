@@ -10000,12 +10000,35 @@ SELECT *
 
     ### conexion modalidades-operaciones (lo dejo aca porque no me dejo guardar como router)
 
+
+    def datos_seleccion_grupo_operaciones(self):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+            select 'Seguimiento_cliente' as nombre, json_agg(m) as campo
+			from rutas.modo_seguimiento_cliente m
+            union all
+            select 'Comuna' as nombre, json_agg(json_build_object('Nombre_comuna',comuna_name,'Id_region', id_region,'Id_comuna', id_comuna  )order by id_comuna) as campo
+            from public.op_comunas oc 
+            union all
+            select 'Region' as nombre, json_agg(json_build_object('Id_region',id_region,'Nombre_region', region_name ) ORDER BY id_region) as campo
+            from public.op_regiones 
+                         """)
+            return cur.fetchall()
+
+    def buscar_def_operacion(self):
+            with self.conn.cursor() as cur:
+                cur.execute(f"""   
+                select json_agg(d) from operacion.def_operacion d
+                                    
+                            """)
+                return cur.fetchone()
+
     def agregar_razon_social(self,data):
         with self.conn.cursor() as cur:
 
             cur.execute("""
-                INSERT INTO operacion.modalidad_operacion(id_user, ids_user, nombre, description, creation_date, update_date, estado ) 
-                VALUES (%(id_user)s, %(ids_user)s,%(nombre)s, %(description)s,%(creation_date)s,%(update_date)s,%(estado)s)
+                INSERT INTO operacion.modalidad_operacion(id_user, ids_user, nombre, description, creation_date, update_date, estado, id_mod) 
+                VALUES (%(id_user)s, %(ids_user)s,%(nombre)s, %(description)s,%(creation_date)s,%(update_date)s,%(estado)s,%(id_mod)s)
 
                  """,data)
             self.conn.commit()

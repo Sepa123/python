@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel
 
 class RazonSocial(BaseModel):
@@ -8,6 +9,7 @@ class RazonSocial(BaseModel):
     creation_date: str
     update_date: str
     estado: bool 
+    id_mod: Optional[int]
 
 class updateApp(BaseModel):
     id: int
