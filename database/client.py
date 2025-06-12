@@ -10076,7 +10076,7 @@ SELECT *
             --select * from operacion.modalidad_operacion mo
             SELECT mo.id, mo.created_at, mo.id_user, mo.ids_user, mo.nombre,
                     mo.description, mo.creation_date, mo.update_date, mo.estado, count(co.id) as cant_co, color_hex,
-                    dop.nombre
+                    coalesce(dop.nombre, '')
             FROM operacion.modalidad_operacion mo
             left join operacion.centro_operacion co on co.id_op = mo.id 
             left join operacion.def_operacion dop on dop.id = mo.id_mod 
