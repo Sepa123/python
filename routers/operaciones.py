@@ -79,7 +79,8 @@ async def Obtener_datos():
                                 "update_date": fila[7],
                                 "estado" : fila[8],
                                 "cant_co" : fila[9],
-                                "color" : fila[10]
+                                "color" : fila[10],
+                                "mod_operacion" : fila[11]
                             } 
                             for fila in datos]
         return datos_formateados
