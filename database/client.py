@@ -8850,7 +8850,44 @@ VALUES( %(Fecha)s, %(PPU)s, %(Guia)s, %(Cliente)s, %(Region)s, %(Estado)s, %(Sub
                 left join areati.subestado_entregas se on (se.parent_code = trc.estado and se.code = trc.subestado)
                 where trc.created_at::date >= '{fecha_inicio}'::date and trc.created_at::date <= '{fecha_fin}'::date
                 ----------------------------------------------------------------------------
+                ----------------------------------------------------------------------------
+                -- (5) Consolidado Clientes
+                ----------------------------------------------------------------------------
+                union all
+                select  to_char(cc.created_at,'dd/mm/yyyy hh24:mi:ss') as ingreso_sistema,
+                        c.nombre as cliente,
+                        cc.cliente::text as anden,
+                        cc.guia as cod_pedido,
+                        cc.fecha_pedido as fec_compromiso,
+                        cc.carton as cod_producto,
+                        cc.sku::text as sku,
+                        cc.comuna as comuna,
+                        case
+                            when unaccent(lower(cc.comuna)) not in (select unaccent(lower(op.comuna_name)) from public.op_comunas op) then
+                            (select opr.region_name  from public.op_regiones opr 
+                            where opr.id_region = (select oc.id_region from public.op_comunas oc 
+                                where oc.id_comuna = ( select occ.id_comuna  from public.op_corregir_comuna occ 
+                                where unaccent(lower(occ.comuna_corregir)) = unaccent(lower(cc.comuna))
+                                )    
+                            ))
+                            else(select opr.region_name  from public.op_regiones opr 
+                            where opr.id_region =(select oc2.id_region from public.op_comunas oc2 
+                            where unaccent(lower(cc.comuna)) = unaccent(lower(oc2.comuna_name))
+                            ))
+                        end as region,
+                        cc.bultos as cantidad,
+                        cc.verificado as verificado,
+                        cc.recepcionado as recepcionado,
+                        ee.descripcion as estado,
+                        se.name as subestado 
+                from rutas.consolidado_clientes cc
+                left join areati.estado_entregas ee on ee.estado = cc.estado
+                left join areati.subestado_entregas se on (se.parent_code = cc.estado and se.code = cc.subestado)
+                left join rutas.clientes c on c.id = cc.cliente
+                where cc.created_at::date >= '{fecha_inicio}'::date and cc.created_at::date <= '{fecha_fin}'::date
+                ----------------------------------------------------------------------------
                 order by ingreso_sistema asc
+   
 
                          """)
             return cur.fetchall()
