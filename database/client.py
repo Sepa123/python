@@ -10049,6 +10049,9 @@ SELECT *
             union all
             select 'Region' as nombre, json_agg(json_build_object('Id_region',id_region,'Nombre_region', region_name ) ORDER BY id_region) as campo
             from public.op_regiones 
+            union all 
+            select 'modo_seguimiento' as nombre, json_agg(json_build_object('id',id,'nombre', glosa, 'icono',icono )) as campo
+            from rutas.modo_seguimiento_cliente msc  
                          """)
             return cur.fetchall()
 
