@@ -10224,8 +10224,8 @@ SELECT *
         with self.conn.cursor() as cur:
             cur.execute(""" 
             INSERT INTO operacion.centro_operacion
-            (id_user, ids_user, centro, descripcion, region, id_op)
-            VALUES(%(Id_user)s, %(Ids_user)s, %(Centro)s, %(Descripcion)s,%(Region)s, %(Id_op)s);
+            (id_user, ids_user, centro, descripcion, region, id_op, id_seguimiento)
+            VALUES(%(Id_user)s, %(Ids_user)s, %(Centro)s, %(Descripcion)s,%(Region)s, %(Id_op)s, %(Id_modo_seg)s);
 
             """, data)
             self.conn.commit()
