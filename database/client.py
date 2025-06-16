@@ -10088,6 +10088,18 @@ SELECT *
                                   
                          """)
             return cur.fetchall()
+        
+
+    def actualizar_servicio_operacion(self,id,id_mod):
+        with self.conn.cursor() as cur:
+
+            cur.execute(f"""
+            UPDATE operacion.modalidad_operacion
+            SET id_mod = {id_mod}
+            WHERE id = {id};
+
+                 """)
+            self.conn.commit()
 
     def filtrar_modalidad_operacion_por_nombre(self, nombre):
         with self.conn.cursor() as cur:

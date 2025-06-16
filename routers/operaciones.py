@@ -187,8 +187,9 @@ async def get_datos_supervisores_hela():
 @router.put("/actualizar/servicio/operacion")
 async def update_ruta_asignada(request : Request):
     try:
-          body_p = await request.json()
+          body = await request.json()
 
+          conn.actualizar_servicio_operacion(body["id"], body["servicio"])
 
           return { "message": "Ruta Actualizada Correctamente" }
     except:
