@@ -1,4 +1,4 @@
-from fastapi import APIRouter,status,UploadFile, File,HTTPException
+from fastapi import APIRouter, Request,status,UploadFile, File,HTTPException
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from database.client import reportesConnection
@@ -180,5 +180,19 @@ async def get_datos_supervisores_hela():
      # Consulta SQL para obtener datos (por ejemplo)
     results = conn.buscar_datos_supervisores_hela()
     return datos_supervisores_schema(results)
+
+
+
+
+@router.put("/actualizar/servicio/operacion")
+async def update_ruta_asignada(request : Request):
+    try:
+          body_p = await request.json()
+
+
+          return { "message": "Ruta Actualizada Correctamente" }
+    except:
+          print("error en /actualizar/ruta_asignada")
+          raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error con la consulta")
 
        
