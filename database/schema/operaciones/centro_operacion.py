@@ -7,7 +7,9 @@ def centro_operacion(operacion):
         "Id_op": operacion[4],
         "Centro" : operacion[5],
         "Descripcion" : operacion[6],
-        "Region" : operacion[7]
+        "Region" : operacion[7],
+        "Seguimiento_id": operacion[8],
+        "Seguimiento_nombre": operacion[9],
     }
 
 def centro_operacion_schema(operaciones):
