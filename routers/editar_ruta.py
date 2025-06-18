@@ -114,6 +114,19 @@ def ejecutar_consulta(sql):
         return filas
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+def ejecutar_consulta2(sql):
+    try:
+        conexion = psycopg2.connect(**parametros_conexion)
+        cursor = conexion.cursor()
+        cursor.execute(sql)
+        filas = cursor.fetchall()
+        columnas = [desc[0] for desc in cursor.description]
+        cursor.close()
+        conexion.close()
+        return filas, columnas
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al ejecutar la consulta: {str(e)}")
 
 
 
@@ -146,63 +159,29 @@ async def agregar_bitacora(body: Bitacora):
 
 @router.get("/InfoRuta")
 async def Obtener_datos():
-     # Consulta SQL para obtener datos (por ejemplo)
-    consulta = "select * from rutas.clientes c "
-    # Ejecutar la consulta utilizando nuestra función
-    datos = ejecutar_consulta(consulta)
-    # Verificar si hay datos
+    """
+    Devuelve todos los datos de rutas.clientes sin formatear.
+    """
+    consulta = "SELECT * FROM rutas.clientes c"
+    datos, columnas = ejecutar_consulta2(consulta)
     if datos:
-        datos_formateados = [{  
-                                "id" : fila[0],
-                                "nombre" : fila[5],
-                                "rut": fila[6],
-                                "direccion": fila [7],
-                                "ciudad": fila[8],
-                                "region" : fila[9],
-                                "telefono" : fila[10],
-                                "correo" : fila[11],
-                                "representante": fila[12],
-                                "activo": fila[13],
-                                "logo_img" : fila[14],
-                                "carga_manual": fila[20],
-                                "id_operacion": fila[21],
-                                "id_centro_op": fila[22],
-                                "id_seguimiento": fila[23],
-                            } 
-                            for fila in datos]
-        return datos_formateados
+        # Empareja cada fila con los nombres de las columnas
+        resultados = [dict(zip(columnas, fila)) for fila in datos]
+        return resultados
     else:
         raise HTTPException(status_code=404, detail="No se encontraron datos")
 
     
 @router.get("/clientes/")
 async def User_data(id: str):
-     # Consulta SQL para obtener datos (por ejemplo)
-    consulta = f"select * from rutas.clientes c where id = '{id}' "
-    # Ejecutar la consulta utilizando nuestra función
-    datos = ejecutar_consulta(consulta)
-    # Verificar si hay datos
+    """
+    Devuelve todos los datos del cliente con el id especificado.
+    """
+    consulta = f"SELECT * FROM rutas.clientes c WHERE id = '{id}'"
+    datos, columnas = ejecutar_consulta2(consulta)
     if datos:
-        datos_formateados = [{
-                                "id" : fila[0],
-                                "nombre" : fila[5],
-                                "rut": fila[6],
-                                "direccion": fila [7],
-                                "ciudad": fila[8],
-                                "region" : fila[9],
-                                "telefono" : fila[10],
-                                "correo" : fila[11],
-                                "representante": fila[12],
-                                "activo": fila[13],
-                                "logo_img" : fila[14],
-                                "carga_manual": fila[20],
-                                "id_operacion": fila[21],
-                                "id_centro_op": fila[22],
-                                "id_seguimiento": fila[23],
-                                "operaciones_permitidas": fila[24],
-                            } 
-                            for fila in datos]
-        return datos_formateados
+        resultados = [dict(zip(columnas, fila)) for fila in datos]
+        return resultados
     else:
         raise HTTPException(status_code=404, detail="No se encontraron datos")
 
