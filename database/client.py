@@ -12896,7 +12896,8 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
              with clientes_ty as (
                 select c.id as "Id_cliente",c.nombre as "Cliente"
                 from rutas.clientes c 
-                where c.activo = true and c.carga_manual = true
+                --where c.activo = true and c.carga_manual = true
+                where c.activo = true 
             )
 
             select 'Clientes_ty' as nombre,json_agg(clientes_ty) from clientes_ty
