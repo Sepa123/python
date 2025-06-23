@@ -305,15 +305,20 @@ async def get_lista_vehiculos(vehiculo : int):
 
 @router.put("/asignar/operacion/vehiculo")
 async def actualizar_datos_vehiculo(body : AsignarOperacion):
-    data = body.dict()
-    conn.asignar_operacion_a_vehiculo(data)
 
-    conn.insert_bitacora_transporte(data)
-    
+    try:
+        data = body.dict()
+        conn.asignar_operacion_a_vehiculo(data)
 
-    return {
-        "message": "Operación asignada correctamente",
-    }
+        conn.insert_bitacora_transporte(data)
+        
+
+        return {
+            "message": "Operación asignada correctamente",
+        }
+    except psycopg2.errors.UniqueViolation as error:
+        # Manejar la excepción UniqueViolation específica
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Error: El vehiculo ya se encuentra registrado en la operación")
 
 @router.get("/buscar/vehiculos")
 async def get_lista_vehiculos():
