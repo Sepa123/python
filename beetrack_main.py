@@ -938,8 +938,8 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
 
                     conn.actualizar_estado_ruta_paris(ruta_paris[0],'started')
 
-                    print(body_put_request)
-                    print(despachos)
+                    # print(body_put_request)
+                    # print(despachos)
 
                     send_put_update_ruta(body_put_request, ruta_paris[1])
 
@@ -1088,7 +1088,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                         }]
                         }
                     
-                    print(body_put_request)
+                    # print(body_put_request)
                 
                     send_put_update_ruta(body_put_request, id_ruta_creada)
 
@@ -1096,7 +1096,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
             else: ## si el troncal viene como false, entonces se actualiza de la forma 
                 print('troncal : false')
 
-                print(verificar_info_ruta)
+                # print(verificar_info_ruta)
 
                 ##### logica para iniciar ruta 
 
@@ -1134,7 +1134,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                     "is_trunk" : True
                     }
 
-                    print(body_info_ruta)
+                    # print(body_info_ruta)
             
                     conn.guardar_informacion_de_rutas_paris(body_info_ruta)
 
@@ -1280,7 +1280,7 @@ async def post_dispatch_guide(request : Request , headers: tuple = Depends(valid
                                     }
 
                         
-                    print(body)
+                    # print(body)
 
 
                     if data.substatus_code == "45" or data.substatus_code == "46":
@@ -1403,7 +1403,7 @@ def procesar_datos_despachos_paris(body):
                 #####  primero hay que verificar la ruta de paris, si existe o no existe
                 #### en base a lo que reciba de la tabla de ppu_tracking
 
-                print(verificar_info_ruta)
+                # print(verificar_info_ruta)
 
 
                 if data.substatus_code == None or data.substatus_code == "null" :### si el substatus es nulo, entonces no se actualiza nada
@@ -1429,7 +1429,7 @@ def procesar_datos_despachos_paris(body):
                         }]
                         }
                     
-                    print(body_put_request)
+                    # print(body_put_request)
                 
                     send_put_update_ruta(body_put_request, id_ruta_creada)
 
@@ -1437,13 +1437,13 @@ def procesar_datos_despachos_paris(body):
             else: ## si el troncal viene como false, entonces se actualiza de la forma 
                 print('troncal : false')
 
-                print(verificar_info_ruta)
+                # print(verificar_info_ruta)
 
                 ##### logica para iniciar ruta 
 
-                print("logica para iniciar ruta")
-                print(data.status)
-                print(data.substatus_code)
+                # print("logica para iniciar ruta")
+                # print(data.status)
+                # print(data.substatus_code)
 
 
                 ######## lo que se hace es verificar si la ruta existe o no existe en dispatchtrack paris
@@ -1480,7 +1480,7 @@ def procesar_datos_despachos_paris(body):
                     "is_trunk" : True
                     }
 
-                    print(body_info_ruta)
+                    # print(body_info_ruta)
             
                     conn.guardar_informacion_de_rutas_paris(body_info_ruta)
 
@@ -1627,7 +1627,7 @@ def procesar_datos_despachos_paris(body):
                                     }
 
                         
-                    print(body)
+                    # print(body)
 
 
                     if data.substatus_code == "45" or data.substatus_code == "46":
@@ -1651,7 +1651,7 @@ def procesar_datos_despachos_paris(body):
                         #             }
                     else:
       
-                        print('actualizar ruta existente')
+                        # print('actualizar ruta existente')
                         send_put_update_ruta(body,verificar_info_ruta[1])
 
                 pass
@@ -1686,7 +1686,7 @@ def procesar_datos_rutas_paris(body):
             ### Primer filtro: verificar si la ruta existe en paris
 
             if ruta_paris is None:
-                print('no existe la ruta en paris')
+                # print('no existe la ruta en paris')
                 return { "message": "no existe la ruta en paris"}
             
 
@@ -1697,7 +1697,7 @@ def procesar_datos_rutas_paris(body):
                 estado_ruta = ruta_paris[2]
 
                 if estado_ruta == 'started':
-                    print('la ruta ya esta iniciada')
+                    # print('la ruta ya esta iniciada')
                     return { "message": "la ruta ya esta iniciada"}
 
                 
@@ -1707,15 +1707,15 @@ def procesar_datos_rutas_paris(body):
 
                 if not despachos and not troncales:
 
-                    print("No hay despachos ni troncales")
+                    # print("No hay despachos ni troncales")
 
                     return { "message": "no hay despachos ni troncales"}
 
                 if any(troncales):
-                    print("Al menos un troncal es True")
+                    # print("Al menos un troncal es True")
                     pass
                 else:
-                    print("Todos son False")
+                    # print("Todos son False")
 
                     fecha_formateada = datetime.now() - timedelta(minutes=3)
 
