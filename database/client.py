@@ -12603,14 +12603,96 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
     def get_recupera_posibles_rutas(self, fecha_inicio : str, fecha_fin : str) :
         with self.conn.cursor() as cur:
             cur.execute(f"""
-            ----select * from mercadolibre.resumen_rutas_fecha_sup('20250308','20250308',158,0);
 
-            select
-            json_agg(json_build_object('Id',id,'Created_at', created_at,'Ruta', ruta, 'Driver',driver,
-            'Ppu',ppu,'Existe_citacion',existe_en_citacion,
-            'Existe_en_mae_ds',existe_en_mae_data_supervisores,'En_proforma',en_proforma,
-            'Usuarios',usuarios)) as campo
-            from mercadolibre.recupera_posibles_rutas('{fecha_inicio}','{fecha_fin}',0);
+           ---- select
+           ---- json_agg(json_build_object('Id',id,'Created_at', created_at,'Ruta', ruta, 'Driver',driver,
+           ---- 'Ppu',ppu,'Existe_citacion',existe_en_citacion,
+           ---- 'Existe_en_mae_ds',existe_en_mae_data_supervisores,'En_proforma',en_proforma,
+           ---- 'Usuarios',usuarios)) as campo
+           ----  from mercadolibre.recupera_posibles_rutas('{fecha_inicio}','{fecha_fin}',0);
+
+           WITH rutas_base AS (
+                SELECT 
+                    idtl.id,
+                    trim(split_part(idtl.monitoring_row__bold, '#', 2)) AS ruta,
+                    idtl.created_at,
+                    initcap(idtl.monitoring_row_details__driver_name) AS driver,
+                    NULLIF(trim(idtl.monitoring_row_details__license), 'NaN') AS ppu,
+                    idtl.id_usuario,
+                    idtl.ids_usuario
+                FROM mercadolibre.ingreso_diario_textual_lm idtl
+                WHERE idtl.created_at::date BETWEEN '{fecha_inicio}'::date AND '{fecha_fin}'::date
+            ),
+            ultimo_registro AS (
+                SELECT *,
+                    ROW_NUMBER() OVER (PARTITION BY ruta ORDER BY created_at DESC) AS rn
+                FROM rutas_base
+            ),
+            rutas_existencia AS (
+                SELECT DISTINCT
+                    ruta,
+                    EXISTS (
+                        SELECT 1 FROM mercadolibre.citacion c WHERE c.ruta_meli::text = ruta
+                    ) AS existe_en_citacion,
+                    EXISTS (
+                        SELECT 1 FROM mercadolibre.mae_data_supervisores mds WHERE mds.id_ruta::text = ruta
+                    ) AS existe_en_mae_data_supervisores,
+                    EXISTS (
+                        SELECT 1 FROM mercadolibre.mae_proforma_mensual mpm WHERE mpm.id_de_ruta::text = ruta
+                    ) AS en_proforma
+                FROM rutas_base
+            ),
+            usuarios_por_ruta AS (
+                SELECT 
+                    ruta,
+                    json_agg(
+                        json_build_object(
+                            'id_usuario', id_usuario,
+                            'ids_usuario', ids_usuario,
+                            'nombre', nombre,
+                            'cantidad_repeticiones', cantidad_repeticiones
+                        )
+                    ) AS usuarios
+                FROM (
+                    SELECT 
+                        trim(split_part(aux.monitoring_row__bold, '#', 2)) AS ruta,
+                        aux.id_usuario,
+                        aux.ids_usuario,
+                        u.nombre,
+                        COUNT(*) AS cantidad_repeticiones
+                    FROM mercadolibre.ingreso_diario_textual_lm aux
+                    LEFT JOIN hela.usuarios u ON u.id = aux.id_usuario
+                    WHERE aux.created_at::date BETWEEN '{fecha_inicio}'::date AND '{fecha_fin}'::date
+                    GROUP BY ruta, aux.id_usuario, aux.ids_usuario, u.nombre
+                ) sub
+                GROUP BY ruta
+            )
+
+            select json_agg(datos)
+            from
+            (
+                    SELECT 
+                            ur.id as "Id",
+                            to_char(ur.created_at, 'dd/mm/yyyy hh24:mi:ss') AS "Created_at",
+                            'LM' AS tipo_operacion,
+                            ur.ruta as "Ruta",
+                            ur.driver as "Driver",
+                            ur.ppu as "Ppu",
+                            re.existe_en_citacion as "Existe_citacion",
+                            re.existe_en_mae_data_supervisores as "Existe_en_mae_ds",
+                            re.en_proforma as "En_proforma",
+                            upr.usuarios as "Usuarios"
+                        FROM ultimo_registro ur
+                        JOIN rutas_existencia re ON ur.ruta = re.ruta
+                        LEFT JOIN usuarios_por_ruta upr ON ur.ruta = upr.ruta
+                        WHERE ur.rn = 1
+                        AND (
+                                (NOT re.existe_en_citacion AND NOT re.existe_en_mae_data_supervisores)
+                            OR
+                                (re.existe_en_citacion AND NOT re.existe_en_mae_data_supervisores)
+                        )
+                        ORDER BY ur.created_at desc
+            ) as datos
 
             """)
 
