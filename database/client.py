@@ -11783,95 +11783,38 @@ SELECT *
         with self.conn.cursor() as cur:
             cur.execute(f"""   
                         ---- "optimizacion v1"
-            ---with resumen_sup as (
-            ----SELECT  mo.modalidad,mo.nombre AS operacion,co.centro AS centro_operacion,r.region_name AS region,
-            ----        mds.fecha,mds.id_ruta,mds.ppu,mds.driver,
-            ----        mds.kilometros,mds.p_avance,mds.avance,
-            ----       CASE 
-            ----            WHEN (SELECT maux.modalidad FROM operacion.modalidad_operacion maux WHERE maux.id = mo.id) = 'FM' THEN
-            ----                (SELECT array_agg(json_build_object('fm_total_paradas', daux.fm_total_paradas, 'fm_paqueteria_colectada', daux.fm_paqueteria_colectada, 'fm_estimados', daux.fm_estimados, 'fm_preparados', daux.fm_preparados,'fm_p_colectas_a_tiempo', daux.fm_p_colectas_a_tiempo,'fm_p_no_colectadas', daux.fm_p_no_colectadas))
-            ----                FROM mercadolibre.mae_data_supervisores daux
-            ----                WHERE daux.id = mds.id)
-            ----            WHEN (SELECT maux.modalidad FROM operacion.modalidad_operacion maux WHERE maux.id = mo.id) = 'LM' THEN 
-            ----                (SELECT array_agg(json_build_object('lm_fallido',  daux.lm_fallido, 'lm_pendiente', daux.lm_pendiente, 'lm_spr', daux.lm_spr, 'lm_entregas', daux.lm_entregas,'lm_tiempo_ruta', daux.lm_tiempo_ruta,'lm_estado', daux.lm_estado))
-            ----                FROM mercadolibre.mae_data_supervisores daux
-            ----               WHERE daux.id = mds.id)
-            ----        END AS campos_por_operacion,
-            ----        mds.valor_ruta,
-            ----            mds.observacion,
-            ----        mds.ruta_cerrada
-            ----    FROM mercadolibre.mae_data_supervisores mds 
-            ----    LEFT JOIN operacion.centro_operacion co ON (co.id = mds.id_centro_operacion AND co.id_op = mds.id_operacion)
-            ----    LEFT JOIN operacion.modalidad_operacion mo ON mo.id = mds.id_operacion
-            ----    LEFT JOIN public.op_regiones r ON r.id_region::INT8 = co.region
-            ----    LEFT JOIN mercadolibre.citacion c ON c.ruta_meli::INT8 = mds.id_ruta
-            ----    WHERE mds.fecha BETWEEN '{fecha_ini}'::DATE AND '{fecha_fin}'::DATE
-            ----   and ({usuario} = ANY(co.id_coordinador) or {usuario} in (select u.id from hela.usuarios u where u.rol_id in ('5','90','72')))
-            ----    ORDER BY 1 DESC, 5 asc
+            with resumen_sup as (
+            SELECT  mo.modalidad,mo.nombre AS operacion,co.centro AS centro_operacion,r.region_name AS region,
+                    mds.fecha,mds.id_ruta,mds.ppu,mds.driver,
+                    mds.kilometros,mds.p_avance,mds.avance,
+                   CASE 
+                        WHEN (SELECT maux.modalidad FROM operacion.modalidad_operacion maux WHERE maux.id = mo.id) = 'FM' THEN
+                            (SELECT array_agg(json_build_object('fm_total_paradas', daux.fm_total_paradas, 'fm_paqueteria_colectada', daux.fm_paqueteria_colectada, 'fm_estimados', daux.fm_estimados, 'fm_preparados', daux.fm_preparados,'fm_p_colectas_a_tiempo', daux.fm_p_colectas_a_tiempo,'fm_p_no_colectadas', daux.fm_p_no_colectadas))
+                            FROM mercadolibre.mae_data_supervisores daux
+                            WHERE daux.id = mds.id)
+                        WHEN (SELECT maux.modalidad FROM operacion.modalidad_operacion maux WHERE maux.id = mo.id) = 'LM' THEN 
+                            (SELECT array_agg(json_build_object('lm_fallido',  daux.lm_fallido, 'lm_pendiente', daux.lm_pendiente, 'lm_spr', daux.lm_spr, 'lm_entregas', daux.lm_entregas,'lm_tiempo_ruta', daux.lm_tiempo_ruta,'lm_estado', daux.lm_estado))
+                            FROM mercadolibre.mae_data_supervisores daux
+                           WHERE daux.id = mds.id)
+                    END AS campos_por_operacion,
+                    mds.valor_ruta,
+                        mds.observacion,
+                    mds.ruta_cerrada
+                FROM mercadolibre.mae_data_supervisores mds 
+                LEFT JOIN operacion.centro_operacion co ON (co.id = mds.id_centro_operacion AND co.id_op = mds.id_operacion)
+                LEFT JOIN operacion.modalidad_operacion mo ON mo.id = mds.id_operacion
+                LEFT JOIN public.op_regiones r ON r.id_region::INT8 = co.region
+                LEFT JOIN mercadolibre.citacion c ON c.ruta_meli::INT8 = mds.id_ruta
+                WHERE mds.fecha BETWEEN '{fecha_ini}'::DATE AND '{fecha_fin}'::DATE
+                and ({usuario} = ANY(co.id_coordinador) or {usuario} in (select u.id from hela.usuarios u where u.rol_id in ('5','90','72')))
+                ORDER BY 1 DESC, 5 asc
 
-            ---- )
+            )
 
             ---select * from mercadolibre.resumen_rutas_fecha_sup('20240901','20240930',158,0);   
 
         
-        ---- "optimizacion v2"
-
-        WITH resumen_sup AS (
-                SELECT  
-                    mo.modalidad,
-                    mo.nombre AS operacion,
-                    co.centro AS centro_operacion,
-                    r.region_name AS region,
-                    mds.fecha,
-                    mds.id_ruta,
-                    mds.ppu,
-                    mds.driver,
-                    mds.kilometros,
-                    mds.p_avance,
-                    mds.avance,
-                    CASE 
-                        WHEN mo.modalidad = 'FM' THEN json_build_object(
-                            'fm_total_paradas', mds.fm_total_paradas,
-                            'fm_paqueteria_colectada', mds.fm_paqueteria_colectada,
-                            'fm_estimados', mds.fm_estimados,
-                            'fm_preparados', mds.fm_preparados,
-                            'fm_p_colectas_a_tiempo', mds.fm_p_colectas_a_tiempo,
-                            'fm_p_no_colectadas', mds.fm_p_no_colectadas
-                        )
-                        WHEN mo.modalidad = 'LM' THEN json_build_object(
-                            'lm_fallido', mds.lm_fallido,
-                            'lm_pendiente', mds.lm_pendiente,
-                            'lm_spr', mds.lm_spr,
-                            'lm_entregas', mds.lm_entregas,
-                            'lm_tiempo_ruta', mds.lm_tiempo_ruta,
-                            'lm_estado', mds.lm_estado
-                        )
-                        ELSE NULL
-                    END AS campos_por_operacion,
-                    mds.valor_ruta,
-                    mds.observacion,
-                    mds.ruta_cerrada
-                FROM mercadolibre.mae_data_supervisores mds 
-                LEFT JOIN operacion.centro_operacion co 
-                    ON co.id = mds.id_centro_operacion AND co.id_op = mds.id_operacion
-                LEFT JOIN operacion.modalidad_operacion mo 
-                    ON mo.id = mds.id_operacion
-                LEFT JOIN public.op_regiones r 
-                    ON r.id_region::INT8 = co.region
-                WHERE 
-                    mds.fecha BETWEEN '{fecha_ini}'::DATE AND '{fecha_fin}'::DATE
-                    AND (
-                        {usuario} = ANY(co.id_coordinador)
-                        OR {usuario} IN (
-                            SELECT u.id FROM hela.usuarios u 
-                            WHERE u.rol_id IN ('5','90','72')
-                        )
-                    )
-            ) ,orden_resumen_sup as (
-                    SELECT * 
-                    FROM resumen_sup
-                    ORDER BY fecha ASC
-                )
+        
 
         select json_agg(
                 json_build_object(
@@ -11892,7 +11835,7 @@ SELECT *
                 'Observacion', observacion
                 )
         ) as campo
-            from orden_resumen_sup   
+            from resumen_sup   
 
                       """)
             return cur.fetchone() 
