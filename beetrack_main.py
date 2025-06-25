@@ -136,36 +136,36 @@ def crear_vehiculo_paris(patente): ### esto es para crear un vehiculo en paris
     if response.status_code == 200:
         print("Solicitud POST exitosa:", response.json())
 
-        body = response.json()
-        response_data = body.get("response", {})  # Usamos .get() para evitar errores si no existe la clave
+        # body = response.json()
+        # response_data = body.get("response", {})  # Usamos .get() para evitar errores si no existe la clave
 
-        # Extraemos los datos de interés
-        vehicle_id = response_data.get("id")
-        truck = response_data.get("truck")
-        vehicle_type = response_data.get("vehicle_type")
-        truck_created = response_data.get("truck_created")
-        created = response_data.get("created")
+        # # Extraemos los datos de interés
+        # vehicle_id = response_data.get("id")
+        # truck = response_data.get("truck")
+        # vehicle_type = response_data.get("vehicle_type")
+        # truck_created = response_data.get("truck_created")
+        # created = response_data.get("created")
 
-        # conn.guardar_patente_paris(vehicle_id,truck)
+        # # conn.guardar_patente_paris(vehicle_id,truck)
 
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        filename = f"POST_vehiculo_Paris_{timestamp}.txt"
+        # timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        # filename = f"POST_vehiculo_Paris_{timestamp}.txt"
 
-            # body = await request.json()  # Obtener el cuerpo como JSON
-            # Guardar el contenido del JSON en un archivo de texto
-        with open(filename, "w") as f:
-            json.dump(body, f, indent=4)
+        #     # body = await request.json()  # Obtener el cuerpo como JSON
+        #     # Guardar el contenido del JSON en un archivo de texto
+        # with open(filename, "w") as f:
+        #     json.dump(body, f, indent=4)
     else:
 
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        filename = f"rPOST_vehiculo_Paris_error_{timestamp}.txt"
+        # timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        # filename = f"rPOST_vehiculo_Paris_error_{timestamp}.txt"
 
-            # body = await request.json()  # Obtener el cuerpo como JSON
-            # Guardar el contenido del JSON en un archivo de texto
-        with open(filename, "w") as f:
-            f.write(response.text)
-            f.write("\n")
-            json.dump(payload, f, indent=4)
+        #     # body = await request.json()  # Obtener el cuerpo como JSON
+        #     # Guardar el contenido del JSON en un archivo de texto
+        # with open(filename, "w") as f:
+        #     f.write(response.text)
+        #     f.write("\n")
+        #     json.dump(payload, f, indent=4)
 
         print(f"Error en la solicitud POST: {response.status_code}")
         print(response.text)
@@ -199,15 +199,15 @@ def crear_ruta_paris(payload): ### esto es para crear una ruta en paris
         route_id = response_data.get("route_id")
 
 
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        filename = f"POST_Ruta_Paris_{timestamp}.txt"
+        # timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        # filename = f"POST_Ruta_Paris_{timestamp}.txt"
 
-            # body = await request.json()  # Obtener el cuerpo como JSON
-            # Guardar el contenido del JSON en un archivo de texto
-        with open(filename, "w") as f:
-            json.dump(body, f, indent=4)
-            f.write("\n")
-            json.dump(payload, f, indent=4)
+        #     # body = await request.json()  # Obtener el cuerpo como JSON
+        #     # Guardar el contenido del JSON en un archivo de texto
+        # with open(filename, "w") as f:
+        #     json.dump(body, f, indent=4)
+        #     f.write("\n")
+        #     json.dump(payload, f, indent=4)
 
         
 
@@ -215,15 +215,15 @@ def crear_ruta_paris(payload): ### esto es para crear una ruta en paris
 
     else:
 
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        filename = f"rPOST_vehiculo_Paris_error_{timestamp}.txt"
+        # timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        # filename = f"rPOST_vehiculo_Paris_error_{timestamp}.txt"
 
-            # body = await request.json()  # Obtener el cuerpo como JSON
-            # Guardar el contenido del JSON en un archivo de texto
-        with open(filename, "w") as f:
-            f.write(response.text)
-            f.write("\n")
-            json.dump(payload, f, indent=4)
+        #     # body = await request.json()  # Obtener el cuerpo como JSON
+        #     # Guardar el contenido del JSON en un archivo de texto
+        # with open(filename, "w") as f:
+        #     f.write(response.text)
+        #     f.write("\n")
+        #     json.dump(payload, f, indent=4)
 
         print(f"Error en la solicitud POST: {response.status_code}")
         print(response.text)
@@ -235,6 +235,10 @@ def send_put_update_ruta(payload, route_id): ### esto es para actualizar una rut
     url = f'https://paris.dispatchtrack.com/api/external/v1/routes/{route_id}'
     print(url)
 
+
+    ## folder
+
+    folder = "resp_api_paris"
     # Encabezados
     headers = {
         'Accept': '*/*',
@@ -254,8 +258,10 @@ def send_put_update_ruta(payload, route_id): ### esto es para actualizar una rut
         print("Solicitud PUT exitosa:", response.json())
         body = response.json()
 
+        
+        # filename = os.path.join(folder, f"datos_ruta_parasabersillegan_ACTUALIZACION{timestamp}.txt")
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        filename = f"r_update_route_Paris_route_id_{route_id}_{timestamp}.txt"
+        filename =  os.path.join(folder,f"r_update_route_Paris_route_id_{route_id}_{timestamp}.txt")
 
 
             # body = await request.json()  # Obtener el cuerpo como JSON
@@ -267,7 +273,7 @@ def send_put_update_ruta(payload, route_id): ### esto es para actualizar una rut
     else:
 
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        filename = f"r_update_route_Paris_error_route_id_{route_id}_{timestamp}.txt"
+        filename = os.path.join(folder,f"r_update_route_Paris_error_route_id_{route_id}_{timestamp}.txt")
 
             # body = await request.json()  # Obtener el cuerpo como JSON
             # Guardar el contenido del JSON en un archivo de texto
@@ -284,12 +290,18 @@ def send_put_request(payload, codigo_guia):
     # URL del endpoint
     url = f'https://paris.dispatchtrack.com/api/external/v1/dispatches/{codigo_guia}'
 
+    
+
     # Encabezados
     headers = {
         'Accept': '*/*',
         'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
         'X-AUTH-TOKEN': config("SECRET_KEY_PARIS"),
     }
+
+    ## folder
+
+    folder = "resp_api_paris"
 
     # Cuerpo de la solicitud (puedes modificar esto según lo que necesites enviar)
     payload = payload
@@ -304,7 +316,7 @@ def send_put_request(payload, codigo_guia):
         body = response.json()
 
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        filename = f"r_update_dispatch_Paris_{timestamp}.txt"
+        filename = os.path.join(folder,f"r_update_dispatch_Paris_{timestamp}.txt")
 
 
             # body = await request.json()  # Obtener el cuerpo como JSON
@@ -314,7 +326,7 @@ def send_put_request(payload, codigo_guia):
     else:
 
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        filename = f"r_update_dispatch_Paris_error_codigo_{codigo_guia}_{timestamp}.txt"
+        filename = os.path.join(folder,f"r_update_dispatch_Paris_error_codigo_{codigo_guia}_{timestamp}.txt")
 
             # body = await request.json()  # Obtener el cuerpo como JSON
             # Guardar el contenido del JSON en un archivo de texto
