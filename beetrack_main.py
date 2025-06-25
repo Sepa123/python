@@ -660,6 +660,8 @@ async def webhook_dispatch_paris(request : Request , headers: tuple = Depends(va
 
     body = await request.json()  # Obtener el cuerpo como JSON
 
+    folder = 'resp_api_paris_productos'
+
     try:
 
         if body["resource"] == "dispatch_guide":
@@ -691,7 +693,7 @@ async def webhook_dispatch_paris(request : Request , headers: tuple = Depends(va
                     body = await request.json() 
                         # Generar nombre de archivo único usando timestamp
                     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-                    filename = f"datos_nuevos_{timestamp}.txt"
+                    filename = os.path.join(folder, f"datos_nuevos_{timestamp}.txt")
 
                     # Guardar el contenido del JSON en un archivo de texto
                     with open(filename, "w") as f:
@@ -713,7 +715,7 @@ async def webhook_dispatch_paris(request : Request , headers: tuple = Depends(va
                     body = await request.json() 
                         # Generar nombre de archivo único usando timestamp
                     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-                    filename = f"datos_actualizado_{timestamp}.txt"
+                    filename = os.path.join(folder, f"datos_actualizado_{timestamp}.txt")
 
                     # Guardar el contenido del JSON en un archivo de texto
                     with open(filename, "w") as f:
@@ -758,7 +760,7 @@ async def webhook_dispatch_paris(request : Request , headers: tuple = Depends(va
 
 
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        filename = f"datos_por_error_400_{timestamp}.txt"
+        filename = os.path.join(folder, f"datos_por_error_400_{timestamp}.txt")
 
         # Guardar el contenido del JSON en un archivo de texto
         with open(filename, "w") as f:
