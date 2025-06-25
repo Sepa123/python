@@ -51,7 +51,6 @@ class Usuario(BaseModel):
     area_id: str
     cargo: str
     id_supervisor: Optional[int] = None
-    carga_manual: Optional[bool] = None
     id_operacion: Optional[int] = None
     id_centro_op: Optional[int] = None
     id_seguimiento: Optional[int] = None
@@ -70,9 +69,6 @@ class Cliente(BaseModel):
     activo: bool
     esquema_destino: str
     tabla_destino: str
-    carga_manual: bool
-    id_operacion: int
-    id_centro_op: int
     id_seguimiento: Optional[int] = None
 
 class ClienteUpdate(BaseModel):
@@ -128,7 +124,15 @@ def ejecutar_consulta2(sql):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al ejecutar la consulta: {str(e)}")
 
-
+def ejecutar_consulta3(consulta, parametros=None):
+    conn = psycopg2.connect(**parametros_conexion)  # ajusta tu conexión
+    cursor = conn.cursor()
+    cursor.execute(consulta, parametros)  # pasa los parámetros correctamente
+    datos = cursor.fetchall()
+    columnas = [desc[0] for desc in cursor.description]
+    cursor.close()
+    conn.close()
+    return datos, columnas
 
 @router.post("/Agregar/Bitacora/")
 async def agregar_bitacora(body: Bitacora):
@@ -185,6 +189,49 @@ async def User_data(id: str):
     else:
         raise HTTPException(status_code=404, detail="No se encontraron datos")
 
+@router.get("/GpOperacion/")
+async def Gp_operacionData():
+    """
+    Devuelve todos los datos del cliente con el id especificado.
+    """
+    consulta = """
+        SELECT mo.id,
+               mo.nombre AS grupo_operacion,
+               do2.nombre AS servicio
+        FROM operacion.modalidad_operacion mo
+        LEFT JOIN operacion.def_operacion do2 ON do2.id = mo.id_mod 
+        WHERE mo.estado IS TRUE
+        ORDER BY 2 ASC;
+    """
+    datos, columnas = ejecutar_consulta2(consulta)
+    if datos:
+        resultados = [dict(zip(columnas, fila)) for fila in datos]
+        return resultados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
+    
+@router.get("/SelectOperacion/")
+async def Select_operacionData(id: int):
+    """
+    Devuelve todos los datos del cliente con el id especificado.
+    """
+    consulta = """
+        SELECT co.id,
+               co.centro AS operacion,
+               or2.region_num AS region,
+               msc.glosa
+        FROM operacion.centro_operacion co 
+        LEFT JOIN public.op_regiones or2 ON or2.id_region::integer = co.region
+        LEFT JOIN rutas.modo_seguimiento_cliente msc ON msc.id = co.id_seguimiento
+        WHERE co.id_op = %s  -- El id de la consulta anterior
+        ORDER BY 2 ASC;
+    """
+    datos, columnas = ejecutar_consulta3(consulta, (id,))
+    if datos:
+        resultados = [dict(zip(columnas, fila)) for fila in datos]
+        return resultados
+    else:
+        raise HTTPException(status_code=404, detail="No se encontraron datos")
 
 @router.get("/regiones/")
 async def Obtener_datos():
@@ -451,25 +498,24 @@ async def agregar_cliente(body: Cliente):
      Endpoint para insertar un registro en la tabla rutas.clientes.
      """
      try:
-         conexion = psycopg2.connect(**parametros_conexion)
-         cursor = conexion.cursor()
-         consulta = """
-             INSERT INTO rutas.clientes
-                 (id_usuario, ids_usuario, nombre, rut, direccion, ciudad, region, telefono, correo, representante, activo, esquema_destino, tabla_destino, carga_manual, id_operacion, id_centro_op)
-             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-         """
-         # Parámetros en el mismo orden que los placeholders
-         parametros = (
-             body.id_usuario, body.ids_usuario, body.nombre, body.rut, body.direccion,
-             body.ciudad, body.region, body.telefono, body.correo, body.representante,
-             body.activo, body.esquema_destino, body.tabla_destino, body.carga_manual,
-             body.id_operacion, body.id_centro_op
-         )
-         cursor.execute(consulta, parametros)
-         conexion.commit()
-         cursor.close()
-         conexion.close()
-         return {"message": "Cliente agregado correctamente"}
+            conexion = psycopg2.connect(**parametros_conexion)
+            cursor = conexion.cursor()
+            consulta = """
+                INSERT INTO rutas.clientes
+                    (id_usuario, ids_usuario, nombre, rut, direccion, ciudad, region, telefono, correo, representante, activo, esquema_destino, tabla_destino)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """
+            # Parámetros en el mismo orden que los placeholders
+            parametros = (
+                body.id_usuario, body.ids_usuario, body.nombre, body.rut, body.direccion,
+                body.ciudad, body.region, body.telefono, body.correo, body.representante,
+                body.activo, body.esquema_destino, body.tabla_destino
+            )
+            cursor.execute(consulta, parametros)
+            conexion.commit()
+            cursor.close()
+            conexion.close()
+            return {"message": "Cliente agregado correctamente"}
      except Exception as e:
          raise HTTPException(status_code=500, detail=f"Error al insertar cliente: {str(e)}")
 # if __name__ == "__main__":
