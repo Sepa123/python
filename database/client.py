@@ -10246,7 +10246,7 @@ SELECT *
         with self.conn.cursor() as cur:
             cur.execute(f"""   
             
-                SELECT id, to_char(created_at::date, 'YYYY-MM-DD'), id_user, ids_user, id_op, centro, descripcion, r.region_name 
+                SELECT id, to_char(created_at::date, 'YYYY-MM-DD'), id_user, ids_user, id_op, centro, descripcion, r.region_name, id_seguimiento
                 FROM operacion.centro_operacion co
                 left join public.op_regiones r on co.region::VARCHAR = r.id_region                
                          """)
