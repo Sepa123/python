@@ -10246,9 +10246,11 @@ SELECT *
         with self.conn.cursor() as cur:
             cur.execute(f"""   
             
-                SELECT id, to_char(created_at::date, 'YYYY-MM-DD'), id_user, ids_user, id_op, centro, descripcion, r.region_name, id_seguimiento
+                SELECT co.id, to_char(created_at::date, 'YYYY-MM-DD'), id_user, ids_user, id_op, centro, descripcion, r.region_name ,co.id_seguimiento,
+                msc.glosa
                 FROM operacion.centro_operacion co
-                left join public.op_regiones r on co.region::VARCHAR = r.id_region                
+                left join rutas.modo_seguimiento_cliente msc on co.id_seguimiento = msc.id
+                left join public.op_regiones r on co.region::VARCHAR = r.id_region               
                          """)
             return cur.fetchall()
 
