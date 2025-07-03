@@ -1710,3 +1710,16 @@ async def get_lista_guias_externas(fecha_ini:str,fecha_fin: str,bloque : int):
 
     datos = conn.obtener_datos_guias_externas_por_bloque(fecha_ini,fecha_fin,bloque)
     return datos[0]
+
+
+
+#### Consolidado Rutas
+
+@router.get("/lista/consolidado_rutas")
+async def get_lista_consolidado_rutas(fecha_ini:str,fecha_fin: str,bloque : int):
+
+    fecha_ini = fecha_ini.replace("-","")
+    fecha_fin = fecha_fin.replace("-","")
+
+    datos = conn.obtener_datos_consolidado_rutas(fecha_ini,fecha_fin,bloque)
+    return datos[0]

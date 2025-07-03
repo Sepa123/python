@@ -13410,6 +13410,20 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
                 ) as guias
                       """)
             return cur.fetchone()
+        
+
+
+    #### consolidado de rutas
+
+    def obtener_datos_consolidado_rutas(self,fecha_ini,fecha_fin,bloque):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+                select json_agg(cr) from rutas.consolidado_rutas cr 
+                WHERE cr.fecha BETWEEN '{fecha_ini}' AND '{fecha_fin}'
+
+
+                      """)
+            return cur.fetchone()
 
 
 class transyanezConnection():
