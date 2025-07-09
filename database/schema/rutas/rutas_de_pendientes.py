@@ -20,16 +20,17 @@ def ruta_de_pendientes(ruta):
 	"Cod_entrega": ruta[2],
 	"Fecha_ingreso": formatear_fecha(ruta[3]),
 	"Fecha_compromiso":  formatear_fecha(ruta[4]),
-	"Region": ruta[5],
-	"Comuna": ruta[6],
-	"Descripcion": ruta[7],
-	"Bultos": ruta[8],
-	"Estado": ruta[9],
-	"Subestado": ruta[10],
-	"Verificado": ruta[11],
-	"Recibido": ruta[12],
-    "Observacion": ruta[13],
-    "Alerta": ruta[14]
+    "Fecha_reprogramado":  formatear_fecha(ruta[5]),
+	"Region": ruta[6],
+	"Comuna": ruta[7],
+	"Descripcion": ruta[8],
+	"Bultos": ruta[9],
+	"Estado": ruta[10],
+	"Subestado": ruta[11],
+	"Verificado": ruta[12],
+	"Recibido": ruta[13],
+    "Observacion": ruta[14],
+    "Alerta": ruta[15]
 	}
 
 def rutas_de_pendientes_schema(rutas):

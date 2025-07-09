@@ -225,7 +225,9 @@ async def get_rutas_de_pendientes_limitada(fecha_inicio, fecha_fin , offset):
 @router.get("/pendientes/easy_cd")
 async def get_rutas_de_pendientes_limitada(fecha_inicio, fecha_fin , offset):
      try:
-        result = conn.pendientes_easy_cd_mio(fecha_inicio, fecha_fin, offset)
+      #   result = conn.pendientes_easy_cd_mio(fecha_inicio, fecha_fin, offset)
+      ### se3 usa pendientes_easy_cd por ser mas rapida en respuesta (ver 3.0 + agregado)
+        result = conn.pendientes_easy_cd(fecha_inicio, fecha_fin, offset)
         return rutas_de_pendientes_schema(result)
      except:
         print("error pedidos/pendientes")
