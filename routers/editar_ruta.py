@@ -11,6 +11,7 @@ from typing import List, Optional
 from dotenv import load_dotenv
 from PIL import Image
 from io import BytesIO
+import json  # ✅ Necesario para usar json.dumps()
 import bcrypt  # Importa bcrypt para encriptar contraseñas
 # Cargar las variables de entorno desde el archivo .env
 load_dotenv()
@@ -98,6 +99,15 @@ class Bitacora(BaseModel):
     dato_actual: Optional[str] = None
     dato_resultado: Optional[str] = None
     tabla_impactada: str
+
+
+class OperacionItem(BaseModel):
+    grupo_operacion_id: int
+    operacion_id: int
+
+class OperacionesInput(BaseModel):
+    id: int
+    operaciones: List[OperacionItem]
 
 def ejecutar_consulta(sql):
     try:
@@ -418,22 +428,19 @@ async def subir_archivo(
 
 
 @router.post("/actualizar-operaciones-permitidas/")
-async def actualizar_operaciones_permitidas(
-    id: int = Form(...),
-    operaciones_permitidas: List[int] = Form(...)
-):
-    """
-    Actualiza el campo operaciones_permitidas para un cliente específico.
-    """
+async def actualizar_operaciones_permitidas(data: OperacionesInput):
     try:
         conexion = psycopg2.connect(**parametros_conexion)
         cursor = conexion.cursor()
         consulta = """
             UPDATE rutas.clientes
-            SET operaciones_permitidas = %s
+            SET operaciones = %s
             WHERE id = %s;
         """
-        cursor.execute(consulta, (operaciones_permitidas, id))
+        # Convertimos cada objeto a dict, luego lo convertimos en string JSON para PostgreSQL
+        operaciones_json = json.dumps([op.dict() for op in data.operaciones])
+        cursor.execute(consulta, (operaciones_json, data.id))
+
         conexion.commit()
         return {"message": "Operaciones permitidas actualizadas correctamente."}
     except Exception as e:
