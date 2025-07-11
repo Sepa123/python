@@ -1723,3 +1723,17 @@ async def get_lista_consolidado_rutas(fecha_ini:str,fecha_fin: str,bloque : int)
 
     datos = conn.obtener_datos_consolidado_rutas(fecha_ini,fecha_fin,bloque)
     return datos[0]
+
+
+#### actualizar valor ruta de consolidado
+@router.put("/actualizar/valor/consolidado",status_code=status.HTTP_202_ACCEPTED)
+async def update_valor_consolidado( body : UpdateValorRuta ):
+     try:
+
+          conn.update_valor_consolidado_ruta(body.ruta,body.guia,body.valor_ruta)
+        
+          return { "message": "Ruta actualizado correctamente" }
+     except Exception as e:   
+          print("error en /actualizar/estado/")
+          
+          raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error al actualizar el valor de la ruta consolidado")

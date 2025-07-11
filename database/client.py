@@ -13489,12 +13489,29 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
     def obtener_datos_consolidado_rutas(self,fecha_ini,fecha_fin,bloque):
         with self.conn.cursor() as cur:
             cur.execute(f""" 
-                select json_agg(cr) from rutas.consolidado_rutas cr 
-                WHERE cr.fecha BETWEEN '{fecha_ini}' AND '{fecha_fin}'
-
-
+                SELECT json_agg(sub)
+                FROM (
+                    SELECT * 
+                    FROM rutas.consolidado_rutas cr
+                    WHERE cr.fecha BETWEEN '{fecha_ini}' AND '{fecha_fin}'
+                    ORDER BY cr.created_at 
+                ) sub;
                       """)
             return cur.fetchone()
+        
+
+    #### actualizar valor consolidado rutas
+
+    def update_valor_consolidado_ruta(self, ruta,guia,valor_ruta):
+        with self.conn.cursor() as cur:
+            cur.execute(f"""
+
+            UPDATE rutas.consolidado_rutas
+            SET  valor_ruta={valor_ruta}
+            WHERE id = {guia}
+            """)
+            row = cur.rowcount
+        self.conn.commit()
 
 
 class transyanezConnection():
