@@ -13495,8 +13495,14 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
             cur.execute(f""" 
                 SELECT json_agg(sub)
                 FROM (
-                    SELECT * 
+                    SELECT 
+                      cr.id, cr.created_at, cr.last_update, cr.nombre_ruta, cr.fecha, cr.id_operacion,cr.id_centro_op, cr.tipo_ruta, cr.estado, cr.origen, cr.destino, cr.origen_seguimiento, cr.fecha_inicio, 
+					  cr.fecha_fin, cr.distancia_km, cr.tiempo_estimado, cr.patente_vehiculo, cr.tipo_vehiculo, cr.id_razon_social, 
+					  cr.nombre_driver, cr.pedido_total, cr.entregados, cr.no_entregados, cr.kg, cr.id_tarifa, 
+					  cr.valor_ruta, cr.cliente_info, cr.notas,mo.nombre as "nombre_op",co.centro as "nombre_centro_op"
                     FROM rutas.consolidado_rutas cr
+                    left join operacion.modalidad_operacion mo on mo.id = cr.id_operacion
+                    left join operacion.centro_operacion co on co.id = cr.id_centro_op 
                     WHERE cr.fecha BETWEEN '{fecha_ini}' AND '{fecha_fin}'
                     ORDER BY cr.created_at 
                 ) sub;
