@@ -13115,7 +13115,11 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
             select 'Clientes_ty' as nombre,json_agg(clientes_ty) from clientes_ty
             union all
             select 'Clientes_guias_ty' as nombre, json_agg(json_build_object('Id_cliente',id,'Cliente', nombre)) as campo
-            from  rutas.listar_clientes_guia_externa();
+            from  rutas.listar_clientes_guia_externa()
+            union all
+            select 'Grupos_operacion' as nombre,
+            json_agg(json_build_object('Id_operacion',id,'Nombre_operacion', nombre)) as campo
+            from operacion.modalidad_operacion            
             
                       """)
             return cur.fetchall()
