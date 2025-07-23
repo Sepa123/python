@@ -13524,6 +13524,46 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
         self.conn.commit()
 
 
+    def obtener_lista_menu(self, id_usuario: int):
+        with self.conn.cursor() as cur:
+            cur.execute(f""" 
+             with lista_submenus as  (
+                SELECT 
+                s->>'id_submenu' AS id_submenu,
+                s->>'permiso' AS permiso,
+                m->>'id_menu' AS id_menu,
+                sm.link,
+                sm.submenu as "submenu",
+                sm.activo
+                FROM hela.usuarios u,
+                    jsonb_array_elements(u.submenus_permisos) AS m,
+                    jsonb_array_elements(m->'submenus') AS s
+                left join hela.submenu sm on s->>'id_submenu' = text(sm.id)
+                WHERE u.id = {id_usuario}
+                and ( (m->>'id_menu')::int = any(u.menus_propietario_ids) and  (s->>'permiso')::boolean = true )
+                ),
+
+                ----select json_agg(lista) from lista_submenus  lista
+
+                lista_menu as (
+
+                    select m.id,m.posicion , m.titulo, m.icono,  m.activo ,
+                    json_agg(json_build_object('link',s.link,'submenu', s.submenu, 'activo',s.activo )) as submenus
+                    from hela.menu m
+                    inner join lista_submenus s on text(m.id) = s.id_menu 
+                    where m.activo = true
+                    group by m.id
+                    order by m.posicion
+
+                )
+                --select * from lista_menu listas
+
+                select json_agg(listas) from lista_menu listas
+      
+                      """)
+            return cur.fetchone()
+
+
 class transyanezConnection():
     conn = None
     def __init__(self) -> None:

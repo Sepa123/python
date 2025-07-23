@@ -2084,6 +2084,14 @@ async def get_campos_registro():
 
 
 
+@app.get("/api/v2/menu/hela")
+async def get_campos_registro():
+    datos = conn.obtener_lista_menu(1020)
+    # resultado_dict = {titulo : cant for titulo, cant in datos}
+
+    return datos[0]
+
+
 
 @app.get("/api/v2/prueba/funcion")
 async def get_campos_registro():
