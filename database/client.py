@@ -13524,40 +13524,60 @@ VALUES(%(Id_usuario)s, %(Ids_usuario)s, %(Driver)s, %(Guia)s, %(Cliente)s,
         self.conn.commit()
 
 
-    def obtener_lista_menu(self, id_usuario: int):
+    def obtener_lista_menu(self, id_usuario: int, id_rol: int ):
         with self.conn.cursor() as cur:
             cur.execute(f""" 
-             with lista_submenus as  (
+             WITH 
+                lista_submenus AS (
                 SELECT 
-                s->>'id_submenu' AS id_submenu,
-                s->>'permiso' AS permiso,
-                m->>'id_menu' AS id_menu,
-                sm.link,
-                sm.submenu as "submenu",
-                sm.activo
+                    m->>'id_submenu' AS id_submenu,
+                    m->>'permiso' AS permiso,
+                    sm.id_menu AS id_menu,
+                    sm.link,
+                    sm.submenu AS "submenu",
+                    sm.activo
                 FROM hela.usuarios u,
+                    jsonb_array_elements(u.submenus_permisos) AS m
+                LEFT JOIN hela.submenu sm ON m->>'id_submenu' = text(sm.id)
+                WHERE u.id = {id_usuario} and sm.activo = true
+                    --AND ( sm.id_menu = ANY(u.menus_propietario_ids) )
+                ),
+                lista_submenus_rol AS (
+                SELECT 
+                    s->>'id_submenu' AS id_submenu,
+                    s->>'permiso' AS permiso,
+                    sm.id_menu AS id_menu,
+                    sm.link,
+                    sm.submenu AS "submenu",
+                    sm.activo
+                FROM hela.rol u,
                     jsonb_array_elements(u.submenus_permisos) AS m,
                     jsonb_array_elements(m->'submenus') AS s
-                left join hela.submenu sm on s->>'id_submenu' = text(sm.id)
-                WHERE u.id = {id_usuario}
-                and ( (m->>'id_menu')::int = any(u.menus_propietario_ids) and  (s->>'permiso')::boolean = true )
+                LEFT JOIN hela.submenu sm ON s->>'id_submenu' = text(sm.id)
+                WHERE u.id = {id_rol} and sm.activo = true
+                    --AND ( (m->>'id_menu')::int = ANY(u.menus_ids) AND (s->>'permiso')::boolean = true )
                 ),
-
-                ----select json_agg(lista) from lista_submenus  lista
-
-                lista_menu as (
-
-                    select m.id,m.posicion , m.titulo, m.icono,  m.activo ,
-                    json_agg(json_build_object('link',s.link,'submenu', s.submenu, 'activo',s.activo )) as submenus
-                    from hela.menu m
-                    inner join lista_submenus s on text(m.id) = s.id_menu 
-                    where m.activo = true
-                    group by m.id
-                    order by m.posicion
-
+                submenu_fuente AS (
+                SELECT * FROM lista_submenus
+                UNION ALL
+                SELECT * FROM lista_submenus_rol
+                WHERE NOT EXISTS (SELECT 1 FROM lista_submenus)
+                ),
+                lista_menu AS (
+                SELECT 
+                    m.id,
+                    m.posicion,
+                    m.titulo,
+                    m.icono,
+                    m.activo,
+                    m.subtitulo,
+                    json_agg(json_build_object('link', s.link, 'submenu', s.submenu, 'activo', s.activo, 'permiso',s.permiso,'id_submenu',id_submenu)) AS submenus
+                FROM hela.menu m
+                INNER JOIN submenu_fuente s ON m.id = s.id_menu
+                WHERE m.activo = true
+                GROUP BY m.id
+                ORDER BY m.posicion
                 )
-                --select * from lista_menu listas
-
                 select json_agg(listas) from lista_menu listas
       
                       """)

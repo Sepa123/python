@@ -2010,7 +2010,8 @@ def login_user(user_data:loginSchema):
         "rol_id" : user_db[5],
         "sub": user_db[1],
         "server": server,
-        "imagen_perfil" : user_db[6]
+        "imagen_perfil" : user_db[6],
+        "menu" : conn.obtener_lista_menu(user_db[0],user_db[5])[0]
     }
 
 def auth_user(token:str = Depends(oauth2)):
@@ -2082,11 +2083,14 @@ async def get_campos_registro():
 
     return resultado_dict
 
-
+connHela = HelaConnection()
 
 @app.get("/api/v2/menu/hela")
-async def get_campos_registro():
-    datos = conn.obtener_lista_menu(1020)
+async def get_campos_registro(id_usuario: int):
+    
+    
+
+    datos = conn.obtener_lista_menu(id_usuario,91)
     # resultado_dict = {titulo : cant for titulo, cant in datos}
 
     return datos[0]
